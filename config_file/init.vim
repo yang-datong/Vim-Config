@@ -152,56 +152,54 @@ endif
 set completeopt-=preview " 关闭弹窗
 
 call plug#begin('~/.config/nvim/plugged')
-  Plug 'Shougo/unite.vim'
-  Plug 'Shougo/neomru.vim'
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'zchee/deoplete-jedi'
-  Plug 'Shougo/deoplete-clangx'
-  Plug 'rhysd/vim-clang-format' " code format
-  Plug 'mbbill/undotree'
-  Plug 'scrooloose/nerdtree'
-  Plug 'tpope/vim-commentary'
-  Plug 'airblade/vim-gitgutter'
-  Plug 'tpope/vim-fugitive'
+  Plug 'Shougo/unite.vim' "弃用
+"  Plug 'Shougo/neomru.vim'
+  "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "代码提示 .可以提示snippet的代码
+  "Plug 'Shougo/ddc.vim'
+  "Plug 'vim-denops/denops.vim'
 
-  Plug 'sheerun/vim-polyglot' " Language packs
-"  Plug 'scrooloose/syntastic' " Check Code 语法 此仓库以及不再维护，可以看这个Plug 'dense-analysis/ale'
-"  let g:syntastic_cpp_compiler_options = ' -std=c++11'
-  Plug 'dense-analysis/ale'
-"保存文件才进行语法检查
-  let g:ale_lint_on_text_changed = 'never'
-  let g:ale_lint_on_insert_leave = 0
-  let g:ale_lint_on_enter = 0
+"  Plug 'zchee/deoplete-jedi' "自动提示代码 python
+"  Plug 'Shougo/deoplete-clangx' "自动提示代码 C/C++
+"  Plug 'rhysd/vim-clang-format' " code format
+"  Plug 'mbbill/undotree' "可视化撤销历史记录
+  Plug 'scrooloose/nerdtree' "打开目录窗口（适合作为ide使用）
+"  Plug 'tpope/vim-commentary' "批量块注释代码
+  Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
+  Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
 
-"  let g:ale_linters_explicit = 1 " 关闭所有语言
-"  关闭python检查，这个太麻烦了
-  let g:ale_linters = {
-\   'python': ['eslint'],
-\}
+  Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
+  Plug 'dense-analysis/ale' "保存文件才进行语法检查
+    let g:ale_lint_on_text_changed = 'never'
+    let g:ale_lint_on_insert_leave = 0
+    let g:ale_lint_on_enter = 0
+    let g:ale_linters_explicit = 1 " 关闭所有语言
+    "关闭python检查，这个太麻烦了
+    let g:ale_linters = {
+  \   'python': ['eslint'],
+  \}
 
-"  Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
-  "vim -> :CocInstall coc-clangd
-"  set hidden
-"  set updatetime=100
-"  set shortmess+=c
-"  inoremap <silent><expr> <TAB>
-"        \ pumvisible() ? "\<C-n>" :
-"        \ <SID>check_back_space() ? "\<TAB>" :
-"        \ coc#refresh()
-"  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-"  function! s:check_back_space() abort
-"    let col = col('.') - 1
-"    return !col || getline('.')[col - 1]  =~# '\s'
-"  endfunction
-"
-  Plug 'majutsushi/tagbar'
-  Plug 'bronson/vim-trailing-whitespace'
-  Plug 'editorconfig/editorconfig-vim'
-  "Plug 'Yggdroot/indentLine'
+"  Plug 'sbdchd/neoformat'
+  Plug 'vim-autoformat/vim-autoformat'
+"  au BufWrite * :Autoformat "保存文件时格式化代码
+
+  Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
+    "vim -> :CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-texlab coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git
+    "CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
+    "Coc 自动导入包 CocAction 类似于java import 包
+    "显示snipt片段的提示 CocInstall coc-snippets
+  set hidden
+  set updatetime=100
+  set shortmess+=c
+  inoremap <expr> <Down> coc#pum#visible() ? coc#pum#next(1) : "\<Down>"
+  inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
+  inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
+"  Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
+  Plug 'bronson/vim-trailing-whitespace' "多余的空格自动报红
+"  Plug 'editorconfig/editorconfig-vim' "回车自动缩进
 "======================================================================
   " Color thems
   Plug 'junegunn/seoul256.vim'
-  "Plug 'dylanaraps/wal'
   setlocal spell
   set spelllang=en_us
   inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
@@ -229,13 +227,7 @@ call plug#begin('~/.config/nvim/plugged')
   Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
   "let g:mkdp_theme ='dark'
   let g:mkdp_theme ='light'
-  let g:mkdp_markdown_css ='~/markdown.css'
-  let g:mkdp_highlight_css='~/highlight.css'
-  let g:mkdp_page_title ='我在这儿呢'
-  "let g:mkdp_auto_open = 1
   "let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-  "let g:mkdp_auto_close = 0
-  "Plug 'iamcco/mathjax-support-for-mkdp'  "预览数学公式  目前不需要了
 "======================================================================
   Plug 'rcarriga/nvim-notify'
 call plug#end()
