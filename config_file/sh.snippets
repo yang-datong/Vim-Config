@@ -1,0 +1,246 @@
+snippet #! "shebang" b
+#!/bin/bash
+endsnippet
+
+
+#########################Shell######################
+snippet > ">"
+-gt
+endsnippet
+
+snippet < "<"
+-lg
+endsnippet
+
+snippet if "if"
+if [ ${1} ];then
+	${0}
+fi
+endsnippet
+
+snippet elif "elif" i
+elif [ ${1} ];then
+	${0}
+endsnippet
+
+snippet func "func" i
+${1:function_name}(){
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet echo "echo -e" i
+echo -e "\033[31m${1}\033[0m"
+endsnippet
+
+snippet while "while()"
+i=0
+while ((i < ${1:100}));do
+	${2}
+	((i++))
+done
+endsnippet
+
+snippet while1 "while(true)"
+while true;do
+	${1}
+done
+endsnippet
+
+snippet whileread "while read"
+while read line;do
+	echo $line
+done < ${1}
+endsnippet
+
+snippet fori "for(i)" i
+for((i=0;i<${1};i++));do
+	${0}
+done
+endsnippet
+
+snippet for "for .. in" i
+for i in ${1};do
+	${0}
+done
+endsnippet
+
+snippet perfix "perfix"
+\$\{${1}%.*\}
+endsnippet
+
+snippet suffix "suffix"
+\$\{${1}##*.\}
+endsnippet
+
+snippet case
+case ${1:word} in
+	${2:pattern})
+		${0};;
+esac
+endsnippet
+
+snippet main
+__ScriptVersion="${1:version}"
+
+usage (){
+	echo "Usage :  \$${0:0} [options] [--]
+
+    Options:
+    -h|help       Display this message
+    -v|version    Display script version"
+
+}
+
+#  Handle command line arguments
+while getopts ":hv" opt;do
+  case \$opt in
+	h|help)			usage; exit 0   ;;
+	v|version)	echo "\$${0:0} -- Version \$__ScriptVersion"; exit 0   ;;
+	* )					echo -e "\\n  Option does not exist : \$OPTARG\\n"
+							usage; exit 1   ;;
+  esac
+done
+shift \$(($OPTIND-1))
+endsnippet
+
+snippet root
+if [ \$(id -u) -ne 0 ]; then exec sudo \$0; fi
+endsnippet
+
+#########################Shell######################
+snippet log "log()"
+log(){
+	if [ \$# -gt 1 ];then
+		printf "\033[31mParameter can only be one!!!" >& 2;exit;fi
+	tty_wid=\$(tput cols)
+	line=\$(printf "\033[33m%00\${tty_wid}d\n" 0 | tr "0" "=")
+	string_len=\$(echo \$1 | wc -c)
+	((tty_wid -= string_len))
+	((tty_wid /= 2))
+	echo \$line
+	printf "%00\${tty_wid}d" 0 | tr "0" " "
+	printf "\033[91m\$1\n"
+	echo \$line
+}
+endsnippet
+
+snippet echo_befor "echo_befor" i
+echo -e "\033[33m\$(sed -n \$(expr \$LINENO - 1)p \$0).......\033[0m"
+endsnippet
+
+#########################Four tools######################
+snippet awk "awk ..." i
+awk -F "${1}" '{print \$${2}}'
+endsnippet
+
+snippet seda "sed a"
+sed -i "" "/${1:flag}/a\ 
+	${2:content}
+" $file
+endsnippet
+
+snippet seds "sed s"
+sed -i "" "${1:code_line}s/${2:old}/${3:new}/" ${4:file}
+endsnippet
+
+snippet sedd "sed d"
+sed -i "" "/${1:flag}/d" ${2:file}
+endsnippet
+
+#########################util######################
+snippet check_os "check_os"
+#Check OS System
+check_os(){
+	case "$(uname)" in
+	"Darwin") $1;;
+	"Linux") $2;;
+	*)echo "Windows has not been tested for the time being";exit 1
+	esac
+}
+endsnippet
+
+snippet check_cmd "check_cmd"
+#Checkout is install
+check_cmd(){
+	local obj=\$1
+	if [ ! -x "$(command -v $obj)" ];then
+		echo "$obj installing ....."
+		${1:brew install}
+	fi
+}
+endsnippet
+
+snippet adb "adb"
+cmd(){
+	adb shell "\$1" || {
+		echo -e "\033[31madb [ \$1 ] execution faild\033[0m" ; exit
+	}
+}
+cmd "${1:id}"
+endsnippet
+
+#########################ffmpeg######################
+snippet ffprobe "ffprobe"
+ffprobe -loglevel quiet -select_streams v -show_streams $1
+endsnippet
+
+snippet ffplay-help "ffplay-help"
+ffplay -i $1 -f rawvideo -video_size $2 #default I420
+#Play yuv[I420]
+
+ffplay -i $1 -pix_fmt yuv420p -s $2
+#Play yuv[420p]
+
+ffplay -i $1 -pix_fmt nv21 -s $2
+#Play yuv[nv21]
+endsnippet
+
+snippet ffmpeg_get_Audio "ffmpeg_get_Audio"
+ffmpeg -i $1 -vn out.mp3
+endsnippet
+
+snippet ffmpeg_cut_frames "ffmpeg_frames"
+ffmpeg -i $1.mp4 -c copy -frames:v $2 $1_cut_$2_frames.mp4 < /dev/null
+endsnippet
+
+snippet ffmpeg_cut_times "ffmpeg_cut_times"
+ffmpeg -ss ${2:00:10:00} -to ${3:00:17:33} -i $1.mp4 -c copy $1_cut_times.mp4
+ffmpeg -ss ${2:00:10:00} -t ${3:60} -i $1.mp4 -c copy $1_cut_times.mp4
+endsnippet
+
+snippet ffmpeg_segment_time "ffmpeg_segment_time"
+ffmpeg -i $1.mp4 -f segment -segment_time 0.01 YUV/frames%d.yuv
+endsnippet
+
+snippet ffmpeg_get_I_frames "ffmpeg_get_I_frames"
+ffmpeg -i ${1:input.mp4} -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 image-%05d.jpeg
+ffmpeg -i ${1:input.mp4} -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 -qscale:v 2 image-%05d.jpeg #高清
+endsnippet
+
+snippet ffmpeg_merge_img_to_video "ffmpeg_merge_img_to_video"
+ffmpeg -f image2 -i ${1:image%d.jpg} video.mpg
+endsnippet
+
+snippet ffmpeg_hardward_h264 "ffmpeg_hardward_h264"
+ffmpeg -i ${1}.mp4 -c:v h264_videotoolbox ${1}.h264
+endsnippet
+
+snippet ffmpeg_hardward_h265 "ffmpeg_hardward_h265"
+ffmpeg -i ${1}.mp4 -pix_fmt yuv420p10le -c:v hevc_videotoolbox ${1}.h265
+endsnippet
+
+
+snippet on "on"
+on $1()
+	$0
+end $1
+endsnippet
+
+
+snippet tell "tell"
+tell application "${1:Finder}"
+	$0
+end tell
+endsnippet
+

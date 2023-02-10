@@ -1,0 +1,7 @@
+[aliases]
+telescope = dereference
+start = entry-break
+stack = dereference -l 10 $sp
+watch = memory watch 
+unwatch = memory unwatch 
+

@@ -1,0 +1,407 @@
+priority -50
+
+#${1:%s}${1/正则表达/(?2:满足:不满足)/}$2${1/同样的正则/(?2:满足)/}
+
+snippet '^\s([a-z|A-Z|_].*).null' ".null" r
+	if(!`!p snip.rv = match.group(1)`){
+		fprintf(stderr, "Fail `!p snip.rv = match.group(1)` is nullptr \n");
+		return ${1:-1};
+	}
+endsnippet
+
+snippet '^\s([a-z|A-Z|_].*).err' ".err" r
+	if(`!p snip.rv = match.group(1)`){
+		fprintf(stderr, "Error `!p snip.rv = match.group(1)`\n");
+		return ${1:-1};
+	}
+endsnippet
+
+#std::cout << ${1:"info : "}${1/([^"])*(".)?.*/(?2: << : << std\:\:endl;)/}$2${1/([^"])*(".)?.*/(?2: << std\:\:endl;)/}
+snippet cout
+std::cout << ${1} << std::endl;
+endsnippet
+
+snippet < "add <<" "re.match('^[\s|cout|std::cout].*[endl|std::endl;]$', snip.buffer[snip.line])" eiA
+ << $0
+endsnippet
+
+snippet cin
+std::cin >> ${1};
+endsnippet
+
+snippet string "string"
+std::string $1 = nullptr;
+endsnippet
+
+snippet '(int|char|size_t|uint8_t)(\*)?' "autoVarible" r
+`!p snip.rv = match.group(1)` `!p
+if(match.group(2)):
+	snip.rv = match.group(2)
+`${1:name} = `!p
+if ( match.group(2) and snip.ft == "cpp"):
+	snip.rv = "${2:nullptr}"
+elif (match.group(2) and snip.ft == "c"):
+	snip.rv = "${2:NULL}"
+else:
+	snip.rv = "0"
+`;
+endsnippet
+
+snippet '(int|char|size_t|uint8_t)\[\]' "varible[]" wr
+`!p snip.rv = match.group(1)` ${1:name}[] = {0};
+$0
+endsnippet
+
+
+snippet malloc "malloc"
+$2 $3 = ($2) malloc(${1:size});
+$0
+//if($3){
+//	free($3);
+//	$3 = nullptr;
+//}
+endsnippet
+
+snippet fopen "fopen"
+FILE *f = fopen($1, "${2:rb}");
+if(!f){
+	perror($1);
+	return -1;
+}
+$0
+endsnippet
+
+snippet fread "fread"
+int readLen = fread(${1:buf},1,${2:size},${3:stream});
+if(readLen > 0){
+	$0
+}
+endsnippet
+
+snippet fclose "fclose"
+if($1){
+	fclose($1);
+	$1 = nullptr;
+}
+endsnippet
+
+snippet write_file "file_write"
+const char* filename = "${1:file}";
+FILE *f = fopen(filename, "${2:wb}");
+if(!f){
+	perror(filename);
+	return -1;
+}
+const char* text = "${3:Write this to the file}";
+fprintf(f, "%s", text);
+$0
+if(f){
+	fclose(f);
+	f = nullptr;
+}
+endsnippet
+
+snippet open_file "file_open"
+const char* filename = "${1:file}";
+FILE *f = fopen(filename, "${2:rb}");
+if(!f){
+	perror(filename);
+	return -1;
+}
+$0
+if(f){
+	fclose(f);
+	f = nullptr;
+}
+endsnippet
+
+snippet ret "ret"
+return ${1:nullptr};
+endsnippet
+
+snippet incc "Inc"
+#include <${1:stdio}${1/([^std]|stdstd)*(std.)?.*/(?2:.h:)/}>
+$0
+endsnippet
+
+snippet inc "inc"
+#include "$1`!p
+if (snip.ft == "cpp"):
+	snip.rv = ".hpp"
+else:
+	snip.rv = ".h"
+`"
+$2
+endsnippet
+
+snippet free "free"
+if($1 != nullptr){
+	free($1);
+	$1 = nullptr;
+}
+endsnippet
+
+snippet while "while"
+while(${1:1}){
+	$0
+}
+endsnippet
+
+snippet while1 "while1"
+while(1){
+	$0
+}
+endsnippet
+
+snippet pri "pri"
+private:
+	$0
+endsnippet
+
+snippet pub "pub"
+public:
+	$0
+endsnippet
+
+snippet class_data "class"
+class `!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`{
+	public:
+		`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
+		~`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
+		$0
+};
+endsnippet
+
+snippet class "class"
+class ${1:`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
+	public:
+		$0
+};
+endsnippet
+
+snippet ifel "ifel"
+if($1){
+	$3
+}else if($2){
+	$0
+}
+endsnippet
+
+snippet if "if"
+if($1){
+	$2
+}
+endsnippet
+
+snippet elif "elif" i
+else if($1){
+	$2
+}
+endsnippet
+
+snippet else "else" i
+else{
+	$0
+}
+endsnippet
+
+snippet switch
+switch (${1:/* variable */}) {
+	case ${2:/* variable case */}:
+		${3}
+		${4:break;}${5}
+	default:
+		${6}
+}
+endsnippet
+
+snippet def "#define ..."
+#define $1
+endsnippet
+
+snippet #ifndef "#ifndef ... #define ... #endif"
+#ifndef ${1/([A-Za-z0-9_]+).*/$1/}
+#define ${1:SYMBOL} ${2:value}
+#endif /* ifndef $1 */
+endsnippet
+
+snippet #if "#if #endif" b
+#if ${1:0}
+${VISUAL}$0
+#endif
+endsnippet
+
+snippet mark "#pragma mark (mark)"
+#if 0
+${1:#pragma mark -
+}#pragma mark $2
+#endif
+
+$0
+endsnippet
+
+snippet mainn "mainn() "
+int main(int argc, char *argv[]){
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet main "main() (main)"
+int main(){
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet fori "for int loop (fori)"
+for (int i = 0; i < ${1}; i++) {
+	${VISUAL}$2
+}
+endsnippet
+
+snippet fore
+for (auto ${1:i} : ${2:container}) {
+	${0}
+}
+endsnippet
+
+
+snippet try
+try {
+
+}catch(${1}) {
+
+}
+endsnippet
+
+snippet once "Include header once only guard"
+#ifndef ${1:`!p
+if not snip.c:
+	import random, string
+	name = re.sub(r'[^A-Za-z0-9]+','_', snip.fn).upper()
+	rand = ''.join(random.sample(string.ascii_letters+string.digits, 8))
+	snip.rv = ('%s_%s' % (name,rand)).upper()
+else:
+	snip.rv = snip.c`}
+#define $1
+
+${VISUAL}$0
+
+#endif /* end of include guard: $1 */
+endsnippet
+
+snippet fprintf "fprintf ..."
+fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet el "else if .. (eli)"
+else if (${1:/* condition */}) {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet echo "printf .. (printf)"
+printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet st "struct"
+struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
+	${0:/* data */}
+};
+endsnippet
+
+snippet func "function" b
+${1:void} ${2:function_name}($3){
+	${VISUAL}$0
+
+	std::cout << "\033[33m" __FILE__ << " -> " << __FUNCTION__ << "\033[0m" << std::endl;
+}
+endsnippet
+
+snippet func_construction "construction"
+$1::$1($2){
+	$0
+}
+endsnippet
+
+snippet fund "function declaration" b
+${1:void} ${2:function_name}($3);
+endsnippet
+
+# vim:ft=snippets:
+
+
+###########################################################################
+#                            TextMate Snippets                            #
+###########################################################################
+#Python interpolation is by far the most powerful. The syntax is similar to Vim
+#scripts except code is started with '!p'. Python scripts can be run using the
+#python shebang '#!/usr/bin/python', but using the '!p' format comes with some
+#predefined objects and variables, which can simplify and shorten code. For
+#example, a 'snip' object instance is implied in python code. Python code using
+#the '!p' indicator differs also in another way. Generally when a snippet is
+#expanded the standard output of code replaces the code. With python code the
+#value of the 'snip.rv' property replaces the code. Standard output is ignored.
+#
+#The variables automatically defined in python code are: >
+#   fn      - The current filename
+#   path    - The complete path to the current file
+#   t       - The values of the placeholders, t[1] is the text of ${1}, etc.
+#   snip    - UltiSnips.TextObjects.SnippetUtil object instance. Has methods
+#             that simplify indentation handling and owns the string that
+#             should be inserted for the snippet.
+#   context - Result of context condition. See |UltiSnips-custom-context-snippets|.
+#   match   - Only in regular expression triggered snippets. This is the return
+#             value of the match of the regular expression. See
+#             http://docs.python.org/library/re.html#match-objects
+#The 'snip' object provides the following methods: >
+#    snip.mkline(line="", indent=None):
+#        Returns a line ready to be appended to the result. If indent
+#        is None, then mkline prepends spaces and/or tabs appropriate to the
+#        current 'tabstop' and 'expandtab' variables.
+#    snip.shift(amount=1):
+#        Shifts the default indentation level used by mkline right by the
+#        number of spaces defined by 'shiftwidth', 'amount' times.
+#    snip.unshift(amount=1):
+#        Shifts the default indentation level used by mkline left by the
+#        number of spaces defined by 'shiftwidth', 'amount' times.
+#    snip.reset_indent():
+#        Resets the indentation level to its initial value.
+#    snip.opt(var, default):
+#        Checks if the Vim variable 'var' has been set. If so, it returns the
+#        variable's value; otherwise, it returns the value of 'default'.
+#The 'snip' object provides some properties as well: >
+#    snip.rv:
+#        'rv' is the return value, the text that will replace the python block
+#        in the snippet definition. It is initialized to the empty string. This
+#        deprecates the 'res' variable.
+#    snip.c:
+#        The text currently in the python block's position within the snippet.
+#        It is set to empty string as soon as interpolation is completed. Thus
+#        you can check if snip.c is != "" to make sure that the interpolation
+#        is only done once. This deprecates the "cur" variable.
+#    snip.v:
+#         Data related to the ${VISUAL} placeholder. This has two attributes:
+#             snip.v.mode   ('v', 'V', '^V', see |visual-mode| )
+#             snip.v.text   The text that was selected.
+#    snip.fn:
+#        The current filename.
+#    snip.basename:
+#        The current filename with the extension removed.
+#    snip.ft:
+#        The current filetype.
+#    snip.p:
+#        Last selected placeholder. Will contain placeholder object with
+#        following properties:
+#        'current_text' - text in the placeholder on the moment of selection;
+#        'start' - placeholder start on the moment of selection;
+#        'end' - placeholder end on the moment of selection;
+#b 表示触发字符应该在一行的开始
+#i 表示触发字符可以在单词内（连续展示会使用这个选项）
+#w 表示触发字符的前后必须是一个字母分界点
+#r 表示触发字符可以是一个正则表达式
+#t 表示展开的代码片段中如果有制表符，原样输出，即使你的 vimrc 里面设置了 expandtab
+#m 表示删除代码片段右边的所有空白字符
+#e 表示自定义上下文
+#A 表示自动触发，不需要按 tab，类似于 VIM 中的 abb
