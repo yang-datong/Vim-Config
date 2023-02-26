@@ -3,7 +3,16 @@ snippet #! "shebang" b
 endsnippet
 
 
+
 #########################Shell######################
+
+snippet /* "/*"
+:<<!
+$0
+!
+endsnippet
+
+
 snippet > ">"
 -gt
 endsnippet
@@ -31,6 +40,24 @@ endsnippet
 
 snippet echo "echo -e" i
 echo -e "\033[31m${1}\033[0m"
+endsnippet
+
+snippet '(.*).toArray' ".toArray" r
+`!p snip.rv = match.group(1)`=(`!p snip.rv = match.group(1)`)
+endsnippet
+
+
+snippet Array_demo "Array_demo"
+list=() #定义一个数组
+
+list+=1
+list+=2
+list+=3
+echo $list
+
+for i in ${list[@]};do
+	echo $i
+done
 endsnippet
 
 snippet while "while()"
@@ -81,27 +108,38 @@ esac
 endsnippet
 
 snippet main
-__ScriptVersion="${1:version}"
+ScriptVersion="${1:1.0}"
+
+main(){
+	$0
+
+}
 
 usage (){
-	echo "Usage :  \$${0:0} [options] [--]
+	echo "Usage :  \$(basename \$0) [options] [--]
 
-    Options:
-    -h|help       Display this message
-    -v|version    Display script version"
+	Options:
+	-h|help       Display this message
+	-d|debug      Debug model run
+	-p|posix      Posix model parse shell command
+	-v|version    Display script version"
 
 }
 
 #  Handle command line arguments
-while getopts ":hv" opt;do
+while getopts ":hvd" opt;do
   case \$opt in
-	h|help)			usage; exit 0   ;;
-	v|version)	echo "\$${0:0} -- Version \$__ScriptVersion"; exit 0   ;;
-	* )					echo -e "\\n  Option does not exist : \$OPTARG\\n"
-							usage; exit 1   ;;
+	h|help)     usage; exit 0   ;;
+	d|debug)    set -x ;;
+	d|debug)    set -o posix ;;
+	v|version)  echo "\$0 -- Version \$ScriptVersion"; exit 0   ;;
+	* )         echo -e "\\n  Option does not exist : \$OPTARG\\n"
+	            usage; exit 1   ;;
   esac
 done
 shift \$(($OPTIND-1))
+
+main
 endsnippet
 
 snippet root
@@ -121,7 +159,7 @@ log(){
 	echo \$line
 	printf "%00\${tty_wid}d" 0 | tr "0" " "
 	printf "\033[91m\$1\n"
-	echo \$line
+	echo -e "$line\033[0m"
 }
 endsnippet
 

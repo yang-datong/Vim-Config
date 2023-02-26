@@ -1,16 +1,20 @@
 priority -50
 
+snippet echo "echo"
+console.log(${1});$0
+endsnippet
+
 snippet java_perform "perform"
 Java.perform(() => {
 	$0
 });
 endsnippet
 
-snippet use "use"
+snippet java_use "use"
 Java.use(${1:"com.xx"})
 endsnippet
 
-snippet hook "hook"
+snippet java_hook "hook"
 //let cls = Java.use("${2:com.}")
 cls.$1.overload('int').implementation = function(v0){
 	send("$1")

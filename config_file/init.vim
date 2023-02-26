@@ -1,4 +1,19 @@
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif "恢复到上一次关闭时的位置
+
+" Restore to the position where it was last closed{
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+"}
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+
+
+" Set include path -> use "gf" jump {
+set path=/usr/local/include
+set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include
+set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+set path+=~/Downloads/OpenCV-android-sdk/sdk/native/jni/include
+"}
+
 
 " Command {  "auto merge text to one line
 :command -range=% Line :<line1>,<line2>s/\n/ /g
@@ -152,84 +167,83 @@ endif
 set completeopt-=preview " 关闭弹窗
 
 call plug#begin('~/.config/nvim/plugged')
-  Plug 'Shougo/unite.vim' "弃用
-"  Plug 'Shougo/neomru.vim'
-  "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "代码提示 .可以提示snippet的代码
-  "Plug 'Shougo/ddc.vim'
-  "Plug 'vim-denops/denops.vim'
+Plug 'Shougo/unite.vim' "弃用
+"Plug 'Shougo/neomru.vim'
+"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "代码提示 .可以提示snippet的代码
+"Plug 'Shougo/ddc.vim'
+"Plug 'vim-denops/denops.vim'
+"Plug 'zchee/deoplete-jedi' "自动提示代码 python
+"Plug 'Shougo/deoplete-clangx' "自动提示代码 C/C++
+"Plug 'rhysd/vim-clang-format' " code format
+"Plug 'mbbill/undotree' "可视化撤销历史记录
+Plug 'scrooloose/nerdtree' "打开目录窗口（适合作为ide使用）
+"Plug 'tpope/vim-commentary' "批量块注释代码
+Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
+Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
+Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
+Plug 'dense-analysis/ale' "保存文件才进行语法检查
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_enter = 0
+let g:ale_linters_explicit = 1 " 关闭所有语言
+"关闭python检查，这个太麻烦了
+let g:ale_linters = {
+      \   'python': ['eslint'],
+      \}
 
-"  Plug 'zchee/deoplete-jedi' "自动提示代码 python
-"  Plug 'Shougo/deoplete-clangx' "自动提示代码 C/C++
-"  Plug 'rhysd/vim-clang-format' " code format
-"  Plug 'mbbill/undotree' "可视化撤销历史记录
-  Plug 'scrooloose/nerdtree' "打开目录窗口（适合作为ide使用）
-"  Plug 'tpope/vim-commentary' "批量块注释代码
-  Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
-  Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
+"Plug 'sbdchd/neoformat'
+Plug 'vim-autoformat/vim-autoformat'
+"au BufWrite * :Autoformat "保存文件时格式化代码
+"python 格式化需要安装 pip install autopep8
 
-  Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
-  Plug 'dense-analysis/ale' "保存文件才进行语法检查
-    let g:ale_lint_on_text_changed = 'never'
-    let g:ale_lint_on_insert_leave = 0
-    let g:ale_lint_on_enter = 0
-    let g:ale_linters_explicit = 1 " 关闭所有语言
-    "关闭python检查，这个太麻烦了
-    let g:ale_linters = {
-  \   'python': ['eslint'],
-  \}
+Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
+"vim -> :CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-texlab coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake
+"CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
+"Coc 自动导入包 CocAction 类似于java import 包
+"显示snipt片段的提示 CocInstall coc-snippets
+set hidden
+set updatetime=100
+"set shortmess+=c
+inoremap <expr> <Down> coc#pum#visible() ? coc#pum#next(1) : "\<Down>"
+inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
+inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
-"  Plug 'sbdchd/neoformat'
-  Plug 'vim-autoformat/vim-autoformat'
-"  au BufWrite * :Autoformat "保存文件时格式化代码
-
-  Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
-    "vim -> :CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-texlab coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git
-    "CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
-    "Coc 自动导入包 CocAction 类似于java import 包
-    "显示snipt片段的提示 CocInstall coc-snippets
-  set hidden
-  set updatetime=100
-  set shortmess+=c
-  inoremap <expr> <Down> coc#pum#visible() ? coc#pum#next(1) : "\<Down>"
-  inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
-  inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-
-"  Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
-  Plug 'bronson/vim-trailing-whitespace' "多余的空格自动报红
-"  Plug 'editorconfig/editorconfig-vim' "回车自动缩进
+"Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
+Plug 'bronson/vim-trailing-whitespace' "多余的空格自动报红
+"Plug 'editorconfig/editorconfig-vim' "回车自动缩进
 "======================================================================
-  " Color thems
-  Plug 'junegunn/seoul256.vim'
-  setlocal spell
-  set spelllang=en_us
-  inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+" Color thems
+Plug 'junegunn/seoul256.vim'
+setlocal spell
+set spelllang=en_us
+inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 "======================================================================
-  " Markdown
-  Plug 'godlygeek/tabular' "必要插件，安装在vim-markdown前面
-  Plug 'plasticboy/vim-markdown'
-  let g:vim_markdown_folding_disabled = 1 "禁用折叠
-  "let g:vim_markdown_folding_level = 6 "折叠层级默认为1
-  let g:vim_markdown_conceal = 0 "禁用隐藏
-  let g:tex_conceal = ""
-  let g:vim_markdown_math = 1 "开启数学公式高亮
-  let g:vim_markdown_fenced_languages = ['csharp=cs'] " 添加指定代码围栏
-  "let g:vim_markdown_conceal_code_blocks = 0 "禁用代码围栏
+" Markdown
+Plug 'godlygeek/tabular' "必要插件，安装在vim-markdown前面
+"Plug 'plasticboy/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+let g:vim_markdown_folding_disabled = 1 "禁用折叠
+"let g:vim_markdown_folding_level = 6 "折叠层级默认为1
+let g:vim_markdown_conceal = 0 "禁用隐藏
+let g:tex_conceal = ""
+let g:vim_markdown_math = 1 "开启数学公式高亮
+let g:vim_markdown_fenced_languages = ['csharp=cs'] " 添加指定代码围栏
+"let g:vim_markdown_conceal_code_blocks = 0 "禁用代码围栏
 
 "======================================================================
-  "Ultisnips
-  Plug 'SirVer/ultisnips'
-  Plug 'keelii/vim-snippets'
-  let g:UltiSnipsExpandTrigger = '<tab>'
-  let g:UltiSnipsJumpForwardTrigger = '<tab>'
-  let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
-"="=====================================================================
-  "网页预览markdown
-  Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-  "let g:mkdp_theme ='dark'
-  let g:mkdp_theme ='light'
-  "let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+"Ultisnips
+Plug 'SirVer/ultisnips'
+Plug 'keelii/vim-snippets'
+let g:UltiSnipsExpandTrigger = '<tab>'
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
-  Plug 'rcarriga/nvim-notify'
+"网页预览markdown
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+let g:mkdp_theme ='light'
+"let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+"======================================================================
+Plug 'rcarriga/nvim-notify'
 call plug#end()
 
 "弹窗美化比如 :lua vim.notify("This is an error message", "error")
@@ -296,9 +310,12 @@ func SetTitle()
     call setline(2,"")
   endif
   if &filetype == 'python'
-    call setline(1, "#!/usr/bin/python3")
+    call setline(1, "#!/usr/local/bin/python3.9")
   endif
   if &filetype == 'java'
+    call setline(1,"public class ".expand("%"))
+  endif
+  if &filetype == 'dosini' "url
     call setline(1,"public class ".expand("%"))
   endif
   autocmd BufNewFile * normal G
