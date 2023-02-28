@@ -3,15 +3,20 @@
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 "}
 
+" Coc-vim jump definition
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
+
+" Auto add symbols and  line break at the end
+nnoremap ; A;<Esc>o
 
 
 " Set include path -> use "gf" jump {
 set path=/usr/local/include
 set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include
 set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
-set path+=~/Downloads/OpenCV-android-sdk/sdk/native/jni/include
+"set path+=~/Downloads/OpenCV-android-sdk/sdk/native/jni/include
+set path+=/usr/local/opt/opencv/include/opencv4
 "}
 
 
@@ -37,7 +42,8 @@ set fileformats=unix,dos,mac
 set showcmd
 set hidden
 set backspace=indent,eol,start    " Fix backspace indent
-set mousemodel=popup
+"set mousemodel=popup " GUI Vim effect
+set mouse= "Remove mouse operation
 " }
 
 " Visual {
@@ -181,12 +187,12 @@ Plug 'scrooloose/nerdtree' "打开目录窗口（适合作为ide使用）
 Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
 Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
 Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
-Plug 'dense-analysis/ale' "保存文件才进行语法检查
+Plug 'dense-analysis/ale' 
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_insert_leave = 0  "保存文件才进行语法检查 ,保持性能
 let g:ale_lint_on_enter = 0
-let g:ale_linters_explicit = 1 " 关闭所有语言
-"关闭python检查，这个太麻烦了
+"let g:ale_linters_explicit = 1 " 关闭所有语言
+"关闭python检查，警告一大堆
 let g:ale_linters = {
       \   'python': ['eslint'],
       \}
@@ -197,19 +203,23 @@ Plug 'vim-autoformat/vim-autoformat'
 "python 格式化需要安装 pip install autopep8
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
-"vim -> :CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-texlab coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake
+"CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-texlab coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake
+"显示snipt片段的提示 CocInstall coc-snippets
+"clangd 配置语法识别参数文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
 "CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
 "Coc 自动导入包 CocAction 类似于java import 包
-"显示snipt片段的提示 CocInstall coc-snippets
 set hidden
 set updatetime=100
 "set shortmess+=c
-inoremap <expr> <Down> coc#pum#visible() ? coc#pum#next(1) : "\<Down>"
+inoremap <silent><expr> <Down>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Down>" :
+      \ coc#refresh()
 inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
 "Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
-Plug 'bronson/vim-trailing-whitespace' "多余的空格自动报红
+"Plug 'bronson/vim-trailing-whitespace' "多余的空格自动报红 , !!!加载这个插件会有冲突
 "Plug 'editorconfig/editorconfig-vim' "回车自动缩进
 "======================================================================
 " Color thems
@@ -234,6 +244,7 @@ let g:vim_markdown_fenced_languages = ['csharp=cs'] " 添加指定代码围栏
 "Ultisnips
 Plug 'SirVer/ultisnips'
 Plug 'keelii/vim-snippets'
+" Key mapping
 let g:UltiSnipsExpandTrigger = '<tab>'
 let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
@@ -300,6 +311,7 @@ autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 func SetTitle()
   if &filetype == 'sh'
     call setline(1, "#!/bin/bash")
+    call setline(2, "")
   endif
   if &filetype == 'cpp'
     call setline(1, "#include<iostream>")

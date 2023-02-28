@@ -1,0 +1,4 @@
+-I/usr/local/Cellar/opencv/4.7.0_1/include/opencv4
+-I/usr/local/include
+-I/usr/include
+-std=c++11

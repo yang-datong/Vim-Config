@@ -108,6 +108,8 @@ esac
 endsnippet
 
 snippet main
+set -e
+
 ScriptVersion="${1:1.0}"
 
 main(){
@@ -122,24 +124,26 @@ usage (){
 	-h|help       Display this message
 	-d|debug      Debug model run
 	-p|posix      Posix model parse shell command
-	-v|version    Display script version"
+	-v|version    Display script version
+	-s            Test input argument"
 
 }
 
 #  Handle command line arguments
-while getopts ":hvd" opt;do
+while getopts ":hvdps:" opt;do
   case \$opt in
-	h|help)     usage; exit 0   ;;
+	h|help)     usage; exit ;;
 	d|debug)    set -x ;;
-	d|debug)    set -o posix ;;
-	v|version)  echo "\$0 -- Version \$ScriptVersion"; exit 0   ;;
+	p|posix)    set -o posix ;;
+	v|version)  echo "\$0 -- Version \$ScriptVersion"; exit ;;
+	s)          echo "\$OPTARG"; exit;;
 	* )         echo -e "\\n  Option does not exist : \$OPTARG\\n"
-	            usage; exit 1   ;;
+	            usage; exit 1 ;;
   esac
 done
 shift \$(($OPTIND-1))
 
-main
+main \$@
 endsnippet
 
 snippet root

@@ -1,6 +1,0 @@
-{
-  "java.import.gradle.java.home": "/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home",
-  "clangd.arguments":"-I/Users/user/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include",
-  "CocSearch.includePaths":  "/Users/user/Downloads/OpenCV-android-sdk/sdk/native/jni/include"
-}
-

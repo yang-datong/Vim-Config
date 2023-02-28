@@ -4,11 +4,11 @@ if status is-interactive
     set -x PATH $PATH /usr/local/opt/binutils/bin
     set -x PATH $PATH /usr/local/texlive/2022/bin/universal-darwin/
     set -x PATH $PATH /Users/user/Library/Android/sdk/ndk/21.1.6352462
+
     set -x CLOUD ~/Library/Mobile\ Documents/com~apple~CloudDocs
+
     set com 'com.ss.android.ugc.aweme'
-    #export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890
-    #export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
-    #
+
     set -x JAVA_HOME /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
     #brew install homebrew/cask-versions/adoptopenjdk8
 
@@ -21,10 +21,16 @@ if status is-interactive
     alias shutdown='sudo shutdown'
     alias vim='nvim'
     alias rm='trash'
+    alias rm-rf='rm -rf'
     alias du='du -sh'
     alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
     alias pping="httping -x 127.0.0.1:7890"
     alias diff='colordiff -w' #brew install colordiff
+    alias clang='clang -std=c++11'
+    alias clang++='clang++ -std=c++11'
+    alias g++='g++ -std=c++11'
+    alias gcc='gcc -std=c++11'
+
 end
 
 

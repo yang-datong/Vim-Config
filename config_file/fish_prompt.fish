@@ -1,12 +1,10 @@
 #=============uesr config================
 function bck
-    cp -r $argv[1] $argv[1]_bck
+    set files $(basename $argv[1])
+    echo "cp -r $files $files.bck"
 end
+
 #========================================
-
-
-
-
 function fish_prompt
 
     # Keep the command executed status
