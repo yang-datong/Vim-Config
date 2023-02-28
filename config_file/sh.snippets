@@ -151,6 +151,9 @@ if [ \$(id -u) -ne 0 ]; then exec sudo \$0; fi
 endsnippet
 
 #########################Shell######################
+snippet date "date"
+local date=$(date +"%Y%m%d%H%M%S")
+endsnippet
 snippet log "log()"
 log(){
 	if [ \$# -gt 1 ];then
