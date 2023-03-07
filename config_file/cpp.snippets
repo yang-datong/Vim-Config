@@ -1,6 +1,31 @@
 priority -50
 
 #${1:%s}${1/正则表达/(?2:满足:不满足)/}$2${1/同样的正则/(?2:满足)/}
+snippet whileread "whileread"
+std::ifstream f("filename.txt");
+if (f.is_open()) {
+	std::string line;
+	while (std::getline(f, line)) {
+		//_labels_name.push_back(line);
+	}
+	f.close();
+}
+endsnippet
+
+snippet write_string "write string"
+#include <fstream>
+std::ofstream ofs("log.txt");
+ofs << "${1:content}" << std::endl;
+myfile.close();
+endsnippet
+
+snippet time "call function time"
+struct timespec start_time, end_time;
+clock_gettime(CLOCK_REALTIME, &start_time);
+${1:funcation();}$0
+clock_gettime(CLOCK_REALTIME, &end_time);
+std::cout << "Number of seconds -> "  <<  end_time.tv_sec - start_time.tv_sec << std::endl;
+endsnippet
 
 snippet '^\s([a-z|A-Z|_].*).null' ".null" r
 	if(!`!p snip.rv = match.group(1)`){
@@ -85,7 +110,7 @@ if($1){
 }
 endsnippet
 
-snippet write_file "file_write"
+snippet file_write "file_write"
 const char* filename = "${1:file}";
 FILE *f = fopen(filename, "${2:wb}");
 if(!f){
@@ -101,7 +126,7 @@ if(f){
 }
 endsnippet
 
-snippet open_file "file_open"
+snippet file_open "file_open"
 const char* filename = "${1:file}";
 FILE *f = fopen(filename, "${2:rb}");
 if(!f){
@@ -241,9 +266,51 @@ $0
 endsnippet
 
 snippet mainn "mainn() "
+#include <getopt.h>
+
+#define VERSION 1
+
+std::string file = "";
+
+void CheckArgument(int argc,char *argv[]){
+    const char* short_opts = "hvf:";
+    const option long_opts[] = {
+        {"help", no_argument, nullptr, 'h'},
+        {"version", no_argument, nullptr, 'v'},
+        {"file", required_argument, nullptr, 'f'},
+        {nullptr, no_argument, nullptr, 0}
+    };
+
+    int opt;
+    while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1) {
+        switch (opt) {
+            case 'h':
+                std::cout << "Usage: " << argv[0] << " [options] [--] argument-1 argument-2 \
+                    \n\n  Options:\
+                      \n  -h, --help           Display this message\
+                      \n  -v, --version        Display version\
+                      \n  -f, --file FILE      Test input argument\
+                      \n";
+                exit(0);
+            case 'v':
+                std::cout << "Version: " << VERSION << "\n";
+                exit(0);
+            case 'f':
+                file = optarg;
+                break;
+            default:
+                std::cout << "Unknown option: " << opt << "\n";
+                exit(1);
+        }
+    }
+}
+
+
 int main(int argc, char *argv[]){
-	${VISUAL}$0
-	return 0;
+    CheckArgument(argc,argv);
+		${1:if(file)}
+
+		return 0;
 }
 endsnippet
 
@@ -261,7 +328,7 @@ for (int i = 0; i < ${1}; i++) {
 endsnippet
 
 snippet fore
-for (auto ${1:i} : ${2:container}) {
+for (const auto& ${1:it} : ${2:container}) {
 	${0}
 }
 endsnippet
@@ -315,7 +382,7 @@ snippet func "function" b
 ${1:void} ${2:function_name}($3){
 	${VISUAL}$0
 
-	std::cout << "\033[33m" __FILE__ << " -> " << __FUNCTION__ << "\033[0m" << std::endl;
+	std::cout << "\033[33m Into -> " << __FUNCTION__ << "()\033[0m" << std::endl;
 }
 endsnippet
 

@@ -1,4 +1,5 @@
--I/usr/local/Cellar/opencv/4.7.0_1/include/opencv4
--I/usr/local/include
--I/usr/include
 -std=c++11
+-I/Users/user/Desktop/ff_face_detection/app/src/main/jniLibs/include
+#-I/usr/local/opt/opencv/include/opencv4
+#-I/Users/user/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include
+

@@ -110,40 +110,48 @@ endsnippet
 snippet main
 set -e
 
-ScriptVersion="${1:1.0}"
+ScriptVersion="1.0"
+
 
 main(){
-	$0
+  echo "main()"
 
 }
 
 usage (){
-	echo "Usage :  \$(basename \$0) [options] [--]
+  echo "Usage :  $(basename "\$0") [options] [--] argument-1 argument-2
 
-	Options:
-	-h|help       Display this message
-	-d|debug      Debug model run
-	-p|posix      Posix model parse shell command
-	-v|version    Display script version
-	-s            Test input argument"
+  Options:
+  -h, --help       Display this message
+  -d, --debug      Debug model run
+  -p, --posix      Posix model parse shell command
+  -v, --version    Display script version
+  -f, --file FILE  Test input argument"
 
 }
 
-#  Handle command line arguments
-while getopts ":hvdps:" opt;do
-  case \$opt in
-	h|help)     usage; exit ;;
-	d|debug)    set -x ;;
-	p|posix)    set -o posix ;;
-	v|version)  echo "\$0 -- Version \$ScriptVersion"; exit ;;
-	s)          echo "\$OPTARG"; exit;;
-	* )         echo -e "\\n  Option does not exist : \$OPTARG\\n"
-	            usage; exit 1 ;;
+while getopts ":hdpvf:-:" opt; do
+  case "${opt}" in
+    h) usage && exit 0;;
+    d) set -x ;;
+    p) set -o posix ;;
+    v) echo "\$0 -- Version $ScriptVersion"; exit ;;
+    f) echo "file=${OPTARG}";;
+    -) case "${OPTARG}" in
+         help) usage && exit 0;;
+         debug)    set -x ;;
+         posix)    set -o posix ;;
+         version)  echo "\$0 -- Version $ScriptVersion"; exit ;;
+         file)     echo "file=${!OPTIND}"; OPTIND=$((OPTIND+1));;
+         *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+       esac;;
+    :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+    *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
   esac
 done
-shift \$(($OPTIND-1))
+shift $((OPTIND-1))
 
-main \$@
+main "$@"
 endsnippet
 
 snippet root
@@ -154,6 +162,7 @@ endsnippet
 snippet date "date"
 local date=$(date +"%Y%m%d%H%M%S")
 endsnippet
+
 snippet log "log()"
 log(){
 	if [ \$# -gt 1 ];then

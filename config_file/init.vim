@@ -6,6 +6,7 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Coc-vim jump definition
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
+nmap <leader> qf <Plug>(coc-fix-current)
 
 " Auto add symbols and  line break at the end
 nnoremap ; A;<Esc>o
@@ -13,10 +14,10 @@ nnoremap ; A;<Esc>o
 
 " Set include path -> use "gf" jump {
 set path=/usr/local/include
-set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include
-set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
-"set path+=~/Downloads/OpenCV-android-sdk/sdk/native/jni/include
-set path+=/usr/local/opt/opencv/include/opencv4
+set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
+set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
+set path+=/usr/local/opt/opencv/include/opencv4 "Mac OS
 "}
 
 
@@ -61,6 +62,8 @@ set numberwidth=3     " minimun width to use for the number column.
 " Syntax {
 syntax on
 syntax enable
+set foldmethod=syntax
+set foldlevel=2
 " }
 
 " Cursor {
@@ -182,20 +185,22 @@ Plug 'Shougo/unite.vim' "弃用
 "Plug 'Shougo/deoplete-clangx' "自动提示代码 C/C++
 "Plug 'rhysd/vim-clang-format' " code format
 "Plug 'mbbill/undotree' "可视化撤销历史记录
-Plug 'scrooloose/nerdtree' "打开目录窗口（适合作为ide使用）
+"Plug 'scrooloose/nerdtree' "打开目录窗口（适合作为ide使用）
 "Plug 'tpope/vim-commentary' "批量块注释代码
 Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
 Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
 Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
-Plug 'dense-analysis/ale' 
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_insert_leave = 0  "保存文件才进行语法检查 ,保持性能
-let g:ale_lint_on_enter = 0
-"let g:ale_linters_explicit = 1 " 关闭所有语言
-"关闭python检查，警告一大堆
-let g:ale_linters = {
-      \   'python': ['eslint'],
-      \}
+"Plug 'dense-analysis/ale' 
+"let g:ale_lint_on_text_changed = 'never'
+"let g:ale_lint_on_insert_leave = 0  "保存文件才进行语法检查 ,保持性能
+"let g:ale_lint_on_enter = 0
+""let g:ale_linters_explicit = 1 " 关闭所有语言
+""关闭python检查，警告一大堆
+"let g:ale_disable_lsp = 1
+"let g:ale_linters = {
+"      \   'python': ['eslint'],
+"      \   'cpp': ['eslint']
+"      \}
 
 "Plug 'sbdchd/neoformat'
 Plug 'vim-autoformat/vim-autoformat'
@@ -204,10 +209,19 @@ Plug 'vim-autoformat/vim-autoformat'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
 "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-texlab coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake
-"显示snipt片段的提示 CocInstall coc-snippets
+"语法检查：
+"- python : CocInstall coc-pyright
+"- js : coc-eslint
+"- shell: brew install shellcheck
+"显示snipt片段的提示: 
+"- CocInstall coc-snippets
+"
 "clangd 配置语法识别参数文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
 "CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
 "Coc 自动导入包 CocAction 类似于java import 包
+"卸载：
+":CocList extensions
+"选中按<Tab> 再按u
 set hidden
 set updatetime=100
 "set shortmess+=c
@@ -218,7 +232,9 @@ inoremap <silent><expr> <Down>
 inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
-"Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
+Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
+let g:tagbar_position = 'vertical'
+"let g:tagbar_autoclose = 1
 "Plug 'bronson/vim-trailing-whitespace' "多余的空格自动报红 , !!!加载这个插件会有冲突
 "Plug 'editorconfig/editorconfig-vim' "回车自动缩进
 "======================================================================
@@ -314,11 +330,11 @@ func SetTitle()
     call setline(2, "")
   endif
   if &filetype == 'cpp'
-    call setline(1, "#include<iostream>")
+    call setline(1, "#include <iostream>")
     call setline(2, "")
   endif
   if &filetype == 'c'
-    call setline(1, "#include<stdio.h>")
+    call setline(1, "#include <stdio.h>")
     call setline(2,"")
   endif
   if &filetype == 'python'
@@ -341,6 +357,8 @@ endfunc
 ":echo expand('%:p:h:t') def First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
 ":echo expand('%:r')     my  name of file less one extension ('root')
 ":echo expand('%:e')     txt name of file's extension ('extension')```
+
+map <C-1> :TagbarToggle <CR>
 
 map <C-h> :call IntoHeadrFile()<CR>
 func! IntoHeadrFile()
