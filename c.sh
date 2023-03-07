@@ -1,7 +1,4 @@
 #!/bin/bash
-
-#set -e
-
 ScriptVersion="1.0"
 
 unset src
@@ -11,7 +8,6 @@ unset level
 unset flag
 unset include_path
 unset lib_path
-unset debug
 
 main(){
   if [ "$1" == "clean" ];then
@@ -36,107 +32,72 @@ check_is_lib_path(){
 }
 
 generate_makefile(){
-	echo "CC:=$cc" > Makefile
-	echo "BIN:=demo" >> Makefile
+  echo "CC:=$cc" > Makefile
+  echo "BIN:=demo" >> Makefile
   if [ $include_path ];then
     include_path="-I $include_path"
   fi
-	echo "${flag}:=-g -Wall ${level} ${include_path}" >> Makefile
-	if [ -n "$lib_path" ];then
-		echo "LIBS=${lib_path}" >> Makefile
-		lib_path="\$(LIBS)"
-	fi
+  echo "${flag}:=-g -Wall ${level} ${include_path}" >> Makefile
+  if [ -n "$lib_path" ];then
+    echo "LIBS=${lib_path}" >> Makefile
+    lib_path="\$(LIBS)"
+  fi
   if [ $src ];then
     src="SRC:=$src"
   else
     src="SRC:=\$(wildcard *.${file_suffix})"
   fi
-	echo "$src" >> Makefile
-	echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> Makefile
-	echo "" >> Makefile
-	echo "\$(BIN):\$(OBJS)" >> Makefile
-	echo "	\$(CC) \$^ -o \$@ ${lib_path}" >> Makefile
-	echo "" >> Makefile
-	echo "clean:" >> Makefile
-	echo "	rm \$(OBJS) \$(BIN)" >> Makefile
-	make
+  echo "$src" >> Makefile
+  echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> Makefile
+  echo "" >> Makefile
+  echo "\$(BIN):\$(OBJS)" >> Makefile
+  echo "  \$(CC) \$^ -o \$@ ${lib_path}" >> Makefile
+  echo "" >> Makefile
+  echo "clean:" >> Makefile
+  echo "  rm \$(OBJS) \$(BIN)" >> Makefile
+  make
   rm *.o
 }
 
 check_build_type(){
-	local c_total=$(ls | grep "\.c$" | wc -l)
-	local cpp_total=$(ls | grep "\.cpp$" | wc -l)
-
-  if [ $debug ];then
-    echo -e "\033[31minto check_build_type\033[0m"
-    echo -e "\033[31mc_total->$c_total\033[0m"
-    echo -e "\033[31mcpp_total->$cpp_total\033[0m"
-    ls | grep "\.c$\|\.cpp$"
-  fi
+  local c_total=$(ls | grep "\.c$" | wc -l)
+  local cpp_total=$(ls | grep "\.cpp$" | wc -l)
 
   if [  $c_total -gt 0 -a $cpp_total -gt 0 ];then
     echo -e "\033[31mYou can try to excute $0 help\033[0m"
     exit;
   fi
 
-	if [ $c_total == 0 -a $cpp_total == 0 ];then
+  if [ $c_total == 0 -a $cpp_total == 0 ];then
     echo "no found c\\cpp file" ; exit;
-	elif [ $c_total -gt 0 -a $cpp_total == 0 ];then
+  elif [ $c_total -gt 0 -a $cpp_total == 0 ];then
     c_kind
-	elif [ $c_total == 0 -a $cpp_total -gt 0 ];then
+  elif [ $c_total == 0 -a $cpp_total -gt 0 ];then
     cpp_kind
   fi
 }
 
 c_kind(){
-	cc="gcc" #gcc 在Mac下同样指向clang
-	file_suffix="c"
-	level="-std=c11"
-	flag="CFLAGS"
+  cc="gcc" #gcc 在Mac下同样指向clang
+  file_suffix="c"
+  level="-std=c11"
+  flag="CFLAGS"
 }
 
 cpp_kind(){
-	cc="g++" #g++ 在Mac下同样指向clang++
-	file_suffix="cpp"
-	level="-std=c++11"
-	flag="CPPFLAGS"
+  cc="g++" #g++ 在Mac下同样指向clang++
+  file_suffix="cpp"
+  level="-std=c++11"
+  flag="CPPFLAGS"
 }
-
-info(){
-  if [ $debug ];then
-    echo -e "\033[31margv[1]->$1\033[0m"
-    echo -e "\033[31margv[2]->$2\033[0m"
-    echo -e "\033[31mcc->$cc\033[0m"
-    echo -e "\033[31mfile_suffix->$file_suffix\033[0m"
-    echo -e "\033[31mlevel->$level\033[0m"
-    echo -e "\033[31mflag->$flag\033[0m"
-    echo -e "\033[31minclude_path->$include_path\033[0m"
-    echo -e "\033[31mlib_path->$lib_path\033[0m"
-  fi
-}
-
-usage (){
-  echo "Usage :  $(basename $0) [options] [--]
-
-  Options:
-  -h|help       Display this message
-  -d|debug      Debug model run
-  -p|posix      Posix model parse shell command
-  -v|version    Display script version
-  -s            Test input argument
-  -c            Used source file
-  -I            Used include file
-  -L            Used dynamic library(default all dylib)
-  -t            Build type"
-
-}
-
 
 clean_cmake(){
   local date=$(date +"%Y%m%d%H%M%S")
   if [ -f Makefile ];then
-    if [ "$1" == "all" ];then make clean;fi
-    mv Makefile /tmp/Makefile_$date
+    if [ "$1" == "all" ];then
+      make clean
+      mv Makefile /tmp/Makefile_$date
+    fi
   fi
   if [ -f CMakeCache.txt ];then
     mv CMakeCache.txt /tmp/CMakeCache.txt_$date
@@ -158,6 +119,8 @@ generate_cmakelists(){
 
   echo "cmake_minimum_required(VERSION 3.0)" > $f
   echo "project(project_name)" >> $f
+  echo "set(CMAKE_CXX_STANDARD 11)" >> $f
+  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall\")" >> $f
 
   #if [ $include_path ];then
   #  echo "include_directories($include_path)" >> $f
@@ -199,30 +162,61 @@ generate_cmakelists(){
 cmake_main(){
   if [ "$1" == "clean" ];then
     clean_cmake "all" && exit
+  elif [ "$1" == "make" ];then
+    make && clean_cmake && exit
   fi
   generate_cmakelists
   clean_cmake
 }
 
-#  Handle command line arguments
-while getopts ":hvdps:c:I:L:t:D:" opt;do
-  case $opt in
-  h|help)     usage; exit ;;
-  d|debug)    set -x ;;
-  p|posix)    set -o posix ;;
-  v|version)  echo "$0 -- Version $ScriptVersion"; exit ;;
-  s)          echo $OPTARG; exit;;
-  c)          src=$OPTARG ;;
-  I)          include_path="$OPTARG" ;;
-  L)          lib_path=$OPTARG ;;
-  t)          cc=$OPTARG ;;
-  D)          dir=$OPTARG ;;
-  * )         echo -e "\n  Option does not exist : $OPTARG\n"
-              usage; exit 1 ;;
-  esac
+usage (){
+  echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+
+  Options:
+  -h, --help       Display this message
+  -d, --debug      Debug model run
+  -p, --posix      Posix model parse shell command
+  -v, --version    Display script version
+  -f, --file       Test input argument
+  -c, --source     Used source file
+  -I, --include    Used include file
+  -L, --library    Used dynamic library(default all dylib)
+  -t, --type       Build type
+  -D, --dir        Cmake auto find directory"
+}
+
+while getopts ":hdpvf:c:I:L:t:D:-:" opt; do
+  case "${opt}" in
+    h) usage && exit 0;;
+    d) set -x ;;
+    p) set -o posix ;;
+    v) echo "$0 -- Version $ScriptVersion"; exit ;;
+    f) echo "file=${OPTARG}";;
+    c) src=${OPTARG} ;;
+    I) include_path="${OPTARG}" ;;
+    L) lib_path=${OPTARG} ;;
+    t) cc=${OPTARG} ;;
+    D) dir=${OPTARG} ;;
+    -) case "${OPTARG}" in
+      help) usage && exit 0;;
+      debug)    set -x ;;
+      posix)    set -o posix ;;
+      version)  echo "$0 -- Version $ScriptVersion"; exit ;;
+      file)     echo "file=${!OPTIND}"; OPTIND=$((OPTIND+1));;
+      source)   src=${OPTARG} ;;
+      include)  include_path="${OPTARG}" ;;
+      library)  lib_path=${OPTARG} ;;
+      type)     cc=${OPTARG} ;;
+      dir)      dir=${OPTARG} ;;
+      *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+    esac;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+esac
 done
-shift $(($OPTIND-1))
 
-#main $@
+shift $((OPTIND-1))
 
-cmake_main $@
+#main :$@"
+
+cmake_main "$@"
