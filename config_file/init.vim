@@ -1,4 +1,4 @@
-
+" 默认情况下，<Leader> 键是反斜杠（\）键
 " Restore to the position where it was last closed{
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 "}
@@ -240,21 +240,23 @@ let g:tagbar_position = 'vertical'
 "======================================================================
 " Color thems
 Plug 'junegunn/seoul256.vim'
+Plug 'shaunsingh/nord.nvim' "Math style
+Plug 'rafamadriz/neon'
 setlocal spell
 set spelllang=en_us
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+nnoremap <C-l> mz[s1z=`]`z
 "======================================================================
 " Markdown
-Plug 'godlygeek/tabular' "必要插件，安装在vim-markdown前面
+"Plug 'godlygeek/tabular' "必要插件，安装在vim-markdown前面
 "Plug 'plasticboy/vim-markdown'
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-let g:vim_markdown_folding_disabled = 1 "禁用折叠
-"let g:vim_markdown_folding_level = 6 "折叠层级默认为1
-let g:vim_markdown_conceal = 0 "禁用隐藏
-let g:tex_conceal = ""
-let g:vim_markdown_math = 1 "开启数学公式高亮
-let g:vim_markdown_fenced_languages = ['csharp=cs'] " 添加指定代码围栏
-"let g:vim_markdown_conceal_code_blocks = 0 "禁用代码围栏
+"let g:vim_markdown_folding_disabled = 1 "禁用折叠
+""let g:vim_markdown_folding_level = 6 "折叠层级默认为1
+"let g:vim_markdown_conceal = 0 "禁用隐藏
+"let g:tex_conceal = ""
+"let g:vim_markdown_math = 1 "开启数学公式高亮
+"let g:vim_markdown_fenced_languages = ['csharp=cs'] " 添加指定代码围栏
+""let g:vim_markdown_conceal_code_blocks = 0 "禁用代码围栏
 
 "======================================================================
 "Ultisnips
@@ -266,8 +268,9 @@ let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
 "网页预览markdown
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-let g:mkdp_theme ='light'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+"Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+let g:mkdp_theme ='dark'
 "let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 "======================================================================
 Plug 'rcarriga/nvim-notify'
@@ -316,6 +319,9 @@ noremap <Leader>gd :Gvdiff<CR>
 
 " Color-thems {
 colorscheme seoul256
+"colorscheme neon
+"colorscheme nord
+autocmd FileType markdown colorscheme nord
 " }
 
 "Auto add Executive authority{
@@ -341,9 +347,6 @@ func SetTitle()
     call setline(1, "#!/usr/local/bin/python3.9")
   endif
   if &filetype == 'java'
-    call setline(1,"public class ".expand("%"))
-  endif
-  if &filetype == 'dosini' "url
     call setline(1,"public class ".expand("%"))
   endif
   autocmd BufNewFile * normal G

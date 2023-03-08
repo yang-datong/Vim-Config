@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 #Checkout is install
 check_cmd(){
 	local obj=$1
@@ -41,13 +43,9 @@ main(){
 
 set_markdown_theme(){
 	file="${HOME}/.config/nvim/plugged/markdown-preview.nvim/app/_static"
-	sed -i '' -e 's/--color-text-primary: \#c9d1d9;/--color-text-primary:\#edeef3;/' -e 's/--color-markdown-blockquote-border: \#3b434b;/--color-markdown-blockquote-border: \#83D1DD;/' -e 's/--color-markdown-table-tr-border: \#272c32;/--color-markdown-table-tr-border: \#3b434b;/' -e 's/--color-bg-primary: \#0d1117;/--color-bg-primary: \#393939;/' -e '/line-height: 1.4;/a\
-		color: #83D1DD;' $file/markdown.css
-	num=$(grep -n "table tr:nth-child" ${file}/markdown.css | awk -F ":" '{print $1}')
-	num=$[$num+1]
-	sed -i '' -e ${num}d  -e '/table tr:nth-child/a\
-  background-color: var(--color-bg-primary);' $file/markdown.css
-	sed -i '' 's/181a1b/393939/' $file/page.css
+  cp ./markdown_theme_file/markdown.css $file/markdown.css
+	cp ./markdown_theme_file/page.css $file/page.css
 }
 
 main
+#set_markdown_theme
