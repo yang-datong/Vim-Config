@@ -18,6 +18,7 @@ replace_symbols_link(){
 }
 
 replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
+replace_symbols_link "$HOME/.config/nvim/filetype.vim" "$(pwd)/filetype.vim"
 replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config.fish"
 replace_symbols_link "$HOME/compile_flags.txt" "$(pwd)/compile_flags.txt"
 
