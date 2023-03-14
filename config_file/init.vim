@@ -405,6 +405,8 @@ func! Run()
     :! bash %
   elseif &filetype == 'tex'
     :MarkdownPreview
+  elseif &filetype == 'markdown'
+    :MarkdownPreview
   endif
 endfunc
 " }

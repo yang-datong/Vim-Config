@@ -9,9 +9,20 @@ def env(name):
 
 endglobal
 #============== Latex =======================
+
+context "math()"
+snippet equiv "equiv" i
+\equiv $0
+endsnippet
+
 context "math()"
 snippet sum "sum" i
-\sum $0
+\sum_{${1:j=0}}^{${2:k}} $0
+endsnippet
+
+context "math()"
+snippet prod "prod" i
+\prod_{${1:j=0}}^{${2:k}} $0
 endsnippet
 
 context "math()"
@@ -189,13 +200,17 @@ snippet so "therefore" i
 \therefore ${0}
 endsnippet
 
+#snippet mk "Math" i
+#$${1}$`!p
+#if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+#    snip.rv = ' '
+#else:
+#    snip.rv = ''
+#`${2}
+#endsnippet
+
 snippet mk "Math" i
-$${1}$`!p
-if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
-    snip.rv = ' '
-else:
-    snip.rv = ''
-`${2}
+$${1}$$0
 endsnippet
 
 snippet dm "Math"
@@ -241,13 +256,18 @@ endsnippet
 
 #\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
 context "math()"
-snippet //red "color_red" iA
-\textcolor{red}{${VISUAL}}
-endsnippet
-
-context "math()"
-snippet //white "color_white" iA
-\textcolor{white}{(${VISUAL})}
+snippet '//(red|gree|grey|blu|yel)' "textcolor" irA
+\textcolor{`!p 
+text = match.group(1)
+if text == "gree":
+	snip.rv = "green"
+elif text == "blu":
+	snip.rv = "blue"
+elif text == "yel":
+	snip.rv = "yellow"
+else:
+	snip.rv = text
+`}{${VISUAL}}
 endsnippet
 
 context "math()"
@@ -295,12 +315,32 @@ endsnippet
 
 context "math()"
 snippet '([Ffg])('{0,3})((?!t)([a-su-z]|\d+))' "f(x)" ir
-`!p snip.rv = match.group(1)``!p snip.rv = match.group(2)`(`!p snip.rv = match.group(3)`)
+`!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`
 endsnippet
 
 context "math()"
-snippet '(x|y)n' "xy_n" ir
-`!p snip.rv = match.group(1)`_n
+snippet 'f(x|k|i|j)(\+|-)(\d)' "f(x+1)" r
+f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)
+endsnippet
+
+context "math()"
+snippet () "()" iA
+($1)$0
+endsnippet
+
+context "math()"
+snippet [] "[]" iA
+[$1]$0
+endsnippet
+
+context "math()"
+snippet '(x|y|a|n)(n|k|i|j)' "x_1" r
+`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}
+endsnippet
+
+context "math()"
+snippet 'x(n|k|i|j)(\+|-)(\d)' "x_n+1" r
+x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}
 endsnippet
 
 context "math()"
@@ -309,7 +349,7 @@ snippet 'phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\phi(x)" ir
 endsnippet
 
 context "math()"
-snippet '((?!t|f)[A-Za-z])(\d{1,2})' "auto subscript" r
+snippet '((?!t|f|F)[A-Za-z])(\d{1,2})' "auto subscript" r
 `!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}
 endsnippet
 

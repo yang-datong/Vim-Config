@@ -110,38 +110,49 @@ endsnippet
 snippet main
 ScriptVersion="1.0"
 
+unset file
+unset directory
 
 main(){
-  echo "main()"
-
+	echo "main()"
+	if [ $file ];then
+		echo "File -> $file"
+	fi
+	if [ $directory ];then
+		echo "Directory -> $directory"
+	fi
+	$0
 }
 
 usage (){
   echo "Usage :  $(basename "\$0") [options] [--] argument-1 argument-2
 
   Options:
-  -h, --help       Display this message
-  -d, --debug      Debug model run
-  -p, --posix      Posix model parse shell command
-  -v, --version    Display script version
-  -f, --file FILE  Test input argument"
+  -h, --help                  Display this message
+  -d, --debug                 Debug model run
+  -p, --posix                 Posix model parse shell command
+  -v, --version               Display script version
+  -f, --file FILE             Target file 
+  -D, --directory DIRECTORY   Target directory"
 
 }
 
-while getopts ":hdpvf:-:" opt; do
+while getopts ":hdpvf:D:-:" opt; do
   case "${opt}" in
     h) usage && exit 0;;
     d) set -x ;;
     p) set -o posix ;;
     v) echo "\$0 -- Version $ScriptVersion"; exit ;;
-    f) echo "file=${OPTARG}";;
+    f) file=${OPTARG};;
+    D) directory=${OPTARG};;
     -) case "${OPTARG}" in
          help) usage && exit 0;;
-         debug)    set -x ;;
-         posix)    set -o posix ;;
-         version)  echo "\$0 -- Version $ScriptVersion"; exit ;;
-         file)     echo "file=${!OPTIND}"; OPTIND=$((OPTIND+1));;
-         *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+         debug)      set -x ;;
+         posix)      set -o posix ;;
+         version)    echo "\$0 -- Version $ScriptVersion"; exit ;;
+         file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
        esac;;
     :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
     *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
