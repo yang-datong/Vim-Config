@@ -64,7 +64,7 @@ check_build_type(){
   local cpp_total=$(ls | grep "\.cpp$" | wc -l)
 
   if [  $c_total -gt 0 -a $cpp_total -gt 0 ];then
-    echo -e "\033[31mYou can try to excute $0 help\033[0m"
+    echo -e "\033[31mTry help\033[0m"
     exit;
   fi
 
@@ -93,11 +93,9 @@ cpp_kind(){
 
 clean_cmake(){
   local date=$(date +"%Y%m%d%H%M%S")
-  if [ -f Makefile ];then
-    if [ "$1" == "all" ];then
-      make clean
-      mv Makefile /tmp/Makefile_$date
-    fi
+  if [[ -f "Makefile" && "$1" == "all" ]];then
+    make clean
+    mv Makefile /tmp/Makefile_$date
   fi
   if [ -f CMakeCache.txt ];then
     mv CMakeCache.txt /tmp/CMakeCache.txt_$date
@@ -159,7 +157,17 @@ generate_cmakelists(){
   cmake . && make
 }
 
+whether_has_source_file(){
+  local c_total=$(ls | grep "\.c$" | wc -l)
+  local cpp_total=$(ls | grep "\.cpp$" | wc -l)
+  if [ $c_total == 0 -a $cpp_total == 0 ];then
+    echo "no found c\\cpp file" ; exit;
+  fi
+}
+
+
 cmake_main(){
+  whether_has_source_file
   if [ "$1" == "clean" ];then
     clean_cmake "all" && exit
   elif [ "$1" == "make" ];then
