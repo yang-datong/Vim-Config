@@ -1,5 +1,6 @@
 #!/bin/bash
 
+exit
 #set -x -v  -e
 
 echo "确定要保存吗？会覆盖原来的文件! [y/n]"

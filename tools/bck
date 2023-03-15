@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ ! $1 ];then
+	echo -e "\033[31mNeed augment\033[0m"
+	exit
+fi
+
+files=$(basename $1)
+
+if [[ -f $files && ! -f $files.bck ]];then
+	cp -r $files $files.bck
+fi

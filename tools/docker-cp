@@ -1,0 +1,91 @@
+#!/bin/bash
+
+ScriptVersion="1.0"
+
+unset local_tar
+unset docker_tar
+
+unset docker_id
+
+main(){
+  local one_obj="$1"
+  local two_obj="$2"
+
+  if [ -z "$one_obj" ];then
+    echo -e "\033[31m Try --help\033[0m";exit
+  fi
+
+  try_fetch_docker_id
+
+  if [[ -f "$one_obj" || -d "$one_obj" ]];then
+    local_tar="$one_obj"
+    docker_tar="${docker_id}:${two_obj}"
+    if [ -z "$two_obj" ];then
+      docker_tar="${docker_id}:/"
+    fi
+    echo "docker cp \"$local_tar\" \"$docker_tar\""
+    docker cp "$local_tar" "$docker_tar"
+  else
+    docker_tar="${docker_id}:${one_obj}"
+    local_tar="$two_obj"
+    if [ -z "$two_obj" ];then
+      local_tar="./"
+    fi
+    echo "docker cp \"$docker_tar\" \"$local_tar\""
+    docker cp "$docker_tar" "$local_tar"
+  fi
+}
+
+
+
+try_fetch_docker_id(){
+	#Check whether exist running container in local
+	local docker_count=$(docker ps | wc -l | sed 's/ //g')
+	if [ $docker_count == 1 ];then
+    echo -e "\033[31m No container found \033[0m";exit
+	elif [ $docker_count == 2 ];then
+		docker_id=$(docker ps | sed -n 2p | awk '{print $1}')
+	elif [ $docker_count -gt 2 ];then
+		echo -e "\033[31m Detection multiple container,need statement container id in command argument\033[0m";exit
+	fi
+}
+
+usage (){
+  echo "Usage :  $(basename "$0") [options] [--] path-one [path-two]
+
+  Such as -> 
+  1. docker-cp local-path docker-path
+  2. docker-cp docker-path local-path
+  
+  If command argument 2 is empty,local-path=./ or docker-path=/
+
+    Must input argument one
+
+  Options:
+  -h, --help                  Display this message
+  -d, --debug                 Debug model run
+  -p, --posix                 Posix model parse shell command
+  -v, --version               Display script version"
+
+}
+
+while getopts ":hdpvi:D:-:" opt; do
+  case "${opt}" in
+    h) usage && exit 0;;
+    d) set -x ;;
+    p) set -o posix ;;
+    v) echo "$0 -- Version $ScriptVersion"; exit ;;
+    -) case "${OPTARG}" in
+         help) usage && exit 0;;
+         debug)      set -x ;;
+         posix)      set -o posix ;;
+         version)    echo "$0 -- Version $ScriptVersion"; exit ;;
+         *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+       esac;;
+    :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+    *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
+main "$@"

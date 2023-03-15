@@ -1,7 +1,7 @@
 #=============uesr config================
 function bck
     set files $(basename $argv[1])
-    echo "cp -r $files $files.bck"
+    cp -r $files $files.bck
 end
 
 #========================================
