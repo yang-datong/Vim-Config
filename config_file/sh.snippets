@@ -227,9 +227,10 @@ snippet check_cmd "check_cmd"
 #Checkout is install
 check_cmd(){
 	local obj=\$1
+	local cmd=\$2
 	if [ ! -x "$(command -v $obj)" ];then
 		echo "$obj installing ....."
-		${1:brew install}
+		${1:brew} install $cmd
 	fi
 }
 endsnippet

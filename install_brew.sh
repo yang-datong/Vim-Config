@@ -1,6 +1,15 @@
 #!/bin/bash
 set -u
 
+#Checkout is install
+check_cmd(){
+  if [ -x $(command -v brew) ];then
+    exit
+  fi
+}
+
+check_cmd
+
 abort() {
   printf "%s\n" "$@"
   exit 1

@@ -13,6 +13,11 @@ main(){
   if [ "$1" == "clean" ];then
     make clean
   fi
+  if [ "${src##*.}" == "c" ];then
+    cc="c"
+  elif [ "${src##*.}" == "cpp" ];then
+    cc="cpp"
+  fi
   if [ "$cc" == "c" ];then
     c_kind
   elif [ "$cc" == "cpp" ];then
@@ -22,18 +27,39 @@ main(){
   fi
   check_is_lib_path
   generate_makefile
-  info
+}
+
+#Check OS System
+check_os(){
+  case "$(uname)" in
+  "Darwin") echo ".dylib" ;;
+  "Linux") echo ".so" ;;
+  *)echo "Windows has not been tested for the time being";exit 1
+  esac
 }
 
 check_is_lib_path(){
   if [ $lib_path ];then
-    lib_path="-L $lib_path $(ls $lib_path | grep '.dylib$' | sed -e 's/lib/-l/' -e 's/\.dylib//' -e 's/\..*//' | uniq | tr '\n' ' ' )"
+    grep_modl=".$(check_os)$"
+    libs=$(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib/-l/' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )
+
+    #Find static library -> ".a"
+    if [ -z "$libs" ];then
+      grep_modl=".a$"
+      libs=$(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib/-l/' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )
+    fi
+
+    lib_path="-L $lib_path $libs"
   fi
 }
 
 generate_makefile(){
   echo "CC:=$cc" > Makefile
-  echo "BIN:=demo" >> Makefile
+  if [ $src ];then
+    echo "BIN:=$src" >> Makefile
+  else
+    echo "BIN:=a.out" >> Makefile
+  fi
   if [ $include_path ];then
     include_path="-I $include_path"
   fi
@@ -51,12 +77,11 @@ generate_makefile(){
   echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> Makefile
   echo "" >> Makefile
   echo "\$(BIN):\$(OBJS)" >> Makefile
-  echo "  \$(CC) \$^ -o \$@ ${lib_path}" >> Makefile
+  echo "	\$(CC) \$^ -o \$@ ${lib_path}" >> Makefile
   echo "" >> Makefile
   echo "clean:" >> Makefile
-  echo "  rm \$(OBJS) \$(BIN)" >> Makefile
+  echo "	rm \$(OBJS) \$(BIN)" >> Makefile
   make
-  rm *.o
 }
 
 check_build_type(){
@@ -64,7 +89,7 @@ check_build_type(){
   local cpp_total=$(ls | grep "\.cpp$" | wc -l)
 
   if [  $c_total -gt 0 -a $cpp_total -gt 0 ];then
-    echo -e "\033[31mTry help\033[0m"
+    echo -e "\033[31m Detection c file and c++ file ,use -c [filename] argument\033[0m"
     exit;
   fi
 
@@ -225,6 +250,6 @@ done
 
 shift $((OPTIND-1))
 
-#main :$@"
+main "$@"
 
-cmake_main "$@"
+#cmake_main "$@"

@@ -10,7 +10,7 @@ main(){
 	if [ ! $docker_id ];then
 		try_fetch_docker_id
 	fi
-	if [ ! $docker_id ];then
+	if [ -z "$docker_id" ];then
 		echo -e "\033[31m Need CONTAINER_ID\033[0m"
 		local tmp=$(docker ps -l | sed -n 2p)
 		if [ -z "$tmp" ];then
@@ -44,7 +44,7 @@ try_fetch_docker_id(){
 	if [ $docker_count == 1 ];then
 		unset docker_id
 	elif [ $docker_count == 2 ];then
-		docker_id=$(docker ps | sed -n 2p)
+		docker_id=$(docker ps | sed -n 2p | awk '{print $1}')
 	elif [ $docker_count -gt 2 ];then
 		echo -e "\033[31m Detection multiple container,need statement container id in command argument\033[0m";exit
 	fi

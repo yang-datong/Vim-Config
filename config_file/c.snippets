@@ -1,13 +1,5 @@
 priority -50
 
-snippet cout
-std::cout << ${1} << std::endl;
-endsnippet
-
-snippet cin
-std::cin >> ${1};
-endsnippet
-
 snippet '(^int|^char|^size_t|^uint8_t)(\*)?' "autoVarible" wr
 `!p snip.rv = match.group(1)` `!p
 if(match.group(2)):
@@ -92,7 +84,7 @@ if(f){
 endsnippet
 
 snippet ret "ret"
-return ${1:nullptr};
+return ${1:NULL};
 endsnippet
 
 snippet incc "Inc"
@@ -129,30 +121,38 @@ while(1){
 }
 endsnippet
 
-snippet pri "pri"
-private:
-	$0
-endsnippet
-
-snippet pub "pub"
-public:
-	$0
-endsnippet
-
-snippet class_data "class"
-class `!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`{
-	public:
-		`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
-		~`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
-		$0
-};
-endsnippet
-
 snippet class "class"
-class ${1:`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
-	public:
+//name -> ${1:`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}
+// 定义一个结构体
+typedef struct {
+    int x;
+    int y;
+    void (*print)(void*);
+} Point;
+
+// 定义一个函数，打印一个 Point 结构体的坐标
+void printPoint(void* p) {
+    Point* point = (Point*)p;
+    printf("(%d, %d)\n", point->x, point->y);
+}
+
+// 定义一个宏，创建一个 Point 结构体
+#define CREATE_POINT(x, y) \
+    (Point){x, y, printPoint}
+
+int main() {
+    // 创建两个 Point 结构体
+    Point p1 = CREATE_POINT(1, 2);
+    Point p2 = CREATE_POINT(3, 4);
+
+    // 打印两个 Point 结构体的坐标
+    p1.print(&p1);
+    p2.print(&p2);
 		$0
-};
+
+    return 0;
+}
+
 endsnippet
 
 snippet ifel "ifel"

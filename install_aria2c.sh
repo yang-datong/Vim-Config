@@ -6,8 +6,18 @@ function write(){
 	echo "done ~ arai2c into ${HOME}"
 }
 
+#Check OS System
+check_os(){
+	case "$(uname)" in
+	"Darwin") cc=brew;;
+	"Linux") cc=apt;;
+	*)echo "Windows has not been tested for the time being";exit 1
+	esac
+}
+
 if [ ! -x "$(command -v aria2c)" ];then
-	brew install aria2
+	check_os
+	$cc install aria2
 fi
 
 if [ ! -d ".aria2" ];then

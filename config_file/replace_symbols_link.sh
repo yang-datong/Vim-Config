@@ -1,5 +1,13 @@
 #!/bin/bash
 
+#Check OS System
+check_os(){
+	case "$(uname)" in
+	"Darwin") echo "";;
+	"Linux") ;;
+	*)echo "Windows has not been tested for the time being";exit 1
+	esac
+}
 replace_symbols_link(){
 	file="$1"
 	really_file="$2"
@@ -19,8 +27,12 @@ replace_symbols_link(){
 
 replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
 replace_symbols_link "$HOME/.config/nvim/filetype.vim" "$(pwd)/filetype.vim"
-replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config.fish"
 replace_symbols_link "$HOME/compile_flags.txt" "$(pwd)/compile_flags.txt"
+if [ "$(uname)" == "Darwin" ];then
+	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config.fish"
+else
+	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_docker.fish"
+fi
 
 for file in *.snippets;do
 	replace_symbols_link "$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/$file" "$(pwd)/$file"

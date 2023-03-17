@@ -26,10 +26,10 @@ if status is-interactive
     alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
     alias pping="httping -x 127.0.0.1:7890"
     alias diff='colordiff -w' #brew install colordiff
-    alias clang='clang -std=c++11'
-    alias clang++='clang++ -std=c++11'
-    alias g++='g++ -std=c++11'
-    alias gcc='gcc -std=c++11'
+    alias clang='clang -std=c11 -Wall'
+    alias clang++='clang++ -std=c++11 -Wall'
+    alias gcc='gcc -std=c11 -Wall'
+    alias g++='g++ -std=c++11 -Wall'
 
 end
 
