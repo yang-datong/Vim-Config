@@ -1,0 +1,8 @@
+BasedOnStyle: LLVM #这个可以  指针靠变量 但是public不缩进
+#BasedOnStyle: Google #不行int main 会换行\n{
+#BasedOnStyle: Chromium #还想指针靠类型
+#BasedOnStyle: Mozilla #int \n main \n () 一个类型、名字换行
+#BasedOnStyle: WebKit #public不缩进 int main()\n{
+#BasedOnStyle: Microsoft #指针靠名字，但是int main()\n{
+#BasedOnStyle: GNU #和BasedOnStyle差不多
+#BasedOnStyle: InheritParentConfig #和LLVM差不多

@@ -54,6 +54,10 @@ snippet cin
 std::cin >> ${1};
 endsnippet
 
+snippet cerr
+std::cerr << ${1} << std::endl;
+endsnippet
+
 snippet string "string"
 std::string $1 = nullptr;
 endsnippet
@@ -90,7 +94,7 @@ endsnippet
 snippet fopen "fopen"
 FILE *f = fopen($1, "${2:rb}");
 if(!f){
-	perror($1);
+	std::cerr << "Open file failed" << std::endl;
 	return -1;
 }
 $0
@@ -114,7 +118,7 @@ snippet file_write "file_write"
 const char* filename = "${1:file}";
 FILE *f = fopen(filename, "${2:wb}");
 if(!f){
-	perror(filename);
+	std::cerr << "Open file failed" << std::endl;
 	return -1;
 }
 const char* text = "${3:Write this to the file}";
@@ -130,7 +134,7 @@ snippet file_open "file_open"
 const char* filename = "${1:file}";
 FILE *f = fopen(filename, "${2:rb}");
 if(!f){
-	perror(filename);
+	std::cerr << "Open file failed" << std::endl;
 	return -1;
 }
 $0

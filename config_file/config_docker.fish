@@ -1,4 +1,5 @@
 if status is-interactive
+    export LD_LIBRARY_PATH='./build/lib'
     set com 'com.ss.android.ugc.aweme'
     alias phone='echo 15886670991'
     alias cl='clear'

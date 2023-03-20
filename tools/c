@@ -56,7 +56,7 @@ check_is_lib_path(){
 generate_makefile(){
   echo "CC:=$cc" > Makefile
   if [ $src ];then
-    echo "BIN:=$src" >> Makefile
+    echo "BIN:=${src%.*}" >> Makefile
   else
     echo "BIN:=a.out" >> Makefile
   fi

@@ -260,8 +260,12 @@ ffplay -i $1 -pix_fmt nv21 -s $2
 #Play yuv[nv21]
 endsnippet
 
+snippet ffmepg_get_Video "ffmepg_get_Video"
+ffmpeg -i $1 -c:v copy -an out.h265 #需要根据源视频的编码文件来，如果是h264则用 out.h264 ,可以使用mediainfo、ffmpeg -i 来确定
+endsnippet
+
 snippet ffmpeg_get_Audio "ffmpeg_get_Audio"
-ffmpeg -i $1 -vn out.mp3
+ffmpeg -i $1 -c:a copy -vn out.wav #需要根据源视频的编码文件来，如果是pcm_s16le 则用out.wav,可以使用mediainfo、ffmpeg -i 来确定
 endsnippet
 
 snippet ffmpeg_cut_frames "ffmpeg_frames"

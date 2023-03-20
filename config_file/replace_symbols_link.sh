@@ -25,12 +25,15 @@ replace_symbols_link(){
 	fi
 }
 
-replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
 replace_symbols_link "$HOME/.config/nvim/filetype.vim" "$(pwd)/filetype.vim"
 replace_symbols_link "$HOME/compile_flags.txt" "$(pwd)/compile_flags.txt"
+replace_symbols_link "$HOME/.clang-format" "$(pwd)/xx.clang-format"
+
 if [ "$(uname)" == "Darwin" ];then
+	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
 	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config.fish"
 else
+	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init_docker.vim"
 	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_docker.fish"
 fi
 

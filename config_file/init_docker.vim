@@ -14,11 +14,12 @@ nmap <leader> qf <Plug>(coc-fix-current)
 
 
 " Set include path -> use "gf" jump {
-set path=/usr/local/include
-set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
-set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
-set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
-set path+=/usr/local/opt/opencv/include/opencv4 "Mac OS
+set path+=/usr/include/c++/11
+set path+=/usr/include/x86_64-linux-gnu/c++/11
+set path+=/usr/include/c++/11/backward
+set path+=/usr/lib/gcc/x86_64-linux-gnu/11/include
+set path+=/usr/local/include
+set path+=/usr/include
 "}
 
 
@@ -254,20 +255,20 @@ let g:UltiSnipsExpandTrigger = '<tab>'
 let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
-Plug 'lervag/vimtex'
-let g:vimtex_quickfix_mode=0
-
-Plug   'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
-"set conceallevel=2
-let g:tex_conceal='abdmg'
-hi Conceal ctermbg=none
+"Plug 'lervag/vimtex'
+"let g:vimtex_quickfix_mode=0
+"
+"Plug   'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+""set conceallevel=2
+"let g:tex_conceal='abdmg'
+"hi Conceal ctermbg=none
 "======================================================================
-autocmd FileType math set filetype=markdown
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-autocmd FileType math set filetype=tex
-let g:mkdp_theme ='dark'
-"let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
+"autocmd FileType math set filetype=markdown
+"Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+"autocmd FileType math set filetype=tex
+"let g:mkdp_theme ='dark'
+""let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+"let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
 "======================================================================
 Plug 'rcarriga/nvim-notify'
 "======================================================================
