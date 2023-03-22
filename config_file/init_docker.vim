@@ -100,13 +100,17 @@ cnoreabbrev Qall! qall!
 cnoreabbrev Wq wq
 cnoreabbrev Wa wa
 cnoreabbrev wQ wq
-cnoreabbrev WQ wq
 cnoreabbrev W w
 cnoreabbrev W: w
 cnoreabbrev w: w
 cnoreabbrev Q q
 cnoreabbrev Qall qall
+cnoreabbrev qAll qall
 cnoreabbrev Wall wall
+cnoreabbrev wAll wall
+cnoreabbrev Wqall wqall
+cnoreabbrev WQall wqall
+cnoreabbrev wQall wqall
 "}
 
 " Mapping {
