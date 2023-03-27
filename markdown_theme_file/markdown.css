@@ -46,7 +46,18 @@
   margin-top: 0;
   margin-bottom: 0;
 }
+
+
+/*
+ *
+ *
+  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+ * */
+
 .markdown-body {
+  --base-Latin-font: "Latin Modern Roman", "Latin Modern Roman 10", Times;
+  --base-Chinese-font: "家族宋", "宋体-简", "华文宋体", "Noto Serif CJK SC";
+  font-family: var(--base-Latin-font), var(--base-Chinese-font), serif;
   font-size: 15px;
   color: var(--color-text-primary);
   line-height: 1.6;

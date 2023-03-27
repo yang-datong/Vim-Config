@@ -92,6 +92,14 @@ for i in ${1};do
 done
 endsnippet
 
+snippet '(.*)\.name' "perfix" r
+file_name=\$\{`!p snip.rv = match.group(1)`%.*\}$0
+endsnippet
+
+snippet '(.*)\.type' "perfix" r
+file_type=\$\{`!p snip.rv = match.group(1)`##*.\}$0
+endsnippet
+
 snippet perfix "perfix"
 \$\{${1}%.*\}
 endsnippet

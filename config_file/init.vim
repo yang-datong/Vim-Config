@@ -1,44 +1,31 @@
-" 默认情况下，<Leader> 键是反斜杠（\）键
-
-" Restore to the position where it was last closed{
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-"}
-
-" Coc-vim jump definition
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <leader> qf <Plug>(coc-fix-current)
-
-" Auto add symbols and  line break at the end
-"nnoremap ; A;<Esc>o
+" CATALOGUE OUTLINE:
+"1. 基本配置区域
+"2. 按键映射区域
+"3. 插件配置区域
+"4. 自定义命令、按键区域
+"5. 自动执行命令区域
+"6. unite插件扩展区域
 
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                     1. 基本配置区域                              "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
-set path=/usr/local/include
 set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
 set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
 set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
-set path+=/usr/local/opt/opencv/include/opencv4 "Mac OS
-"}
-
-
-" Command {  "auto merge text to one line
-:command -range=% Line :<line1>,<line2>s/\n/ /g
-"}
-
+" }
 " Attribute {
 set clipboard=unnamed  "共享剪贴板
 set autoindent "自动缩进
 set cindent
-"}
-
+" }
 " Search {
 set hlsearch
 set incsearch
 set ignorecase
 set smartcase
 " }
-
 " Others {
 set fileformats=unix,dos,mac
 set showcmd
@@ -47,11 +34,9 @@ set backspace=indent,eol,start    " Fix backspace indent
 "set mousemodel=popup " GUI Vim effect
 set mouse= "Remove mouse operation
 " }
-
 " Visual {
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " }
-
 " Basic {
 set nolinebreak               " don't wrap at words, messes up copy
 set visualbell
@@ -59,14 +44,12 @@ set wildmode=longest,list,full
 set wildmenu
 set numberwidth=3     " minimun width to use for the number column.
 " }
-
 " Syntax {
 syntax on
 syntax enable
 set foldmethod=syntax
 set foldlevel=2
 " }
-
 " Cursor {
 set guicursor=a:ver25-blinkon10
 "set ruler
@@ -74,12 +57,10 @@ set nonumber
 "set cursorline
 set scrolloff=3
 "}
-
 " Tab {
 "set list                      " Show tabs differently
 "set listchars=tab:>-          " Use >--- for tabs
 " }
-
 " Status {
 set title
 set titleold="Terminal"
@@ -89,8 +70,16 @@ set noruler
 set laststatus=0
 set noshowcmd
 " }
+" Close the pop-up window {
+" 影响主要是在编写代码时会弹出函数定义框，需要手动关闭影响布局
+"set completeopt-=preview 
+" }
+
 ""}
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                      2. 按键映射区域                             "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "" Key-mapping {
 " Abbreviations {
 cnoreabbrev W! w!
@@ -107,8 +96,11 @@ cnoreabbrev Qall qall
 cnoreabbrev qAll qall
 cnoreabbrev Wall wall
 cnoreabbrev wAll wall
+cnoreabbrev Wqall! wqall!
 cnoreabbrev Wqall wqall
+cnoreabbrev WQall! wqall!
 cnoreabbrev WQall wqall
+cnoreabbrev wQall! wqall!
 cnoreabbrev wQall wqall
 "}
 
@@ -141,36 +133,50 @@ else
 endif
 " }
 
-" Split
+
+" Fix word spell {
+setlocal spell
+set spelllang=en_us
+inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+nnoremap <C-l> mz[s1z=`]`z
+" }
+" Auto add symbols and  line break at the end {
+"nnoremap ; A;<Esc>o
+" }
+" Hex model edit{
+nnoremap <Leader>x :%!xxd<CR>
+" }
+" Split {
 noremap <Leader>h :<C-u>split<CR>
 noremap <Leader>v :<C-u>vsplit<CR>
-
-" Tabs
+" }
+" Tabs {
 nnoremap <Tab> gt
 nnoremap <S-Tab> gT
 nnoremap <silent> <S-t> :tabnew<CR>
-
+" }
 " Terminal {
 nnoremap <silent> <Leader>t :terminal<CR>
 " exit 'terminal' mode
 :tnoremap <Esc> <C-\><C-n>
 "}
-
-" Set working directory
+" Set working directory {
 nnoremap <Leader>. :lcd %:p:h<CR>
-
-" Buffer nav
+" }
+" Buffer nav {
 noremap <Leader>q :bp<CR>
 noremap <Leader>w :bn<CR>
-
-" Close buffer
+" }
+" Close buffer {
 noremap <Leader>c :bd<CR>
-
-" Clean search (highlight)
+" }
+" Clean search (highlight) {
 nnoremap <silent> <leader><space> :noh<cr>
 " }
-"" }
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                      3. 插件配置区域                              "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "" Plugins {
 let s:vim_plug_dir=expand('~/.config/nvim/autoload')
 " Vim-Plug {
@@ -178,8 +184,6 @@ if !filereadable(s:vim_plug_dir.'/plug.vim')
   execute '!wget https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -P '.s:vim_plug_dir
   let s:install_plug=1
 endif
-
-set completeopt-=preview " 关闭弹窗
 
 call plug#begin('~/.config/nvim/plugged')
 "======================================================================
@@ -192,6 +196,9 @@ Plug 'Shougo/ddc.vim'
 Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
 "======================================================================
 Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
+noremap <Leader>gs :Gstatus<CR>
+noremap <Leader>gb :Gblame<CR>
+noremap <Leader>gd :Gvdiff<CR>
 "======================================================================
 Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
 "======================================================================
@@ -204,7 +211,7 @@ Plug 'vim-autoformat/vim-autoformat'
   "Markdown : npm install -g remark-cli
   "Shell : go install mvdan.cc/sh/v3/cmd/shfmt@latest (需要安装go)
 "======================================================================
-Plug 'neoclide/coc.nvim', {'branch': 'release'} "非常强大
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 set hidden
 set updatetime=100
 inoremap <silent><expr> <Down>
@@ -214,9 +221,15 @@ inoremap <silent><expr> <Down>
 inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
-"let g:coc_global_extensions = ['coc-texlab']
-autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif
+" Jump definition
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <leader> qf <Plug>(coc-fix-current)
 
+"Must install -> let g:coc_global_extensions = ['coc-texlab']
+autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
+
+" Option {
   "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake
     "- CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
   "语法检查：
@@ -235,20 +248,17 @@ autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --chan
   "卸载：
     "- :CocList extensions
     "- 选中按<Tab> 再按u
-
+" }
 "======================================================================
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 let g:tagbar_position = 'vertical'
 "Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
+map <C-1> :TagbarToggle <CR>
 "======================================================================
 " Color thems
 Plug 'junegunn/seoul256.vim'
 Plug 'shaunsingh/nord.nvim' "Math style
 Plug 'rafamadriz/neon'
-setlocal spell
-set spelllang=en_us
-inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
-nnoremap <C-l> mz[s1z=`]`z
 "======================================================================
 "Ultisnips
 Plug 'SirVer/ultisnips'
@@ -260,8 +270,7 @@ let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
 Plug 'lervag/vimtex'
 let g:vimtex_quickfix_mode=0
-
-Plug   'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
 "set conceallevel=2
 let g:tex_conceal='abdmg'
 hi Conceal ctermbg=none
@@ -270,24 +279,10 @@ autocmd FileType math set filetype=markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 autocmd FileType math set filetype=tex
 let g:mkdp_theme ='dark'
-"let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
+let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+"let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
 "======================================================================
-Plug 'rcarriga/nvim-notify'
-"======================================================================
-call plug#end()
-
-"弹窗美化比如 :lua vim.notify("This is an error message", "error")
-lua vim.notify = require("notify")
-
-if exists('s:install_plug')
-  augroup PlugInstall
-    au!
-    au VimEnter * PlugInstall
-  augroup END
-endif
-" }
-
+"Plug 'scrooloose/nerdtree'
 "" NERDTree {
 "set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 "let g:NERDTreeChDirMode=2
@@ -306,37 +301,110 @@ endif
 "" Close NERDTree if no other window open
 "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 "" }
-
+"======================================================================
+"Plug 'suan/vim-commentary'
 " Vim-commentray {
 " to support other file type
 " autocmd FileType apache setlocal commentstring=#\ %s
 " }
+"======================================================================
+Plug 'rcarriga/nvim-notify'
+"======================================================================
+call plug#end()
 
-" Fugitive-git {
-noremap <Leader>gs :Gstatus<CR>
-noremap <Leader>gb :Gblame<CR>
-noremap <Leader>gd :Gvdiff<CR>
+" Notify Configure {
+"弹窗美化 :lua vim.notify("This is an error message", "error")
+lua vim.notify = require("notify")
 " }
-
-" Color-thems {
+" Themes Configure {
 colorscheme seoul256
 "colorscheme neon
 "colorscheme nord
 " }
+" Unite Configure {
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+nnoremap <Leader>f :<C-u>Unite file_rec/neovim<CR>
+nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
+nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
+nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
+" Start insert.
+call unite#custom#profile('default', 'context', { 'start_insert': 1 })
+" }
+if exists('s:install_plug')
+  augroup PlugInstall
+    au!
+    au VimEnter * PlugInstall
+  augroup END
+endif
+" }
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                  4. 自定义命令、按键区域                          "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Command {  "auto merge text to one line
+:command -range=% Line :<line1>,<line2>s/\n/ /g
+"}
 
+" Fast into head file {
+map <C-h> :call IntoHeadrFile()<CR>
+func! IntoHeadrFile()
+  let filename = expand('%:r')
+  let filetype = expand('%:e')
+  if filetype == 'cpp'
+    exec 'e ' . filename . '.hpp'
+  elseif filetype == 'hpp'
+    exec 'e ' . filename . '.cpp'
+  elseif filetype == 'c'
+    exec 'e ' . filename . '.h'
+  elseif filetype == 'h'
+    exec 'e ' . filename . '.c'
+  endif
+endfunc
+" }
+
+" Fast start file execution {
+"map <C-r> :call Run()<CR>
+func! Run()
+  exec "w"
+  if &filetype == 'c'
+    exec '!gcc % -o %< -g -w  '
+    exec '!./%<'
+  elseif &filetype == 'cpp'
+    exec '!g++ % -o %< -g -w'
+    exec '!./%<'
+  elseif &filetype == 'JavaScript'
+    exec '!python3 ./exp.py'
+  elseif &filetype == 'python'
+    exec '!python3 %'
+    "exec '!manim -pql % Demo'
+  elseif &filetype == 'sh'
+    :! bash %
+  elseif &filetype == 'tex'
+    :MarkdownPreview
+  elseif &filetype == 'markdown'
+    :MarkdownPreview
+  endif
+endfunc
+" }
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                  5. 自动执行命令区域                              "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Mathematics file {
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
 autocmd FileType math set filetype=tex
 " }
 
+" Restore to the position where it was last closed {
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+" }
 
 "Auto add Executive authority{
 au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent execute "!chmod +x <afile>" | endif | endif
 " }
 
-"Auto add FileContent{
+"Auto add File Content{
 autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 func SetTitle()
   if &filetype == 'sh'
@@ -361,72 +429,9 @@ func SetTitle()
 endfunc
 " }
 
-"One-click operation{
-":echo expand('%:t')     my.txt  name of file ('tail')
-":echo expand('%:p')     /abc/def/my.txt full path
-":echo expand('%:p:h')   /abc/def    directory containing file ('head')
-":echo expand('%:p:h:t') def First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
-":echo expand('%:r')     my  name of file less one extension ('root')
-":echo expand('%:e')     txt name of file's extension ('extension')```
-
-map <C-1> :TagbarToggle <CR>
-
-map <C-h> :call IntoHeadrFile()<CR>
-func! IntoHeadrFile()
-  let filename = expand('%:r')
-  let filetype = expand('%:e')
-  if filetype == 'cpp'
-    exec 'e ' . filename . '.hpp'
-  elseif filetype == 'hpp'
-    exec 'e ' . filename . '.cpp'
-  elseif filetype == 'c'
-    exec 'e ' . filename . '.h'
-  elseif filetype == 'h'
-    exec 'e ' . filename . '.c'
-  endif
-endfunc
-
-"map <C-b> :call Run()<CR>
-func! Run()
-  exec "w"
-  if &filetype == 'c'
-    exec '!gcc % -o %< -g -w  '
-    exec '!./%<'
-  elseif &filetype == 'cpp'
-    exec '!g++ % -o %< -g -w'
-    exec '!./%<'
-  elseif &filetype == 'JavaScript'
-    exec '!python3 ./exp.py'
-  elseif &filetype == 'python'
-    :"exec '!time python3 %'
-    exec '!manim -pql % Demo'
-  elseif &filetype == 'sh'
-    :! bash %
-  elseif &filetype == 'tex'
-    :MarkdownPreview
-  elseif &filetype == 'markdown'
-    :MarkdownPreview
-  endif
-endfunc
-" }
-
-function Auto()
-  :%!xxd
-endfunction
-
-
-" Unite {
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
-nnoremap <Leader>f :<C-u>Unite file_rec/neovim<CR>
-nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
-nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
-nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
-
-" Start insert.
-call unite#custom#profile('default', 'context', {
-      \   'start_insert': 1
-      \ })
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                  6. unite插件扩展区域                             "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
   " Overwrite settings.
