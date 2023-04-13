@@ -30,6 +30,43 @@ def mermaid_auto_add_mark(snip):
 endglobal
 
 #================== Markdown ==================
+snippet '([1-7])' "1-7" br
+`!p 
+number = int(match.group(1))
+if number == 1:
+		snip.rv = ":one:"
+elif number == 2:
+		snip.rv = ":two:"
+elif number == 3:
+		snip.rv = ":three:"
+elif number == 4:
+		snip.rv = ":four:"
+elif number == 5:
+		snip.rv = ":five:"
+elif number == 6:
+		snip.rv = ":six:"
+elif number == 7:
+		snip.rv = ":seven:"
+` $0
+endsnippet
+
+snippet test "test"
+>${1:题号}. ${2:问题} \
+$(A).$ ${3:答案A} &emsp;&emsp; $(B).$ ${4:答案B}\
+$(C).$ ${5:答案C} &emsp;&emsp; $(D).$ ${6:答案D}
+endsnippet
+
+snippet br "br" bA
+<br>
+$0
+endsnippet
+
+snippet box "Box"
+<div style=border-style:solid;border-color:red;text-align:center;padding:10px;border-width:1px>
+${1:This is a Box}
+</div>
+endsnippet
+
 snippet clear "clear"
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 endsnippet
@@ -93,13 +130,15 @@ snippet spar "Paragraph" b
 $0
 endsnippet
 
+#https://mermaid.js.org/syntax/flowchart.HTML
 snippet mermaid "mermaid"
 \`\`\`mermaid
 %%{init: {'theme': 'base','themeVariables': {'primaryBorderColor':'#fff','primaryTextColor': '#fff', 'primaryColor': '#383838'}}}%%
 graph LR
 %%--------------------------------------------------------------------
-${1} --> ${2}
-
+0("${1:Root}")
+1("${1:Branch}")
+0 --> 1
 %%--------------------------------------------------------------------
 \`\`\`
 endsnippet
@@ -127,11 +166,13 @@ snippet fnt "Footnote"
 [^$1]:${2:Text}
 endsnippet
 
-snippet detail "detail"
+snippet details "details"
 <details>
 <summary>${1:Tag}</summary>
 <pre><code>
+
 ${VISUAL}$2
+
 </code></pre>
 </details>
 $0

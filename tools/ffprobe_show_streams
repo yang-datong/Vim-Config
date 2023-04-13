@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ ! $1 ];then
+	echo -e "\033[31mNeed target AV file\033[0m";exit	
+fi
+
+
+file="$1"
+ffprobe -loglevel quiet -select_streams v -show_streams $file

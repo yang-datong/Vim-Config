@@ -208,6 +208,7 @@ Plug 'vim-autoformat/vim-autoformat'
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
   "Cmake : pip install cmake-format
   "Latex : brew install latexindent ,(必须添加->let g:formatdef_latexindent = '"latexindent -"')
+  let g:formatdef_latexindent = '"latexindent -"'
   "Markdown : npm install -g remark-cli
   "Shell : go install mvdan.cc/sh/v3/cmd/shfmt@latest (需要安装go)
 "======================================================================
@@ -230,7 +231,7 @@ nmap <leader> qf <Plug>(coc-fix-current)
 autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
 
 " Option {
-  "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake
+  "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
     "- CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
   "语法检查：
     "- python : CocInstall coc-pyright
@@ -270,6 +271,12 @@ let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
 Plug 'lervag/vimtex'
 let g:vimtex_quickfix_mode=0
+let g:tex_flavor = 'latex'
+let g:vimtex_view_general_viewer = 'skim'
+let g:vimtex_view_method = 'skim'
+let g:vimtex_compiler_progname = 'nvr'
+let g:vimtex_view_general_options = '-r @line @pdf @tex'
+
 Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
 "set conceallevel=2
 let g:tex_conceal='abdmg'
@@ -375,8 +382,10 @@ func! Run()
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'
   elseif &filetype == 'python'
-    exec '!python3 %'
-    "exec '!manim -pql % Demo'
+    "exec '!python3 %'
+    exec '!manim -pql % Demo'
+  elseif &filetype == 'manim'
+    exec '!manim -pql % Demo'
   elseif &filetype == 'sh'
     :! bash %
   elseif &filetype == 'tex'
@@ -394,6 +403,9 @@ endfunc
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
 autocmd FileType math set filetype=tex
+
+autocmd FileType manim UltiSnipsAddFiletypes python.snippets
+autocmd FileType manim set filetype=python
 " }
 
 " Restore to the position where it was last closed {

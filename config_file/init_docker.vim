@@ -1,5 +1,3 @@
-" 默认情况下，<Leader> 键是反斜杠（\）键
-
 " Restore to the position where it was last closed{
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 "}

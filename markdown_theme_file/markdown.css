@@ -29,7 +29,7 @@
     --color-border-primary: #30363d;
     --color-border-tertiary: #6e7681;
     --color-kbd-foreground: #b1bac4;
-    --color-markdown-blockquote-border: #3b434b;
+    --color-markdown-blockquote-border: #e3e3e3;
     --color-markdown-table-border: #3b434b;
     --color-markdown-table-tr-border: #272c32;
     --color-markdown-code-bg: #f0f6fc26;
@@ -58,7 +58,7 @@
   --base-Latin-font: "Latin Modern Roman", "Latin Modern Roman 10", Times;
   --base-Chinese-font: "家族宋", "宋体-简", "华文宋体", "Noto Serif CJK SC";
   font-family: var(--base-Latin-font), var(--base-Chinese-font), serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--color-text-primary);
   line-height: 1.6;
   word-wrap: break-word;

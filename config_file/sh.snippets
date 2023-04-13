@@ -115,6 +115,22 @@ case ${1:word} in
 esac
 endsnippet
 
+
+snippet check_activity "check_activity"
+check_activity(){
+	activity="\$1"
+	local ret=$(adb shell dumpsys activity top | grep ACTIVITY | tail -1 | awk '{print $2}')
+	if [ "$ret" == "$activity" ];then
+		echo 0
+	else
+		echo -1
+	fi
+}
+
+ret=\`check_activity "${1:com.xingin.xhs/.index.v2.IndexActivityV2}"\`
+echo $ret
+endsnippet
+
 snippet main
 ScriptVersion="1.0"
 

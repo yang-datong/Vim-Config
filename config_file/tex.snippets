@@ -1,17 +1,141 @@
 global !p
-
 def math():
-		return vim.eval('vimtex#syntax#in_mathzone()') == '1'
+    return vim.eval('vimtex#syntax#in_mathzone()') == '1'
+
+
+def internel_math():
+    if math():
+        linebuf = vim.eval("getline('.')")
+        index = int(vim.eval("col('.')-1"))
+        # print(linebuf+"|"+index)
+        count_before = linebuf[:index].count('$')
+        count_after = linebuf[index:].count('$')
+        # print(str(count_before)+"|"+str(count_after))
+        if (count_after == 0 and count_before == 0) or (count_after % 2 == 0 and count_before % 2 == 0):
+            return False
+        return True
+    else:
+        return False
+
 
 def env(name):
-		[x,y] = vim.eval("vimtex#env#is_inside('" + name + "')")
-		return x != '0' and y != '0'
+    [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
+    return x != '0' and y != '0'
 
 endglobal
 #============== Latex =======================
+#带有括号的结束符在括号旁边，不带有括号的结束符空格一个
+
+context "math()"
+snippet pm "pm"
+\pm $0
+endsnippet
+
+#概率论用的比较频繁
+context "math()" 
+snippet P{} "P{}" i
+P\\{ $1 \\}$0
+endsnippet
+
+context "math()"
+snippet sig "sigma" i
+\sigma $0
+endsnippet
+
+context "math()"
+snippet mu "mu" i
+\mu $0
+endsnippet
+
+context "math()"
+snippet sim "sim" i
+\sim $0
+endsnippet
+
+context "math()"
+snippet 'C(\d{0,3})-(\d{0,3})' "C_{\d}^{\d}'" r
+`!p snip.rv = "C_{" + match.group(1) + "}^{" + match.group(2) + "}"`
+endsnippet
+
+context "math()"
+snippet dis "dis" i
+\displaystyle{${VISUAL}$1}$0
+endsnippet
+
+context "math()"
+snippet '(b|l|r)(\(|\)|\||\[|\]|\{|\})' "\bigg left right ()[]{}" r
+`!p 
+one = match.group(1)
+two = match.group(2)
+if two == "(":
+	twos = ")"
+elif two == "[":
+	twos = "]"
+elif two == "{":
+	twos = "}"
+elif two == "|":
+	twos = "|"
+else:
+	twos = ""
+
+if one == "b":
+	snip.rv = "\\bigg" + two
+elif one == "l":
+	snip.rv = "\\left" + two
+elif one == "r":
+	snip.rv = "\\right" + two
+` $1 `!p 
+if one == "b":
+	snip.rv = "\\bigg" + twos
+elif one == "l":
+	snip.rv = "\\right" + twos
+elif one == "r":
+	snip.rv = "\\left" + twos
+`$0
+endsnippet
+
+context "math()"
+snippet sout "sout" i
+\sout{${VISUAL}$1}$0
+endsnippet
+
+context "math()"
+snippet sub "subset"
+\subset $0
+endsnippet
+
+context "math()"
+snippet cup "cup"
+\cup $0
+endsnippet
+
+context "math()"
+snippet cap "cap"
+\cap $0
+endsnippet
+
+context "math()"
+snippet emp "empty" i
+\emptyset $0
+endsnippet
+
+context "math()"
+snippet 'P([A-C]{1,3})' "'P(A)'" r
+`!p snip.rv= "P(" + match.group(1) + ")"`
+endsnippet
+
+context "math()"
+snippet 'P([A-C])\|([A-C])' "'P(A|B)'" r
+`!p snip.rv= "P(" + match.group(1) + "|" + match.group(2) + ")"`
+endsnippet
+
+context "math()"
+snippet def "def"
+def($1)$0
+endsnippet
 
 snippet over "overline" i
-\overline{$1} $0
+\overline{$1}$0
 endsnippet
 
 context "math()"
@@ -21,21 +145,21 @@ endsnippet
 
 context "math()"
 snippet sum "sum" i
-\sum_{${1:j=0}}^{${2:k}} $0
+\sum_{${1:j=0}}^{${2:k}}$0
 endsnippet
 
 context "math()"
 snippet prod "prod" i
-\prod_{${1:j=0}}^{${2:k}} $0
+\prod_{${1:j=0}}^{${2:k}}$0
 endsnippet
 
 context "math()"
 snippet 'ell(\d)' "ell" r
-\ell_{`!p snip.rv = match.group(1)`} $0
+\ell_{`!p snip.rv = match.group(1)`}$0
 endsnippet
 
 context "math()"
-snippet => "iff"
+snippet iff "iff"
 \iff $0
 endsnippet
 
@@ -55,7 +179,12 @@ snippet vec "\vec" i
 endsnippet
 
 context "math()"
-snippet int "\int"
+snippet int "\int" i
+\int $0
+endsnippet
+
+context "math()"
+snippet ints "\int_{}^{}" i
 \int_{$1}^\{$2\}$0
 endsnippet
 
@@ -65,13 +194,18 @@ snippet del "\Delta{}" i
 endsnippet
 
 context "math()"
+snippet delx "\Delta{x}" i
+\Delta{x}$0
+endsnippet
+
+context "math()"
 snippet in "in"
-\in$0
+\in $0
 endsnippet
 
 context "math()"
 snippet pi "\pi" i
-\pi$0
+\pi $0
 endsnippet
 
 context "math()"
@@ -95,17 +229,22 @@ snippet cdot "\cdot" i
 endsnippet
 
 context "math()"
-snippet 'ln(x{0,1})' "\lnx" ir
-\ln{`!p snip.rv = match.group(1)`}$0
+snippet lnx "\lnx" i
+\ln{x}$0
 endsnippet
 
 context "math()"
-snippet be "\beta"
+snippet ln "\lnx" i
+\ln{$1}$0
+endsnippet
+
+context "math()"
+snippet be "\beta" i
 \beta $0
 endsnippet
 
 context "math()"
-snippet al "\alpha"
+snippet al "\alpha" i
 \alpha $0
 endsnippet
 
@@ -120,8 +259,23 @@ snippet inf "\infty" i
 endsnippet
 
 context "math()"
-snippet -> "\right" iA
-\rightarrow $0
+snippet '(-)?->' "\right" irA
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\rightarrow"
+else:
+	snip.rv = "\\longrightarrow"
+` $0
+endsnippet
+
+context "math()"
+snippet '(=)?=>' "\Right" irA
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\Rightarrow"
+else:
+	snip.rv = "\\quad \\Longrightarrow \\quad"
+` $0
 endsnippet
 
 context "math()"
@@ -130,13 +284,18 @@ snippet <- "\left" iA
 endsnippet
 
 context "math()"
+snippet <= "\Left" iA
+\Leftarrow $0
+endsnippet
+
+context "math()"
 snippet lim "lim" i
-\lim{$1} $0
+\lim{$1}$2
 endsnippet
 
 context "math()"
 snippet lims "lims" i
-\lim\limits_{${1:x} \rightarrow ${2:\infty}}
+\lim\limits_{${1:x} \to ${2:\infty}}$3
 endsnippet
 
 context "math()"
@@ -154,22 +313,29 @@ endsnippet
 snippet mkka "display math aligned"
 $$
 \begin{aligned}
-& ${1} \\\
-& ${0}
+& ${1} \\\\${0}
 \end{aligned}
 $$
 endsnippet
 
 context "math()"
 snippet ali "ali"
-\begin{aligned}
-& ${1} \\\
-& ${0}
+`!p 
+s = snip.v.text
+idx = s.find("=")
+idx2 = s.find("&")
+if idx!=-1 and idx2 == -1:
+    new_s = s[:idx] + " & " + s[idx:]
+elif idx==-1 and idx2 == -1:
+    new_s = "& " + s
+else:
+    new_s = s
+snip.rv = "\\begin{aligned}\n" + new_s + " \\\\"
+`$0
 \end{aligned}
 endsnippet
 
 context "env("aligned")"
-#snippet \\ "jump to next line" "re.match('\s{0,5}&.*', snip.buffer[snip.line]) and re.match('\s{0,5}&.*', snip.buffer[snip.line-1])" e
 snippet \\ "jump to next line" 
 \\\
 & $1
@@ -185,13 +351,18 @@ endsnippet
 context "math()"
 snippet beg "begin{} / end{}" i
 \begin{$1}
-$0
+$2
 \end{$1}
 endsnippet
 
 context "math()"
 snippet qu "quad" i
 \\quad ${0}
+endsnippet
+
+context "math()"
+snippet qqu "qquad" i
+\\qquad ${0}
 endsnippet
 
 context "math()"
@@ -224,28 +395,23 @@ $1
 endsnippet
 
 context "math()"
-snippet sr "^2" iA
-^2
-endsnippet
-
-context "math()"
-snippet cb "^3" i
-^3
-endsnippet
-
-context "math()"
-snippet compl "complement" i
-^{c}
-endsnippet
-
-context "math()"
-snippet td "superscript" i
-^{$1}$0
+snippet '([A-Za-z|\)|\}])(\d{0,2})sr' "x^\d\d" ir
+`!p
+if match.group(2) is None:
+	snip.rv = match.group(1) + "^{"
+else:
+	snip.rv = match.group(1) + "^{"+ match.group(2)
+`${1:2}}$0
 endsnippet
 
 context "math()"
 snippet sq "\sqrt" i
 \\sqrt{$1}$0
+endsnippet
+
+context "math()"
+snippet sqx "\sqrt{x}" i
+\\sqrt{x}$0
 endsnippet
 
 context "math()"
@@ -271,7 +437,7 @@ elif text == "yel":
 	snip.rv = "yellow"
 else:
 	snip.rv = text
-`}{${VISUAL}}
+`}{${VISUAL}}$0
 endsnippet
 
 context "math()"
@@ -280,9 +446,19 @@ snippet //v "frac_visual" iA
 endsnippet
 
 context "math()"
+pre_expand "fraction(snip)"
 snippet // "Fraction" i
-\\frac{$1}{$2}$0
 endsnippet
+
+#context "math()"
+#snippet // "Fraction" i
+#\\frac{$1}{$2}$0
+#endsnippet
+#
+#context "internel_math()"
+#snippet // "DFraction" i
+#\\dfrac{$1}{$2}$0
+#endsnippet
 
 priority 1000
 context "math()"
@@ -303,13 +479,25 @@ endsnippet
 
 #================== 正则 ==================
 context "math()"
-snippet '(sin|cos|tan)' "sin{}" ir
-\\`!p snip.rv = match.group(1)`{${1}}$0
+snippet '(arc)?(sin|cos|tan)' "sin{}" ir
+\\`!p 
+one = match.group(1)
+two = match.group(2)
+if not one is None:
+	snip.rv = one + two
+else:
+	snip.rv = two
+`{${1}}$0
 endsnippet
 
 context "math()"
-snippet '(sin|cos|tan)x' "sin{x}" ir
+snippet '\s(sin|cos|tan)x' "sin{x}" ir
 \\`!p snip.rv = match.group(1)`{x}$0
+endsnippet
+
+context "math()"
+snippet '\sarc(sin|cos|tan)x' "sin{x}" ir
+\\arc`!p snip.rv = match.group(1)`{x}$0
 endsnippet
 
 context "math()"
@@ -318,13 +506,13 @@ snippet '([Ffg])xi' "f(\xi)" ir
 endsnippet
 
 context "math()"
-snippet '([Ffg])('{0,3})((?!t)([a-su-z]|\d+))' "f(x)" ir
-`!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`
+snippet '([Ffg])('{0,3})((?!t|f|F)([a-zX]|\d+))' "f(x)" ir
+`!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
 endsnippet
 
 context "math()"
 snippet 'f(x|k|i|j)(\+|-)(\d)' "f(x+1)" r
-f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)
+f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
 context "math()"
@@ -338,23 +526,23 @@ snippet [] "[]" iA
 endsnippet
 
 context "math()"
-snippet '(x|y|a|n)(n|k|i|j)' "x_1" r
-`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}
+snippet '(x|y|n)(n|k|i|j)' "x_n" r
+`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}$0
 endsnippet
 
 context "math()"
 snippet 'x(n|k|i|j)(\+|-)(\d)' "x_n+1" r
-x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}
+x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
 endsnippet
 
 context "math()"
 snippet 'phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\phi(x)" ir
-\\phi(`!p snip.rv = match.group(1)`)
+\\phi(`!p snip.rv = match.group(1)`)$0
 endsnippet
 
 context "math()"
 snippet '((?!t|f|F)[A-Za-z])(\d{1,2})' "auto subscript" r
-`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}
+`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}$0
 endsnippet
 
 context "math()"
@@ -364,43 +552,54 @@ endsnippet
 
 #================== Function ==================
 global !p
-def create_matrix_middle(snip,types=0):
-    flag="mat"
-    if(types == 0):
+def create_matrix_middle(snip, types=0):
+    flag = "mat"
+    if (types == 0):
         types = "b"
-    if(types == "v"):
-        flag="vmat"
+    if (types == "v"):
+        flag = "vmat"
     rows = int(match.group(1))
     columns = int(match.group(2))
     old_str = snip.buffer[snip.line]
     snip.buffer[snip.line] = ''
-    old_str = old_str.replace(flag+str(rows)+"*"+str(columns),"")
-#make matrix
+    old_str = old_str.replace(flag+str(rows)+"*"+str(columns), "")
+# make matrix
     body = ""
     anon_befor = "\\begin{"+types+"matrix} "
-    for row in range(1,rows+1):
-        body += ' & '.join(['$' + str(row*columns+col) for col in range(1,columns+1)]) + "\\\\\\\\"
-    anon_end=" \end{"+types+"matrix}"
+    for row in range(1, rows+1):
+        body += ' & '.join(['$' + str(row*columns+col)
+                           for col in range(1, columns+1)]) + "\\\\\\\\"
+    anon_end = " \end{"+types+"matrix}"
     snip.expand_anon(old_str + anon_befor + body + anon_end)
 
-def create_matrix(snip,types=0):
+
+def create_matrix(snip, types=0):
     strLen = 3
-    if(types == "b"):
+    if (types == "b"):
         strLen = 4
-    elif(types == "v"):
+    elif (types == "v"):
         strLen = 4
     else:
         types = "b"
-    lists = snip.buffer[snip.line].strip()[strLen:].split("*",1)
+    lists = snip.buffer[snip.line].strip()[strLen:].split("*", 1)
     snip.buffer[snip.line] = ''
     rows = int(lists[0])
     columns = int(lists[1])
     anon_befor = "\\begin{"+types+"matrix}\n"
     body = ""
-    for row in range(1,rows+1):
-        body += ' & '.join(['$' + str(row*columns+col) for col in range(1,columns+1)]) + "\\\\\\\n"
-    anon_end="\end{"+types+"matrix}"
+    for row in range(1, rows+1):
+        body += ' & '.join(['$' + str(row*columns+col)
+                           for col in range(1, columns+1)]) + "\\\\\\\n"
+    anon_end = "\end{"+types+"matrix}"
     snip.expand_anon(anon_befor + body + anon_end)
+
+
+def fraction(snip):
+    if internel_math():
+        snip.expand_anon("\\dfrac{$1}{$2}$0")
+    else:
+        snip.expand_anon("\\frac{$1}{$2}$0")
+
 endglobal
 
 
@@ -424,8 +623,3 @@ pre_expand "create_matrix_middle(snip,\"v\")"
 snippet '.*\svmat(\d)\*(\d)' "matrix_middle" r
 endsnippet
 
-snippet box "Box"
-<div style=border-style:solid;border-color:red;text-align:center;padding:10px;border-width:2px>
-${1:This is a Box}
-</div>
-endsnippet
