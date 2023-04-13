@@ -23,14 +23,81 @@ def env(name):
     return x != '0' and y != '0'
 
 endglobal
-#============== Latex =======================
-#带有括号的结束符在括号旁边，不带有括号的结束符空格一个
 
+#==================== Latex ====================
+#配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
+
+#-------------------- 简单的规则 --------------------
 context "math()"
-snippet pm "pm"
-\pm $0
+snippet '(cap|cdot|cup|equiv|int|in|iff|mu|neq|phi|pi|pm|sim)' "all" ir
+`!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 
+context "math()"
+snippet '(\.\.\.|al|bec|be|emp|inf|lam|qqu|qu|sig)' "all_entensions" ir
+`!p 
+s = match.group(1)
+if s == "...":
+	s = "dots"
+elif s == "al":
+	s = "alpha"
+elif s == "be":
+	s = "beta"
+elif s == "bec":
+	s = "because"
+elif s == "emp":
+	s = "empty"
+elif s == "int":
+	s = "int"
+elif s == "inf":
+	s = "infty"
+elif s == "lam":
+	s = "lambda"
+elif s == "qqu":
+	s = "qquad"
+elif s == "qu":
+	s = "quad"
+elif s == "sig":
+	s = "sigma"
+elif s == "so":
+	s = "therefore"
+elif s == "sub":
+	s = "subset"
+snip.rv = "\\" + s
+` $0
+endsnippet
+#-------------------- 参数的规则 --------------------
+snippet '(del|lim|ln|log|sq|vec)' "argment_all" ir
+`!p 
+s = match.group(1)
+if s == "del":
+	s = "Delta"
+elif s == "lim":
+	s = "lim"
+elif s == "ln":
+	s = "ln"
+elif s == "log":
+	s = "log"
+elif s == "sq":
+	s = "sqrt"
+elif s == "vec":
+	s = "vec"
+snip.rv = "\\" + s
+`{$1}$0
+endsnippet
+
+snippet '(del|ln|sq)x' "argment_x_all" ir
+`!p 
+s = match.group(1)
+if s == "del":
+	s = "Delta"
+elif s == "sq":
+	s = "sqrt"
+snip.rv = "\\" + s
+`{x}$0
+endsnippet
+
+#-------------------- 多个参数规则 --------------------
 #概率论用的比较频繁
 context "math()" 
 snippet P{} "P{}" i
@@ -38,28 +105,236 @@ P\\{ $1 \\}$0
 endsnippet
 
 context "math()"
-snippet sig "sigma" i
-\sigma $0
+snippet sum "sum" i
+\sum_{${1:j=0}}^{${2:k}}$0
 endsnippet
 
 context "math()"
-snippet mu "mu" i
-\mu $0
+snippet prod "prod" i
+\prod_{${1:j=0}}^{${2:k}}$0
 endsnippet
 
 context "math()"
-snippet sim "sim" i
-\sim $0
+snippet lims "lims" i
+\lim\limits_{${1:x} \to ${2:\infty}}$3
 endsnippet
 
+context "math()"
+snippet ints "\ints" i
+\int_{$1}^\{$2\}$0
+endsnippet
+
+context "math()"
+snippet Vert "\Vert" i
+\Vert ${1} \Vert $0
+endsnippet
+
+context "math()"
+snippet def "def"
+def($1)$0
+endsnippet
+
+#-------------------- 符号的规则 --------------------
+context "math()"
+snippet () "()" iA
+($1)$0
+endsnippet
+
+context "math()"
+snippet [] "[]" iA
+[$1]$0
+endsnippet
+
+context "math()"
+snippet '(-)?->' "\right" irA
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\rightarrow"
+else:
+	snip.rv = "\\longrightarrow"
+` $0
+endsnippet
+
+context "math()"
+snippet '(=)?=>' "\Right" irA
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\Rightarrow"
+else:
+	snip.rv = "\\quad \\Longrightarrow \\quad"
+` $0
+endsnippet
+
+context "math()"
+snippet <- "\left" iA
+\leftarrow $0
+endsnippet
+
+context "math()"
+snippet <= "\Left" iA
+\Leftarrow $0
+endsnippet
+
+#-------------------- 公式的规则 --------------------
+#snippet mk "Math" i
+#$${1}$`!p
+#if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+#    snip.rv = ' '
+#else:
+#    snip.rv = ''
+#`${2}
+#endsnippet
+
+snippet mk "Math" i
+$${1}$$0
+endsnippet
+
+snippet dm "Math"
+\[
+$1
+.\] $0
+endsnippet
+
+snippet mkk "display math"
+$$
+$0
+$$
+endsnippet
+
+snippet mkka "display math aligned"
+$$
+\begin{aligned}
+& ${1} \\\\${0}
+\end{aligned}
+$$
+endsnippet
+
+#-------------------- 套件的规则 --------------------
+context "math()"
+snippet beg "begin{} / end{}" i
+\begin{$1}
+$2
+\end{$1}
+endsnippet
+
+context "math()"
+snippet cases "cases" i
+\begin{cases} & ${1} \\\ & ${0} \end{cases}
+endsnippet
+
+context "env("cases")"
+snippet \\ "jump to next line" 
+\\\ & ${1}
+endsnippet
+
+context "math()"
+snippet ali "ali"
+`!p 
+s = snip.v.text
+idx = s.find("=")
+idx2 = s.find("&")
+if idx! = -1 and idx2 == -1:
+    new_s = s[:idx] + " & " + s[idx:]
+elif idx == -1 and idx2 == -1:
+    new_s = "& " + s
+else:
+    new_s = s
+snip.rv = "\\begin{aligned}\n" + new_s + " \\\\"
+`$0
+\end{aligned}
+endsnippet
+
+context "env("aligned")"
+snippet \\ "jump to next line" 
+\\\
+& $1
+endsnippet
+
+#-------------------- VISUAL --------------------
+context "math()"
+snippet dis "dis" i
+\displaystyle{${VISUAL}$1}$0
+endsnippet
+
+context "math()"
+snippet sout "sout" i
+\sout{${VISUAL}$1}$0
+endsnippet
+
+context "math()"
+snippet //( "()visual" iA
+(${VISUAL})$0
+endsnippet
+
+#\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
+context "math()"
+snippet '//(red|gree|grey|blu|yel)' "textcolor" irA
+\textcolor{`!p 
+text = match.group(1)
+if text == "gree":
+	snip.rv = "green"
+elif text == "blu":
+	snip.rv = "blue"
+elif text == "yel":
+	snip.rv = "yellow"
+else:
+	snip.rv = text
+`}{${VISUAL}}$0
+endsnippet
+
+context "math()"
+snippet //v "frac_visual" iA
+\\frac{${VISUAL}}{${1}}$0
+endsnippet
+
+context "math()"
+pre_expand "fraction(snip)"
+snippet // "Fraction" i
+endsnippet
+
+priority 1000
+context "math()"
+snippet '^.*\)/' "() Fraction" wrA
+`!p
+stripped = match.string[:-1]
+depth = 0
+i = len(stripped) - 1
+while True:
+    if stripped[i] == ')': depth += 1
+    if stripped[i] == '(': depth -= 1
+    if depth == 0: break;
+    i -= 1
+snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
+`{$1}$0
+endsnippet
+
+
+#================== 正则 ==================
+#---------- 概率论 ----------
 context "math()"
 snippet 'C(\d{0,3})-(\d{0,3})' "C_{\d}^{\d}'" r
 `!p snip.rv = "C_{" + match.group(1) + "}^{" + match.group(2) + "}"`
 endsnippet
 
 context "math()"
-snippet dis "dis" i
-\displaystyle{${VISUAL}$1}$0
+snippet 'P([A-C]{1,3})' "'P(A)'" r
+`!p snip.rv= "P(" + match.group(1) + ")"`
+endsnippet
+
+context "math()"
+snippet 'P([A-C])\|([A-C])' "'P(A|B)'" r
+`!p snip.rv= "P(" + match.group(1) + "|" + match.group(2) + ")"`
+endsnippet
+
+#---------- 符号 ----------
+context "math()"
+snippet 'ell(\d)' "ell" r
+\ell_{`!p snip.rv = match.group(1)`}$0
+endsnippet
+
+context "math()"
+snippet '(g|l)eq' "\geq" ir
+\\`!p snip.rv = match.group(1)`eq $0
 endsnippet
 
 context "math()"
@@ -94,410 +369,75 @@ elif one == "r":
 `$0
 endsnippet
 
+#---------- 上下标 ----------
 context "math()"
-snippet sout "sout" i
-\sout{${VISUAL}$1}$0
-endsnippet
-
-context "math()"
-snippet sub "subset"
-\subset $0
+snippet '([A-Za-z|\)|\}])(\d{1,2})sr' "x^{\d}" ir
+`!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
 endsnippet
 
 context "math()"
-snippet cup "cup"
-\cup $0
+snippet '([A-Za-z|\)|\}])sr(\d{1,2})' "---x^{\d}" ir
+`!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
 endsnippet
 
 context "math()"
-snippet cap "cap"
-\cap $0
+snippet '([A-Za-z|\)|\}])sr' "x^{2}" ir
+`!p	snip.rv = match.group(1)`^{2}$0
 endsnippet
 
 context "math()"
-snippet emp "empty" i
-\emptyset $0
+snippet '([A-Za-z|\)|\}])srr' "x^{3}" ir
+`!p	snip.rv = match.group(1)`^{3}$0
 endsnippet
 
 context "math()"
-snippet 'P([A-C]{1,3})' "'P(A)'" r
-`!p snip.rv= "P(" + match.group(1) + ")"`
+snippet '((?!r|t|f|F)[A-Za-z])(\d{1,2})' "x_{\d}" r
+`!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
 endsnippet
 
 context "math()"
-snippet 'P([A-C])\|([A-C])' "'P(A|B)'" r
-`!p snip.rv= "P(" + match.group(1) + "|" + match.group(2) + ")"`
+snippet '\s(x|y|n)(n|k|i|j)' "x_n" ir
+`!p snip.rv = match.group(1) + "_{" + match.group(2) + "}"`$0
 endsnippet
 
 context "math()"
-snippet def "def"
-def($1)$0
-endsnippet
-
-snippet over "overline" i
-\overline{$1}$0
-endsnippet
-
-context "math()"
-snippet equiv "equiv" i
-\equiv $0
-endsnippet
-
-context "math()"
-snippet sum "sum" i
-\sum_{${1:j=0}}^{${2:k}}$0
-endsnippet
-
-context "math()"
-snippet prod "prod" i
-\prod_{${1:j=0}}^{${2:k}}$0
-endsnippet
-
-context "math()"
-snippet 'ell(\d)' "ell" r
-\ell_{`!p snip.rv = match.group(1)`}$0
-endsnippet
-
-context "math()"
-snippet iff "iff"
-\iff $0
-endsnippet
-
-context "math()"
-snippet lam "lam" i
-\lambda $0
-endsnippet
-
-context "math()"
-snippet Vert "\Vert" i
-\Vert ${1} \Vert ${0}
-endsnippet
-
-context "math()"
-snippet vec "\vec" i
-\vec{$1}$0
-endsnippet
-
-context "math()"
-snippet int "\int" i
-\int $0
-endsnippet
-
-context "math()"
-snippet ints "\int_{}^{}" i
-\int_{$1}^\{$2\}$0
-endsnippet
-
-context "math()"
-snippet del "\Delta{}" i
-\Delta{$1}$0
-endsnippet
-
-context "math()"
-snippet delx "\Delta{x}" i
-\Delta{x}$0
-endsnippet
-
-context "math()"
-snippet in "in"
-\in $0
-endsnippet
-
-context "math()"
-snippet pi "\pi" i
-\pi $0
-endsnippet
-
-context "math()"
-snippet ... "/dots" i
-\dots $0
-endsnippet
-
-context "math()"
-snippet '(g|l)eq' "\geq" ir
-\\`!p snip.rv = match.group(1)`eq $0
-endsnippet
-
-context "math()"
-snippet log "\log" i
-\log{$1}$0
-endsnippet
-
-context "math()"
-snippet cdot "\cdot" i
-\cdot $1
-endsnippet
-
-context "math()"
-snippet lnx "\lnx" i
-\ln{x}$0
-endsnippet
-
-context "math()"
-snippet ln "\lnx" i
-\ln{$1}$0
-endsnippet
-
-context "math()"
-snippet be "\beta" i
-\beta $0
-endsnippet
-
-context "math()"
-snippet al "\alpha" i
-\alpha $0
-endsnippet
-
-context "math()"
-snippet neq "\neq" i
-\neq $0
-endsnippet
-
-context "math()"
-snippet inf "\infty" i
-\infty $0
-endsnippet
-
-context "math()"
-snippet '(-)?->' "\right" irA
-`!p 
-if match.group(1) is None:
-	snip.rv = "\\rightarrow"
-else:
-	snip.rv = "\\longrightarrow"
-` $0
-endsnippet
-
-context "math()"
-snippet '(=)?=>' "\Right" irA
-`!p 
-if match.group(1) is None:
-	snip.rv = "\\Rightarrow"
-else:
-	snip.rv = "\\quad \\Longrightarrow \\quad"
-` $0
-endsnippet
-
-context "math()"
-snippet <- "\left" iA
-\leftarrow $0
-endsnippet
-
-context "math()"
-snippet <= "\Left" iA
-\Leftarrow $0
-endsnippet
-
-context "math()"
-snippet lim "lim" i
-\lim{$1}$2
-endsnippet
-
-context "math()"
-snippet lims "lims" i
-\lim\limits_{${1:x} \to ${2:\infty}}$3
-endsnippet
-
-context "math()"
-snippet cases "cases" i
-\begin{cases} & ${1} \\\ & ${0} \end{cases}
-endsnippet
-
-context "env("cases")"
-#snippet \\ "jump to next line" "re.match('\s{0,5}&.*', snip.buffer[snip.line]) and re.match('\s{0,5}&.*', snip.buffer[snip.line-1])" e
-snippet \\ "jump to next line" 
-\\\ & ${1}
-endsnippet
-
-#---------------------------------------
-snippet mkka "display math aligned"
-$$
-\begin{aligned}
-& ${1} \\\\${0}
-\end{aligned}
-$$
-endsnippet
-
-context "math()"
-snippet ali "ali"
-`!p 
-s = snip.v.text
-idx = s.find("=")
-idx2 = s.find("&")
-if idx!=-1 and idx2 == -1:
-    new_s = s[:idx] + " & " + s[idx:]
-elif idx==-1 and idx2 == -1:
-    new_s = "& " + s
-else:
-    new_s = s
-snip.rv = "\\begin{aligned}\n" + new_s + " \\\\"
-`$0
-\end{aligned}
-endsnippet
-
-context "env("aligned")"
-snippet \\ "jump to next line" 
-\\\
-& $1
-endsnippet
-
-
-snippet mkk "display math"
-$$
-$0
-$$
-endsnippet
-
-context "math()"
-snippet beg "begin{} / end{}" i
-\begin{$1}
-$2
-\end{$1}
-endsnippet
-
-context "math()"
-snippet qu "quad" i
-\\quad ${0}
-endsnippet
-
-context "math()"
-snippet qqu "qquad" i
-\\qquad ${0}
-endsnippet
-
-context "math()"
-snippet bec "because" i
-\because ${0}
-endsnippet
-
-context "math()"
-snippet so "therefore" i
-\therefore ${0}
-endsnippet
-
-#snippet mk "Math" i
-#$${1}$`!p
-#if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
-#    snip.rv = ' '
-#else:
-#    snip.rv = ''
-#`${2}
-#endsnippet
-
-snippet mk "Math" i
-$${1}$$0
-endsnippet
-
-snippet dm "Math"
-\[
-$1
-.\] $0
-endsnippet
-
-context "math()"
-snippet '([A-Za-z|\)|\}])(\d{0,2})sr' "x^\d\d" ir
-`!p
-if match.group(2) is None:
-	snip.rv = match.group(1) + "^{"
-else:
-	snip.rv = match.group(1) + "^{"+ match.group(2)
-`${1:2}}$0
-endsnippet
-
-context "math()"
-snippet sq "\sqrt" i
-\\sqrt{$1}$0
-endsnippet
-
-context "math()"
-snippet sqx "\sqrt{x}" i
-\\sqrt{x}$0
-endsnippet
-
-context "math()"
-snippet phi "\phi" i
-\\phi $0
-endsnippet
-
-context "math()"
-snippet //( "()visual" iA
-(${VISUAL})$0
-endsnippet
-
-#\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
-context "math()"
-snippet '//(red|gree|grey|blu|yel)' "textcolor" irA
-\textcolor{`!p 
-text = match.group(1)
-if text == "gree":
-	snip.rv = "green"
-elif text == "blu":
-	snip.rv = "blue"
-elif text == "yel":
-	snip.rv = "yellow"
-else:
-	snip.rv = text
-`}{${VISUAL}}$0
-endsnippet
-
-context "math()"
-snippet //v "frac_visual" iA
-\\frac{${VISUAL}}{${1}}$0
-endsnippet
-
-context "math()"
-pre_expand "fraction(snip)"
-snippet // "Fraction" i
+snippet 'x(n|k|i|j|\d)(\+|-)(n|k|i|j|\d)' "x_{n+\d}" r
+x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
 endsnippet
 
 #context "math()"
-#snippet // "Fraction" i
-#\\frac{$1}{$2}$0
+#snippet 'x(\d)(\+|-)(n|k|i|j)' "x_{\d+n}" r
+#x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
 #endsnippet
-#
-#context "internel_math()"
-#snippet // "DFraction" i
-#\\dfrac{$1}{$2}$0
-#endsnippet
-
-priority 1000
+#---------- 三角函数 ----------
 context "math()"
-snippet '^.*\)/' "() Fraction" wrA
-`!p
-stripped = match.string[:-1]
-depth = 0
-i = len(stripped) - 1
-while True:
-    if stripped[i] == ')': depth += 1
-    if stripped[i] == '(': depth -= 1
-    if depth == 0: break;
-    i -= 1
-snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
-`{$1}$0
-endsnippet
-
-
-#================== 正则 ==================
-context "math()"
-snippet '(arc)?(sin|cos|tan)' "sin{}" ir
+snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)' "sin{}" ir
 \\`!p 
 one = match.group(1)
 two = match.group(2)
 if not one is None:
-	snip.rv = one + two
+	snip.rv = "arc" + two
 else:
 	snip.rv = two
 `{${1}}$0
 endsnippet
 
 context "math()"
-snippet '\s(sin|cos|tan)x' "sin{x}" ir
-\\`!p snip.rv = match.group(1)`{x}$0
+snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)x' "sin{}" ir
+\\`!p 
+one = match.group(1)
+two = match.group(2)
+if not one is None:
+	snip.rv = "arc" + two
+else:
+	snip.rv = two
+`{x}$0
 endsnippet
 
+#---------- 原函数 ----------
 context "math()"
-snippet '\sarc(sin|cos|tan)x' "sin{x}" ir
-\\arc`!p snip.rv = match.group(1)`{x}$0
+snippet 'fgx' "f(g(x))" ir
+f(g(x))$0
 endsnippet
 
 context "math()"
@@ -506,7 +446,7 @@ snippet '([Ffg])xi' "f(\xi)" ir
 endsnippet
 
 context "math()"
-snippet '([Ffg])('{0,3})((?!t|f|F)([a-zX]|\d+))' "f(x)" ir
+snippet '([Ffg])('{0,3})((?!r|t|f|F)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
 endsnippet
 
@@ -516,33 +456,8 @@ f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
 context "math()"
-snippet () "()" iA
-($1)$0
-endsnippet
-
-context "math()"
-snippet [] "[]" iA
-[$1]$0
-endsnippet
-
-context "math()"
-snippet '(x|y|n)(n|k|i|j)' "x_n" r
-`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}$0
-endsnippet
-
-context "math()"
-snippet 'x(n|k|i|j)(\+|-)(\d)' "x_n+1" r
-x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
-endsnippet
-
-context "math()"
 snippet 'phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\phi(x)" ir
 \\phi(`!p snip.rv = match.group(1)`)$0
-endsnippet
-
-context "math()"
-snippet '((?!t|f|F)[A-Za-z])(\d{1,2})' "auto subscript" r
-`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`}$0
 endsnippet
 
 context "math()"
@@ -602,7 +517,6 @@ def fraction(snip):
 
 endglobal
 
-
 context "math()"
 pre_expand "create_matrix(snip)"
 snippet '^mat(\d+\*\d+)' "matrix" r
@@ -622,4 +536,3 @@ context "math()"
 pre_expand "create_matrix_middle(snip,\"v\")"
 snippet '.*\svmat(\d)\*(\d)' "matrix_middle" r
 endsnippet
-
