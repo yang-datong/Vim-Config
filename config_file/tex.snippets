@@ -17,6 +17,9 @@ def internel_math():
     else:
         return False
 
+def display_math():
+		return math() and (not internel_math())
+
 
 def env(name):
     [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
@@ -34,7 +37,7 @@ snippet '(cap|cdot|cup|equiv|int|in|iff|mu|neq|phi|pi|pm|sim)' "all" ir
 endsnippet
 
 context "math()"
-snippet '(\.\.\.|al|bec|be|emp|inf|lam|qqu|qu|sig)' "all_entensions" ir
+snippet '(\.\.\.|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub)' "all_entensions" ir
 `!p 
 s = match.group(1)
 if s == "...":
@@ -287,9 +290,20 @@ snippet //v "frac_visual" iA
 \\frac{${VISUAL}}{${1}}$0
 endsnippet
 
-context "math()"
-pre_expand "fraction(snip)"
+# TODO 有点bug <23-04-14 15:59:43, YangJing}> #
+#context "math()"
+#pre_expand "fraction(snip)"
+#snippet // "Fraction" i
+#endsnippet
+
+context "internel_math()"
 snippet // "Fraction" i
+\dfrac{$1}{$2}$0
+endsnippet
+
+context "display_math()"
+snippet // "Fraction" i
+\frac{$1}{$2}$0
 endsnippet
 
 priority 1000
@@ -391,7 +405,7 @@ snippet '([A-Za-z|\)|\}])srr' "x^{3}" ir
 endsnippet
 
 context "math()"
-snippet '((?!r|t|f|F)[A-Za-z])(\d{1,2})' "x_{\d}" r
+snippet '\s((?!r|t|f|F)[A-Za-z])(\d{1,2})' "x_{\d}" r
 `!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
 endsnippet
 
@@ -411,26 +425,34 @@ endsnippet
 #endsnippet
 #---------- 三角函数 ----------
 context "math()"
-snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)' "sin{}" ir
+snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(2|3)?' "sin{}" ir
 \\`!p 
 one = match.group(1)
 two = match.group(2)
+thr = match.group(3)
 if not one is None:
-	snip.rv = "arc" + two
+	s = "arc" + two
 else:
-	snip.rv = two
+	s = two
+if not thr is None:
+	s += "^{"+ thr +"}"
+snip.rv = s
 `{${1}}$0
 endsnippet
 
 context "math()"
-snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)x' "sin{}" ir
+snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(2|3)?x' "sin{}" ir
 \\`!p 
 one = match.group(1)
 two = match.group(2)
+thr = match.group(3)
 if not one is None:
-	snip.rv = "arc" + two
+	s = "arc" + two
 else:
-	snip.rv = two
+	s = two
+if not thr is None:
+	s += "^{"+ thr +"}"
+snip.rv = s
 `{x}$0
 endsnippet
 
@@ -508,14 +530,14 @@ def create_matrix(snip, types=0):
     anon_end = "\end{"+types+"matrix}"
     snip.expand_anon(anon_befor + body + anon_end)
 
-def fraction(snip):
-    old_str = snip.buffer[snip.line]
-    internel = internel_math()
-    snip.buffer[snip.line] = ''
-    if internel:
-        snip.expand_anon(old_str.replace("//","\\dfrac{$1}{$2}$0"))
-    else:
-        snip.expand_anon(old_str.replace("//","\\frac{$1}{$2}$0"))
+#def fraction(snip):
+#    old_str = snip.buffer[snip.line]
+#    internel = internel_math()
+#    snip.buffer[snip.line] = ''
+#    if internel:
+#        snip.expand_anon(old_str.replace("//","\\dfrac{$1}{$2}$0"))
+#    else:
+#        snip.expand_anon(old_str.replace("//","\\frac{$1}{$2}$0"))
 
 endglobal
 
