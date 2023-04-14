@@ -233,7 +233,7 @@ snippet ali "ali"
 s = snip.v.text
 idx = s.find("=")
 idx2 = s.find("&")
-if idx! = -1 and idx2 == -1:
+if idx != -1 and idx2 == -1:
     new_s = s[:idx] + " & " + s[idx:]
 elif idx == -1 and idx2 == -1:
     new_s = "& " + s
@@ -508,12 +508,14 @@ def create_matrix(snip, types=0):
     anon_end = "\end{"+types+"matrix}"
     snip.expand_anon(anon_befor + body + anon_end)
 
-
 def fraction(snip):
-    if internel_math():
-        snip.expand_anon("\\dfrac{$1}{$2}$0")
+    old_str = snip.buffer[snip.line]
+    internel = internel_math()
+    snip.buffer[snip.line] = ''
+    if internel:
+        snip.expand_anon(old_str.replace("//","\\dfrac{$1}{$2}$0"))
     else:
-        snip.expand_anon("\\frac{$1}{$2}$0")
+        snip.expand_anon(old_str.replace("//","\\frac{$1}{$2}$0"))
 
 endglobal
 
