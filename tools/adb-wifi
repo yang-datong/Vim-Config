@@ -1,0 +1,9 @@
+#!/bin/bash
+
+IP=$(adb shell ifconfig wlan0 2>&1 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')
+
+if [ -s "$IP" ];then
+	echo -e "\033[31mUnable to find the device\033[0m";exit
+fi
+
+adb tcpip 5555 && adb connect $IP

@@ -385,12 +385,12 @@ endsnippet
 
 #---------- 上下标 ----------
 context "math()"
-snippet '([A-Za-z|\)|\}])(\d{1,2})sr' "x^{\d}" ir
+snippet '([A-Za-z|\)|\}])(\d{1,2}|x)sr' "x^{\d}" ir
 `!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
 endsnippet
 
 context "math()"
-snippet '([A-Za-z|\)|\}])sr(\d{1,2})' "---x^{\d}" ir
+snippet '([A-Za-z|\)|\}])sr(\d{1,2}|x)' "---x^{\d}" ir
 `!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
 endsnippet
 

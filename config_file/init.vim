@@ -47,8 +47,8 @@ set numberwidth=3     " minimun width to use for the number column.
 " Syntax {
 syntax on
 syntax enable
-set foldmethod=syntax
-set foldlevel=2
+"set foldmethod=syntax
+"set foldlevel=2
 " }
 " Cursor {
 set guicursor=a:ver25-blinkon10

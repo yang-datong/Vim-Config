@@ -96,6 +96,10 @@ snippet link "Link to something" i
 [${2:text}](${1:${VISUAL:url}})$0
 endsnippet
 
+snippet svg "svg"
+<img src="$1?sanitize=true" width=70% />
+endsnippet
+
 snippet img "Images" i
 <img src="$1" width=70% />
 $0
@@ -141,7 +145,7 @@ snippet mermaid "mermaid"
 graph LR
 %%--------------------------------------------------------------------
 0("${1:Root}")
-1("${1:Branch}")
+1("${2:Branch}")
 0 --> 1
 %%--------------------------------------------------------------------
 \`\`\`
@@ -176,7 +180,6 @@ snippet details "details"
 <pre><code>
 
 ${VISUAL}$2
-
 </code></pre>
 </details>
 $0
