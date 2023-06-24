@@ -6,10 +6,10 @@ if status is-interactive
     set -x PATH $PATH /Users/user/Library/Android/sdk/ndk/21.1.6352462
 
     set -x CLOUD ~/Library/Mobile\ Documents/com~apple~CloudDocs
-
-    set com 'com.ss.android.ugc.aweme'
-
     set -x JAVA_HOME /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+
+    #set com 'com.ss.android.ugc.aweme'
+
     #brew install homebrew/cask-versions/adoptopenjdk8
 
     alias gdb='/usr/local/Cellar/gdb/12.1/bin/gdb'

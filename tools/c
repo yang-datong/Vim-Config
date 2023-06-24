@@ -94,7 +94,7 @@ check_build_type(){
   fi
 
   if [ $c_total == 0 -a $cpp_total == 0 ];then
-    echo "no found c\\cpp file" ; exit;
+    echo "No target/complist(C\\Cpp) passed" ; exit;
   elif [ $c_total -gt 0 -a $cpp_total == 0 ];then
     c_kind
   elif [ $c_total == 0 -a $cpp_total -gt 0 ];then

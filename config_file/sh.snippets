@@ -119,7 +119,7 @@ endsnippet
 snippet check_activity "check_activity"
 check_activity(){
 	activity="\$1"
-	local ret=$(adb shell dumpsys activity top | grep ACTIVITY | tail -1 | awk '{print $2}')
+	local ret=$(adb shell dumpsys activity top | grep ACTIVITY | tail -1 | awk '{print \$2}')
 	if [ "$ret" == "$activity" ];then
 		echo 0
 	else

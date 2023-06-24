@@ -30,6 +30,12 @@ endglobal
 #==================== Latex ====================
 #配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
 
+snippet #! "#!"
+%!TeX program = xelatex
+\usepackage[UTF8]{ctex}
+endsnippet
+
+
 #-------------------- 简单的规则 --------------------
 context "math()"
 snippet '(cap|cdot|cup|equiv|int|in|iff|mu|neq|phi|pi|pm|sim)' "all" ir

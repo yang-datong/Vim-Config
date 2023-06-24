@@ -270,7 +270,7 @@ let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
 Plug 'lervag/vimtex'
-let g:vimtex_quickfix_mode=0
+let g:vimtex_quickfix_mode=1
 let g:tex_flavor = 'latex'
 let g:vimtex_view_general_viewer = 'skim'
 let g:vimtex_view_method = 'skim'
@@ -284,10 +284,13 @@ hi Conceal ctermbg=none
 "======================================================================
 autocmd FileType math set filetype=markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+"Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 autocmd FileType math set filetype=tex
 let g:mkdp_theme ='dark'
 let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
+"let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
+
 "======================================================================
 "Plug 'scrooloose/nerdtree'
 "" NERDTree {

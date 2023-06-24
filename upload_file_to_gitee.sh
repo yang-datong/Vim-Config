@@ -6,7 +6,7 @@ ScriptVersion="1.0"
 unset file
 unset directory
 
-main(){
+upload(){
 	if [ $file ];then
 		local owner="yang-datong"
 		local repo="pwn_16"
@@ -22,6 +22,15 @@ main(){
 	else
 					echo -e "\033[31mTry help\033[0m"
 	fi
+}
+
+
+download(){
+}
+
+main(){
+	upload
+	download
 }
 
 usage (){
