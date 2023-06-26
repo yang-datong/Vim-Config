@@ -1,0 +1,75 @@
+#!/bin/bash
+ScriptVersion="1.0"
+
+ssh_history="$HOME/.ssh_history"
+
+unset ip
+unset user
+unset passwd
+
+main(){
+	if [[ ! $ip || ! $user || ! $passwd ]];then
+    # 没有输入连接信息
+
+      # 尝试本地获取历史信息
+    if [ ! -f $ssh_history ];then
+      echo -e "\033[31m Don't found user configure \033[0m"
+      exit
+    else
+      ip=$(cat "$ssh_history" | awk '{print $1}')
+      user=$(cat "$ssh_history" | awk '{print $2}')
+      passwd=$(cat "$ssh_history" | awk '{print $3}')
+    fi
+    #echo -e "\033[31m Read file \033[0m"
+	fi
+  echo "$ip $user $passwd" > $ssh_history
+  #echo "$ip $user $passwd"
+  echo "IyEvdXNyL2Jpbi9leHBlY3QKc2V0IHRpbWVvdXQgMzAKCnNldCBpcCAgW2xpbmRleCAkYXJndiAwXQpzZXQgbmFtZSAgW2xpbmRleCAkYXJndiAxXQpzZXQgcHN3ZCAgW2xpbmRleCAkYXJndiAyXQoKc3Bhd24gc3NoICRuYW1lQCRpcApleHBlY3QgewogICAgICAgICJBcmUgeW91IHN1cmUgeW91IHdhbnQgdG8gY29udGludWUgY29ubmVjdGluZyoiCiAgICAgICAge3NlbmQgInllc1xuIjtleHBfY29udGludWV9CiAgICAgICAgInBhc3N3b3JkOiIKICAgICAgICB7c2VuZCAiJHBzd2RcbiJ9Cn0KaW50ZXJhY3QK" | base64 -d > /tmp/load_ssh.expect && expect /tmp/load_ssh.expect $ip $user $passwd
+}
+
+usage (){
+  echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+
+  Options:
+  -h, --help                  Display this message
+  -d, --debug                 Debug model run
+  -v, --version               Display script version
+  -f, --file FILE             Target file 
+  -D, --directory DIRECTORY   Target directory
+  -s, --show user             Show SSH user list
+  -i, --ip address            SSH IP address 
+  -u, --user user             SSH User 
+  -p, --passwd password       SSH Password"
+
+}
+
+while getopts ":hdvf:D:si:u:p:-:" opt; do
+  case "${opt}" in
+    h) usage && exit 0;;
+    d) set -x ;;
+    v) echo "$0 -- Version $ScriptVersion"; exit ;;
+    f) file=${OPTARG};;
+    D) directory=${OPTARG};;
+    s) cat $ssh_history && exit;;
+    i) ip=${OPTARG};;
+    u) user=${OPTARG};;
+    p) passwd=${OPTARG};;
+    -) case "${OPTARG}" in
+         help) usage && exit 0;;
+         debug)      set -x ;;
+         version)    echo "$0 -- Version $ScriptVersion"; exit ;;
+         file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         ip)  			 ip=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         user)  		 user=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         passwd)  	 passwd=${!OPTIND}; OPTIND=$((OPTIND+1));;
+         *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+       esac;;
+    :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+    *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
+main "$@"
+

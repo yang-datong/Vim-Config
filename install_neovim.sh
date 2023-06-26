@@ -22,7 +22,7 @@ check_cmd(){
 main(){
 	check_cmd wget wget
 	check_cmd node nodejs
-	if [ ! -x "$(command -v "pip")" ];then;
+	if [ ! -x "$(command -v "pip")" ];then
 		wget https://bootstrap.pypa.io/get-pip.py
 		python get-pip.py
 	fi

@@ -28,6 +28,8 @@ replace_symbols_link(){
 replace_symbols_link "$HOME/.config/nvim/filetype.vim" "$(pwd)/filetype.vim"
 replace_symbols_link "$HOME/compile_flags.txt" "$(pwd)/compile_flags.txt"
 replace_symbols_link "$HOME/.clang-format" "$(pwd)/xx.clang-format"
+replace_symbols_link "$HOME/.bashrc" "$(pwd)/../xx.bashrc"
+replace_symbols_link "$HOME/.zshrc" "$(pwd)/../xx.zshrc"
 
 if [ "$(uname)" == "Darwin" ];then
 	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
