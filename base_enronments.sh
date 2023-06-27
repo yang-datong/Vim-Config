@@ -1,8 +1,10 @@
 #!/bin/bash
+set -e
 
 #Check OS System
 if [ "$(uname)" == "Linux" ];then
-	sudo apt install -y ncurses file sudo passwd
+	#sudo apt install -y ncurses file sudo passwd
+	sudo apt install -y file sudo passwd
 fi
 
 ./install_aria2c.sh

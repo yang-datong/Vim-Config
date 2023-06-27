@@ -5,7 +5,7 @@
 check_os(){
 	case "$(uname)" in
 	"Darwin") cc=brew;;
-	"Linux") cc=apt;;
+	"Linux") cc="apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
@@ -50,6 +50,9 @@ main(){
 	if [ "$theme" == "y" ];then
 		set_markdown_theme
 	fi;
+	if [ -f get-pip.py ];then
+		rm get-pip.py
+	fi
 
 	#cd ~/.config/nvim/plugins/markdown-preview.nvim
 	#yarn install && yarn upgrade

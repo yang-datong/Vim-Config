@@ -4,14 +4,14 @@
 check_os(){
 	case "$(uname)" in
 	"Darwin") cc=brew;;
-	"Linux") cc=apt;;
+	"Linux") cc="apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
 
 function write(){
 	check_os
-	#$cc install zsh
+	$cc install zsh
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 	local ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting

@@ -10,7 +10,7 @@ function write(){
 check_os(){
 	case "$(uname)" in
 	"Darwin") cc=brew;;
-	"Linux") cc=apt;;
+	"Linux") cc="apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }

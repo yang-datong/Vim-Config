@@ -1,9 +1,3 @@
-#=============uesr config================
-function bck
-    set files $(basename $argv[1])
-    cp -r $files $files.bck
-end
-
 #========================================
 function fish_prompt
 
