@@ -11,17 +11,18 @@ check_os(){
 
 function write(){
 	check_os
-	$cc install fish
-	curl -L https://get.oh-my.fish | fish
-	omf install aight
-	omf install autojump
+	#$cc install zsh
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+	git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+	$cc install autojump
 	pip install trash-cli #install rm foo -> mv foot foot-bck
 	$cc install bat
 	$cc install colordiff
 
-	cp ./config_file/config.fish ~/.config/fish/config.fish
+	cp ./xx.zshrc ~/.zshrc
 }
 
-if [ ! -x "$(command -v fish)" ];then
+if [ ! -x "$(command -v zsh)" ];then
 	write
 fi

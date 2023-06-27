@@ -3,6 +3,11 @@ export PATH=$PATH:$HOME/Library/Python/3.9/bin
 export PATH=$PATH:/usr/local/opt/binutils/bin
 export PATH=$PATH:/usr/local/texlive/2022/bin/universal-darwin/
 export PATH=$PATH:$HOME/Library/Android/sdk/ndk/21.1.6352462
+export PATH=$PATH:$HOME/tools/nvim-linux64/bin
+export PATH=$PATH:$HOME/tools/clangd_16.0.2/bin
+export PATH=$PATH:$HOME/tools/cmake-3.26.4/bin
+export PATH=$PATH:$HOME/tools/node-v18.16.1-linux-x64/bin
+export PATH=$PATH:$HOME/.local/bin/
 
 export ZSH=$HOME/.oh-my-zsh
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
@@ -12,14 +17,7 @@ plugins=(git zsh-autosuggestions zsh-syntax-highlighting autojump )  #插件
 
 #[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh
 
-#ZSH_THEME="powerlevel10k/powerlevel10k"
-#ZSH_THEME="terminalparty"
-#ZSH_THEME="kennethreitz"  #Mac
-#ZSH_THEME="arrow"  #箭头
-#ZSH_THEME="awesomepanda"  #也可以
-#ZSH_THEME="robbyrussell"  #最好看的主题
-#ZSH_THEME="candy"   #带时间
-#ZSH_THEME="steeef"   #命令在下面
+ZSH_THEME="example"
 
 alias mkdir='mkdir -p'
 alias gdb='/usr/local/Cellar/gdb/12.1/bin/gdb'
@@ -32,7 +30,7 @@ alias python3='python3.9'
 alias cat='bat -p'
 alias reboot='sudo reboot'
 alias shutdown='sudo shutdown'
-alias vim='nvim'
+#alias vim='nvim'
 alias rm='trash'
 alias rm-rf='rm -rf'
 alias du='du -sh'

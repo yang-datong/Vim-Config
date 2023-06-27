@@ -11,6 +11,7 @@
 "                     1. 基本配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
+let g:python3_host_prog='/usr/local/bin/python3.9'
 set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
 set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
 set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
@@ -254,7 +255,7 @@ autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --chan
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 let g:tagbar_position = 'vertical'
 "Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
-map <C-1> :TagbarToggle <CR>
+noremap <F2> :TagbarToggle <CR>
 "======================================================================
 " Color thems
 Plug 'junegunn/seoul256.vim'
@@ -292,25 +293,26 @@ let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chro
 "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
 
 "======================================================================
-"Plug 'scrooloose/nerdtree'
-"" NERDTree {
-"set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-"let g:NERDTreeChDirMode=2
-"let NERDTreeShowHidden=1
-"let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
-""let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
-"let g:NERDTreeShowBookmarks=1
-"let g:nerdtree_tabs_focus_on_files=1
-"let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
-"let g:NERDTreeWinSize=30
-"
-"" NERDTree KeyMapping
-"" Locate current file in file systems
-"nnoremap <silent> <Leader>l :NERDTreeFind<CR>
-"noremap <F2> :NERDTreeToggle<CR>
-"" Close NERDTree if no other window open
-"autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-"" }
+Plug 'scrooloose/nerdtree'
+" NERDTree {
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
+let g:NERDTreeChDirMode=2
+let NERDTreeShowHidden=1
+let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
+"let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
+let g:NERDTreeShowBookmarks=1
+let g:nerdtree_tabs_focus_on_files=1
+let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
+let g:NERDTreeWinSize=30
+
+" NERDTree KeyMapping
+" Locate current file in file systems
+nnoremap <silent> <Leader>l :NERDTreeFind<CR>
+noremap <C-1> :NERDTreeToggle<CR>
+noremap <F1> :NERDTreeToggle<CR>
+" Close NERDTree if no other window open
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" }
 "======================================================================
 "Plug 'suan/vim-commentary'
 " Vim-commentray {
