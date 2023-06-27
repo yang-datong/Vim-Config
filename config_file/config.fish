@@ -8,13 +8,14 @@ set -x PATH $PATH $HOME/Library/Android/sdk/ndk/21.1.6352462
 
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
 set -x JAVA_HOME /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+#set -x HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 
 #set com 'com.ss.android.ugc.aweme'
 
 #brew install homebrew/cask-versions/adoptopenjdk8
 
 alias mkdir='mkdir -p'
-alias gdb='/usr/local/Cellar/gdb/12.1/bin/gdb'
+#alias gdb='/usr/local/Cellar/gdb/12.1/bin/gdb'
 alias phone='echo 15886670991'
 alias ip='curl -s -m 5 https://ipleak.net/json/'
 alias cl='clear'

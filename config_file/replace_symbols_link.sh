@@ -1,13 +1,5 @@
 #!/bin/bash
 
-#Check OS System
-check_os(){
-	case "$(uname)" in
-	"Darwin") echo "";;
-	"Linux") ;;
-	*)echo "Windows has not been tested for the time being";exit 1
-	esac
-}
 replace_symbols_link(){
 	file="$1"
 	really_file="$2"

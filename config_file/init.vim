@@ -382,8 +382,13 @@ func! Run()
     exec '!gcc % -o %< -g -w  '
     exec '!./%<'
   elseif &filetype == 'cpp'
-    exec '!g++ % -o %< -g -w'
-    exec '!./%<'
+    let firstLine = getline(1)
+    if stridx(firstLine, '//g++') == 0
+      let remainingChars = strpart(firstLine, strlen('//g++'))
+      echo remainingChars
+      exec '!g++ % -o %< -g -w ' remainingChars
+      exec '!./%<'
+    endif
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'
   elseif &filetype == 'python'

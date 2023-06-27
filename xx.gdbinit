@@ -1,7 +1,6 @@
 source ~/.gdbinit-gef.py
-#source ~/pwndbg/gdbinit.py
-source ~/Pwngdb/pwngdb.py
-source ~/Pwngdb/angelheap/gdbinit.py
+source ~/.pwngdb/pwngdb.py
+source ~/.pwngdb/angelheap/gdbinit.py
 
 define hook-run
 python
