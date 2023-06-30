@@ -1,10 +1,12 @@
 #!/bin/bash
+set -e
 
+cc="brew"
 #Check OS System
 check_os(){
 	case "$(uname)" in
-	"Darwin") cc=brew;;
-	"Linux") cc="apt -y";;
+	"Darwin") cc="brew";;
+	"Linux") cc="sudo apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
@@ -15,12 +17,12 @@ function write(){
 	curl -L https://get.oh-my.fish | fish
 	omf install aight
 	omf install autojump
-	pip3 install trash-cli #install rm foo -> mv foot foot-bck
+	$cc install trash-cli #install rm foo -> mv foot foot-bck
 	$cc install bat
 	$cc install colordiff
 
-	cp ./config_file/config.fish ~/.config/fish/config.fish
-	cp ./config_file/fish_prompt.fish ~/.config/fish/functions/fish_prompt.fish
+	cp ./config_file/config.fish $HOME/.config/fish/config.fish
+	cp ./config_file/fish_prompt.fish $HOME/.config/fish/functions/fish_prompt.fish
 
 }
 

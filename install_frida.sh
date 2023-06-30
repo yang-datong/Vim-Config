@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 pip install frida=15.2.2 frida-tools #安装Frida CLI 工具
 

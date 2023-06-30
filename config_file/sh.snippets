@@ -2,10 +2,7 @@ snippet #! "shebang" b
 #!/bin/bash
 endsnippet
 
-
-
-#########################Shell######################
-
+######################### Shell ######################
 snippet /* "/*"
 :<<!
 $0
@@ -191,7 +188,7 @@ snippet root
 if [ \$(id -u) -ne 0 ]; then exec sudo \$0; fi
 endsnippet
 
-#########################Shell######################
+######################### Shell ######################
 snippet date "date"
 local date=$(date +"%Y%m%d%H%M%S")
 endsnippet
@@ -216,7 +213,7 @@ snippet echo_befor "echo_befor" i
 echo -e "\033[33m\$(sed -n \$(expr \$LINENO - 1)p \$0).......\033[0m"
 endsnippet
 
-#########################Four tools######################
+######################### Four tools ######################
 snippet awk "awk ..." i
 awk -F "${1}" '{print \$${2}}'
 endsnippet
@@ -235,13 +232,30 @@ snippet sedd "sed d"
 sed -i "" "/${1:flag}/d" ${2:file}
 endsnippet
 
-#########################util######################
+######################### Utility ######################
+snippet check_proxy "check_proxy"
+check_proxy(){
+	local err=$(echo $https_proxy)
+	if [ -z "$err" ];then
+		echo 0
+	else
+		echo 1
+	fi
+}
+
+if [ $(check_proxy) == 1 ];then
+	echo ${1:"使用了代理"}
+fi
+endsnippet
+	
+
 snippet check_os "check_os"
+cc="brew"
 #Check OS System
 check_os(){
 	case "$(uname)" in
-	"Darwin") $1;;
-	"Linux") $2;;
+	"Darwin") cc="brew";;
+	"Linux") cc="sudo apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
@@ -268,7 +282,7 @@ cmd(){
 cmd "${1:id}"
 endsnippet
 
-#########################ffmpeg######################
+######################### FFmpeg ######################
 snippet ffprobe "ffprobe"
 ffprobe -loglevel quiet -select_streams v -show_streams $1
 endsnippet

@@ -1,11 +1,12 @@
 #!/bin/bash
+set -e
 
-
+cc="brew"
 #Check OS System
 check_os(){
 	case "$(uname)" in
-	"Darwin") cc=brew;;
-	"Linux") cc="apt -y";;
+	"Darwin") cc="brew";;
+	"Linux") cc="sudo apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
@@ -22,9 +23,10 @@ check_cmd(){
 main(){
 	check_cmd wget wget
 	check_cmd node nodejs
-	if [ ! -x "$(command -v "pip")" ];then
-		wget https://bootstrap.pypa.io/get-pip.py
-		python get-pip.py
+	if [[ ! -x "$(command -v "pip")" &&  ! -x "$(command -v "pip3")" ]];then
+		#wget https://bootstrap.pypa.io/get-pip.py
+		#python3 get-pip.py  #下载最新版pip，如果用python2执行则下载pip2，反之
+		$cc install python3-pip
 	fi
 	#brew install neovim yarn && pip3 install pynvim
 	err=$(pip3 show pynvim)
@@ -32,14 +34,14 @@ main(){
 	check_cmd nvim neovim
 
 	#into main work
+	if [ ! -d $HOME/.config/nvim ];then
+		mkdir $HOME/.config/nvim
+	fi
 	cd $HOME/.config/nvim
 	cp $HOME/sh_foot/config_file/init.vim  ./init.vim
 
-	err=$(echo $https_proxy)
-	#if [ -z "$err" ];then
-	#	echo "export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890"
-	#	read -p "?" ok
-	#fi
+	$cc install clangd clang-format
+
 	#download plugins
 	nvim -c "PlugInstall"
 
@@ -50,6 +52,7 @@ main(){
 	if [ "$theme" == "y" ];then
 		set_markdown_theme
 	fi;
+
 	if [ -f get-pip.py ];then
 		rm get-pip.py
 	fi

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#不太好用
+
 #sudo apt install neovim python3-neovim clang nodejs
 #curl -sLf https://spacevim.org/cn/install.sh | bash
 #pip3 install --user flake8 isort yapf

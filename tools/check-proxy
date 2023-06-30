@@ -1,0 +1,17 @@
+#!/bin/bash
+check_proxy(){
+	local err=$(echo $https_proxy)
+	if [ -z "$err" ];then
+		echo 0
+	else
+		echo 1
+	fi
+}
+
+if [ $(check_proxy) == 1 ];then
+	echo "使用了代理:"
+	echo $http_proxy
+	echo $https_proxy
+else
+	echo "没使用代理"
+fi

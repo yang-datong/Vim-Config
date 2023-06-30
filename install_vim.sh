@@ -1,6 +1,12 @@
 #!/bin/zsh
 
-main(){
+
+	cp ./xx.vimrc $HOME/.vimrc
+  sudo update-alternatives --config gcc #切换为gcc-8
+	vim -c "PlugInstall"
+
+
+build(){
 	#安装代码提示插件
 	sudo apt install g++-8
 	sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8

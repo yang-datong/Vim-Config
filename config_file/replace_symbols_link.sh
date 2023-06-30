@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 replace_symbols_link(){
 	file="$1"
@@ -23,13 +24,13 @@ replace_symbols_link "$HOME/.clang-format" "$(pwd)/xx.clang-format"
 replace_symbols_link "$HOME/.bashrc" "$(pwd)/../xx.bashrc"
 replace_symbols_link "$HOME/.zshrc" "$(pwd)/../xx.zshrc"
 
-if [ "$(uname)" == "Darwin" ];then
+#if [ "$(uname)" == "Darwin" ];then
 	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
 	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config.fish"
-else
-	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init_docker.vim"
-	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_docker.fish"
-fi
+#else
+#	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init_docker.vim"
+#	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_docker.fish"
+#fi
 
 for file in *.snippets;do
 	replace_symbols_link "$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/$file" "$(pwd)/$file"

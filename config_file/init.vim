@@ -386,8 +386,9 @@ func! Run()
     if stridx(firstLine, '//g++') == 0
       let remainingChars = strpart(firstLine, strlen('//g++'))
       echo remainingChars
-      exec '!g++ % -o %< -g -w ' remainingChars
-      exec '!./%<'
+      exec '!g++ % -o %< -g -w ' remainingChars '&& ./%<'
+    else
+      exec '!g++ % -o %< -g -w && ./%<'
     endif
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 replace_symbols_link(){
 	file="$1"
@@ -27,15 +28,15 @@ check_cmd(){
     fi
 }
 
+cc="brew"
 #Check OS System
 check_os(){
-    case "$(uname)" in
-    "Darwin") cc="brew";;
-    "Linux") cc="apt -y";;
-    *)echo "Windows has not been tested for the time being";exit 1
-    esac
+	case "$(uname)" in
+	"Darwin") cc="brew";;
+	"Linux") cc="sudo apt -y";;
+	*)echo "Windows has not been tested for the time being";exit 1
+	esac
 }
-
 
 check_os
 check_cmd gdb gdb
