@@ -20,11 +20,13 @@ plugins=(git zsh-autosuggestions zsh-syntax-highlighting autojump )  #插件
 ZSH_THEME="example"
 
 alias mkdir='mkdir -p'
-alias gdb='/usr/local/Cellar/gdb/12.1/bin/gdb'
+#alias gdb='/usr/local/Cellar/gdb/12.1/bin/gdb'
 alias phone='echo 15886670991'
 alias ip='curl -s -m 5 https://ipleak.net/json/'
 alias cl='clear'
 alias pip='pip3.9'
+alias apt='sudo apt'
+alias chmon='sudo chmod'
 alias python='python3.9'
 alias python3='python3.9'
 alias cat='bat -p'
