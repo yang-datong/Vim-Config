@@ -11,13 +11,19 @@
 "                     1. 基本配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
-let g:python3_host_prog='/usr/local/bin/python3.9'
-set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
-set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
-set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
+if has("mac")
+  let g:python3_host_prog='/usr/local/bin/python3.9' "Mac -> Open 
+  set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
+  set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+  set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
+endif
 " }
 " Attribute {
-set clipboard=unnamed  "共享剪贴板
+if has("mac")
+  set clipboard=unnamed  "共享剪贴板
+else
+  set clipboard=unnamedplus
+endif
 set autoindent "自动缩进
 set cindent
 " }
@@ -179,14 +185,22 @@ nnoremap <silent> <leader><space> :noh<cr>
 "                      3. 插件配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "" Plugins {
-let s:vim_plug_dir=expand('~/.vim/autoload')
+if has("nvim")
+  let s:vim_plug_dir=expand('~/.config/nvim/autoload')
+else
+  let s:vim_plug_dir=expand('~/.vim/autoload')
+endif
 " Vim-Plug {
 if !filereadable(s:vim_plug_dir.'/plug.vim')
   execute '!wget https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -P '.s:vim_plug_dir
   let s:install_plug=1
 endif
 
-call plug#begin('~/.vim/plugged')
+if has("nvim")
+  call plug#begin('~/.config/nvim/plugged')
+else
+  call plug#begin('~/.vim/plugged')
+endif
 "======================================================================
 Plug 'Shougo/unite.vim'
 "======================================================================
@@ -223,10 +237,26 @@ inoremap <silent><expr> <Down>
 inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
 inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 
-" Jump definition
+" https://github.com/neoclide/coc.nvim
+" Coc-vim jump definition
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
-nmap <leader> qf <Plug>(coc-fix-current)
+
+" Remap keys for applying code actions at the cursor position
+nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+" Remap keys for apply code actions affect whole buffer
+nmap <leader>as  <Plug>(coc-codeaction-source)
+" Apply the most preferred quickfix action to fix diagnostic on the current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" GoTo code navigation
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
 
 "Must install -> let g:coc_global_extensions = ['coc-texlab']
 autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
@@ -320,13 +350,17 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " autocmd FileType apache setlocal commentstring=#\ %s
 " }
 "======================================================================
-"Plug 'rcarriga/nvim-notify'
+if has("nvim")
+  Plug 'rcarriga/nvim-notify'
+endif
 "======================================================================
 call plug#end()
 
 " Notify Configure {
 "弹窗美化 :lua vim.notify("This is an error message", "error")
-"lua vim.notify = require("notify")
+if has("nvim")
+  lua vim.notify = require("notify")
+endif
 " }
 " Themes Configure {
 colorscheme seoul256
@@ -379,11 +413,23 @@ endfunc
 func! Run()
   exec "w"
   if &filetype == 'c'
-    exec '!gcc % -o %< -g -w  '
-    exec '!./%<'
+    let firstLine = getline(1)
+    if stridx(firstLine, '//g++') == 0
+      let remainingChars = strpart(firstLine, strlen('//g++'))
+      echo remainingChars
+      exec '!gcc % -o %< -g -w ' remainingChars '&& ./%<'
+    else
+      exec '!gcc % -o %< -g -w && ./%<'
+    endif
   elseif &filetype == 'cpp'
-    exec '!g++ % -o %< -g -w'
-    exec '!./%<'
+    let firstLine = getline(1)
+    if stridx(firstLine, '//g++') == 0
+      let remainingChars = strpart(firstLine, strlen('//g++'))
+      echo remainingChars
+      exec '!g++ % -o %< -g -w ' remainingChars '&& ./%<'
+    else
+      exec '!g++ % -o %< -g -w && ./%<'
+    endif
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'
   elseif &filetype == 'python'

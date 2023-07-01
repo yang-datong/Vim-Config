@@ -1,6 +1,6 @@
-#-std=c++11
+-std=c++14
 #-I/Users/user/Desktop/ff_face_detection/app/src/main/jniLibs/include
--I/Users/user/home/x性能对比/Android_heif_to_yuv/tmp
+#-I/Users/user/home/x性能对比/Android_heif_to_yuv/tmp
 #-I/usr/local/opt/opencv/include/opencv4
 #-I/Users/user/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include
 
