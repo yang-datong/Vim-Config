@@ -1,6 +1,10 @@
 priority -50
 
-#${1:%s}${1/正则表达/(?2:满足:不满足)/}$2${1/同样的正则/(?2:满足)/}
+snippet test-reg "test"
+${1} --> ${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}$2${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}
+endsnippet
+#如果都不满足,则默认为满足条件1 来显示
+
 snippet whileread "whileread"
 std::ifstream f("filename.txt");
 if (f.is_open()) {
@@ -55,14 +59,14 @@ std::cin >> ${1};
 endsnippet
 
 snippet cerr
-std::cerr << ${1} << std::endl;
+std::cerr << "\033[31m" << "${1}" << "\033[0m" << std::endl;
 endsnippet
 
-snippet string "string"
+snippet string= "string_nullptr"
 std::string $1 = nullptr;
 endsnippet
 
-snippet '(int|char|size_t|uint8_t)(\*)?' "autoVarible" r
+snippet '(int|char|size_t|uint8_t)=(\*)?' "autoVarible" r
 `!p snip.rv = match.group(1)` `!p
 if(match.group(2)):
 	snip.rv = match.group(2)
@@ -168,6 +172,12 @@ if($1 != nullptr){
 	free($1);
 	$1 = nullptr;
 }
+endsnippet
+
+snippet do-while "do-while"
+do{
+	$0
+}while(${1:1})
 endsnippet
 
 snippet while "while"
@@ -340,9 +350,9 @@ endsnippet
 
 snippet try
 try {
-
-}catch(${1}) {
-
+	$2
+}catch(${1:...}) {
+	$0
 }
 endsnippet
 
@@ -387,6 +397,7 @@ ${1:void} ${2:function_name}($3){
 	${VISUAL}$0
 
 	std::cout << "\033[33m Into -> " << __FUNCTION__ << "()\033[0m" << std::endl;
+	${1/(void)*(int|bool|string|std::string)*/(?2:return :)/}$4${1/(void)*(int|bool|string|std::string)*/(?2:;)/}
 }
 endsnippet
 

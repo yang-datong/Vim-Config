@@ -387,6 +387,9 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Check current line end char is ";"
+inoremap <expr> <M-Enter> getline('.')[-1:] == ';' ? "\<M-Enter>" : "\<C-o>A;<Esc>o"
+
 " Command {  "auto merge text to one line
 :command -range=% Line :<line1>,<line2>s/\n/ /g
 "}
