@@ -1,14 +1,7 @@
-# This file contains snippets that are always defined. I personally
-# have snippets for signatures and often needed texts
-
 # sligthly lower priority than everything else since specialized versions
 # should overwrite. The user needs to adjust her priority in her snippets to
 # ~-55 so that other filetypes will still overwrite.
 priority -60
-
-#snippet help_snippets "help_snippets" b
-#`!p vim.command('UltiSnipsEdit')`
-#endsnippet
 
 ##############
 # NICE BOXES #
@@ -16,6 +9,27 @@ priority -60
 global !p
 from vimsnippets import foldmarker, make_box, get_comment_format
 endglobal
+
+snippet help "help"
+`!p 
+lists = vim.eval("GetAllSnippets()")
+lists.sort()
+show = ""
+tmp = lists[0]
+for cmd in lists:
+	if cmd[0] == tmp[0]:
+		show += cmd + "\t"
+	else:
+		show += "\n" + cmd + "\t"
+		tmp = cmd
+snip.rv = "List of all available snippets for the current file :\n" + "-"*40 + "\n"+ show + "\n" + "-"*40 + "\n"
+`
+endsnippet
+
+snippet hi "hi"
+hi ${1|YJ,Yangjing|}
+endsnippet
+#按q<tab>2<c-j>2
 
 snippet box "A nice box with the current comment symbol" b
 `!p

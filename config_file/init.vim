@@ -6,7 +6,6 @@
 "5. 自动执行命令区域
 "6. unite插件扩展区域
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -387,11 +386,27 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Check current line end char is ";"
+" Check current line end char is ";" {
 inoremap <expr> <M-Enter> getline('.')[-1:] == ';' ? "\<M-Enter>" : "\<C-o>A;<Esc>o"
+"}
+
+" Fast open configure file {
+:command Config :e $MYVIMRC
+"}
 
 " Command {  "auto merge text to one line
 :command -range=% Line :<line1>,<line2>s/\n/ /g
+"}
+
+" Show all snippets command {
+func! GetAllSnippets()
+  call UltiSnips#SnippetsInCurrentScope(1)
+  let list = []
+  for [key, info] in items(g:current_ulti_dict_info)
+    call add(list, key)
+  endfor
+  return list
+endfunc
 "}
 
 " Fast into head file {
