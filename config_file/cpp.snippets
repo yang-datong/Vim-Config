@@ -398,8 +398,9 @@ else if (${1:/* condition */}) {
 }
 endsnippet
 
+#printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 snippet echo "printf .. (printf)"
-printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+std::cout << "hi~" << std::endl;
 endsnippet
 
 snippet st "struct"

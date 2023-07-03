@@ -32,6 +32,7 @@ replace_symbols_link(){
 		echo -e "\033[32m Replace $file done~\033[0m"
 	else
 		#echo -e "\033[31m Not know file type -> $file \033[0m"
+		ln -s $really_file $file
 		echo -e "\033[33m Add $file done~\033[0m"
 	fi
 }
