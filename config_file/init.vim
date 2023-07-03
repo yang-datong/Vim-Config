@@ -395,7 +395,13 @@ endif
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Check current line end char is ";" {
-inoremap <expr> <M-Enter> getline('.')[-1:] == ';' ? "\<M-Enter>" : "\<C-o>A;<Esc>o"
+if &filetype == 'cpp'
+  if has('mac')
+    inoremap <expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-o>A<Esc>o" : "\<C-o>A;<Esc>o"
+  elseif has('linux')
+    inoremap <expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-Enter>" : "\<C-o>A;<Esc>o"
+  endif
+endif
 "}
 
 " Fast open configure file {
@@ -423,7 +429,20 @@ func! IntoHeadrFile()
   let filename = expand('%:r')
   let filetype = expand('%:e')
   if filetype == 'cpp'
-    exec 'e ' . filename . '.hpp'
+    if filereadable(filename . '.hpp')
+      " 当前目录存在文件头/源文件
+      exec 'e ' . filename . '.hpp'
+    else
+      if filereadable('./include/' . filename . '.hpp')
+      " 当前目录的include目录存在文件头/源文件
+        exec 'e ./include/' . filename . '.hpp'
+        echo "Into include/" . filename . '.hpp'
+      else
+        " 都不存在直接创建
+        exec 'e ' . filename . '.hpp'
+        echo "New create: " . filename . '.hpp'
+      endif
+    endif
   elseif filetype == 'hpp'
     exec 'e ' . filename . '.cpp'
   elseif filetype == 'c'
