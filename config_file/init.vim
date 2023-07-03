@@ -217,12 +217,13 @@ noremap <Leader>gd :Gvdiff<CR>
 Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
 "======================================================================
 Plug 'vim-autoformat/vim-autoformat'
+"let g:autoformat_verbosemode=1 "调试format
 "au BufWrite * :Autoformat "保存文件时格式化代码
   "python-格式化: pip install autopep8
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
   "Cmake : pip install cmake-format
   "Latex : brew install latexindent ,(必须添加->let g:formatdef_latexindent = '"latexindent -"')
-  let g:formatdef_latexindent = '"latexindent -"'
+  "let g:formatdef_latexindent = '"latexindent -"'
   "Markdown : npm install -g remark-cli
   "Shell : go install mvdan.cc/sh/v3/cmd/shfmt@latest (需要安装go)
 "======================================================================
@@ -259,6 +260,13 @@ nmap <leader>rn <Plug>(coc-rename)
 
 "Must install -> let g:coc_global_extensions = ['coc-texlab']
 autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
+
+nmap <silent> <C-c> <Plug>(coc-cursors-position)
+"nmap <silent> <C-d> <Plug>(coc-cursors-word) "冲突翻页
+xmap <silent> <C-d> <Plug>(coc-cursors-range)
+" use normal command like `<leader>xi(`
+nmap <leader>x  <Plug>(coc-cursors-operator)
+
 
 " Option {
   "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
@@ -427,7 +435,7 @@ endfunc
 " }
 
 " Fast start file execution {
-"map <C-r> :call Run()<CR>
+map <C-r> :call Run()<CR>
 func! Run()
   exec "w"
   if &filetype == 'c'

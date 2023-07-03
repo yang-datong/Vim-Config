@@ -3,7 +3,8 @@ priority -50
 snippet test-reg "test"
 ${1} --> ${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}$2${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}
 endsnippet
-#如果都不满足,则默认为满足条件1 来显示，这个语法在 https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt 下的：
+#如果都不满足,则默认为满足条件1 来显示，这个语法在 
+#https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt 下的：
 #4.7 Transformations                               *UltiSnips-transformations*
 #A transformation has the following syntax: >
 #   ${<tab_stop_no/regular_expression/replacement/options}
@@ -404,7 +405,7 @@ snippet func "function" b
 ${1:void} ${2:function_name}($3){
 	${VISUAL}$0
 
-	std::cout << "\033[33m Into -> " << __FUNCTION__ << "()\033[0m" << std::endl;
+	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
 	${1/(void)*(int|bool|string|std::string)*/(?2:return :)/}$4${1/(void)*(int|bool|string|std::string)*/(?2:;)/}
 }
 endsnippet
