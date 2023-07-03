@@ -35,20 +35,27 @@ clock_gettime(CLOCK_REALTIME, &end_time);
 std::cout << "Number of seconds -> "  <<  end_time.tv_sec - start_time.tv_sec << std::endl;
 endsnippet
 
-snippet '^\s([a-z|A-Z|_].*).if' ".if" r
+snippet '^\s{0,4}([a-z|A-Z|_].*).if' ".if" r
 	if(`!p snip.rv = match.group(1)`){
 		$0
 	}
 endsnippet
 
-snippet '^\s([a-z|A-Z|_].*).null' ".null" r
+snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
 	if(!`!p snip.rv = match.group(1)`){
-		fprintf(stderr, "Fail `!p snip.rv = match.group(1)` is nullptr \n");
+		std::cerr << "\033[31mFail `!p snip.rv = match.group(1)` is nullptr\033[0m" << std::endl;
 		return ${1:-1};
 	}
 endsnippet
 
-snippet '^\s([a-z|A-Z|_].*).err' ".err" r
+#snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
+#	if(!`!p snip.rv = match.group(1)`){
+#		fprintf(stderr, "Fail `!p snip.rv = match.group(1)` is nullptr \n");
+#		return ${1:-1};
+#	}
+#endsnippet
+
+snippet '^\s{0,4}([a-z|A-Z|_].*).err' ".err" r
 	if(`!p snip.rv = match.group(1)`){
 		fprintf(stderr, "Error `!p snip.rv = match.group(1)`\n");
 		return ${1:-1};
@@ -69,7 +76,7 @@ std::cin >> ${1};
 endsnippet
 
 snippet cerr
-std::cerr << "\033[31m" << "${1}" << "\033[0m" << std::endl;
+std::cerr << "\033[31m${1:Fail}\033[0m" << std::endl;
 endsnippet
 
 snippet string= "string_nullptr"

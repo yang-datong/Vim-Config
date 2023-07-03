@@ -454,7 +454,7 @@ endfunc
 " }
 
 " Fast start file execution {
-map <C-r> :call Run()<CR>
+map <M-r> :call Run()<CR>
 func! Run()
   exec "w"
   if &filetype == 'c'
