@@ -9,6 +9,10 @@ endsnippet
 #A transformation has the following syntax: >
 #   ${<tab_stop_no/regular_expression/replacement/options}
 
+pre_expand "write_inclde_file(snip)"
+snippet head "head" b
+endsnippet
+
 snippet whileread "whileread"
 std::ifstream f("filename.txt");
 if (f.is_open()) {
@@ -228,6 +232,13 @@ class `!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`{
 };
 endsnippet
 
+snippet cclass "cclass"
+class ${1:C`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
+	public:
+		$0
+};
+endsnippet
+
 snippet class "class"
 class ${1:`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
 	public:
@@ -429,3 +440,21 @@ ${1:void} ${2:function_name}($3);
 endsnippet
 
 # vim:ft=snippets:
+
+global !p
+def write_inclde_file(snip):
+		perfix = vim.eval("expand('%:r')")
+		suffix = vim.eval("expand('%:e')")
+		if (suffix == "cpp"):
+			suffix = ".hpp"
+		else:
+			suffix = ".h"
+		file = perfix + suffix
+		snip.buffer[snip.line] = ""
+		#if((not os.path.exists(file)) and (not os.path.exists("include/" + file))):
+		#	snip.expand_anon("#include <" + file + ">") #本地和include目录都不存在该文件
+		#else:
+		#	snip.expand_anon("#include \"" + file + "\"")
+		snip.expand_anon("#include \"" + file + "\"\n")
+endglobal
+

@@ -121,6 +121,10 @@ snippet datetime "YYYY-MM-DD hh:mm" w
 `!v strftime("%Y-%m-%d %H:%M")`
 endsnippet
 
+snippet // "//" w
+`!p snip.rv=get_comment_format()[0]` ${1:Comment} `!p snip.rv=get_comment_format()[2]`
+endsnippet
+
 snippet todo "TODO comment" bw
 `!p snip.rv=get_comment_format()[0]` TODO ${1:} <`!v strftime('%y-%m-%d %T')`, YangJing}> `!p snip.rv=get_comment_format()[2]`
 endsnippet

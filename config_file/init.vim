@@ -325,9 +325,13 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 "Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 autocmd FileType math set filetype=tex
 let g:mkdp_theme ='dark'
-let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-"let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
-"let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
+if has('mac')
+  let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+  "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
+  "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
+else
+  let g:mkdp_browser = '/usr/bin/google-chrome-stable'
+endif
 
 "======================================================================
 Plug 'scrooloose/nerdtree'
