@@ -6,6 +6,7 @@
 "5. 自动执行命令区域
 "6. unite插件扩展区域
 
+">注意! cpp\hpp 文件的&filetype变量都是cpp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -503,6 +504,12 @@ endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  5. 自动执行命令区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Save mksession on vimleave {
+if &filetype == 'cpp'
+  autocmd VimLeave * mksession!
+endif
+"}
+
 " Mathematics file {
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
