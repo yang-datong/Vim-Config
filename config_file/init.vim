@@ -471,13 +471,17 @@ func! Run()
       exec '!gcc % -o %< -g -w && ./%<'
     endif
   elseif &filetype == 'cpp'
-    let firstLine = getline(1)
-    if stridx(firstLine, '//g++') == 0
-      let remainingChars = strpart(firstLine, strlen('//g++'))
-      echo remainingChars
-      exec '!g++ % -o %< -g -w ' remainingChars '&& ./%<'
+    if filereadable('Makefile')
+        exec '!make && ./a.out'
     else
-      exec '!g++ % -o %< -g -w && ./%<'
+      let firstLine = getline(1)
+      if stridx(firstLine, '//g++') == 0
+        let remainingChars = strpart(firstLine, strlen('//g++'))
+        echo remainingChars
+        exec '!g++ % -o %< -g -w ' remainingChars '&& ./%<'
+      else
+        exec '!g++ % -o %< -g -w && ./%<'
+      endif
     endif
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'
