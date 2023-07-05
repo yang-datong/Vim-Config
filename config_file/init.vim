@@ -12,7 +12,7 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
 if has("mac")
-  let g:python3_host_prog='/usr/local/bin/python3.9' "Mac -> Open 
+  let g:python3_host_prog='/usr/local/bin/python3.9' "Mac -> Open
   set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
   set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
   set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
@@ -79,7 +79,7 @@ set noshowcmd
 " }
 " Close the pop-up window {
 " 影响主要是在编写代码时会弹出函数定义框，需要手动关闭影响布局
-"set completeopt-=preview 
+"set completeopt-=preview
 " }
 
 ""}
@@ -219,7 +219,9 @@ Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
 "======================================================================
 Plug 'vim-autoformat/vim-autoformat'
 "let g:autoformat_verbosemode=1 "调试format
-"au BufWrite * :Autoformat "保存文件时格式化代码
+if &filetype == 'cpp'
+  au BufWrite * :Autoformat "保存文件时格式化代码
+endif
   "python-格式化: pip install autopep8
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
   "Cmake : pip install cmake-format
@@ -473,7 +475,7 @@ func! Run()
     endif
   elseif &filetype == 'cpp'
     if filereadable('Makefile')
-        exec '!make && ./a.out'
+      exec '!make && ./a.out'
     else
       let firstLine = getline(1)
       if stridx(firstLine, '//g++') == 0

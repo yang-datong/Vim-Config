@@ -423,11 +423,17 @@ endsnippet
 snippet func "function" b
 ${1:void} ${2:function_name}($3){
 	${VISUAL}$0
-
 	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
-	${1/(void)*(int|bool|string|std::string)*/(?2:return :)/}$4${1/(void)*(int|bool|string|std::string)*/(?2:;)/}
-}
+${1/(void)*(int|string|std::string|char\*|char\ \*|char)*/(?2:	return NULL;\\n}:})/}
 endsnippet
+#snippet func "function" b
+#${1:void} ${2:function_name}($3){
+#	${VISUAL}$0
+#
+#	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
+#	${1/(void)*(int|bool|string|std::string)*/(?2:return :)/}$4${1/(void)*(int|bool|string|std::string)*/(?2:;)/}
+#}
+#endsnippet
 
 snippet func_construction "construction"
 $1::$1($2){
