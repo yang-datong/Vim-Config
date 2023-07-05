@@ -7,6 +7,13 @@ unset docker_tar
 
 unset docker_id
 
+case "$(uname)" in
+"Darwin") docker="docker";;
+"Linux") docker="sudo docker";;
+*)echo "Windows has not been tested for the time being";exit 1
+esac
+
+
 main(){
   local one_obj="$1"
   local two_obj="$2"
@@ -24,7 +31,7 @@ main(){
       docker_tar="${docker_id}:/"
     fi
     echo "docker cp \"$local_tar\" \"$docker_tar\""
-    docker cp "$local_tar" "$docker_tar"
+    ${docker} cp "$local_tar" "$docker_tar"
   else
     docker_tar="${docker_id}:${one_obj}"
     local_tar="$two_obj"
@@ -32,7 +39,7 @@ main(){
       local_tar="./"
     fi
     echo "docker cp \"$docker_tar\" \"$local_tar\""
-    docker cp "$docker_tar" "$local_tar"
+    ${docker} cp "$docker_tar" "$local_tar"
   fi
 }
 
@@ -40,11 +47,11 @@ main(){
 
 try_fetch_docker_id(){
 	#Check whether exist running container in local
-	local docker_count=$(docker ps | wc -l | sed 's/ //g')
+	local docker_count=$(${docker} ps | wc -l | sed 's/ //g')
 	if [ $docker_count == 1 ];then
     echo -e "\033[31m No container found \033[0m";exit
 	elif [ $docker_count == 2 ];then
-		docker_id=$(docker ps | sed -n 2p | awk '{print $1}')
+		docker_id=$(${docker} ps | sed -n 2p | awk '{print $1}')
 	elif [ $docker_count -gt 2 ];then
 		echo -e "\033[31m Detection multiple container,need statement container id in command argument\033[0m";exit
 	fi
