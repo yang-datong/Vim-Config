@@ -433,7 +433,8 @@ endfunc
 " Fast into head file {
 map <C-h> :call IntoHeadrFile()<CR>
 func! IntoHeadrFile()
-  let filename = expand('%:r')
+  "let filename = expand('%:r')
+  let filename = expand('%:t:r')
   let filetype = expand('%:e')
   if filetype == 'cpp'
     if filereadable(filename . '.hpp')
@@ -451,7 +452,20 @@ func! IntoHeadrFile()
       endif
     endif
   elseif filetype == 'hpp'
-    exec 'e ' . filename . '.cpp'
+    if filereadable(filename . '.cpp')
+      " 当前目录存在源文件
+      exec 'e ' . filename . '.cpp'
+    else
+      if filereadable('../' . filename . '.cpp')
+      " 上级目录的存在源文件
+        exec 'e ../' . filename . '.cpp'
+        echo "Into ../" . filename . '.cpp'
+      else
+        " 都不存在直接创建
+        exec 'e ' . filename . '.cpp'
+        echo "New create: " . filename . '.cpp'
+      endif
+    endif
   elseif filetype == 'c'
     exec 'e ' . filename . '.h'
   elseif filetype == 'h'
