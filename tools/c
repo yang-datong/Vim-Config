@@ -35,6 +35,8 @@ cmake_main(){
     else
       generate_cmakelists
     fi
+  else
+      generate_cmakelists
   fi
   #现在默认不清理生成文件，提高二次编译速度
   #clean_cmake
