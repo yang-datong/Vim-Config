@@ -1,5 +1,5 @@
 #!/bin/bash
-ScriptVersion="1.0"
+ScriptVersion="2.0"
 
 unset src
 unset cc
@@ -8,10 +8,138 @@ unset level
 unset flag
 unset include_path
 unset lib_path
+unset libs
+unset flag
 
-main(){
+is_cmake=1
+make="make -j 16"
+cmake_version=3.0
+cmake_cxx_standard=14
+
+
+#---------------------------------------- CMakeLists Generate ----------------------------------------
+cmake_main(){
+  whether_has_source_file
   if [ "$1" == "clean" ];then
-    make clean
+    clean_cmake "all" && exit
+  elif [ "$1" == "make" ];then
+    ${make} && clean_cmake && exit
+  fi
+
+  local f="CMakeLists.txt"
+  if [ -f $f ];then
+    #cat $f
+    read -p "继续执行将覆盖${f}是否继续？[y/N]" OK
+    if [ "$OK" != "y" ];then
+      cmake . && ${make}
+    else
+      generate_cmakelists
+    fi
+  fi
+  #现在默认不清理生成文件，提高二次编译速度
+  #clean_cmake
+}
+
+generate_cmakelists(){
+cat << EOF > CMakeLists.txt
+# Minimum version used by CMake
+cmake_minimum_required(VERSION ${cmake_version})
+
+# Project name
+project(project_name)
+
+# C++ version used, added compilation parameters
+set(CMAKE_CXX_STANDARD ${cmake_cxx_standard})
+$(if [ $flag ]; then 
+  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall $(echo $flag | sed 's/[\,\-\.\_]/ /g')\")"
+else
+  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g -O0\")"
+fi)
+
+$(if [ $include_path ]; then 
+  echo " "
+  echo "# Specify header file directory"
+  echo "include_directories($include_path)"
+  echo " "
+fi)
+
+$(if [ $src ];then
+  echo "# Specify source files"
+  echo "add_executable( ${src%.*} $src )"
+else
+  echo "# Find all source files in the current directory"
+  echo "aux_source_directory(. SOURCES)"
+  echo " "
+  echo "# Compile all source code together and link it to an executable file 'a.out'"
+  echo "add_executable(a.out \${SOURCES})"
+fi)
+
+$(if [ $libs ];then
+    echo " "
+  if [ $src ];then
+    echo "target_link_libraries(${src%.*} $(echo $libs | sed 's/[\,\-\.\_]/ /g') )"
+  else
+    echo "target_link_libraries(a.out $(echo $libs | sed 's/[\,\-\.\_]/ /g') )"
+  fi
+fi)
+EOF
+
+
+  #if [ $lib_path ];then
+  #  echo "file(GLOB LIBS \"$lib_path/*.so\" \"$lib_path/*.dylib\")" >> $f
+  #fi
+
+  #if [ $dir ];then
+  #  echo "set(OpenCV_DIR $dir)" >> $f
+  #  echo "find_package(OpenCV REQUIRED )" >> $f
+  #  echo "include_directories(\${OpenCV_INCLUDE_DIRS})" >> $f
+  #fi
+
+  #if [ $dir ];then
+  #  if [ $src ];then
+  #    echo "target_link_libraries(${src%.*} \${OpenCV_LIBS} )" >> $f
+  #  else
+  #    echo "target_link_libraries(\${BIN} \${OpenCV_LIBS})" >> $f
+  #  fi
+  #fi
+
+  #if [ $lib_path ];then
+  #  if [ $src ];then
+  #    echo "target_link_libraries(${src%.*} \${LIBS} )" >> $f
+  #  else
+  #    echo "target_link_libraries(\${BIN} \${LIBS})" >> $f
+  #  fi
+  #fi
+  cmake . && ${make}
+}
+
+clean_cmake(){
+  local date=$(date +"%Y%m%d%H%M%S")
+  if [[ -f "Makefile" && "$1" == "all" ]];then
+    ${make} clean
+    mv Makefile /tmp/Makefile_$date
+  fi
+  if [ -f CMakeCache.txt ];then
+    mv CMakeCache.txt /tmp/CMakeCache.txt_$date
+  fi
+  if [ -f cmake_install.cmake ];then
+    mv cmake_install.cmake /tmp/cmake_install.cmake_$date
+  fi
+  if [ -f CTestTestfile.cmake ];then
+    mv CTestTestfile.cmake /tmp/CTestTestfile.cmake_$date
+  fi
+  if [ -d CMakeFiles ];then
+    mv CMakeFiles /tmp/CMakeFiles_$date
+  fi
+}
+
+
+
+
+#---------------------------------------- Makefile Generate ----------------------------------------
+makefile_main(){
+  if [ "$1" == "clean" ];then
+    ${make} clean
   fi
   if [ "${src##*.}" == "c" ];then
     cc="c"
@@ -26,9 +154,53 @@ main(){
     check_build_type
   fi
   check_is_lib_path
-  generate_makefile
+
+  local f="Makefile"
+  if [ -f $f ];then
+    #cat $f
+    read -p "继续执行将覆盖${f}是否继续？[y/N]" OK
+    if [ "$OK" != "y" ];then
+      ${make}
+    else
+      generate_makefile
+    fi
+  fi
 }
 
+generate_makefile(){
+  local f="Makefile"
+  echo "CC:=$cc" > ${f}
+  if [ $src ];then
+    echo "BIN:=${src%.*}" >> ${f}
+  else
+    echo "BIN:=a.out" >> ${f}
+  fi
+  if [ $include_path ];then
+    include_path="-I $include_path"
+  fi
+  echo "${flag}:=-g -O0 -Wall ${level} ${include_path}" >> ${f}
+  if [ -n "$lib_path" ];then
+    echo "LIBS=${lib_path}" >> ${f}
+    lib_path="\$(LIBS)"
+  fi
+  if [ $src ];then
+    src="SRC:=$src"
+  else
+    src="SRC:=\$(wildcard *.${file_suffix})"
+  fi
+  echo "$src" >> ${f}
+  echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> ${f}
+  echo "" >> ${f}
+  echo "\$(BIN):\$(OBJS)" >> ${f}
+  echo "	\$(CC) \$^ -o \$@ ${lib_path}" >> ${f}
+  echo "" >> ${f}
+  echo "clean:" >> ${f}
+  echo "	rm \$(OBJS) \$(BIN)" >> ${f}
+  ${make}
+}
+
+
+#---------------------------------------- Utility Tool Functions ----------------------------------------
 #Check OS System
 check_os(){
   case "$(uname)" in
@@ -53,37 +225,6 @@ check_is_lib_path(){
   fi
 }
 
-generate_makefile(){
-  echo "CC:=$cc" > Makefile
-  if [ $src ];then
-    echo "BIN:=${src%.*}" >> Makefile
-  else
-    echo "BIN:=a.out" >> Makefile
-  fi
-  if [ $include_path ];then
-    include_path="-I $include_path"
-  fi
-  echo "${flag}:=-g -Wall ${level} ${include_path}" >> Makefile
-  if [ -n "$lib_path" ];then
-    echo "LIBS=${lib_path}" >> Makefile
-    lib_path="\$(LIBS)"
-  fi
-  if [ $src ];then
-    src="SRC:=$src"
-  else
-    src="SRC:=\$(wildcard *.${file_suffix})"
-  fi
-  echo "$src" >> Makefile
-  echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> Makefile
-  echo "" >> Makefile
-  echo "\$(BIN):\$(OBJS)" >> Makefile
-  echo "	\$(CC) \$^ -o \$@ ${lib_path}" >> Makefile
-  echo "" >> Makefile
-  echo "clean:" >> Makefile
-  echo "	rm \$(OBJS) \$(BIN)" >> Makefile
-  make
-}
-
 check_build_type(){
   local c_total=$(ls | grep "\.c$" | wc -l)
   local cpp_total=$(ls | grep "\.cpp$" | wc -l)
@@ -105,81 +246,15 @@ check_build_type(){
 c_kind(){
   cc="gcc" #gcc 在Mac下同样指向clang
   file_suffix="c"
-  level="-std=c11"
+  level="-std=c14"
   flag="CFLAGS"
 }
 
 cpp_kind(){
   cc="g++" #g++ 在Mac下同样指向clang++
   file_suffix="cpp"
-  level="-std=c++11"
+  level="-std=c++14"
   flag="CPPFLAGS"
-}
-
-clean_cmake(){
-  local date=$(date +"%Y%m%d%H%M%S")
-  if [[ -f "Makefile" && "$1" == "all" ]];then
-    make clean
-    mv Makefile /tmp/Makefile_$date
-  fi
-  if [ -f CMakeCache.txt ];then
-    mv CMakeCache.txt /tmp/CMakeCache.txt_$date
-  fi
-  if [ -f cmake_install.cmake ];then
-    mv cmake_install.cmake /tmp/cmake_install.cmake_$date
-  fi
-  if [ -f CTestTestfile.cmake ];then
-    mv CTestTestfile.cmake /tmp/CTestTestfile.cmake_$date
-  fi
-  if [ -d CMakeFiles ];then
-    mv CMakeFiles /tmp/CMakeFiles_$date
-  fi
-}
-
-
-generate_cmakelists(){
-  f="CMakeLists.txt"
-
-  echo "cmake_minimum_required(VERSION 3.0)" > $f
-  echo "project(project_name)" >> $f
-  echo "set(CMAKE_CXX_STANDARD 11)" >> $f
-  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall\")" >> $f
-
-  #if [ $include_path ];then
-  #  echo "include_directories($include_path)" >> $f
-  #fi
-
-  #if [ $lib_path ];then
-  #  echo "file(GLOB LIBS \"$lib_path/*.so\" \"$lib_path/*.dylib\")" >> $f
-  #fi
-  if [ $dir ];then
-    echo "set(OpenCV_DIR $dir)" >> $f
-    echo "find_package(OpenCV REQUIRED )" >> $f
-    echo "include_directories(\${OpenCV_INCLUDE_DIRS})" >> $f
-  fi
-
-  if [ $src ];then
-    echo "add_executable( ${src%.*} $src )" >> $f
-  else
-    echo "file(GLOB SOURCES *.cpp *.c)" >> $f
-    echo "get_filename_component(BIN \${SOURCES} NAME_WE)" >> $f
-    echo "add_executable(\${BIN} \${SOURCES})" >> $f
-  fi
-  if [ $dir ];then
-    if [ $src ];then
-      echo "target_link_libraries(${src%.*} \${OpenCV_LIBS} )" >> $f
-    else
-      echo "target_link_libraries(\${BIN} \${OpenCV_LIBS})" >> $f
-    fi
-  fi
-  #if [ $lib_path ];then
-  #  if [ $src ];then
-  #    echo "target_link_libraries(${src%.*} \${LIBS} )" >> $f
-  #  else
-  #    echo "target_link_libraries(\${BIN} \${LIBS})" >> $f
-  #  fi
-  #fi
-  cmake . && make
 }
 
 whether_has_source_file(){
@@ -191,16 +266,9 @@ whether_has_source_file(){
 }
 
 
-cmake_main(){
-  whether_has_source_file
-  if [ "$1" == "clean" ];then
-    clean_cmake "all" && exit
-  elif [ "$1" == "make" ];then
-    make && clean_cmake && exit
-  fi
-  generate_cmakelists
-  clean_cmake
-}
+
+
+#---------------------------------------- Command Handle ----------------------------------------
 
 usage (){
   echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
@@ -210,23 +278,27 @@ usage (){
   -d, --debug      Debug model run
   -p, --posix      Posix model parse shell command
   -v, --version    Display script version
-  -f, --file       Test input argument
+  -f, --flag       Compiler parameters
   -c, --source     Used source file
   -I, --include    Used include file
+  -l, --lib        Used library(as -> -l avformat,avfilter,avcodec)
   -L, --library    Used dynamic library(default all dylib)
   -t, --type       Build type
-  -D, --dir        Cmake auto find directory"
+  -D, --dir        Cmake auto find directory
+  --cmake           Use Cmake build project(default)
+  --no-cmake        Use Makefile build project"
 }
 
-while getopts ":hdpvf:c:I:L:t:D:-:" opt; do
+while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
   case "${opt}" in
     h) usage && exit 0;;
     d) set -x ;;
     p) set -o posix ;;
     v) echo "$0 -- Version $ScriptVersion"; exit ;;
-    f) echo "file=${OPTARG}";;
+    f) flag="${OPTARG}";;
     c) src=${OPTARG} ;;
     I) include_path="${OPTARG}" ;;
+    l) libs="${OPTARG}" ;;
     L) lib_path=${OPTARG} ;;
     t) cc=${OPTARG} ;;
     D) dir=${OPTARG} ;;
@@ -235,12 +307,15 @@ while getopts ":hdpvf:c:I:L:t:D:-:" opt; do
       debug)    set -x ;;
       posix)    set -o posix ;;
       version)  echo "$0 -- Version $ScriptVersion"; exit ;;
-      file)     echo "file=${!OPTIND}"; OPTIND=$((OPTIND+1));;
+      flag)     flag=${OPTARG} ;;
       source)   src=${OPTARG} ;;
       include)  include_path="${OPTARG}" ;;
+      lib)      libs="${OPTARG}" ;;
       library)  lib_path=${OPTARG} ;;
       type)     cc=${OPTARG} ;;
       dir)      dir=${OPTARG} ;;
+      cmake)    is_cmake=1;;
+      no-cmake) is_cmake=0;;
       *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
     esac;;
   :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
@@ -250,6 +325,9 @@ done
 
 shift $((OPTIND-1))
 
-main "$@"
 
-#cmake_main "$@"
+if [ $is_cmake == 1 ];then
+  cmake_main "$@"
+else
+  makefile_main "$@"
+fi
