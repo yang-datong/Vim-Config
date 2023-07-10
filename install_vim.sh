@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 
 	cp ./xx.vimrc $HOME/.vimrc

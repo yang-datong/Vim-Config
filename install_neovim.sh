@@ -29,8 +29,8 @@ main(){
 		$cc install python3-pip
 	fi
 	#brew install neovim yarn && pip3 install pynvim
-	err=$(pip3 show pynvim)
-	if [ "$err" == "1" ];then	pip3 install pynvim;fi
+	#err=$(pip3 show pynvim)
+	#if [ "$err" == "1" ];then	pip3 install pynvim;fi
 	check_cmd nvim neovim
 
 	#into main work
