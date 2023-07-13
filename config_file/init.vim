@@ -333,7 +333,7 @@ noremap <F2> :TagbarToggle <CR>
 " Color thems
 Plug 'junegunn/seoul256.vim'
 Plug 'shaunsingh/nord.nvim' "Math style
-Plug 'rafamadriz/neon'
+"Plug 'morhetz/gruvbox'
 "======================================================================
 "Ultisnips
 Plug 'SirVer/ultisnips'
@@ -360,10 +360,10 @@ if g:is_latex == 1
   "添加编译器参数： 编译器开启批处理模式
 
   
-  Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
-  "set conceallevel=2
-  let g:tex_conceal='abdmg'
-  hi Conceal ctermbg=none
+  "Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+  ""set conceallevel=2
+  "let g:tex_conceal='abdmg'
+  "hi Conceal ctermbg=none
 endif
 "======================================================================
 if g:is_markdown == 1
@@ -421,8 +421,9 @@ if has("nvim")
 endif
 " }
 " Themes Configure {
+"set termguicolors
 colorscheme seoul256
-"colorscheme neon
+"colorscheme gruvbox
 "colorscheme nord
 " }
 " Unite Configure {
@@ -571,6 +572,7 @@ endif
 "}
 
 " Mathematics file {
+autocmd FileType tex colorscheme  nord
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
 autocmd FileType math set filetype=tex
