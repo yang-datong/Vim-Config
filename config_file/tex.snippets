@@ -35,6 +35,131 @@ snippet #! "#!"
 \usepackage[UTF8]{ctex}
 endsnippet
 
+snippet ref "References"
+\begin{thebibliography}{3}  
+	\bibitem{ref1} ${0}
+\end{thebibliography}
+endsnippet
+
+#snippet img "Images" i
+#<img src="$1" width=70% />
+#$0
+#endsnippet
+snippet img "Figure environment" b
+\usepackage{graphicx}
+
+\begin{figure}[${1:htpb}]
+	\centering
+	${2:\includegraphics[width=0.8\textwidth]{$3}}
+	\caption{${4:$3}}
+	\label{fig:${5:${3/\W+/-/g}}}
+\end{figure}
+endsnippet
+
+pre_expand "create_table(snip)"
+snippet "tab(\d+\*\d+)" "Customizable table" br
+endsnippet
+
+#snippet tab "Table environment" b
+#\begin{table}[${1:htpb}]
+#	\centering
+#	\caption{${2:caption}}
+#	\label{tab:${3:label}}
+#
+#	\begin{${4:t}${4/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}{${5:c}}
+#		$0${5/(?<=.)(c|l|r)|./(?1: & )/g}
+#	\end{$4${4/(t)$|(a)$|(.*)/(?1:abular)(?2:rray)/}}
+#\end{table}
+#endsnippet
+
+snippet tab_math "tab_math"
+\usepackage{longtable,booktabs,array}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule()
+${1} & ${2} & ${3} \\\
+\midrule()
+\endhead
+${4} & ${5} & ${6} \\\
+\bottomrule()
+\end{longtable}
+endsnippet
+
+# Itemize
+snippet item "itemize environment"
+\begin{itemize}[leftmargin=2em,itemindent=2em]
+ 	\item ${0}
+\end{itemize}
+endsnippet
+snippet it "\item"
+\item ${1:${VISUAL}}
+endsnippet
+context "env("itemize")"
+snippet - "\item" 
+\item ${1:${VISUAL}}
+endsnippet
+
+# Label
+snippet lab \label
+	\\label{${1:eq:}${2:fig:}${3:tab:}${0}}
+endsnippet
+
+# Enumerate
+snippet enum "enumerate environment"
+\begin{enumerate}[leftmargin=2em,itemindent=2em]
+  \item ${0}
+\end{enumerate}
+endsnippet
+snippet enuma "enumerate environment"
+\begin{enumerate}[(a)]
+  \item ${0}
+\end{enumerate}
+endsnippet
+snippet enumi "enumerate environment"
+\begin{enumerate}[(i)]
+  \item ${0}
+\end{enumerate}
+endsnippet
+context "env("enumerate")"
+snippet - "\item" 
+\item ${1:${VISUAL}}
+endsnippet
+
+
+#newcommand
+snippet nc "\newcommand" b
+\newcommand{\\${1:cmd}}[${2:opt}]{${3:realcmd}} ${0}
+#usepackage
+endsnippet
+
+snippet up "\usepackage" b
+\usepackage{${1:package}} ${0}
+endsnippet
+
+snippet mb "\mbox" w
+\mbox{${VISUAL}}
+endsnippet
+
+#-------------------- 类markdown --------------------
+snippet ** "bold" i
+\textbf{${1:${VISUAL}}}$0
+endsnippet
+
+snippet ` "bold" i
+\texttt{${1:${VISUAL}}}$0
+endsnippet
+
+snippet # "#" b
+\section{$1}$0
+endsnippet
+
+snippet ## "##" b
+\subsection{$1}$0
+endsnippet
+
+snippet ## "##" b
+\subsubsection{$1}$0
+endsnippet
 
 #-------------------- 简单的规则 --------------------
 context "math()"
@@ -219,14 +344,12 @@ $$
 endsnippet
 
 #-------------------- 套件的规则 --------------------
-context "math()"
 snippet beg "begin{} / end{}" i
 \begin{$1}
 $2
 \end{$1}
 endsnippet
 
-context "math()"
 snippet cases "cases" i
 \begin{cases} & ${1} \\\ & ${0} \end{cases}
 endsnippet
@@ -276,7 +399,6 @@ snippet //( "()visual" iA
 endsnippet
 
 #\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
-context "math()"
 snippet '//(red|gree|grey|blu|yel)' "textcolor" irA
 \textcolor{`!p 
 text = match.group(1)
@@ -566,3 +688,25 @@ context "math()"
 pre_expand "create_matrix_middle(snip,\"v\")"
 snippet '.*\svmat(\d)\*(\d)' "matrix_middle" r
 endsnippet
+
+global !p
+
+def create_table(snip):
+	rows = snip.buffer[snip.line].split('*')[0]
+	cols = snip.buffer[snip.line].split('*')[1]
+	int_val = lambda string: int(''.join(s for s in string if s.isdigit()))
+	rows = int_val(rows)
+	cols = int_val(cols)
+	offset = cols + 1
+	old_spacing = snip.buffer[snip.line][:snip.buffer[snip.line].rfind('\t') + 1]
+	snip.buffer[snip.line] = ''
+	final_str = old_spacing + "\\begin{tabular}{|" + "|".join(['$' + str(i + 1) for i in range(cols)]) + "|}\n"
+	for i in range(rows):
+		final_str += old_spacing + '\t'
+		final_str += " & ".join(['$' + str(i * cols + j + offset) for j in range(cols)])
+		final_str += " \\\\\\\n"
+	final_str += old_spacing + "\\end{tabular}\n$0"
+	snip.expand_anon(final_str)
+endglobal
+
+

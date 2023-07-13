@@ -1,4 +1,5 @@
 " CATALOGUE OUTLINE:
+"0. 变量控制区域
 "1. 基本配置区域
 "2. 按键映射区域
 "3. 插件配置区域
@@ -7,6 +8,15 @@
 "6. unite插件扩展区域
 
 ">注意! cpp\hpp 文件的&filetype变量都是cpp
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                     0. 变量控制区域                               "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Whether to enable plug-in(0->off | 1->on){
+let g:is_latex = 1  "Latex
+let g:is_markdown= 1  "Markdown
+"}
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -181,6 +191,12 @@ noremap <Leader>c :bd<CR>
 nnoremap <silent> <leader><space> :noh<cr>
 " }
 
+" fast show view in PDF {
+if expand('%:e') == 'tex'
+  nmap \v \lv
+endif
+" }
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                      3. 插件配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -224,9 +240,17 @@ if &filetype == 'cpp'
 endif
   "python-格式化: pip install autopep8
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
+if (system('command -v clang-format') =~ 'clang-format') == 0
+  echo "Please use -> brew install clang-format"
+endif
   "Cmake : pip install cmake-format
-  "Latex : brew install latexindent ,(必须添加->let g:formatdef_latexindent = '"latexindent -"')
-  "let g:formatdef_latexindent = '"latexindent -"'
+if g:is_latex == 1
+  "Must -> brew install latexindent
+  if (system('command -v latexindent') =~ 'latexindent') == 0
+    echo "Please use -> brew install latexindent"
+  endif
+  let g:formatdef_latexindent = '"latexindent -"'  "设置格式化
+endif
   "Markdown : npm install -g remark-cli
   "Shell : go install mvdan.cc/sh/v3/cmd/shfmt@latest (需要安装go)
 "======================================================================
@@ -261,15 +285,24 @@ nmap <silent> gr <Plug>(coc-references)
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
 
-"Must install -> let g:coc_global_extensions = ['coc-texlab']
-autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
-
 nmap <silent> <C-c> <Plug>(coc-cursors-position)
 "nmap <silent> <C-d> <Plug>(coc-cursors-word) "冲突翻页
 xmap <silent> <C-d> <Plug>(coc-cursors-range)
 " use normal command like `<leader>xi(`
 nmap <leader>x  <Plug>(coc-cursors-operator)
 
+if g:is_latex == 1
+  let g:coc_global_extensions = ['coc-texlab']
+  autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
+
+  if (system('command -v texlab') =~ 'texlab') == 0
+    echo "Please use -> brew install texlab"
+  endif
+  "Must -> brew install --HEAD texlab
+endif
+
+let g:coc_global_extensions = ['coc-clangd'] "自动安装clangd
+let g:coc_global_extensions = ['coc-snippets'] "自动安装snippets
 
 " Option {
   "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
@@ -310,30 +343,41 @@ let g:UltiSnipsExpandTrigger = '<tab>'
 let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
-Plug 'lervag/vimtex'
-let g:vimtex_quickfix_mode=1
-let g:tex_flavor = 'latex'
-let g:vimtex_view_general_viewer = 'skim'
-let g:vimtex_view_method = 'skim'
-let g:vimtex_compiler_progname = 'nvr'
-let g:vimtex_view_general_options = '-r @line @pdf @tex'
+if g:is_latex == 1
+  Plug 'lervag/vimtex'
+  let g:vimtex_quickfix_mode=0
+  let g:tex_flavor = 'latex'
+  let g:vimtex_view_general_viewer = 'skim'
+  let g:vimtex_view_method = 'skim'
+  let g:vimtex_compiler_progname = 'nvr' "设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
+  let g:vimtex_view_general_options = '-r @line @pdf @tex'
 
-Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
-"set conceallevel=2
-let g:tex_conceal='abdmg'
-hi Conceal ctermbg=none
+  let g:vimtex_compiler_pdflatex = {
+      \ 'options' : [
+      \   '-interaction=batchmode',
+      \ ],
+      \}
+  "添加编译器参数： 编译器开启批处理模式
+
+  
+  Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+  "set conceallevel=2
+  let g:tex_conceal='abdmg'
+  hi Conceal ctermbg=none
+endif
 "======================================================================
-autocmd FileType math set filetype=markdown
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-"Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-autocmd FileType math set filetype=tex
-let g:mkdp_theme ='dark'
-if has('mac')
-  let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-  "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
-  "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
-else
-  let g:mkdp_browser = '/usr/bin/google-chrome-stable'
+if g:is_markdown == 1
+  autocmd FileType math set filetype=markdown
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+  autocmd FileType math set filetype=tex
+  let g:mkdp_theme ='dark'
+  if has('mac')
+    let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
+    "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
+  else
+    let g:mkdp_browser = '/usr/bin/google-chrome-stable'
+  endif
 endif
 
 "======================================================================
@@ -510,7 +554,7 @@ func! Run()
   elseif &filetype == 'sh'
     :! bash %
   elseif &filetype == 'tex'
-    :MarkdownPreview
+    normal \ll
   elseif &filetype == 'markdown'
     :MarkdownPreview
   endif
@@ -544,7 +588,7 @@ au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent exe
 " }
 
 "Auto add File Content{
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
+autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py,*.tex exec ":call SetTitle()"
 func SetTitle()
   if &filetype == 'sh'
     call setline(1, "#!/bin/bash")
@@ -561,8 +605,32 @@ func SetTitle()
   if &filetype == 'python'
     call setline(1, "#!/usr/local/bin/python3.9")
   endif
-  if &filetype == 'java'
-    call setline(1,"public class ".expand("%"))
+  if &filetype == 'tex'
+    if g:is_latex == 1
+        call setline(1,"%!TeX program = xelatex")
+        call setline(2,"%告诉编辑器使用XeLaTeX编译器来编译文档")
+        call setline(3,"")
+        call setline(4,"\\documentclass[12pt]{article}")
+        call setline(5,"%指定文档的类型和整体格式。文档类型:article，字体:12pt（磅）")
+        call setline(6,"\\usepackage[UTF8]{ctex}")
+        call setline(7,"%引入ctex宏包，用于支持中文")
+        call setline(8,"\\usepackage{amssymb}")
+        call setline(9,"%数学符号包")
+        call setline(10,"\\usepackage{xcolor}")
+        call setline(11,"%颜色包")
+        call setline(12,"\\definecolor{backcolor}{HTML}{2E3440}")
+        call setline(13,"\\definecolor{textcolor}{HTML}{c9d1d9}")
+        call setline(14,"%定义了两个颜色")
+        call setline(15,"\\pagecolor{backcolor}")
+        call setline(16,"%页面背景色")
+        call setline(17,"\\color{textcolor}")
+        call setline(18,"%文本颜色")
+        call setline(19,"")
+        call setline(20,"\\begin{document}")
+        call setline(21,"%文档的正文部分")
+        call setline(22,"hi~")
+        call setline(23,"\\end{document}")
+     endif
   endif
   autocmd BufNewFile * normal G
 endfunc
