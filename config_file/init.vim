@@ -15,6 +15,7 @@
 "Whether to enable plug-in(0->off | 1->on){
 let g:is_latex = 1  "Latex
 let g:is_markdown= 1  "Markdown
+let g:is_lua= 1  "Lua config
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -333,6 +334,7 @@ noremap <F2> :TagbarToggle <CR>
 " Color thems
 Plug 'junegunn/seoul256.vim'
 Plug 'shaunsingh/nord.nvim' "Math style
+"Plug 'dylanaraps/wal'
 "Plug 'morhetz/gruvbox'
 "======================================================================
 "Ultisnips
@@ -347,23 +349,28 @@ if g:is_latex == 1
   Plug 'lervag/vimtex'
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
-  let g:vimtex_view_general_viewer = 'skim'
-  let g:vimtex_view_method = 'skim'
-  let g:vimtex_compiler_progname = 'nvr' "设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
-  let g:vimtex_view_general_options = '-r @line @pdf @tex'
-
-  let g:vimtex_compiler_pdflatex = {
-      \ 'options' : [
-      \   '-interaction=batchmode',
-      \ ],
-      \}
-  "添加编译器参数： 编译器开启批处理模式
-
-  
-  "Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
-  ""set conceallevel=2
-  "let g:tex_conceal='abdmg'
-  "hi Conceal ctermbg=none
+  if has('mac')
+    " Use Skim {
+    let g:vimtex_view_general_viewer = 'skim'
+    let g:vimtex_view_method = 'skim'
+    let g:vimtex_view_general_options = '-r @line @pdf @tex'
+    " }
+  else
+    " Use zathura {
+    let g:vimtex_view_general_viewer = 'zathura'
+    let g:vimtex_view_method='zathura'
+    let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+    " }
+  endif
+    let g:vimtex_compiler_progname = 'nvr' 
+    " 设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
+    let g:vimtex_compiler_pdflatex = {'options' : ['-interaction=batchmode']}
+    " 添加编译器参数： 编译器开启批处理模式
+ 
+  Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+  set conceallevel=2
+  let g:tex_conceal='abdmg'
+  hi Conceal ctermbg=none
 endif
 "======================================================================
 if g:is_markdown == 1
@@ -420,8 +427,16 @@ if has("nvim")
   lua vim.notify = require("notify")
 endif
 " }
+
+" Load lua config file {
+if g:is_lua == 1
+  let $MYLUARC = expand('$HOME/.config/nvim/yj.lua')
+  luafile $MYLUARC
+endif
+" }
+
 " Themes Configure {
-"set termguicolors
+set termguicolors
 colorscheme seoul256
 "colorscheme gruvbox
 "colorscheme nord
@@ -458,6 +473,9 @@ endif
 
 " Fast open configure file {
 :command Config :e $MYVIMRC
+if g:is_lua == 1
+  :command ConfigLua :e $MYLUARC
+endif
 "}
 
 " Command {  "auto merge text to one line
@@ -572,7 +590,8 @@ endif
 "}
 
 " Mathematics file {
-autocmd FileType tex colorscheme  nord
+set background=dark
+autocmd FileType tex colorscheme nord
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
 autocmd FileType math set filetype=tex
