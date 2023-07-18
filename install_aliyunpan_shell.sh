@@ -25,16 +25,20 @@ check_os(){
 	esac
 }
 
+unset DIR
 
 LNIUX(){
-	wget https://github.com/tickstep/aliyunpan/releases/download/v0.2.7/aliyunpan-v0.2.7-linux-386.zip
-	unzip aliyunpan-v0.2.7-linux-386.zip
+	DIR=aliyunpan-v0.2.7-linux-386
 }
 
 OSX(){
-	wget https://github.com/tickstep/aliyunpan/releases/download/v0.2.6/aliyunpan-v0.2.6-darwin-macos-amd64.zip
-	unzip aliyunpan-v0.2.6-darwin-macos-amd64.zip
-
+	DIR=aliyunpan-v0.2.7-darwin-macos-amd64
 }
 
 check_os
+
+wget https://github.com/tickstep/aliyunpan/releases/download/v0.2.7/${DIR}.zip -O /tmp/tmp.zip
+
+unzip /tmp/tmp.zip -d $HOME/
+
+cd $HOME/$DIR

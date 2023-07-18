@@ -14,9 +14,8 @@ check_os(){
 function write(){
 	check_os
 	$cc install fish
-	curl -L https://get.oh-my.fish | fish
-	omf install aight
-	omf install autojump
+	curl -L https://get.oh-my.fish
+	fish -c "omf install aight autojump"
 	$cc install trash-cli #install rm foo -> mv foot foot-bck
 	$cc install bat
 	$cc install colordiff
