@@ -46,7 +46,7 @@ endsnippet
 #$0
 #endsnippet
 snippet img "Figure environment" b
-\usepackage{graphicx}
+%\usepackage{graphicx}
 
 \begin{figure}[${1:htpb}]
 	\centering
@@ -72,9 +72,41 @@ endsnippet
 #\end{table}
 #endsnippet
 
-snippet tab_math "tab_math"
-\usepackage{longtable,booktabs,array}
+snippet longtable "longtable"
+{
+\small
+%\newcolumntype{L}{>{\arraybackslash}p{1cm}}
+\begin{longtable}{ll}
+	\toprule()
+	Name  & Define \\\
+	\midrule()
+	\endhead
+	$1 & $2 \\\
+	\bottomrule()
+	\caption{${0:Table Name}}
+\end{longtable}
+}
+endsnippet
 
+
+snippet tabular "tabular"
+%\usepackage{tabularx}                       %自适应宽度表格
+{
+\small
+\begin{tabularx}{\textwidth}{|X|X|}
+	\hline
+	$1 & $2 \\
+	\hline
+\end{tabularx}
+}
+endsnippet
+
+
+snippet tab_math "tab_math"
+%\usepackage{longtable,booktabs,array}
+
+{
+\small
 \begin{longtable}[]{@{}lll@{}}
 \toprule()
 ${1} & ${2} & ${3} \\\
@@ -82,18 +114,34 @@ ${1} & ${2} & ${3} \\\
 \endhead
 ${4} & ${5} & ${6} \\\
 \bottomrule()
+\caption{${1:Table Name}}
 \end{longtable}
+}
 endsnippet
 
 # Itemize
 snippet item "itemize environment"
 \begin{itemize}[leftmargin=2em,itemindent=2em]
- 	\item ${0}
+`!p 
+# 如果段落非空，则在首字母处添加 " \item"
+if snip.v.text != "":
+		text = snip.v.text
+		paragraphs = re.split(r'\n\s*\n', text)
+		for i, paragraph in enumerate(paragraphs):
+				paragraph = paragraph.strip()
+				if paragraph:
+						paragraph = '  \item ' + paragraph
+				paragraphs[i] = paragraph
+		result = '\n\n'.join(paragraphs)
+		snip.rv = result
+	`$0
 \end{itemize}
 endsnippet
+
 snippet it "\item"
 \item ${1:${VISUAL}}
 endsnippet
+
 context "env("itemize")"
 snippet - "\item" 
 \item ${1:${VISUAL}}
@@ -104,12 +152,26 @@ snippet lab \label
 	\\label{${1:eq:}${2:fig:}${3:tab:}${0}}
 endsnippet
 
+
 # Enumerate
 snippet enum "enumerate environment"
 \begin{enumerate}[leftmargin=2em,itemindent=2em]
-  \item ${0}
+`!p 
+# 如果段落非空，则在首字母处添加 " \item"
+if snip.v.text != "":
+		text = snip.v.text
+		paragraphs = re.split(r'\n\s*\n', text)
+		for i, paragraph in enumerate(paragraphs):
+				paragraph = paragraph.strip()
+				if paragraph:
+						paragraph = '  \item ' + paragraph
+				paragraphs[i] = paragraph
+		result = '\n\n'.join(paragraphs)
+		snip.rv = result
+	`$0
 \end{enumerate}
 endsnippet
+
 snippet enuma "enumerate environment"
 \begin{enumerate}[(a)]
   \item ${0}
@@ -137,7 +199,14 @@ snippet up "\usepackage" b
 endsnippet
 
 snippet mb "\mbox" w
-\mbox{${VISUAL}}
+\mbox{${1:${VISUAL}}}
+endsnippet
+
+snippet box "Box"
+`!p snip.rv = '┌' + '─' * (len(t[1]) + 2) + '┐'`
+│ $1 │
+`!p snip.rv = '└' + '─' * (len(t[1]) + 2) + '┘'`
+$0
 endsnippet
 
 #-------------------- 类markdown --------------------
@@ -150,15 +219,40 @@ snippet ` "bold" i
 endsnippet
 
 snippet # "#" b
-\section{$1}$0
+\section{$1}
+$0
 endsnippet
 
 snippet ## "##" b
-\subsection{$1}$0
+\subsection{$1}
+$0
 endsnippet
 
-snippet ## "##" b
-\subsubsection{$1}$0
+snippet ### "###" b
+\subsubsection{$1}
+$0
+endsnippet
+
+snippet #### "####"
+\paragraph{$1}
+endsnippet
+
+snippet subfigure "subfigure"
+\begin{figure}[htp]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+	\centering
+	${1}
+	\caption{}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.45\textwidth}
+	\centering
+	${2}
+	\caption{}
+	\end{subfigure}
+	\caption{}
+\end{figure}
 endsnippet
 
 #-------------------- 简单的规则 --------------------
@@ -326,7 +420,7 @@ endsnippet
 snippet dm "Math"
 \[
 $1
-.\] $0
+\] $0
 endsnippet
 
 snippet mkk "display math"
@@ -399,7 +493,7 @@ snippet //( "()visual" iA
 endsnippet
 
 #\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
-snippet '//(red|gree|grey|blu|yel)' "textcolor" irA
+snippet '//(red|gree|grey|blu|yel)' "textcolor" ir
 \textcolor{`!p 
 text = match.group(1)
 if text == "gree":
@@ -410,7 +504,7 @@ elif text == "yel":
 	snip.rv = "yellow"
 else:
 	snip.rv = text
-`}{${VISUAL}}$0
+`}{${VISUAL}}
 endsnippet
 
 context "math()"
