@@ -19,6 +19,8 @@ fi
 #Check OS System
 if [ "$(uname)" == "Linux" ];then
 	sudo apt install -y file passwd
+else
+	brew install coreutils
 fi
 
 ./install_aria2c.sh

@@ -195,6 +195,7 @@ nnoremap <silent> <leader><space> :noh<cr>
 " fast show view in PDF {
 if expand('%:e') == 'tex'
   nmap \v \lv
+  nmap 'v \lv
 endif
 " }
 

@@ -36,7 +36,6 @@ alias clang='clang -std=c11 -Wall'
 alias clang++='clang++ -std=c++11 -Wall'
 alias gcc='gcc -std=c11 -Wall'
 alias g++='g++ -std=c++11 -Wall'
+alias set-proxy='source /usr/local/bin/set-proxy'
 
 end
-
-test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
