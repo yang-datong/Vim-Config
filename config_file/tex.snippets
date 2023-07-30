@@ -46,13 +46,18 @@ endsnippet
 #$0
 #endsnippet
 snippet img "Figure environment" b
-%\usepackage{graphicx}
-
-\begin{figure}[${1:htpb}]
+\begin{figure}[ht]
 	\centering
-	${2:\includegraphics[width=0.8\textwidth]{$3}}
+	\includegraphics[width=0.8\textwidth]{$3}
 	\caption{${4:$3}}
-	\label{fig:${5:${3/\W+/-/g}}}
+\end{figure}
+endsnippet
+
+snippet fig "fig"
+\begin{figure}[htp]
+	\centering
+	${VISUAL:default}
+	\caption{${0}}
 \end{figure}
 endsnippet
 
@@ -147,6 +152,13 @@ snippet - "\item"
 \item ${1:${VISUAL}}
 endsnippet
 
+context "env("thebibliography")"
+snippet - "\bibitem" 
+\bibitem{ref${1:1}} ${3:Name}：\url{${2:https://tor.stackexchange.com/}}
+endsnippet
+
+
+
 # Label
 snippet lab \label
 	\\label{${1:eq:}${2:fig:}${3:tab:}${0}}
@@ -202,11 +214,89 @@ snippet mb "\mbox" w
 \mbox{${1:${VISUAL}}}
 endsnippet
 
+snippet lst "lst"
+\begin{figure}[htp]
+	\centering
+	\begin{lstlisting}[basicstyle=\small]
+	${1:${VISUAL}}
+	\end{lstlisting}
+	\caption{$0}
+\end{figure}
+endsnippet
+
 snippet box "Box"
 `!p snip.rv = '┌' + '─' * (len(t[1]) + 2) + '┐'`
 │ $1 │
 `!p snip.rv = '└' + '─' * (len(t[1]) + 2) + '┘'`
 $0
+endsnippet
+
+snippet main "main"
+%!TeX program = xelatex
+%============================== Introduction ================================
+\documentclass[a4paper]{article}
+%-------------------------------- Package -----------------------------------
+\usepackage[UTF8]{ctex}
+\usepackage[margin=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+
+\usepackage[nottoc,notlot,notlof]{tocbibind}
+\usepackage{titletoc} 
+\usepackage{titlesec}
+\usepackage{fmtcount}
+\usepackage{setspace}
+\setstretch{1.5}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+
+%\usepackage{tabularx}
+%\usepackage{longtable,booktabs,array}
+%\usepackage{pgfplots}
+%\pgfplotsset{compat=1.18}
+%\usepackage{subcaption}
+%\usepackage{listings}
+%\usepackage{pifont}
+%\usepackage{multicol}
+%\usepackage{xurl} 
+%\usepackage{xcolor}
+%------------------------------- Configure ----------------------------------
+\titlecontents{section}[0pt]
+{\addvspace{1.5pt}\filright\bf}
+{\contentspush{第\thecontentslabel\ 章\quad}}{}
+{\titlerule*[8pt]{.}\contentspage} 
+
+\titleformat{\section}[block]
+{\centering\Large\bfseries}
+{第\zhnum{section}章}{1em}{} 
+
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}[block]
+{\normalfont\normalsize\bfseries}
+{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1em}
+%================================= Main =====================================
+%--------------------------------- Title ------------------------------------
+\title{`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}
+\author{\textcopyright Yang-datong }
+\date{`!v strftime("%Y-%m-%d %H:%M")`}
+%--------------------------------- Head -------------------------------------
+\begin{document}
+\maketitle                  % 生成Title
+\pagenumbering{gobble}      % 取消目录前显示页码
+\tableofcontents            % 生成章节目录
+\listoffigures              % 生成图片目录
+\listoftables               % 生成表格目录
+\newpage
+\pagenumbering{arabic}
+%--------------------------------- Body -------------------------------------
+${1:HI!}$0
+
+%--------------------------------- Reference --------------------------------
+\newpage
+\begin{thebibliography}{1}  
+	\bibitem{ref1} \url{}
+\end{thebibliography}
+\end{document}
 endsnippet
 
 #-------------------- 类markdown --------------------
@@ -427,6 +517,12 @@ snippet mkk "display math"
 $$
 $0
 $$
+endsnippet
+
+snippet equ "equation"
+\begin{equation}
+	${1:${VISUAL}}
+\end{equation}
 endsnippet
 
 snippet mkka "display math aligned"

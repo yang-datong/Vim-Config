@@ -627,33 +627,6 @@ func SetTitle()
   if &filetype == 'python'
     call setline(1, "#!/usr/local/bin/python3.9")
   endif
-  if &filetype == 'tex'
-    if g:is_latex == 1
-        call setline(1,"%!TeX program = xelatex")
-        call setline(2,"%告诉编辑器使用XeLaTeX编译器来编译文档")
-        call setline(3,"")
-        call setline(4,"\\documentclass[12pt]{article}")
-        call setline(5,"%指定文档的类型和整体格式。文档类型:article，字体:12pt（磅）")
-        call setline(6,"\\usepackage[UTF8]{ctex}")
-        call setline(7,"%引入ctex宏包，用于支持中文")
-        call setline(8,"\\usepackage{amssymb}")
-        call setline(9,"%数学符号包")
-        call setline(10,"\\usepackage{xcolor}")
-        call setline(11,"%颜色包")
-        call setline(12,"\\definecolor{backcolor}{HTML}{2E3440}")
-        call setline(13,"\\definecolor{textcolor}{HTML}{c9d1d9}")
-        call setline(14,"%定义了两个颜色")
-        call setline(15,"\\pagecolor{backcolor}")
-        call setline(16,"%页面背景色")
-        call setline(17,"\\color{textcolor}")
-        call setline(18,"%文本颜色")
-        call setline(19,"")
-        call setline(20,"\\begin{document}")
-        call setline(21,"%文档的正文部分")
-        call setline(22,"hi~")
-        call setline(23,"\\end{document}")
-     endif
-  endif
   autocmd BufNewFile * normal G
 endfunc
 " }

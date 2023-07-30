@@ -38,4 +38,5 @@ alias gcc='gcc -std=c11 -Wall'
 alias g++='g++ -std=c++11 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
+if test -f /Users/hi/.autojump/share/autojump/autojump.fish; . /Users/hi/.autojump/share/autojump/autojump.fish; end
 end
