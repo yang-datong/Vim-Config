@@ -31,19 +31,19 @@ endsnippet
 # vim:ft=snippets:
 
 #---------- python ----------
-snippet if "If" b
+snippet if "If" i
 if ${1:condition}:
 	${2:${VISUAL:pass}}
 endsnippet
 
-snippet ife "If / Else" b
+snippet ife "If / Else" i
 if ${1:condition}:
 	${2:${VISUAL:pass}}
 else:
 	${3:pass}
 endsnippet
 
-snippet ifee "If / Elif / Else" b
+snippet ifee "If / Elif / Else" i
 if ${1:condition}:
 	${2:${VISUAL:pass}}
 elif ${3:condition}:
@@ -52,14 +52,14 @@ else:
 	${5:pass}
 endsnippet
 
-snippet try "Try / Except" b
+snippet try "Try / Except" i
 try:
 	${1:${VISUAL:pass}}
 except ${2:Exception} as ${3:e}:
 	${4:raise $3}
 endsnippet
 
-snippet for "for loop" b
+snippet for "for loop" i
 for ${1:item} in ${2:iterable}:
 	${3:${VISUAL:pass}}
 endsnippet

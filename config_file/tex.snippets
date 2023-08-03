@@ -30,13 +30,13 @@ endglobal
 #==================== Latex ====================
 #配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
 
+snippet ding "ding"
+\ding{${1|172,173,174,175,176|}} $0
+endsnippet
+
 snippet #! "#!"
 %!TeX program = xelatex
 \usepackage[UTF8]{ctex}
-endsnippet
-
-snippet ref "References"
-\ref{$1}$0
 endsnippet
 
 snippet fig "Figure environment" b
@@ -82,24 +82,25 @@ snippet tab "Table environment" b
 \end{table}
 endsnippet
 
-snippet longtable "longtable"
+snippet longtable "longtable" wb
 {
 \small
-%\newcolumntype{L}{>{\arraybackslash}p{1cm}}
-\begin{longtable}{ll}
-	\toprule()
-	${1:Name}  & ${2:Define} \\\
-	\midrule()
+%\newcolumntype{L}{>{\arraybackslash}p{5cm}}
+\begin{longtable}{cc}
+	\caption{${3:Sample}表}
+	\label{tab:sample}           \\\
+	\toprule
+	\textbf{${1:No.}} & \textbf{${2:Name}} \\\
+	\midrule
 	\endhead
-	$3 & $4 \\\
+	${4:1}            & ${5:Alice}         \\\
 	\bottomrule()
-	\caption{${0:Table Name}}
 \end{longtable}
 }
 endsnippet
 
 
-snippet tabular "tabular"
+snippet tabular "tabular" wb
 {
 \small
 \begin{tabularx}{\textwidth}{|X|X|}
@@ -179,9 +180,12 @@ snippet - "\bibitem"
 \bibitem{ref${1:1}} ${3:Name}：\url{${2:https://tor.stackexchange.com/}}
 endsnippet
 
-# Label
-snippet lab \label
-	\\label{${1:eq:}${2:fig:}${3:tab:}${0}}
+snippet lab "\label"
+\label{${1|eq:,fig:,tab:|}$2}$0
+endsnippet
+
+snippet ref "~\ref"
+~\ref{${1|eq:,fig:,tab:|}$2}$0
 endsnippet
 
 snippet desc "Description" b
@@ -273,16 +277,29 @@ endsnippet
 
 #-------------------- 简单的规则 --------------------
 context "math()"
-snippet '(cap|cdot|cup|equiv|int|in|iff|mu|neq|phi|pi|pm|sim)' "all" ir
+snippet '(\*|X)' "*"  ir
+`!p
+if match.group(1) == "*" :
+	snip.rv = "\\cdot"
+elif match.group(1) == "X":
+	snip.rv = "\\times"
+` $0
+endsnippet
+
+priority -200
+context "math()"
+snippet '(cap|cdot|cup|equiv|int|in|iff|mu|neq|varphi|phi|pi|pm|sim)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 
 context "math()"
-snippet '(\.\.\.|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub)' "all_entensions" ir
+snippet '(\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub)' "all_entensions" ir
 `!p 
 s = match.group(1)
 if s == "...":
 	s = "dots"
+elif s == "~":
+	s = "sim"
 elif s == "al":
 	s = "alpha"
 elif s == "be":
@@ -310,6 +327,32 @@ elif s == "sub":
 snip.rv = "\\" + s
 ` $0
 endsnippet
+
+#begin，end
+snippet '(solution|sym|the|def|lem|example|exa|cor|remark|rem|property|proposition|proof|warning)' "beg_entensions" irb
+`!p 
+s = match.group(1)
+if s == "sym":
+	s = "symbols"
+elif s == "the":
+	s = "theorem"
+elif s == "def":
+	s = "definition"
+elif s == "lem":
+	s = "lemma"
+elif s == "exa":
+	s = "example"
+elif s == "cor":
+	s = "corollary"
+elif s == "rem":
+	s = "remark"
+snip.rv = "\\begin{" + s + "}"
+` 
+	${1:${VISUAL}}$0
+`!p snip.rv = "\\end{" + s + "}"` 
+endsnippet
+
+
 #-------------------- 参数的规则 --------------------
 snippet '(del|lim|ln|log|sq|vec)' "argment_all" ir
 `!p 
@@ -360,7 +403,7 @@ endsnippet
 
 context "math()"
 snippet lims "lims" i
-\lim\limits_{${1:x} \to ${2:\infty}}$3
+\lim\limits_{${1:x} \to ${2:x_{0}}}$0 
 endsnippet
 
 context "math()"
@@ -380,13 +423,13 @@ endsnippet
 
 #-------------------- 符号的规则 --------------------
 context "math()"
-snippet () "()" iA
-($1)$0
+snippet '(\(\)|\[\]|\|\|)' "parent" iAr
+`!p	snip.rv = match.group(1)[:1]` $1 `!p snip.rv = match.group(1)[1:]`$0
 endsnippet
 
 context "math()"
-snippet [] "[]" iA
-[$1]$0
+snippet \{} "\{\}" iA
+\\{ $1 \\}$0
 endsnippet
 
 context "math()"
@@ -445,6 +488,13 @@ snippet mkk "display math"
 \end{equation}
 endsnippet
 
+context "env("proof")"
+snippet mkk "display math"
+$$
+	$0
+$$
+endsnippet
+
 snippet equ "equation"
 \begin{equation}
 	${1:${VISUAL}}
@@ -460,7 +510,7 @@ endsnippet
 #-------------------- 套件的规则 --------------------
 snippet beg "begin{} / end{}" i
 \begin{$1}
-$2
+${2:${VISUAL}}
 \end{$1}
 endsnippet
 
@@ -473,7 +523,6 @@ snippet \\ "jump to next line"
 \\\ & ${1}
 endsnippet
 
-context "math()"
 snippet ali "ali"
 `!p 
 s = snip.v.text
@@ -485,9 +534,9 @@ elif idx == -1 and idx2 == -1:
     new_s = "& " + s
 else:
     new_s = s
-snip.rv = "\\begin{aligned}\n" + new_s + " \\\\"
+snip.rv = "\\begin{align}\n" + new_s + " \\\\"
 `$0
-\end{aligned}
+\end{align}
 endsnippet
 
 context "env("aligned")"
@@ -496,6 +545,11 @@ snippet \\ "jump to next line"
 & $1
 endsnippet
 
+context "env("align")"
+snippet \\ "jump to next line" 
+\\\
+& $1
+endsnippet
 #-------------------- VISUAL --------------------
 context "math()"
 snippet dis "dis" i
@@ -564,6 +618,21 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 `{$1}$0
 endsnippet
 
+priority 1001
+context "internel_math()"
+snippet '^.*\)/' "() Fraction" wrA
+`!p
+stripped = match.string[:-1]
+depth = 0
+i = len(stripped) - 1
+while True:
+    if stripped[i] == ')': depth += 1
+    if stripped[i] == '(': depth -= 1
+    if depth == 0: break;
+    i -= 1
+snip.rv = stripped[0:i] + "\\dfrac{" + stripped[i+1:-1] + "}"
+`{$1}$0
+endsnippet
 
 #================== 正则 ==================
 #---------- 概率论 ----------
@@ -626,16 +695,22 @@ elif one == "r":
 endsnippet
 
 #---------- 上下标 ----------
+priority -200
 context "math()"
-snippet '([A-Za-z|\)|\}])(\d{1,2}|x)sr' "x^{\d}" ir
+snippet '([A-Za-z|\)|\}])(\d{1,2}|x|n|m|\+|-)sr' "x^{\d}" ir
 `!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
 endsnippet
 
 context "math()"
-snippet '([A-Za-z|\)|\}])sr(\d{1,2}|x)' "---x^{\d}" ir
+snippet '([A-Za-z|\)|\}])sr(\d{1,2}|x|n|m|\+|-)' "---x^{\d}" ir
 `!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
 endsnippet
 
+snippet '(\]|\}\|\))sr' "sr" ir
+`!p	snip.rv = match.group(1)`^{$1}$0
+endsnippet
+
+priority -100
 context "math()"
 snippet '([A-Za-z|\)|\}])sr' "x^{2}" ir
 `!p	snip.rv = match.group(1)`^{2}$0
@@ -646,13 +721,20 @@ snippet '([A-Za-z|\)|\}])srr' "x^{3}" ir
 `!p	snip.rv = match.group(1)`^{3}$0
 endsnippet
 
+priority -200
 context "math()"
-snippet '\s((?!r|t|f|F)[A-Za-z])(\d{1,2})' "x_{\d}" r
+snippet '((?!r|t|f|F)[A-Za-z])(\d{1,2})' "x_{\d\d}" ir
+`!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
+endsnippet
+
+priority -100
+context "math()"
+snippet '((?!r|t|f|F)[A-Za-z])(\d{1})' "x_{\d}" r
 `!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
 endsnippet
 
 context "math()"
-snippet '\s(x|y|n)(n|k|i|j)' "x_n" ir
+snippet '(x|y|n)(n|k|i|j)' "x_n" ir
 `!p snip.rv = match.group(1) + "_{" + match.group(2) + "}"`$0
 endsnippet
 
@@ -710,7 +792,7 @@ snippet '([Ffg])xi' "f(\xi)" ir
 endsnippet
 
 context "math()"
-snippet '([Ffg])('{0,3})((?!r|t|f|F)([a-zX]|\d+))' "f(x)" ir
+snippet '([Ffg])('{0,3})((?!r|f|F)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
 endsnippet
 
@@ -719,16 +801,29 @@ snippet 'f(x|k|i|j)(\+|-)(\d)' "f(x+1)" r
 f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
+priority -100
 context "math()"
 snippet 'phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\phi(x)" ir
 \\phi(`!p snip.rv = match.group(1)`)$0
 endsnippet
 
+priority -100
+context "math()"
+snippet 'varphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
+\\varphi(`!p snip.rv = match.group(1)`)$0
+endsnippet
+
+priority 1000
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
 \\frac{`!p snip.rv = match.group(1)`}{$1}$0
 endsnippet
 
+priority 1001
+context "internel_math()"
+snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
+\\dfrac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
 #================== Function ==================
 global !p
 def create_matrix_middle(snip, types=0):
@@ -826,19 +921,19 @@ endglobal
 snippet main "main"
 %!TeX program = xelatex
 %============================== Introduction ================================
-\documentclass[a4paper]{article}
+\documentclass[a4paper,12pt,oneside]{ctexart} % 中文用这个，排版好看些
+%\documentclass[a4paper,12pt,oneside]{article} % 英文用这个
 %-------------------------------- Package -----------------------------------
-\usepackage[UTF8]{ctex}
+%\usepackage[UTF8]{ctex}
 \usepackage[margin=2cm]{geometry}
-\usepackage{amsmath,amssymb}
+%\usepackage[top=2.54cm,bottom=2.54cm,left=3.17cm,right=3.17cm]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
 
 % Format
 \usepackage[nottoc,notlot,notlof]{tocbibind}
-\usepackage{titletoc} 
+\usepackage{titletoc}
 \usepackage{titlesec}
 \usepackage{fmtcount}
-\usepackage{setspace}
-\setstretch{1.5}
 \usepackage[hidelinks]{hyperref}
 \usepackage{enumitem}
 
@@ -861,20 +956,52 @@ snippet main "main"
 %	\import{./}{#1.pdf_tex}
 %}
 %------------------------------- Configure ----------------------------------
+\setmainfont{STSongti-SC-Light}
+
+% 定义定理环境的样式
+\newtheoremstyle{indented}
+{\topsep} % 上方间距
+{\topsep} % 下方间距
+{\itshape} % 定理文本的字体
+{2em} % 缩进量
+{\bfseries} % 定理标签的字体
+{.} % 定理标签和定理内容之间的标点
+{.5em} % 定理标签和定理内容之间的水平间距
+{} % 定理标签的规定
+
+\theoremstyle{indented}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{property}{性质}[section]
+\newtheorem{definition}[theorem]{定义}
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{corollary}[theorem]{推论}
+\newtheorem{example}[theorem]{例}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem*{symbols}{符号记作}
+\newtheorem{proofs}[theorem]{证明}
+
+\newtheorem{warning}{}
+\renewcommand{\warning}{\textcolor{red}{\textbf{[注]}}}
+
+\numberwithin{equation}{section} % 数学公式编号方式
+\allowdisplaybreaks              % 允许在长公式中换页
+
 \titlecontents{section}[0pt]
 {\addvspace{1.5pt}\filright\bf}
 {\contentspush{第\thecontentslabel\ 章\quad}}{}
-{\titlerule*[8pt]{.}\contentspage} 
+{\titlerule*[8pt]{.}\contentspage}
 
 \titleformat{\section}[block]
 {\centering\Large\bfseries}
-{第\zhnum{section}章}{1em}{} 
+{第\zhnum{section}章}{1em}{}
 
 \setcounter{secnumdepth}{4}
 \titleformat{\paragraph}[block]
 {\normalfont\normalsize\bfseries}
 {\theparagraph}{1em}{}
 \titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1em}
+
+\linespread{1.5}
 %================================= Main =====================================
 %--------------------------------- Title ------------------------------------
 \title{`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}
@@ -882,24 +1009,37 @@ snippet main "main"
 \date{`!v strftime("%Y-%m-%d %H:%M")`}
 %--------------------------------- Head -------------------------------------
 \begin{document}
+
+\setcounter{page}{0}        % 设置页码为0
 \maketitle                  % 生成Title
-\pagenumbering{gobble}      % 取消目录前显示页码
+\thispagestyle{empty}       % 隐藏特定页面上的页眉、页脚和页码
+
+\textbf{ChatGPT}: 我想让你当一名数学老师。我会提供一些数学公式或概念，你的工作是用易于理解的术语解释它们。这可能包括提供解决问题的分步说明，演示各种视觉效果技术或建议在线资源以供进一步研究。下面我将会向你提出我的问题，你准备好了吗？
+
+%\begin{abstract}
+%	这里是摘要.
+%	\par\textbf{关键词：}这里是关键词; 这里是关键词.
+%\end{abstract}
+
+%\newpage
+\pagenumbering{Roman}       % 设置Roman数字
+\setcounter{page}{1}        % 设置当前页码为I
 \tableofcontents            % 生成章节目录
+%\newpage
 \listoffigures              % 生成图片目录
 \listoftables               % 生成表格目录
+
 \newpage
-\pagenumbering{arabic}
+\setcounter{page}{1}        % 设置当前页码为1
+\pagenumbering{arabic}      % 开始页数计数
 %--------------------------------- Body -------------------------------------
 ${1:HI!}$0
 
 %--------------------------------- Reference --------------------------------
 \newpage
-\begin{thebibliography}{1}  
-	\bibitem{ref1} \url{}
+\begin{thebibliography}{1}
+	\bibitem{a}作者. \emph{文献}[M]. 地点:出版社,年份.
 \end{thebibliography}
+
 \end{document}
 endsnippet
-
-
-
-

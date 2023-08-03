@@ -5,6 +5,7 @@ set -x PATH $PATH $HOME/Library/Python/3.9/bin
 set -x PATH $PATH /usr/local/opt/binutils/bin
 set -x PATH $PATH /usr/local/texlive/2022/bin/universal-darwin/
 set -x PATH $PATH $HOME/Library/Android/sdk/ndk/21.1.6352462
+set -x PATH $PATH /Applications/Inkscape.app/Contents/MacOS/
 
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
 set -x JAVA_HOME /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home

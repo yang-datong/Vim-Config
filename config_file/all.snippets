@@ -121,12 +121,19 @@ snippet datetime "YYYY-MM-DD hh:mm" w
 `!v strftime("%Y-%m-%d %H:%M")`
 endsnippet
 
+priority -200
 snippet // "//" w
 `!p snip.rv=get_comment_format()[0]` ${VISUAL}$0 `!p snip.rv=get_comment_format()[2]`
 endsnippet
 
+priority -100
 snippet todo "TODO comment" bw
-`!p snip.rv=get_comment_format()[0]` TODO ${1:} <`!v strftime('%y-%m-%d %T')`, YangJing}> `!p snip.rv=get_comment_format()[2]`
+`!p snip.rv=get_comment_format()[0]` TODO ${1:} <`!v strftime('%y-%m-%d %T')`, YangJing> `!p snip.rv=get_comment_format()[2]`
+endsnippet
+
+priority -200
+snippet todo "todo" w
+TODO ${1:} <`!v strftime('%y-%m-%d %T')`, Yangdatong> 
 endsnippet
 
 ##########
