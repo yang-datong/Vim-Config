@@ -7,11 +7,10 @@ def internel_math():
     if math():
         linebuf = vim.eval("getline('.')")
         index = int(vim.eval("col('.')-1"))
-        # print(linebuf+"|"+index)
         count_before = linebuf[:index].count('$')
         count_after = linebuf[index:].count('$')
-        # print(str(count_before)+"|"+str(count_after))
-        if (count_after == 0 and count_before == 0) or (count_after % 2 == 0 and count_before % 2 == 0):
+        # print(str(linebuf) + " <-----> " + str(count_before)+"|"+str(count_after))
+        if (count_after == 0 and count_before == 0):# or (count_after % 2 == 0 and count_before % 2 == 0):
             return False
         return True
     else:
@@ -20,15 +19,55 @@ def internel_math():
 def display_math():
 		return math() and (not internel_math())
 
-
 def env(name):
     [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
     return x != '0' and y != '0'
+
+#"""在字符串中的中文前后添加标识符"""
+def add_chinese_tags(snip,flag):
+	text = snip.buffer[snip.line][:-len(flag)]
+	snip.buffer[snip.line] = ''
+	pattern = r'([\u4e00-\u9fa5]+)'  # 匹配中文字符的正则表达式
+	replacement = r'\\mbox{\1}'  # 替换模式，使用\mbox{}包裹中文字符
+	result = re.sub(pattern, replacement, text)
+	snip.expand_anon(result + '$1')
+
+#"""判断最后i个字符是否为中文字符"""
+def is_end_chinese_character(flag):
+	linebuf = vim.eval("getline('.')")[:-len(flag)]
+	char = linebuf[-1]
+	if '\u4e00' <= char <= '\u9fa5':
+		return True
+	else:
+		return False
+
+#"""判断是否为中文字符"""
+def is_chinese_character(flag):
+	if not math():
+		return False
+	linebuf = vim.eval("getline('.')")[:-len(flag)]
+	pattern = re.compile(r'[\u4e00-\u9fa5]')
+	result = re.search(pattern, linebuf)
+	if result:
+		return True
+	else:
+		return False
+
 
 endglobal
 
 #==================== Latex ====================
 #配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
+
+# 数学环境下中文需要mbox的解决
+context "is_chinese_character('.mbox')"
+pre_expand "add_chinese_tags(snip,'.mbox')"
+snippet .mbox ".mbox" i
+endsnippet
+
+snippet selectOptions "\selectOptions"
+\selectOptions{$1}{$2}{$3}{$4}$0
+endsnippet
 
 snippet ding "ding"
 \ding{${1|172,173,174,175,176|}} $0
@@ -177,7 +216,7 @@ endsnippet
 
 context "env("thebibliography")"
 snippet - "\bibitem" 
-\bibitem{ref${1:1}} ${3:Name}：\url{${2:https://tor.stackexchange.com/}}
+\bibitem{${1:a}} ${2:作者}. \emph{${3:文献}}[M]. ${4:地点}:${5:出版社},${6:年份}.\url{${7:www.wiki.com}}
 endsnippet
 
 snippet lab "\label"
@@ -523,19 +562,25 @@ snippet \\ "jump to next line"
 \\\ & ${1}
 endsnippet
 
+#snippet ali "ali"
+#`!p 
+#s = snip.v.text
+#idx = s.find("=")
+#idx2 = s.find("&")
+#if idx != -1 and idx2 == -1:
+#    new_s = s[:idx] + " & " + s[idx:]
+#elif idx == -1 and idx2 == -1:
+#    new_s = "& " + s
+#else:
+#    new_s = s
+#snip.rv = "\\begin{align}\n" + new_s + " \\\\"
+#`$0
+#\end{align}
+#endsnippet
+
 snippet ali "ali"
-`!p 
-s = snip.v.text
-idx = s.find("=")
-idx2 = s.find("&")
-if idx != -1 and idx2 == -1:
-    new_s = s[:idx] + " & " + s[idx:]
-elif idx == -1 and idx2 == -1:
-    new_s = "& " + s
-else:
-    new_s = s
-snip.rv = "\\begin{align}\n" + new_s + " \\\\"
-`$0
+\begin{align}
+	$0
 \end{align}
 endsnippet
 
@@ -662,36 +707,50 @@ snippet '(g|l)eq' "\geq" ir
 \\`!p snip.rv = match.group(1)`eq $0
 endsnippet
 
+#context "math()"
+#snippet '(b|l|r)(\(|\)|\||\[|\]|\{|\})' "\bigg left right ()[]{}" r
+#`!p 
+#one = match.group(1)
+#two = match.group(2)
+#if two == "(":
+#	twos = ")"
+#elif two == "[":
+#	twos = "]"
+#elif two == "{":
+#	twos = "}"
+#elif two == "|":
+#	twos = "|"
+#else:
+#	twos = ""
+#
+#if one == "b":
+#	snip.rv = "\\bigg" + two
+#elif one == "l":
+#	snip.rv = "\\left" + two
+#elif one == "r":
+#	snip.rv = "\\right" + two
+#` $1 `!p 
+#if one == "b":
+#	snip.rv = "\\bigg" + twos
+#elif one == "l":
+#	snip.rv = "\\right" + twos
+#elif one == "r":
+#	snip.rv = "\\left" + twos
+#`$0
+#endsnippet
+
 context "math()"
 snippet '(b|l|r)(\(|\)|\||\[|\]|\{|\})' "\bigg left right ()[]{}" r
 `!p 
 one = match.group(1)
 two = match.group(2)
-if two == "(":
-	twos = ")"
-elif two == "[":
-	twos = "]"
-elif two == "{":
-	twos = "}"
-elif two == "|":
-	twos = "|"
-else:
-	twos = ""
-
 if one == "b":
 	snip.rv = "\\bigg" + two
 elif one == "l":
 	snip.rv = "\\left" + two
 elif one == "r":
 	snip.rv = "\\right" + two
-` $1 `!p 
-if one == "b":
-	snip.rv = "\\bigg" + twos
-elif one == "l":
-	snip.rv = "\\right" + twos
-elif one == "r":
-	snip.rv = "\\left" + twos
-`$0
+` $0
 endsnippet
 
 #---------- 上下标 ----------
@@ -1038,7 +1097,7 @@ ${1:HI!}$0
 %--------------------------------- Reference --------------------------------
 \newpage
 \begin{thebibliography}{1}
-	\bibitem{a}作者. \emph{文献}[M]. 地点:出版社,年份.
+	\bibitem{a}作者. \emph{文献}[M]. 地点:出版社,年份.\url{www.google.com}
 \end{thebibliography}
 
 \end{document}
