@@ -19,13 +19,11 @@ let g:is_lua= 1  "Lua config
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"                     1. 基本配置区域                              "
+"                     1. 基本配置区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
 if has("mac")
   let g:python3_host_prog='/usr/local/bin/python3.9' "Mac -> Open
-  set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1
-  set path+=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
   set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
 endif
 " }
@@ -92,7 +90,6 @@ set noshowcmd
 " 影响主要是在编写代码时会弹出函数定义框，需要手动关闭影响布局
 "set completeopt-=preview
 " }
-
 ""}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -238,7 +235,8 @@ Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
 Plug 'vim-autoformat/vim-autoformat'
 "let g:autoformat_verbosemode=1 "调试format
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
-autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
+"autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
+noremap <C-p> :Autoformat<CR>
   "python-格式化: pip install autopep8
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
 if (system('command -v clang-format') =~ 'clang-format') == 0
@@ -263,48 +261,40 @@ inoremap <silent><expr> <Down>
       \ CheckBackspace() ? "\<Down>" :
       \ coc#refresh()
 inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
-inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-
+"inoremap <expr> <Cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" 检查光标是否在一行的开头，或者光标前面的字符是否是空白字符
+" abort关键字用于在出现错误时立即终止函数
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 " https://github.com/neoclide/coc.nvim
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
 " Coc-vim jump definition
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-
-" Remap keys for applying code actions at the cursor position
-nmap <leader>ac  <Plug>(coc-codeaction-cursor)
-" Remap keys for apply code actions affect whole buffer
-nmap <leader>as  <Plug>(coc-codeaction-source)
-" Apply the most preferred quickfix action to fix diagnostic on the current line
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" GoTo code navigation
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-
-" Remap for rename current word
+nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+nmap <leader>as  <Plug>(coc-codeaction-source)
+nmap <leader>qf  <Plug>(coc-fix-current)
 nmap <leader>rn <Plug>(coc-rename)
-
 nmap <silent> <C-c> <Plug>(coc-cursors-position)
-"nmap <silent> <C-d> <Plug>(coc-cursors-word) "冲突翻页
-xmap <silent> <C-d> <Plug>(coc-cursors-range)
-" use normal command like `<leader>xi(`
-nmap <leader>x  <Plug>(coc-cursors-operator)
-
+nmap <silent> <C-x> <Plug>(coc-cursors-word) "冲突翻页
+xmap <silent> <C-x> <Plug>(coc-cursors-range)
 if g:is_latex == 1
   let g:coc_global_extensions = ['coc-texlab']
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
-
   if (system('command -v texlab') =~ 'texlab') == 0
     echo "Please use -> brew install texlab"
   endif
   "Must -> brew install --HEAD texlab
 endif
-
 let g:coc_global_extensions = ['coc-clangd'] "自动安装clangd
 let g:coc_global_extensions = ['coc-snippets'] "自动安装snippets
-
 " Option {
   "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
     "- CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
@@ -312,13 +302,10 @@ let g:coc_global_extensions = ['coc-snippets'] "自动安装snippets
     "- python : CocInstall coc-pyright
     "- js : coc-eslint
     "- shell: brew install shellcheck
-
   "显示snipt片段的提示: 
     "- CocInstall coc-snippets
-
   "clangd 配置语法识别参数: 
     "- 文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
-
   "Coc 自动导入包 CocAction 类似于java import 包
 
   "卸载：
@@ -350,23 +337,20 @@ if g:is_latex == 1
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
   if has('mac')
-    " Use Skim {
+    " Use Skim 
     let g:vimtex_view_general_viewer = 'skim'
     let g:vimtex_view_method = 'skim'
     let g:vimtex_view_general_options = '-r @line @pdf @tex'
-    " }
   else
-    " Use zathura {
+    " Use zathura 
     let g:vimtex_view_general_viewer = 'zathura'
     let g:vimtex_view_method='zathura'
     let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
-    " }
   endif
     let g:vimtex_compiler_progname = 'nvr' 
     " 设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
     let g:vimtex_compiler_pdflatex = {'options' : ['-interaction=batchmode']}
     " 添加编译器参数： 编译器开启批处理模式
- 
   Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
   set conceallevel=2
   let g:tex_conceal='abdmg'
@@ -399,7 +383,6 @@ let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize=30
-
 " NERDTree KeyMapping
 " Locate current file in file systems
 nnoremap <silent> <Leader>l :NERDTreeFind<CR>
@@ -418,6 +401,8 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 if has("nvim")
   Plug 'rcarriga/nvim-notify'
 endif
+"======================================================================
+Plug 'deris/vim-shot-f' "高亮f/F,t/T命令
 "======================================================================
 call plug#end()
 

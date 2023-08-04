@@ -28,7 +28,7 @@ def add_chinese_tags(snip,flag):
 	text = snip.buffer[snip.line][:-len(flag)]
 	snip.buffer[snip.line] = ''
 	pattern = r'([\u4e00-\u9fa5]+)'  # 匹配中文字符的正则表达式
-	replacement = r'\\mbox{\1}'  # 替换模式，使用\mbox{}包裹中文字符
+	replacement = r'\\text{\1}'  # 替换模式，使用\mbox{}包裹中文字符
 	result = re.sub(pattern, replacement, text)
 	snip.expand_anon(result + '$1')
 
@@ -63,6 +63,12 @@ endglobal
 context "is_chinese_character('.mbox')"
 pre_expand "add_chinese_tags(snip,'.mbox')"
 snippet .mbox ".mbox" i
+endsnippet
+
+# 数学环境下中文需要text的解决
+context "is_chinese_character('.text')"
+pre_expand "add_chinese_tags(snip,'.text')"
+snippet .text ".text" i
 endsnippet
 
 snippet selectOptions "\selectOptions"
@@ -553,8 +559,17 @@ ${2:${VISUAL}}
 \end{$1}
 endsnippet
 
+context "display_math()"
 snippet cases "cases" i
-\begin{cases} & ${1} \\\ & ${0} \end{cases}
+\begin{cases} 
+	${1:f(x) = x}  ${2:,& x > 0} \\\
+	${3:f(x) = x}  ${4:,& x < 0} 
+\end{cases}
+endsnippet
+
+context "internel_math()"
+snippet cases "cases" i
+\begin{cases}	${1:f(x) = x}  ${2:,& x > 0} \\\	${3:f(x) = x}  ${4:,& x < 0} \end{cases}
 endsnippet
 
 context "env("cases")"
