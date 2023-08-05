@@ -1,3 +1,5 @@
+#defulat priority = 0 但是一旦设置会影响下面的所以snippet 直到设置一个新的 priority
+
 global !p
 def math():
     return vim.eval('vimtex#syntax#in_mathzone()') == '1'
@@ -297,7 +299,7 @@ snippet ** "bold" i
 \textbf{${1:${VISUAL}}}$0
 endsnippet
 
-snippet ` "bold" i
+snippet `` "bold" i
 \texttt{${1:${VISUAL}}}$0
 endsnippet
 
@@ -318,6 +320,7 @@ endsnippet
 
 snippet #### "####"
 \paragraph{$1}
+$0
 endsnippet
 
 #-------------------- 简单的规则 --------------------
@@ -638,19 +641,13 @@ elif text == "yel":
 	snip.rv = "yellow"
 else:
 	snip.rv = text
-`}{${VISUAL}}
+`}{${1:${VISUAL}}}$0
 endsnippet
 
 context "math()"
 snippet //v "frac_visual" iA
 \\frac{${VISUAL}}{${1}}$0
 endsnippet
-
-# TODO 有点bug <23-04-14 15:59:43, YangJing}> #
-#context "math()"
-#pre_expand "fraction(snip)"
-#snippet // "Fraction" i
-#endsnippet
 
 context "internel_math()"
 snippet // "Fraction" i
@@ -662,7 +659,7 @@ snippet // "Fraction" i
 \frac{$1}{$2}$0
 endsnippet
 
-priority 1000
+priority 1001
 context "math()"
 snippet '^.*\)/' "() Fraction" wrA
 `!p
@@ -678,7 +675,7 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 `{$1}$0
 endsnippet
 
-priority 1001
+priority 2001
 context "internel_math()"
 snippet '^.*\)/' "() Fraction" wrA
 `!p
@@ -769,47 +766,25 @@ elif one == "r":
 endsnippet
 
 #---------- 上下标 ----------
-priority -200
 context "math()"
-snippet '([A-Za-z|\)|\}])(\d{1,2}|x|n|m|\+|-)sr' "x^{\d}" ir
-`!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
-endsnippet
-
-context "math()"
-snippet '([A-Za-z|\)|\}])sr(\d{1,2}|x|n|m|\+|-)' "---x^{\d}" ir
-`!p snip.rv = match.group(1) + "^{"+ match.group(2) +"}"`$0
-endsnippet
-
-snippet '(\]|\}\|\))sr' "sr" ir
+snippet '([A-Za-z]|\)|\}|\])srr' "x^{}" ir
 `!p	snip.rv = match.group(1)`^{$1}$0
 endsnippet
 
-priority -100
 context "math()"
-snippet '([A-Za-z|\)|\}])sr' "x^{2}" ir
-`!p	snip.rv = match.group(1)`^{2}$0
+snippet '([A-Za-z]|\)|\}|\])sr(\d{1,3}|x|n|m|\+|-)?' "x^{\d}" ir
+`!p 
+if match.group(2) is None:
+	snip.rv = match.group(1) + "^{2}"
+else:
+	snip.rv = match.group(1) + "^{"+ match.group(2) +"}"
+`$0
 endsnippet
 
+priority 0
 context "math()"
-snippet '([A-Za-z|\)|\}])srr' "x^{3}" ir
-`!p	snip.rv = match.group(1)`^{3}$0
-endsnippet
-
-priority -200
-context "math()"
-snippet '((?!r|t|f|F)[A-Za-z])(\d{1,2})' "x_{\d\d}" ir
+snippet '([A-Za-z])(\d{1,3}|n|k|i|j)' "x_{\d}" ir
 `!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
-endsnippet
-
-priority -100
-context "math()"
-snippet '((?!r|t|f|F)[A-Za-z])(\d{1})' "x_{\d}" r
-`!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
-endsnippet
-
-context "math()"
-snippet '(x|y|n)(n|k|i|j)' "x_n" ir
-`!p snip.rv = match.group(1) + "_{" + match.group(2) + "}"`$0
 endsnippet
 
 context "math()"
@@ -817,11 +792,8 @@ snippet 'x(n|k|i|j|\d)(\+|-)(n|k|i|j|\d)' "x_{n+\d}" r
 x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
 endsnippet
 
-#context "math()"
-#snippet 'x(\d)(\+|-)(n|k|i|j)' "x_{\d+n}" r
-#x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
-#endsnippet
 #---------- 三角函数 ----------
+priority 2001
 context "math()"
 snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(2|3)?' "sin{}" ir
 \\`!p 
@@ -838,8 +810,9 @@ snip.rv = s
 `{${1}}$0
 endsnippet
 
+priority 3001
 context "math()"
-snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(2|3)?x' "sin{}" ir
+snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(2|3)?x' "sin{x}" ir
 \\`!p 
 one = match.group(1)
 two = match.group(2)
@@ -865,41 +838,79 @@ snippet '([Ffg])xi' "f(\xi)" ir
 `!p snip.rv = match.group(1)`(\xi)$0
 endsnippet
 
+priority 2001
 context "math()"
 snippet '([Ffg])('{0,3})((?!r|f|F)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
 endsnippet
 
 context "math()"
-snippet 'f(x|k|i|j)(\+|-)(\d)' "f(x+1)" r
+snippet 'f(x|k|i|j)(\+|-)(\d{1,3})' "f(x+\d)" r
 f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
-priority -100
+priority 1001
 context "math()"
 snippet 'phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\phi(x)" ir
 \\phi(`!p snip.rv = match.group(1)`)$0
 endsnippet
 
-priority -100
+priority 2001
 context "math()"
 snippet 'varphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
 \\varphi(`!p snip.rv = match.group(1)`)$0
 endsnippet
 
-priority 1000
+priority 1001
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
 \\frac{`!p snip.rv = match.group(1)`}{$1}$0
 endsnippet
 
-priority 1001
+priority 2001
 context "internel_math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
 \\dfrac{`!p snip.rv = match.group(1)`}{$1}$0
 endsnippet
 #================== Function ==================
+context "math()"
+pre_expand "create_matrix(snip)"
+snippet '^mat(\d+\*\d+)' "matrix" r
+endsnippet
+
+context "math()"
+pre_expand "create_matrix(snip,\"v\")"
+snippet '^vmat(\d+\*\d+)' "matrix" r
+endsnippet
+
+context "math()"
+pre_expand "create_matrix_middle(snip)"
+snippet '.*\smat(\d)\*(\d)' "matrix_middle" r
+endsnippet
+
+context "math()"
+pre_expand "create_matrix_middle(snip,\"v\")"
+snippet '.*\svmat(\d)\*(\d)' "matrix_middle" r
+endsnippet
+
 global !p
+def create_table(snip):
+	rows = snip.buffer[snip.line].split('*')[0]
+	cols = snip.buffer[snip.line].split('*')[1]
+	int_val = lambda string: int(''.join(s for s in string if s.isdigit()))
+	rows = int_val(rows)
+	cols = int_val(cols)
+	offset = cols + 1
+	old_spacing = snip.buffer[snip.line][:snip.buffer[snip.line].rfind('\t') + 1]
+	snip.buffer[snip.line] = ''
+	final_str = old_spacing + "\\begin{tabular}{|" + "|".join(['$' + str(i + 1) for i in range(cols)]) + "|}\n"
+	for i in range(rows):
+		final_str += old_spacing + '\t'
+		final_str += " & ".join(['$' + str(i * cols + j + offset) for j in range(cols)])
+		final_str += " \\\\\\\n"
+	final_str += old_spacing + "\\end{tabular}\n$0"
+	snip.expand_anon(final_str)
+
 def create_matrix_middle(snip, types=0):
     flag = "mat"
     if (types == 0):
@@ -940,56 +951,6 @@ def create_matrix(snip, types=0):
                            for col in range(1, columns+1)]) + "\\\\\\\n"
     anon_end = "\end{"+types+"matrix}"
     snip.expand_anon(anon_befor + body + anon_end)
-
-#def fraction(snip):
-#    old_str = snip.buffer[snip.line]
-#    internel = internel_math()
-#    snip.buffer[snip.line] = ''
-#    if internel:
-#        snip.expand_anon(old_str.replace("//","\\dfrac{$1}{$2}$0"))
-#    else:
-#        snip.expand_anon(old_str.replace("//","\\frac{$1}{$2}$0"))
-
-endglobal
-
-context "math()"
-pre_expand "create_matrix(snip)"
-snippet '^mat(\d+\*\d+)' "matrix" r
-endsnippet
-
-context "math()"
-pre_expand "create_matrix(snip,\"v\")"
-snippet '^vmat(\d+\*\d+)' "matrix" r
-endsnippet
-
-context "math()"
-pre_expand "create_matrix_middle(snip)"
-snippet '.*\smat(\d)\*(\d)' "matrix_middle" r
-endsnippet
-
-context "math()"
-pre_expand "create_matrix_middle(snip,\"v\")"
-snippet '.*\svmat(\d)\*(\d)' "matrix_middle" r
-endsnippet
-
-global !p
-
-def create_table(snip):
-	rows = snip.buffer[snip.line].split('*')[0]
-	cols = snip.buffer[snip.line].split('*')[1]
-	int_val = lambda string: int(''.join(s for s in string if s.isdigit()))
-	rows = int_val(rows)
-	cols = int_val(cols)
-	offset = cols + 1
-	old_spacing = snip.buffer[snip.line][:snip.buffer[snip.line].rfind('\t') + 1]
-	snip.buffer[snip.line] = ''
-	final_str = old_spacing + "\\begin{tabular}{|" + "|".join(['$' + str(i + 1) for i in range(cols)]) + "|}\n"
-	for i in range(rows):
-		final_str += old_spacing + '\t'
-		final_str += " & ".join(['$' + str(i * cols + j + offset) for j in range(cols)])
-		final_str += " \\\\\\\n"
-	final_str += old_spacing + "\\end{tabular}\n$0"
-	snip.expand_anon(final_str)
 endglobal
 
 snippet main "main"
