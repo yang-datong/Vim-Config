@@ -347,10 +347,33 @@ if g:is_latex == 1
     let g:vimtex_view_method='zathura'
     let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
   endif
-    let g:vimtex_compiler_progname = 'nvr' 
+
+  let g:vimtex_compiler_progname = 'nvr' 
     " 设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
-    let g:vimtex_compiler_pdflatex = {'options' : ['-interaction=batchmode']}
-    " 添加编译器参数： 编译器开启批处理模式
+  "let g:vimtex_compiler_pdflatex = {'options' : ['-interaction=batchmode']}
+
+  " 类似于C的编译器参数
+  let macro_definition = ''
+        \ .'\def\StandardModel{true}'
+        \ .'\def\ShowAfterClassExercises{true}'
+        \ .'\def\UseInkscapeTools{true}'
+"        \ .'\def\ReleaseModel{true}'
+
+  " 添加编译器参数： 编译器开启批处理模式
+  let g:vimtex_compiler_latexmk = { 
+        \ 'executable' : 'latexmk',
+        \ 'options' : [ 
+        \   '-file-line-error',
+        \   '-synctex=1',
+        \   '-interaction=batchmode',
+        \   '-pretex=' . shellescape(macro_definition) ,
+        \   '-usepretex',
+        \ ],}
+  "\   '-interaction=nonstopmode',
+  "\   '-interaction=batchmode', "最低交互模式，编译速度最快
+  "-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
+  "-interaction=nonstopmode : 禁止交互式操作。当 LaTeX 编译器遇到错误或需要用户输入时，默认情况下会暂停编译并等待用户响应。
+
   Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
   set conceallevel=2
   let g:tex_conceal='abdmg'
