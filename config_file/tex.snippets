@@ -60,6 +60,21 @@ endglobal
 
 #==================== Latex ====================
 #配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
+context "math()"
+snippet 'd(x|y)?' "dx" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "\mathrm{d}"
+else:
+	snip.rv = "\mathrm{d}" + match.group(1)
+`$0
+endsnippet
+
+snippet kaishu "kaishu"
+{\kaishu
+	$0
+}
+endsnippet
 
 # 数学环境下中文需要mbox的解决
 context "is_chinese_character('.mbox')"
@@ -134,13 +149,27 @@ snippet longtable "longtable" wb
 %\newcolumntype{L}{>{\arraybackslash}p{5cm}}
 \begin{longtable}{cc}
 	\caption{${3:Sample}表}
-	\label{tab:sample}           \\\
+	\label{tab:${4:${3/\W+/-/g}}} \\\
+
+	\toprule
+	\textbf{${1:No.}} & \textbf{${2:Name}} \\\
+	\midrule
+	\endfirsthead
+
+	\multicolumn{2}{cc}{${3:Sample}表}                      \\\
 	\toprule
 	\textbf{${1:No.}} & \textbf{${2:Name}} \\\
 	\midrule
 	\endhead
-	${4:1}            & ${5:Alice}         \\\
+
 	\bottomrule()
+	\multicolumn{2}{r}{续下页}
+	\endfoot
+
+	\bottomrule()
+	\endlastfoot
+
+	${5:1}            & ${6:Alice}         \\\
 \end{longtable}
 }
 endsnippet
@@ -163,7 +192,7 @@ endsnippet
 
 # Itemize
 snippet item "itemize environment"
-\begin{itemize}[leftmargin=2em,itemindent=2em]
+\begin{itemize}
 `!p 
 # 如果段落非空，则在首字母处添加 " \item"
 if snip.v.text != "":
@@ -187,7 +216,7 @@ endsnippet
 
 # Enumerate
 snippet enum "enumerate environment"
-\begin{enumerate}[leftmargin=2em,itemindent=2em]
+\begin{enumerate}
 `!p 
 # 如果段落非空，则在首字母处添加 " \item"
 if snip.v.text != "":
@@ -376,7 +405,7 @@ snip.rv = "\\" + s
 endsnippet
 
 #begin，end
-snippet '(solution|sym|the|def|lem|example|exa|cor|remark|rem|property|proposition|proof|warning)' "beg_entensions" irb
+snippet '(kai|solution|sym|the|def|lem|example|exa|cor|remark|rem|property|proposition|proof|warning)' "beg_entensions" irb
 `!p 
 s = match.group(1)
 if s == "sym":
@@ -402,6 +431,7 @@ endsnippet
 
 #-------------------- 参数的规则 --------------------
 priority 1001
+context "math()"
 snippet '(del|lim|ln|log|sq|vec)' "argment_all" ir
 `!p 
 s = match.group(1)
@@ -425,7 +455,7 @@ snippet 'sq(\d)' "sqrt[\d]{}" r
 \sqrt[`!p snip.rv = match.group(1)`]{$1}$0
 endsnippet
 
-snippet '(del|ln|sq)x' "argment_x_all" ir
+snippet '(del|ln|sq)(x|y)' "argment_x_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -433,7 +463,7 @@ if s == "del":
 elif s == "sq":
 	s = "sqrt"
 snip.rv = "\\" + s
-`{x}$0
+`{`!p snip.rv = match.group(2)`}$0
 endsnippet
 
 #-------------------- 多个参数规则 --------------------
@@ -443,19 +473,15 @@ snippet P{} "P{}" i
 P\\{ $1 \\}$0
 endsnippet
 
+priority 3001
 context "math()"
-snippet sum "sum" i
-\sum_{${1:j=0}}^{${2:k}}$0
-endsnippet
-
-context "math()"
-snippet prod "prod" i
-\prod_{${1:j=0}}^{${2:k}}$0
+snippet '(sum|prod)' "sum|prod" ir
+\\`!p snip.rv=match.group(1)`_{${1:j=0}}^{${2:k}}$0
 endsnippet
 
 context "math()"
 snippet lims "lims" i
-\lim\limits_{${1:x} \to ${2:x_{0}}}$0 
+\lim\limits_{${1:x} \to ${2:0}}$0 
 endsnippet
 
 context "math()"
@@ -566,7 +592,8 @@ ${2:${VISUAL}}
 \end{$1}
 endsnippet
 
-context "display_math()"
+#context "display_math()"
+context "math()"
 snippet cases "cases" i
 \begin{cases} 
 	${1:f(x) = x}  ${2:,& x > 0} \\\
@@ -574,10 +601,10 @@ snippet cases "cases" i
 \end{cases}
 endsnippet
 
-context "internel_math()"
-snippet cases "cases" i
-\begin{cases}	${1:f(x) = x}  ${2:,& x > 0} \\\	${3:f(x) = x}  ${4:,& x < 0} \end{cases}
-endsnippet
+#context "internel_math()"
+#snippet cases "cases" i
+#\begin{cases}	${1:f(x) = x}  ${2:,& x > 0} \\\	${3:f(x) = x}  ${4:,& x < 0} \end{cases}
+#endsnippet
 
 context "env("cases")"
 snippet \\ "jump to next line" 
@@ -756,7 +783,7 @@ endsnippet
 #endsnippet
 
 context "math()"
-snippet '(b|l|r)(\(|\)|\||\[|\]|\{|\})' "\bigg left right ()[]{}" r
+snippet '(b|l|r)(\(|\)|\||\[|\]|\{|\})' "\bigg left right ()[]{}" wr
 `!p 
 one = match.group(1)
 two = match.group(2)
@@ -787,7 +814,7 @@ endsnippet
 
 priority 0
 context "math()"
-snippet '(?!p|i)([A-Za-z])(\d{1,3}|n|k|i|j)' "x_{\d}" ir
+snippet '(?!p|i|h)([A-Za-z])(\d{1,3}|n|k|i|j)' "x_{\d}" ir
 `!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
 endsnippet
 
@@ -838,14 +865,29 @@ f(g(x))$0
 endsnippet
 
 context "math()"
-snippet '([Ffg])xi' "f(\xi)" ir
+snippet 'f'gx' "f(g(x))" ir
+f'(g(x))$0
+endsnippet
+
+context "math()"
+snippet '([Ffguv])xi' "f(\xi)" ir
 `!p snip.rv = match.group(1)`(\xi)$0
 endsnippet
 
 priority 2001
 context "math()"
-snippet '([Ffg])('{0,3})((?!r|f|F)([a-zX]|\d+))' "f(x)" ir
+snippet '([Ffguv])('{0,3})((?!r|f|F)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
+endsnippet
+
+context "math()"
+snippet fx0 "f(x_0)" i
+f(x_{0})$0
+endsnippet
+
+context "math()"
+snippet f'x0 "f'(x_0)" i
+f'(x_{0})$0
 endsnippet
 
 context "math()"
