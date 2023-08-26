@@ -89,7 +89,11 @@ snippet .text ".text" i
 endsnippet
 
 snippet selectOptions "\selectOptions"
-\selectOptions{$1}{$2}{$3}{$4}$0
+\selectOptions
+{$1}
+{$2}
+{$3}
+{$4}$0
 endsnippet
 
 snippet ding "ding"
@@ -255,12 +259,20 @@ snippet - "\bibitem"
 \bibitem{${1:a}} ${2:作者}. \emph{${3:文献}}[M]. ${4:地点}:${5:出版社},${6:年份}.\url{${7:www.wiki.com}}
 endsnippet
 
-snippet lab "\label"
-\label{${1|eq:,fig:,tab:|}$2}$0
+snippet lab "\label" w
+\label{${1:fig:}${2:figureName}}$0
 endsnippet
 
-snippet ref "~\ref"
-~\ref{${1|eq:,fig:,tab:|}$2}$0
+snippet ref "~\ref" w
+~\ref{${1:fig:}${2:figureName}}$0
+endsnippet
+
+snippet figref "~\ref" w
+\figref{${1:fig:}${2:figureName}}$0
+endsnippet
+
+snippet tabref "~\ref" w
+\tabref{${1:fig:}${2:figureName}}$0
 endsnippet
 
 snippet desc "Description" b
@@ -301,19 +313,19 @@ $0
 endsnippet
 
 snippet plot "Plot" w
-\begin{figure}[$1]
+\begin{figure}[ht]
 	\centering
 	\begin{tikzpicture}
 		\begin{axis}[
-			xmin= ${2:-10}, xmax= ${3:10},
-			ymin= ${4:-10}, ymax = ${5:10},
+			xmin= -10, xmax= 10,
+			ymin= -10, ymax = 10,
 			axis lines = middle,
 		]
-			\addplot[domain=$2:$3, samples=${6:100}]{$7};
+			\addplot[domain=-10:10,smooth,red]{$1};
 		\end{axis}
 	\end{tikzpicture}
-	\caption{$8}
-	\label{${9:$8}}
+	\caption{$2}
+	\label{${3:$2}}
 \end{figure}
 endsnippet
 
@@ -347,7 +359,8 @@ $0
 endsnippet
 
 snippet #### "####"
-\paragraph{$1}
+\paragraph{$1}~
+
 $0
 endsnippet
 
@@ -423,7 +436,7 @@ elif s == "cor":
 elif s == "rem":
 	s = "remark"
 snip.rv = "\\begin{" + s + "}"
-` 
+`
 	${1:${VISUAL}}$0
 `!p snip.rv = "\\end{" + s + "}"` 
 endsnippet
@@ -528,6 +541,11 @@ if match.group(1) is None:
 else:
 	snip.rv = "\\quad \\Longrightarrow \\quad"
 ` $0
+endsnippet
+
+context "math()"
+snippet == "==" w
+\xlongequal{\quad \mbox{${1:洛}} \quad} $0
 endsnippet
 
 context "math()"
@@ -876,8 +894,13 @@ endsnippet
 
 priority 2001
 context "math()"
-snippet '([Ffguv])('{0,3})((?!r|f|F)([a-zX]|\d+))' "f(x)" ir
+snippet '([Ffguv])('{0,3})((?!r|f|F|p)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
+endsnippet
+
+context "math()"
+snippet yx "y(x)" w
+y(x)$0
 endsnippet
 
 context "math()"

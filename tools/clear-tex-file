@@ -1,6 +1,6 @@
 #!/bin/bash
 
-list=(*.aux *.fdb_latexmk *.fls *.log *.out *.synctex.gz *.toc *.xdv *.synctex\(busy\))
+list=(*.lof *.lot *.aux *.fdb_latexmk *.fls *.log *.out *.synctex.gz *.toc *.xdv *.synctex\(busy\))
 
 date=$(date +"%Y%m%d%H%M%S")
 sum=0
