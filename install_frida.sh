@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-pip install frida=15.2.2 frida-tools #安装Frida CLI 工具
+pip3 install frida==15.2.2 frida-tools #安装Frida CLI 工具
 
 wget https://github.com/frida/frida/releases/download/15.2.2/frida-server-15.2.2-android-arm64.xz #拉取远程手机端服务
 

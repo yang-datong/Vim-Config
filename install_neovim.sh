@@ -34,7 +34,7 @@ main(){
 		$cc install python3-pip
 	fi
 	#brew install neovim yarn 
-	pip3 install pynvim
+	pip3 install pynvim -i https://pypi.tuna.tsinghua.edu.cn/simple
 	#err=$(pip3 show pynvim)
 	#if [ "$err" == "1" ];then	pip3 install pynvim;fi
 	check_cmd nvim neovim
@@ -46,7 +46,7 @@ main(){
 	cd $HOME/.config/nvim
 	cp $HOME/sh_foot/config_file/init.vim  ./init.vim
 
-	$cc install clangd clang-format
+	$cc install clang-format #clangd
 
 	#download plugins
 	nvim -c "PlugInstall"
