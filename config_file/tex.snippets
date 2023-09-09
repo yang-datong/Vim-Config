@@ -34,6 +34,13 @@ def add_chinese_tags(snip,flag):
 	result = re.sub(pattern, replacement, text)
 	snip.expand_anon(result + '$1')
 
+#"""在字符串中的math前后添加标识符"""
+def add_math_tags(snip,flag):
+	text = snip.buffer[snip.line][:-len(flag)]
+	snip.buffer[snip.line] = ''
+	#result = re.sub(r'[^a-zA-Z\u4e00-\u9fa5\s]+', lambda x: f'${x.group()}$', text)
+	snip.expand_anon(result + '$1')
+
 #"""判断最后i个字符是否为中文字符"""
 def is_end_chinese_character(flag):
 	linebuf = vim.eval("getline('.')")[:-len(flag)]
@@ -88,6 +95,11 @@ pre_expand "add_chinese_tags(snip,'.text')"
 snippet .text ".text" i
 endsnippet
 
+# 使用场景：复制了一段带有公式的文字段落
+pre_expand "add_math_tags(snip,'.math')"
+snippet .math ".math" i
+endsnippet
+
 snippet selectOptions "\selectOptions"
 \selectOptions
 {$1}
@@ -129,6 +141,19 @@ snippet subfigure "subfigure"
 	\end{subfigure}
 	\caption{}
 \end{figure}
+endsnippet
+
+snippet minipage "minipage"
+\noindent
+\begin{minipage}{0.6\textwidth}
+	\quad \quad ${1:复平面中坐标的另一种选择是极坐标系，它使用点 $z$ 与原点 $O$ 的距离，以及正实轴和线段 $Oz$ 之间逆时针的角度。}
+\end{minipage}
+\hfill 
+\begin{minipage}{0.4\textwidth} 
+	\centering
+	${2:\begin{tikzpicture}[scale=0.7]
+	\end{tikzpicture}}
+\end{minipage}
 endsnippet
 
 pre_expand "create_table(snip)"
@@ -316,28 +341,80 @@ snippet lst "lst"
 \end{figure}
 endsnippet
 
-snippet box "Box"
-`!p snip.rv = '┌' + '─' * (len(t[1]) + 2) + '┐'`
-│ $1 │
-`!p snip.rv = '└' + '─' * (len(t[1]) + 2) + '┘'`
-$0
+#snippet box "Box"
+#`!p snip.rv = '┌' + '─' * (len(t[1]) + 2) + '┐'`
+#│ $1 │
+#`!p snip.rv = '└' + '─' * (len(t[1]) + 2) + '┘'`
+#$0
+#endsnippet
+
+snippet box "box"
+\begin{tcolorbox}[colback=white]
+	$0
+\end{tcolorbox}
 endsnippet
 
 snippet plot "Plot" w
 \begin{figure}[ht]
+	\newcommand{\size}{10}
 	\centering
 	\begin{tikzpicture}
 		\begin{axis}[
-			xmin= -10, xmax= 10,
-			ymin= -10, ymax = 10,
-			axis lines = middle,
-		]
-			\addplot[domain=-10:10,smooth,red]{$1};
+			xmin= -\size, xmax= \size,
+			ymin= -\size, ymax = \size,
+			axis lines = middle]
+			\addplot[domain=-\size:\size,smooth,red]{$1};
+			\fill (0,0) node[above right] {$O$};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{$2}
 	\label{${3:$2}}
 \end{figure}
+endsnippet
+
+context "env("tikzpicture")"
+snippet var "Variable"
+\pgfmathsetmacro\\${1:var}{${2:1+1}};
+endsnippet
+
+context "env("tikzpicture")"
+snippet line "line"
+\addplot[thick] coordinates {(${1:x1},${2:y1}) (${3:x2},${4:y2})};
+endsnippet
+
+context "env("tikzpicture")"
+snippet vec "vec"
+\addplot[->] coordinates {(${1:x1},${2:y1}) (${3:x2},${4:y2})};
+endsnippet
+
+context "env("tikzpicture")"
+snippet dash "dash"
+\addplot[dashed] coordinates {(${1:x1},${2:y1}) (${3:x2},${4:y2})};
+endsnippet
+
+context "env("tikzpicture")"
+snippet O "O"
+\fill (0,0) node[above right] {$O$};
+endsnippet
+
+context "env("tikzpicture")"
+snippet point "point"
+\filldraw[red] (${1:x},${2:y}) circle (2pt) node[above right,black] {$($1,$2)$};
+endsnippet
+
+context "env("tikzpicture")"
+snippet leg "legend"
+\legend{$${1:y=f(x)}$}
+endsnippet
+
+context "env("tikzpicture")"
+snippet '(func|add)' "function" r
+\addplot[${1:domain=${2:-10:10},}smooth,red]{${3:2 * x}};
+endsnippet
+
+context "env("tikzpicture")"
+snippet lab "label" 
+\node at (${1:x},${2:y}) {$${3:z = a + bi}$};
 endsnippet
 
 snippet node "Tikz node" w
@@ -388,12 +465,13 @@ endsnippet
 
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|equiv|eta|int|in|iff|mu|neq|varphi|phi|pi|pm|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|int|in|iff|mu|neq|phi|pi|pm|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 
+priority 0
 context "math()"
-snippet '(\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub)' "all_entensions" ir
+snippet '(\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi|vphi)' "all_entensions" ir
 `!p 
 s = match.group(1)
 if s == "...":
@@ -424,6 +502,8 @@ elif s == "so":
 	s = "therefore"
 elif s == "sub":
 	s = "subset"
+elif s == "vphi":
+	s = "varphi"
 snip.rv = "\\" + s
 ` $0
 endsnippet
@@ -779,9 +859,9 @@ snippet '(g|l)eq' "\geq" ir
 \\`!p snip.rv = match.group(1)`eq $0
 endsnippet
 
-snippet i "mark" "re.match('(?:\${1,2})(.*?)\\1{1,2}$', snip.buffer[snip.line])" e
+#snippet i "mark" "re.match('(?:\${1,2})(.*?)\\1{1,2}$', snip.buffer[snip.line])" e
 context "math()"
-snippet '(\(|\)|\||\[|\]|\{|\})\1' "\bigg left right ()[]{}" wr
+snippet '(\(|\)|\||\[|\])\1' "\bigg left right ()[]{}" wr
 `!p snip.rv = "\\bigg" + match.group(1)` $0
 endsnippet
 
