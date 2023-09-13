@@ -101,11 +101,7 @@ snippet .math ".math" i
 endsnippet
 
 snippet selectOptions "\selectOptions"
-\selectOptions
-{$1}
-{$2}
-{$3}
-{$4}$0
+\selectOptions{$1}{$2}{$3}{$4}$0
 endsnippet
 
 snippet ding "ding" w
@@ -433,23 +429,18 @@ endsnippet
 
 snippet # "#" b
 \section{$1}
-$0
 endsnippet
 
 snippet ## "##" b
 \subsection{$1}
-$0
 endsnippet
 
 snippet ### "###" b
 \subsubsection{$1}
-$0
 endsnippet
 
 snippet #### "####"
-\paragraph{$1}~
-
-$0
+\paragraph{$1}
 endsnippet
 
 #-------------------- 简单的规则 --------------------
@@ -465,7 +456,7 @@ endsnippet
 
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|int|in|iff|mu|neq|phi|pi|pm|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|dint|int|in|iff|mu|neq|phi|pi|pm|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 
@@ -588,9 +579,16 @@ snippet lims "lims" i
 \lim\limits_{${1:x} \to ${2:0}}$0 
 endsnippet
 
+priority 1000
 context "math()"
 snippet ints "\ints" i
-\int_{$1}^\{$2\}$0
+\int_{${1:a}}^\{${2:b}\}$0
+endsnippet
+
+priority 1001
+context "math()"
+snippet dints "\dints" i
+\dint_{${1:a}}^\{${2:b}\}$0
 endsnippet
 
 context "math()"
@@ -705,8 +703,8 @@ endsnippet
 context "math()"
 snippet cases "cases" i
 \begin{cases} 
-	${1:f(x) = x}  ${2:,& x > 0} \\\
-	${3:f(x) = x}  ${4:,& x < 0} 
+	${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
+	${4:f(x) = x}  ${5:,& ${6:x < 0}}
 \end{cases}
 endsnippet
 
