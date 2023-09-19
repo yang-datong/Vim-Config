@@ -469,6 +469,18 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" TODO 用于给首次安装环境时 执行一些brew install 命令 <23-09-19 20:32:08, Yangdatong> 
+"function! AskUser()
+"    let answer = confirm("是否继续？ [Y/N] ")
+"    if answer ==# 'Y' || answer ==# 'y'
+"        echo "你选择了继续"
+"    elseif answer ==# 'N' || answer ==# 'n'
+"        echo "你选择了不继续"
+"    else
+"        echo "无效的输入"
+"    endif
+"endfunction
+
 " Latex fast open Inkscape {
 inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
 " }

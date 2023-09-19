@@ -68,7 +68,7 @@ endglobal
 #==================== Latex ====================
 #配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
 context "math()"
-snippet 'd(x|y|t)?' "dx" wr
+snippet 'd(x|y|t|u)?' "dx" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\mathrm{d}"
@@ -77,28 +77,24 @@ else:
 `$0
 endsnippet
 
-snippet kaishu "kaishu"
-{\kaishu
-	$0
-}
-endsnippet
-
 # 数学环境下中文需要mbox的解决
-context "is_chinese_character('.mbox')"
-pre_expand "add_chinese_tags(snip,'.mbox')"
-snippet .mbox ".mbox" i
-endsnippet
+# TODO 还有点问题 <23-09-19 20:38:39, Yangdatong> 
+#context "is_chinese_character('.mbox')"
+#pre_expand "add_chinese_tags(snip,'.mbox')"
+#snippet .mbox ".mbox" i
+#endsnippet
 
 # 数学环境下中文需要text的解决
-context "is_chinese_character('.text')"
-pre_expand "add_chinese_tags(snip,'.text')"
-snippet .text ".text" i
-endsnippet
+#context "is_chinese_character('.text')"
+#pre_expand "add_chinese_tags(snip,'.text')"
+#snippet .text ".text" i
+#endsnippet
 
 # 使用场景：复制了一段带有公式的文字段落
-pre_expand "add_math_tags(snip,'.math')"
-snippet .math ".math" i
-endsnippet
+# TODO 有问题 <23-09-19 20:39:03, YangJing> #
+#pre_expand "add_math_tags(snip,'.math')"
+#snippet .math ".math" i
+#endsnippet
 
 snippet selectOptions "\selectOptions"
 \selectOptions{$1}{$2}{$3}{$4}$0
@@ -126,28 +122,29 @@ snippet subfigure "subfigure"
 	\centering
 	\begin{subfigure}{0.45\textwidth}
 	\centering
-	${1}
-	\caption{}
+	${1:% TODO }
+	\caption{${3: figure1}}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}{0.45\textwidth}
 	\centering
-	${2}
-	\caption{}
+	${2:% TODO}
+	\caption{${4: figure2}}
 	\end{subfigure}
-	\caption{}
+	\caption{${5: Figure}}
 \end{figure}
 endsnippet
 
 snippet minipage "minipage"
 \noindent
 \begin{minipage}{0.6\textwidth}
-	\quad \quad ${1:复平面中坐标的另一种选择是极坐标系，它使用点 $z$ 与原点 $O$ 的距离，以及正实轴和线段 $Oz$ 之间逆时针的角度。}
+	\quad \quad ${1:% TODO}
 \end{minipage}
 \hfill 
 \begin{minipage}{0.4\textwidth} 
 	\centering
 	${2:\begin{tikzpicture}[scale=0.7]
+	$3
 	\end{tikzpicture}}
 \end{minipage}
 endsnippet
@@ -168,47 +165,48 @@ snippet tab "Table environment" b
 \end{table}
 endsnippet
 
-snippet longtable "longtable" wb
-{
-\small
+snippet '(longtable|long)' "longtable" rwb
 %\newcolumntype{L}{>{\arraybackslash}p{5cm}}
 \begin{longtable}{cc}
+	%------------ Name ---------------
 	\caption{${3:Sample}表}
 	\label{tab:${4:${3/\W+/-/g}}} \\\
-
+	%------------ Head ----------------
 	\toprule
-	\textbf{${1:No.}} & \textbf{${2:Name}} \\\
+	\textbf{${1:Column1}} & \textbf{${2:Column2}} \\\
 	\midrule
 	\endfirsthead
-
-	\multicolumn{2}{cc}{${3:Sample}表}                      \\\
-	\toprule
-	\textbf{${1:No.}} & \textbf{${2:Name}} \\\
-	\midrule
-	\endhead
-
+	%---------- Breakable --------------
 	\bottomrule()
 	\multicolumn{2}{r}{续下页}
 	\endfoot
-
+	%------------ Bottom ---------------
 	\bottomrule()
 	\endlastfoot
-
-	${5:1}            & ${6:Alice}         \\\
+	%------------- Main ----------------
+	${5}            & ${6}         \\\ $0
 \end{longtable}
-}
 endsnippet
 
+context "env("longtable")"
+snippet \\ "jump to next line" 
+\\\
+$1            & $2         \\\
+endsnippet
 
-snippet tabular "tabular" wb
-{
-\small
+snippet tabularx "tabularx" wb
 \begin{tabularx}{\textwidth}{|X|X|}
 	\hline
-	$1 & $2 \\
+	$1 & $2 \\\ $0
 	\hline
 \end{tabularx}
-}
+endsnippet
+
+context "env("tabularx")"
+snippet \\ "jump to next line" 
+\\\\
+\hline
+$1 & $2 \\\
 endsnippet
 
 snippet it "\item"
@@ -345,7 +343,7 @@ endsnippet
 #endsnippet
 
 snippet box "box"
-\begin{tcolorbox}[colback=white]
+\begin{tcolorbox}
 	$0
 \end{tcolorbox}
 endsnippet
@@ -445,24 +443,26 @@ endsnippet
 
 #-------------------- 简单的规则 --------------------
 context "math()"
-snippet '(\*|X)' "*"  ir
+snippet '(\*|X|R)' "*"  ir
 `!p
 if match.group(1) == "*" :
 	snip.rv = "\\cdot"
 elif match.group(1) == "X":
 	snip.rv = "\\times"
+elif match.group(1) == "R":
+	snip.rv = "\\mathbb{R}"
 ` $0
 endsnippet
 
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|dint|int|in|iff|mu|neq|phi|pi|pm|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|neq|phi|pi|pm|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 
 priority 0
 context "math()"
-snippet '(\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi|vphi)' "all_entensions" ir
+snippet '(\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" ir
 `!p 
 s = match.group(1)
 if s == "...":
@@ -477,8 +477,6 @@ elif s == "bec":
 	s = "because"
 elif s == "emp":
 	s = "empty"
-elif s == "int":
-	s = "int"
 elif s == "inf":
 	s = "infty"
 elif s == "lam":
@@ -493,14 +491,14 @@ elif s == "so":
 	s = "therefore"
 elif s == "sub":
 	s = "subset"
-elif s == "vphi":
-	s = "varphi"
+#elif s == "vphi":
+#	s = "varphi"
 snip.rv = "\\" + s
 ` $0
 endsnippet
 
 #begin，end
-snippet '(kai|solution|sym|the|def|lem|example|exa|cor|remark|rem|property|proposition|proof|warning)' "beg_entensions" irb
+snippet '(kai|solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|prop|proposition|proof|warning)' "beg_entensions" irb
 `!p 
 s = match.group(1)
 if s == "sym":
@@ -511,11 +509,13 @@ elif s == "def":
 	s = "definition"
 elif s == "lem":
 	s = "lemma"
-elif s == "exa":
+elif s == "exam":
 	s = "example"
 elif s == "cor":
 	s = "corollary"
-elif s == "rem":
+elif s == "solu":
+	s = "solution"
+elif s == "rema":
 	s = "remark"
 snip.rv = "\\begin{" + s + "}"
 `
@@ -527,21 +527,15 @@ endsnippet
 #-------------------- 参数的规则 --------------------
 priority 1001
 context "math()"
-snippet '(del|lim|ln|log|sq|vec)' "argment_all" ir
+snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi)' "argment_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
 	s = "Delta"
-elif s == "lim":
-	s = "lim"
-elif s == "ln":
-	s = "ln"
-elif s == "log":
-	s = "log"
 elif s == "sq":
 	s = "sqrt"
-elif s == "vec":
-	s = "vec"
+elif s == "vphi":
+	s = "varphi"
 snip.rv = "\\" + s
 `{$1}$0
 endsnippet
@@ -579,15 +573,34 @@ snippet lims "lims" i
 \lim\limits_{${1:x} \to ${2:0}}$0 
 endsnippet
 
-priority 1000
 context "math()"
-snippet ints "\ints" i
+snippet log "log" i
+\log_{${1:a}}^\{${2:b}\}$0
+endsnippet
+
+context "math()"
+snippet C "C" i
+C_{${1:n}}^\{${2:k}\}$0
+endsnippet
+
+
+context "display_math()"
+snippet int "int" i
+\int $0
+endsnippet
+
+context "internel_math()"
+snippet int "int" i
+\dint $0
+endsnippet
+
+context "display_math()"
+snippet ints "ints" i
 \int_{${1:a}}^\{${2:b}\}$0
 endsnippet
 
-priority 1001
-context "math()"
-snippet dints "\dints" i
+context "internel_math()"
+snippet ints "ints" i
 \dint_{${1:a}}^\{${2:b}\}$0
 endsnippet
 
@@ -634,7 +647,7 @@ endsnippet
 
 context "math()"
 snippet == "==" w
-\xlongequal{\quad \mbox{${1:洛}} \quad} $0
+\xlongequal{~ ${1:\mbox{洛}} ~} $0
 endsnippet
 
 context "math()"
@@ -708,35 +721,25 @@ snippet cases "cases" i
 \end{cases}
 endsnippet
 
-#context "internel_math()"
-#snippet cases "cases" i
-#\begin{cases}	${1:f(x) = x}  ${2:,& x > 0} \\\	${3:f(x) = x}  ${4:,& x < 0} \end{cases}
-#endsnippet
-
 context "env("cases")"
 snippet \\ "jump to next line" 
-\\\ & ${1}
+\\\
+${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
 endsnippet
 
-#snippet ali "ali"
-#`!p 
-#s = snip.v.text
-#idx = s.find("=")
-#idx2 = s.find("&")
-#if idx != -1 and idx2 == -1:
-#    new_s = s[:idx] + " & " + s[idx:]
-#elif idx == -1 and idx2 == -1:
-#    new_s = "& " + s
-#else:
-#    new_s = s
-#snip.rv = "\\begin{align}\n" + new_s + " \\\\"
-#`$0
-#\end{align}
-#endsnippet
-
 snippet ali "ali"
-\begin{align}
-	$0
+`!p 
+s = snip.v.text
+idx = s.find("=")
+idx2 = s.find("&")
+if idx != -1 and idx2 == -1:
+    new_s = s[:idx] + " & " + s[idx:]
+elif idx == -1 and idx2 == -1:
+    new_s = "& " + s
+else:
+    new_s = s
+snip.rv = "\\begin{align}\n" + new_s + " \\\\"
+`$0
 \end{align}
 endsnippet
 
@@ -980,6 +983,12 @@ snippet 'varphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" 
 \\varphi(`!p snip.rv = match.group(1)`)$0
 endsnippet
 
+priority 2001
+context "math()"
+snippet 'vphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\vphi(x)" ir
+\\varphi(`!p snip.rv = match.group(1)`)$0
+endsnippet
+
 priority 1001
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
@@ -1074,7 +1083,34 @@ endglobal
 
 snippet main "main"
 %!TeX program = xelatex
-\documentclass{ctexmath}
+`!p 
+# 创建一个包含所有路径的列表
+paths_to_check = [
+    os.getcwd(),  # 当前工作目录
+    os.path.dirname(os.getcwd()),  # 上一层目录
+    os.path.join(os.path.expanduser("~"), ""),  # 桌面目录
+    os.path.join(os.path.expanduser("~"), "Desktop"),  # 桌面目录
+    os.path.join(os.path.expanduser("~"), "Documents"),  # 文档目录
+    os.path.join(os.path.expanduser("~"), "Downloads"),  # 下载文件夹目录
+    os.path.join(os.path.expanduser("~"), "Desktop/study/Math"),  # 常用目录
+]
+
+# 待检测的文件名
+file_to_check = "ctexmath.cls"
+
+# 遍历每个路径并检测文件是否存在
+is_live = 0
+for path in paths_to_check:
+	file_path = os.path.join(path, file_to_check)
+	if os.path.exists(file_path):
+		print(f"检测到 '{file_to_check}' 存在于路径: {path}")
+		is_live = 1
+		break
+if is_live == 1:
+	snip.rv = "\documentclass{" + path + "/ctexmath}"
+else:
+	snip.rv = """\documentclass{ctexmath}"""
+`
 %--------------------------------- Head -------------------------------------
 \title{`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}
 \author{\textcopyright Yang-datong }
@@ -1083,7 +1119,7 @@ snippet main "main"
 \begin{document}
 \makehead
 %--------------------------------- Body -------------------------------------
-${1:HI!}$0
+$0
 
 %--------------------------------- Reference --------------------------------
 \newpage
