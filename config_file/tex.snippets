@@ -128,15 +128,15 @@ snippet subfigure "subfigure"
 	\begin{subfigure}{0.45\textwidth}
 	\centering
 	${1:% TODO }
-	\caption{${3: figure1}}
+	\caption{${3:figure1}}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}{0.45\textwidth}
 	\centering
 	${2:% TODO}
-	\caption{${4: figure2}}
+	\caption{${4:figure2}}
 	\end{subfigure}
-	\caption{${5: Figure}}
+	\caption{${5:Figure}}
 \end{figure}
 endsnippet
 
@@ -515,11 +515,13 @@ endsnippet
 
 priority 0
 context "math()"
-snippet '(\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" ir
+snippet '(l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" ir
 `!p 
 s = match.group(1)
 if s == "...":
 	s = "dots"
+if s == "l...":
+	s = "ldots"
 elif s == "~":
 	s = "sim"
 elif s == "al":
