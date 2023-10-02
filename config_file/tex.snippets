@@ -25,6 +25,10 @@ def env(name):
     [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
     return x != '0' and y != '0'
 
+def noenv(name):
+    [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
+    return x == '0' and y == '0'
+
 #"""在字符串中的中文前后添加标识符"""
 def add_chinese_tags(snip,flag):
 	text = snip.buffer[snip.line][:-len(flag)]
@@ -73,7 +77,7 @@ snippet '(max|min)' "'(max|min)'" r
 endsnippet
 
 context "math()"
-snippet 'd(x|y|t|u)?' "dx" wr
+snippet 'd(x|y|t|u|z)?' "dx" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\mathrm{d}"
@@ -144,8 +148,7 @@ snippet minipage "minipage"
 \noindent
 \begin{minipage}{0.6\textwidth}
 	${1:% TODO}
-\end{minipage}
-\hfill 
+\end{minipage}\hfill 
 \begin{minipage}{0.3\textwidth} 
 	\centering
 	${2:\begin{tikzpicture}[scale=0.7]
@@ -298,17 +301,23 @@ snippet lab "\label" w
 \label{${1:fig:}${2:figureName}}$0
 endsnippet
 
-snippet ref "~\ref" w
-~\ref{${1:fig:}${2:figureName}}$0
+snippet ref "ref" w
+\\${1|figref,tabref,exaref|}{${1/ref//g}:${2:LableName}}$0
 endsnippet
 
-snippet figref "~\ref" w
-\figref{${1:fig:}${2:figureName}}$0
-endsnippet
+#snippet ref "~\ref" w
+#~\ref{${1:fig:}${2:figureName}}$0
+#endsnippet
 
-snippet tabref "~\ref" w
-\tabref{${1:fig:}${2:figureName}}$0
-endsnippet
+#\label{fig:${5:${3/\W+/-/g}}}
+
+#snippet figref "~\ref" w
+#\figref{${1:fig:}${2:figureName}}$0
+#endsnippet
+#
+#snippet tabref "~\ref" w
+#\tabref{${1:fig:}${2:figureName}}$0
+#endsnippet
 
 snippet desc "Description" b
 \begin{description}
@@ -456,7 +465,19 @@ endsnippet
 #\node[$5] (${1/[^0-9a-zA-Z]//g}${2}) ${3:at (${4:0,0}) }{$${1}$};
 context "env("tikzpicture")"
 snippet node "Tikz node" w
-\node at (${1:x},${2:y}) {$${3:z = a + bi}$};
+\node(${3/\W+/-/g}) at (${1:x},${2:y}) {$${3:z = a + bi}$};
+endsnippet
+
+context "noenv("tikzpicture")"
+snippet node "Tikz node" w
+\begin{tikzpicture}
+\node(${3/\W+/-/g}) at (${1:x},${2:y}) {$${3:z = a + bi}$};
+\end{tikzpicture}
+endsnippet
+
+context "env("tikzpicture")"
+snippet -- "\draw --"
+\draw (${1:A}) -- (${2:B});
 endsnippet
 
 context "env("tikzpicture")"
@@ -509,13 +530,13 @@ endsnippet
 
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|phi|pi|pm|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|phi|pi|pm|subset|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 
 priority 0
 context "math()"
-snippet '(l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" ir
+snippet '(l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -584,7 +605,7 @@ endsnippet
 #-------------------- 参数的规则 --------------------
 priority 1001
 context "math()"
-snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
+snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi|bar|parl)' "argment_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -593,6 +614,8 @@ elif s == "sq":
 	s = "sqrt"
 elif s == "vphi":
 	s = "varphi"
+elif s == "parl":
+	s = "partial"
 snip.rv = "\\" + s
 `{$1}$0
 endsnippet
@@ -601,7 +624,7 @@ snippet 'sq(\d)' "sqrt[\d]{}" r
 \sqrt[`!p snip.rv = match.group(1)`]{$1}$0
 endsnippet
 
-snippet '(del|ln|sq)(x|y)' "argment_x_all" ir
+snippet '(del|ln|sq)(x|y|z)' "argment_x_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -622,6 +645,11 @@ endsnippet
 context "math()"
 snippet lims "lims" i
 \lim\limits_{${1:x} \to ${2:0}}$0 
+endsnippet
+
+context "math()"
+snippet limss "limss" i
+\lim\limits_{\substack{${1:x} \to ${2:0} \\\ ${3:y} \to ${4:0}}}$0
 endsnippet
 
 context "math()"
@@ -926,6 +954,53 @@ while True:
     i -= 1
 snip.rv = stripped[0:i] + "\\dfrac{" + stripped[i+1:-1] + "}"
 `{$1}$0
+endsnippet
+
+snippet sympy "sympyblock " w
+sympy $1 sympy$0
+endsnippet
+
+priority 10000
+snippet 'sympy(.*)sympy' "sympy" wr
+`!p
+from sympy import *
+x, y, z, t = symbols('x y z t')
+k, m, n = symbols('k m n', integer=True)
+f, g, h = symbols('f g h', cls=Function)
+init_printing()
+snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').replace('{', '(').replace('}', ')') + ')')
+`
+endsnippet
+
+priority 1000
+snippet math "mathematicablock" w
+math $1 math$0
+endsnippet
+
+priority 10000
+snippet 'math(.*)math' "math" wr
+`!p
+import subprocess
+code = match.group(1)
+code = 'ToString[' + code + ', TeXForm]'
+snip.rv = subprocess.check_output(['wolframscript', '-code', code])
+`
+endsnippet
+
+#---------- 多元微积分 ----------
+context "math()"
+snippet 'x(0)?,y(0)?' "(x,y)" wr
+`!p
+if match.group(1) is None:
+	snip.rv = "(x,y)"
+else:
+	snip.rv = "(x_{0},y_{0})"
+` $0
+endsnippet
+
+context "math()"
+snippet 'fxy' "f(x,y)" wr
+f(x,y)
 endsnippet
 
 #================== 正则 ==================
