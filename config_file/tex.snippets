@@ -1,5 +1,6 @@
 #defulat priority = 0 但是一旦设置会影响下面的所以snippet 直到设置一个新的 priority
 
+# Time <23-10-03 23:28:20, YangJing> #
 #+====================== 目录 =========================+
 #|------------------- 1. \CMD -------------------------|
 #|------------------- 2. \CMD (alise) -----------------|
@@ -117,7 +118,7 @@ ${2:${VISUAL}}
 \end{$1}
 endsnippet
 
-snippet '(solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
+snippet '(box|solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
 `!p 
 s = match.group(1)
 if s == "sym":
@@ -138,6 +139,8 @@ elif s == "solu":
 	s = "solution"
 elif s == "rema":
 	s = "remark"
+elif s == "box":
+	s = "tcolorbox"
 snip.rv = "\\begin{" + s + "}"`
 	${1:${VISUAL}}$0
 `!p snip.rv = "\\end{" + s + "}"` 
@@ -157,8 +160,13 @@ snippet \\ "jump to next line"
 ${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
 endsnippet
 
-snippet ali "ali"
-\begin{align}
+snippet '(aligned|ali)' "ali" br
+`!p 
+if match.group(1) == 'ali':
+	snip.rv = "\\begin{align}"
+else:
+	snip.rv = "\\begin{aligned}"
+`
 	`!p 
 s = snip.v.text
 if s != '':
@@ -172,43 +180,18 @@ if s != '':
 			new_s = s
 	snip.rv = new_s + " \\\\"
 `$0
-\end{align}
+`!p 
+if match.group(1) == 'ali':
+	snip.rv = "\\end{align}"
+else:
+	snip.rv = "\\end{aligned}"
+`
 endsnippet
 
-snippet aligned "ali"
-\[\begin{aligned}
-	`!p 
-s = snip.v.text
-if s != '':
-	idx = s.find("=")
-	idx2 = s.find("&")
-	if idx != -1 and idx2 == -1:
-			new_s = s[:idx] + " & " + s[idx:]
-	elif idx == -1 and idx2 == -1:
-			new_s = "& " + s
-	else:
-			new_s = s
-	snip.rv = new_s + " \\\\"
-`$0
-\end{aligned}\]
-endsnippet
-
-context "env("aligned")"
+context "envs(['aligned','align'])"
 snippet \\ "jump to next line" 
 \\\
 &$1
-endsnippet
-
-context "env("align")"
-snippet \\ "jump to next line" 
-\\\
-&$1
-endsnippet
-
-snippet box "box"
-\begin{tcolorbox}
-	$0
-\end{tcolorbox}
 endsnippet
 #-------------------- 6. *^{$1} ----------------
 context "math()"
@@ -252,9 +235,14 @@ snippet log "log" i
 \log_{${1:a}}^\{${2:b}\}$0
 endsnippet
 
+#context "math()"
+#snippet C "C" i
+#C_{${1:n}}^\{${2:k}\}$0
+#endsnippet
+
 context "math()"
-snippet C "C" i
-C_{${1:n}}^\{${2:k}\}$0
+snippet  b| "bigg|_{a}^{b}" w
+\bigg|_{$1}^{$2}$0
 endsnippet
 #-------------------- 10. 积分|累乘|累加 ---------------
 priority 1001
@@ -321,11 +309,6 @@ snippet '(g|l)eq' "\geq" ir
 endsnippet
 
 context "math()"
-snippet  b| "bigg|_{a}^{b}" w
-\bigg|_{$1}^{$2}$0
-endsnippet
-
-context "math()"
 snippet '(-|=)?(-|=)>' "\right" irA
 `!p 
 if match.group(1) is None:
@@ -357,30 +340,27 @@ snippet == "==" w
 \xlongequal{~ ${1:\mbox{${2:洛}}} ~} $0
 endsnippet
 
-snippet ** "bold" i
-\textbf{${1:${VISUAL}}}$0
+snippet '(\*|`)\1' "'(\*|`)'" r
+`!p 
+if match.group(1) == '*':
+	snip.rv = "\\textbf"
+else:
+	snip.rv = "\\texttt"
+`{${1:${VISUAL}}}$0
 endsnippet
 
-snippet `` "bold" i
-\texttt{${1:${VISUAL}}}$0
+snippet '(####|###|##|#)' "'(#)'" br
+`!p 
+if len(match.group(1)) == 1:
+	snip.rv = "\\section"
+elif len(match.group(1)) == 2:
+	snip.rv = "\\subsection"
+elif len(match.group(1)) == 3:
+	snip.rv = "\\subsubsection"
+else:
+	snip.rv = "\\paragraph"
+`{$1}
 endsnippet
-
-snippet # "#" b
-\section{$1}
-endsnippet
-
-snippet ## "##" b
-\subsection{$1}
-endsnippet
-
-snippet ### "###" b
-\subsubsection{$1}
-endsnippet
-
-snippet #### "####"
-\paragraph{$1}
-endsnippet
-
 # ----------------------------------------
 # 这里两个一样的原因是：1001是为了判断当前是否处于\dint_{}^{}内，如果处于该环境那么只能响应\frac ，反之其他的行间公式可以响应\frac ，即1000
 priority 1001
@@ -431,7 +411,6 @@ while True:
 snip.rv = stripped[0:i] + "\\dfrac{" + stripped[i+1:-1] + "}"
 `{$1}$0
 endsnippet
-
 # ----------------------------------------
 # 这里两个一样的原因是：2002是为了判断当前是否处于\dint_{}^{}内，如果处于该环境那么只能响应\frac ，反之其他的行间公式可以响应\frac ，即2001
 priority 2002
@@ -453,7 +432,7 @@ snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
 endsnippet
 
 #-------------------- 12. 文档控件 ---------------------
-snippet fig "Figure environment" b
+snippet 'figure|fig' "Figure environment" bwr
 \begin{figure}[${1:htpb}]
 	\centering
 	${2:\includegraphics[width=0.8\textwidth]{$3}}
@@ -462,15 +441,14 @@ snippet fig "Figure environment" b
 \end{figure}
 endsnippet
 
-snippet subfigure "subfigure"
+snippet 'subfigure|subf' "subfigure" wr
 \begin{figure}[htp]
 	\centering
 	\begin{subfigure}{0.45\textwidth}
 	\centering
 	${1:% TODO }
 	\caption{${3:figure1}}
-	\end{subfigure}
-	\hfill
+	\end{subfigure}\hfill
 	\begin{subfigure}{0.45\textwidth}
 	\centering
 	${2:% TODO}
@@ -480,7 +458,12 @@ snippet subfigure "subfigure"
 \end{figure}
 endsnippet
 
-snippet minipage "minipage"
+context "envs(['subfigure','figure','minipage','longtable'])"
+snippet 'caption|cap' "caption" wr
+\caption{${1:CationName}}
+endsnippet
+
+snippet 'minipage|mini' "minipage" wr
 \noindent
 \begin{minipage}{0.6\textwidth}
 	${1:% TODO}
@@ -491,11 +474,6 @@ snippet minipage "minipage"
 	$3
 	\end{tikzpicture}}
 \end{minipage}
-endsnippet
-
-context "env("minipage")"
-snippet caption "caption" w
-\captionof{figure}{${1:CationName}}
 endsnippet
 
 pre_expand "create_table(snip)"
@@ -558,7 +536,7 @@ snippet \\ "jump to next line"
 $1 & $2 \\\
 endsnippet
 
-snippet lst "lst"
+snippet 'lstlisting|lst' "lst" wr
 \begin{figure}[htp]
 	\centering
 	\begin{lstlisting}[basicstyle=\small]
@@ -644,15 +622,25 @@ else:
 endsnippet
 
 context "math()"
-snippet //v "frac_visual" iA
-\\frac{${VISUAL}}{${1}}$0
+snippet '//(v|f)' "frac_visual" iAr
+\frac{${VISUAL}}{${1}}$0
 endsnippet
 
 snippet mb "\mbox" w
 \mbox{${1:${VISUAL}}}
 endsnippet
-
 #-------------------- 15. 画图Tikz ---------------------
+snippet tikz "tikz"
+\begin{figure}[ht]
+	\centering
+	\begin{tikzpicture}
+		$0
+	\end{tikzpicture}
+	\caption{$2}
+	\label{fig:${3:${2/\W+/-/g}}}
+\end{figure}
+endsnippet
+
 priority 1001
 context "env("tikzpicture")"
 snippet plot "Plot" w
@@ -664,7 +652,6 @@ snippet plot "Plot" w
 	ymin= \min, ymax= \max,
 	axis lines = middle]
 	\fill (0,0) node[above left] {$O$};
-
 	\addplot[domain=\min:\max,thick,smooth,red]{$1};
 \end{axis}
 endsnippet
@@ -682,12 +669,11 @@ snippet plot "Plot" w
 			ymin= \min, ymax= \max,
 			axis lines = middle]
 			\fill (0,0) node[above left] {$O$};
-
 			\addplot[domain=\min:\max,thick,smooth,red]{$1};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{$2}
-	\label{${3:$2}}
+	\label{fig:${3:${2/\W+/-/g}}}
 \end{figure}
 endsnippet
 
@@ -697,10 +683,10 @@ snippet '(var|val)' "Variable" r
 endsnippet
 
 context "env("tikzpicture")"
-snippet 'for' "Variable" r
+snippet 'foreach|fore|for' "Variable" r
 \foreach \x in {${1:0,1,...,10}} {
 	$0
-	}
+}
 endsnippet
 
 context "env("tikzpicture")"
@@ -709,8 +695,18 @@ snippet line "line"
 endsnippet
 
 context "env("tikzpicture")"
-snippet vec "vec"
+snippet 'vec|->' "vec" r
 \addplot[->] coordinates {(${1:x1},${2:y1}) (${3:x2},${4:y2})};
+endsnippet
+
+context "env("tikzpicture")"
+snippet -- "\draw --"
+\draw (${1:A}) -- (${2:B});
+endsnippet
+
+context "env("tikzpicture")"
+snippet bezier "bezier"
+\addplot [thick,smooth,tension=1.2] coordinates {(${1:0,1})(${2:2,2})(${3:3,1})};
 endsnippet
 
 context "env("tikzpicture")"
@@ -738,47 +734,45 @@ snippet '(func|add)' "function" r
 \addplot[${1:domain=${2:-10:10},}smooth,red]{${3:2 * x}};
 endsnippet
 
-context "env("tikzpicture")"
-snippet lab "label" 
-\node at (${1:x},${2:y}) {$${3:z = a + bi}$};
-endsnippet
-
+priority 1001
 context "env("axis")"
-snippet xlab "xlab"
-xticklabels={$2},
+snippet '(x|y)?lab' "xlab" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "x"
+else:
+	snip.rv = match.group(1)
+`ticklabels={$2},
 endsnippet
 
-context "env("axis")"
-snippet ylab "ylab"
-yticklabels={$2},
-endsnippet
-
-#\node[$5] (${1/[^0-9a-zA-Z]//g}${2}) ${3:at (${4:0,0}) }{$${1}$};
+priority 1000
 context "env("tikzpicture")"
-snippet node "Tikz node" w
+snippet 'node|lab' "Tikz node" wr
 \node(${3/\W+/-/g}) at (${1:x},${2:y}) {$${3:z = a + bi}$};
 endsnippet
 
 context "noenv("tikzpicture")"
 snippet node "Tikz node" w
 \begin{tikzpicture}
-\node(${3/\W+/-/g}) at (${1:x},${2:y}) {$${3:z = a + bi}$};
+	\node(${3/\W+/-/g}) at (${1:x},${2:y}) {$${3:z = a + bi}$};
 \end{tikzpicture}
 endsnippet
 
+priority 1000
 context "env("tikzpicture")"
-snippet -- "\draw --"
-\draw (${1:A}) -- (${2:B});
+snippet 'emp(ty|t)?' "empty" wr
+xtick=\empty,ytick=\empty,
 endsnippet
 
+priority 1001
 context "env("tikzpicture")"
-snippet bezier "bezier"
-\addplot [thick,smooth,tension=1.2] coordinates {(${1:0,1})(${2:2,2})(${3:3,1})};
-endsnippet
-
-context "env("tikzpicture")"
-snippet empty "empty"
-xtick=\empty,ytick=\empty
+snippet '(x|y)emp(ty|t)?' "empty" wr
+`!p 
+if match.group(1) == 'x':
+	snip.rv = 'xtick=\empty,'
+else:
+	snip.rv = 'ytick=\empty,'
+`
 endsnippet
 #-------------------- 16. 选项列表 ---------------------
 snippet lab "\label" w
@@ -803,13 +797,7 @@ $1
 \] $0
 endsnippet
 
-snippet mkk "display math"
-\begin{equation}
-	$0
-\end{equation}
-endsnippet
-
-snippet equ "equation"
+snippet 'equ|mkk' "equation" wr
 \begin{equation}
 	${1:${VISUAL}}
 \end{equation}
@@ -825,8 +813,8 @@ snippet up "\usepackage" b
 \usepackage{${1:package}} ${0}
 endsnippet
 
-snippet selectOptions "\selectOptions"
-\selectOptions{$1}{$2}{$3}{$4}$0
+snippet 'selectOptions|selectO|select|sele' "\selectOptions" wr
+\selectOptions${1:{$2}{$3}{$4}{$5}}
 endsnippet
 
 context "math()"
@@ -838,7 +826,6 @@ context "math()"
 snippet def "def"
 def($1)$0
 endsnippet
-
 
 snippet sympy "sympyblock " w
 sympy $1 sympy$0
@@ -885,7 +872,6 @@ else:
 `$0
 endsnippet
 
-
 context "math()"
 snippet 'x(0)?,y(0)?' "(x,y)" wr
 `!p
@@ -894,11 +880,6 @@ if match.group(1) is None:
 else:
 	snip.rv = "(x_{0},y_{0})"
 ` $0
-endsnippet
-
-context "math()"
-snippet 'fxy' "f(x,y)" wr
-f(x,y)
 endsnippet
 #-------------------- 20. 概率论 -----------------------
 context "math()" 
@@ -962,24 +943,24 @@ snip.rv = s + "{" + fou + "}"
 endsnippet
 #-------------------- 22. *($1) ------------------------
 context "math()"
-snippet 'fgx' "f(g(x))" ir
-f(g(x))$0
+snippet yx "y(x)" w
+y(x)$0
 endsnippet
 
 context "math()"
-snippet 'f'gx' "f(g(x))" ir
-f'(g(x))$0
+snippet 'f(')?gx' "f(g(x))" ir
+`!p 
+if match.group(1) is None:
+	snip.rv = 'f(g(x))'
+else:
+	snip.rv = 'f\'(g(x))'
+`$0
 endsnippet
 
 priority 2001
 context "math()"
 snippet '([Ffguv])('{0,3})((?!r|f|F|p)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
-endsnippet
-
-context "math()"
-snippet yx "y(x)" w
-y(x)$0
 endsnippet
 
 context "math()"
@@ -1002,22 +983,14 @@ snippet 'f(x|k|i|j)(\+|-)(\d{1,3})' "f(x+\d)" r
 f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
-priority 1001
 context "math()"
-snippet 'phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\phi(x)" ir
-\\phi(`!p snip.rv = match.group(1)`)$0
-endsnippet
-
-priority 2001
-context "math()"
-snippet 'varphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
-\\varphi(`!p snip.rv = match.group(1)`)$0
-endsnippet
-
-priority 2001
-context "math()"
-snippet 'vphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\vphi(x)" ir
-\\varphi(`!p snip.rv = match.group(1)`)$0
+snippet '(var|va|v)?phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
+`!p 
+if match.group(1) is None:
+	snip.rv = '\\phi'
+else:
+	snip.rv = '\\varphi'
+`(`!p snip.rv = match.group(2)`)$0
 endsnippet
 #-------------------- 23. 调用函数 ---------------------
 context "math()"
@@ -1078,7 +1051,6 @@ def create_matrix_middle(snip, types=0):
     anon_end = " \end{"+types+"matrix}"
     snip.expand_anon(old_str + anon_befor + body + anon_end)
 
-
 def create_matrix(snip, types=0):
     strLen = 3
     if (types == "b"):
@@ -1109,6 +1081,43 @@ def show_display_frac():
 		if re.match(r'.*\\dint_{(.*?)}$',str(linebuf[:index])) \
 		or re.match(r'.*\\dint_{(.*?)}\^{//}$',str(linebuf[:index])):
 			return False
+		return True
+	else:
+		return False
+
+#"""在字符串中的中文前后添加标识符"""
+def add_chinese_tags(snip,flag):
+	text = snip.buffer[snip.line][:-len(flag)]
+	snip.buffer[snip.line] = ''
+	pattern = r'([\u4e00-\u9fa5]+)'  # 匹配中文字符的正则表达式
+	replacement = r'\\text{\1}'  # 替换模式，使用\mbox{}包裹中文字符
+	result = re.sub(pattern, replacement, text)
+	snip.expand_anon(result + '$1')
+
+#"""在字符串中的math前后添加标识符"""
+def add_math_tags(snip,flag):
+	text = snip.buffer[snip.line][:-len(flag)]
+	snip.buffer[snip.line] = ''
+	#result = re.sub(r'[^a-zA-Z\u4e00-\u9fa5\s]+', lambda x: f'${x.group()}$', text)
+	snip.expand_anon(result + '$1')
+
+#"""判断最后i个字符是否为中文字符"""
+def is_end_chinese_character(flag):
+	linebuf = vim.eval("getline('.')")[:-len(flag)]
+	char = linebuf[-1]
+	if '\u4e00' <= char <= '\u9fa5':
+		return True
+	else:
+		return False
+
+#"""判断是否为中文字符"""
+def is_chinese_character(flag):
+	if not math():
+		return False
+	linebuf = vim.eval("getline('.')")[:-len(flag)]
+	pattern = re.compile(r'[\u4e00-\u9fa5]')
+	result = re.search(pattern, linebuf)
+	if result:
 		return True
 	else:
 		return False
@@ -1147,44 +1156,6 @@ def envs(names):
 			[x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
 			if x != '0' and y != '0':
 				return True
-		return False
-
-
-#"""在字符串中的中文前后添加标识符"""
-def add_chinese_tags(snip,flag):
-	text = snip.buffer[snip.line][:-len(flag)]
-	snip.buffer[snip.line] = ''
-	pattern = r'([\u4e00-\u9fa5]+)'  # 匹配中文字符的正则表达式
-	replacement = r'\\text{\1}'  # 替换模式，使用\mbox{}包裹中文字符
-	result = re.sub(pattern, replacement, text)
-	snip.expand_anon(result + '$1')
-
-#"""在字符串中的math前后添加标识符"""
-def add_math_tags(snip,flag):
-	text = snip.buffer[snip.line][:-len(flag)]
-	snip.buffer[snip.line] = ''
-	#result = re.sub(r'[^a-zA-Z\u4e00-\u9fa5\s]+', lambda x: f'${x.group()}$', text)
-	snip.expand_anon(result + '$1')
-
-#"""判断最后i个字符是否为中文字符"""
-def is_end_chinese_character(flag):
-	linebuf = vim.eval("getline('.')")[:-len(flag)]
-	char = linebuf[-1]
-	if '\u4e00' <= char <= '\u9fa5':
-		return True
-	else:
-		return False
-
-#"""判断是否为中文字符"""
-def is_chinese_character(flag):
-	if not math():
-		return False
-	linebuf = vim.eval("getline('.')")[:-len(flag)]
-	pattern = re.compile(r'[\u4e00-\u9fa5]')
-	result = re.search(pattern, linebuf)
-	if result:
-		return True
-	else:
 		return False
 endglobal
 
