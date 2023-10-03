@@ -1,122 +1,458 @@
 #defulat priority = 0 但是一旦设置会影响下面的所以snippet 直到设置一个新的 priority
 
-global !p
-def math():
-    return vim.eval('vimtex#syntax#in_mathzone()') == '1'
+#+====================== 目录 =========================+
+#|------------------- 1. \CMD -------------------------|
+#|------------------- 2. \CMD (alise) -----------------|
+#|------------------- 3. \CMD{$1} (alise) -------------|
+#|------------------- 4. \CMD{x} (alise) --------------|
+#|------------------- 5. \begin $0 \end ---------------|
+#|------------------- 6. *^{$1} -----------------------|
+#|------------------- 7. *_{$1} -----------------------|
+#|------------------- 8. *_{$1 -> $2} -----------------|
+#|------------------- 9. *_{$1}^{$2} ------------------|
+#|------------------- 10. 积分|累乘|累加 --------------|
+#|------------------- 11. 符号 ------------------------|
+#|------------------- 12. 文档控件 --------------------|
+#|------------------- 13. 列表 ------------------------|
+#|------------------- 14. $VISUAL ---------------------|
+#|------------------- 15. 画图Tikz --------------------|
+#|------------------- 16. 选项列表 --------------------|
+#|------------------- 17. 公式命令 --------------------|
+#|------------------- 18. 特殊格式 --------------------|
+#|------------------- 19. 微积分 ----------------------|
+#|------------------- 20. 概率论 ----------------------|
+#|------------------- 21. 三角函数 --------------------|
+#|------------------- 22. *($1) -----------------------|
+#|------------------- 23. 调用函数 --------------------|
+#|------------------- 24. Python Function -------------|
+#|------------------- 25. VimTex API ------------------|
+#|------------------- 26. Template --------------------|
+#+====================== 目录 =========================+
 
 
-def internel_math():
-    if math():
-        linebuf = vim.eval("getline('.')")
-        index = int(vim.eval("col('.')-1"))
-        count_before = linebuf[:index].count('$')
-        count_after = linebuf[index:].count('$')
-        # print(str(linebuf) + " <-----> " + str(count_before)+"|"+str(count_after))
-        if (count_after == 0 and count_before == 0):# or (count_after % 2 == 0 and count_before % 2 == 0):
-            return False
-        return True
-    else:
-        return False
-
-def display_math():
-		return math() and (not internel_math())
-
-def env(name):
-    [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
-    return x != '0' and y != '0'
-
-def noenv(name):
-    [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
-    return x == '0' and y == '0'
-
-#"""在字符串中的中文前后添加标识符"""
-def add_chinese_tags(snip,flag):
-	text = snip.buffer[snip.line][:-len(flag)]
-	snip.buffer[snip.line] = ''
-	pattern = r'([\u4e00-\u9fa5]+)'  # 匹配中文字符的正则表达式
-	replacement = r'\\text{\1}'  # 替换模式，使用\mbox{}包裹中文字符
-	result = re.sub(pattern, replacement, text)
-	snip.expand_anon(result + '$1')
-
-#"""在字符串中的math前后添加标识符"""
-def add_math_tags(snip,flag):
-	text = snip.buffer[snip.line][:-len(flag)]
-	snip.buffer[snip.line] = ''
-	#result = re.sub(r'[^a-zA-Z\u4e00-\u9fa5\s]+', lambda x: f'${x.group()}$', text)
-	snip.expand_anon(result + '$1')
-
-#"""判断最后i个字符是否为中文字符"""
-def is_end_chinese_character(flag):
-	linebuf = vim.eval("getline('.')")[:-len(flag)]
-	char = linebuf[-1]
-	if '\u4e00' <= char <= '\u9fa5':
-		return True
-	else:
-		return False
-
-#"""判断是否为中文字符"""
-def is_chinese_character(flag):
-	if not math():
-		return False
-	linebuf = vim.eval("getline('.')")[:-len(flag)]
-	pattern = re.compile(r'[\u4e00-\u9fa5]')
-	result = re.search(pattern, linebuf)
-	if result:
-		return True
-	else:
-		return False
 
 
-endglobal
 
-#==================== Latex ====================
-#配置规则: 带有括号的结束符在括号旁边，不带有括号的结束符空格一个
+#-------------------- 1. \CMD --------------------------
+priority -200
 context "math()"
-snippet '(max|min)' "'(max|min)'" r
-`!p snip.rv = "\\" + match.group(1)`{\\{ ${1:a} , ${2:b} \\}}$0
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|phi|pi|pm|subset|sim|xi)' "all" r
+`!p snip.rv = "\\" + match.group(1)` $0
+endsnippet
+#-------------------- 2. \CMD (alise) ------------------
+priority 0
+context "math()"
+snippet '(\*|X|R|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+`!p 
+s = match.group(1)
+if s == "...":
+	s = "dots"
+if s == "l...":
+	s = "ldots"
+elif s == "~":
+	s = "sim"
+elif s == "al":
+	s = "alpha"
+elif s == "be":
+	s = "beta"
+elif s == "bec":
+	s = "because"
+elif s == "emp":
+	s = "empty"
+elif s == "inf":
+	s = "infty"
+elif s == "lam":
+	s = "lambda"
+elif s == "qqu":
+	s = "qquad"
+elif s == "qu":
+	s = "quad"
+elif s == "sig":
+	s = "sigma"
+elif s == "so":
+	s = "therefore"
+elif s == "sub":
+	s = "subset"
+elif s == "*" :
+	s = "cdot"
+elif s == "X":
+	s = "times"
+elif s == "R":
+	s = "mathbb{R}"
+snip.rv = "\\" + s
+` $0
+endsnippet
+#-------------------- 3. \CMD{$1} (alise) --------------
+priority 1001
+context "math()"
+snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi|bar|parl)' "argment_all" ir
+`!p 
+s = match.group(1)
+if s == "del":
+	s = "Delta"
+elif s == "sq":
+	s = "sqrt"
+elif s == "vphi":
+	s = "varphi"
+elif s == "parl":
+	s = "partial"
+snip.rv = "\\" + s
+`{$1}$0
+endsnippet
+#-------------------- 4. \CMD{x} (alise) ---------------
+snippet '(del|ln|sq)(x|y|z)' "argment_x_all" ir
+`!p 
+s = match.group(1)
+if s == "del":
+	s = "Delta"
+elif s == "sq":
+	s = "sqrt"
+snip.rv = "\\" + s
+`{`!p snip.rv = match.group(2)`}$0
+endsnippet
+#-------------------- 5. \begin $0 \end ----------------
+snippet beg "begin{} / end{}" i
+\begin{$1}
+${2:${VISUAL}}
+\end{$1}
+endsnippet
+
+snippet '(solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
+`!p 
+s = match.group(1)
+if s == "sym":
+	s = "symbols"
+elif s == "the":
+	s = "theorem"
+elif s == "def":
+	s = "definition"
+elif s == "prop":
+	s = "proposition"
+elif s == "lem":
+	s = "lemma"
+elif s == "exam":
+	s = "example"
+elif s == "cor":
+	s = "corollary"
+elif s == "solu":
+	s = "solution"
+elif s == "rema":
+	s = "remark"
+snip.rv = "\\begin{" + s + "}"`
+	${1:${VISUAL}}$0
+`!p snip.rv = "\\end{" + s + "}"` 
 endsnippet
 
 context "math()"
-snippet 'd(x|y|t|u|z)?' "dx" wr
+snippet cases "cases" i
+\begin{cases} 
+	${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
+	${4:f(x) = x}  ${5:,& ${6:x < 0}}
+\end{cases}
+endsnippet
+
+context "env("cases")"
+snippet \\ "jump to next line" 
+\\\
+${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
+endsnippet
+
+snippet ali "ali"
+\begin{align}
+	`!p 
+s = snip.v.text
+if s != '':
+	idx = s.find("=")
+	idx2 = s.find("&")
+	if idx != -1 and idx2 == -1:
+			new_s = s[:idx] + " & " + s[idx:]
+	elif idx == -1 and idx2 == -1:
+			new_s = "& " + s
+	else:
+			new_s = s
+	snip.rv = new_s + " \\\\"
+`$0
+\end{align}
+endsnippet
+
+snippet aligned "ali"
+\[\begin{aligned}
+	`!p 
+s = snip.v.text
+if s != '':
+	idx = s.find("=")
+	idx2 = s.find("&")
+	if idx != -1 and idx2 == -1:
+			new_s = s[:idx] + " & " + s[idx:]
+	elif idx == -1 and idx2 == -1:
+			new_s = "& " + s
+	else:
+			new_s = s
+	snip.rv = new_s + " \\\\"
+`$0
+\end{aligned}\]
+endsnippet
+
+context "env("aligned")"
+snippet \\ "jump to next line" 
+\\\
+&$1
+endsnippet
+
+context "env("align")"
+snippet \\ "jump to next line" 
+\\\
+&$1
+endsnippet
+
+snippet box "box"
+\begin{tcolorbox}
+	$0
+\end{tcolorbox}
+endsnippet
+#-------------------- 6. *^{$1} ----------------
+context "math()"
+snippet '([A-Za-z0-9]|\)|\}|\])srr' "x^{}" ir
+`!p	snip.rv = match.group(1)`^{$1}$0
+endsnippet
+
+context "math()"
+snippet '([A-Za-z0-9]|\)|\}|\])sr(\d{1,3}|x|n|m|\+|-)?' "x^{\d}" ir
 `!p 
-if match.group(1) is None:
-	snip.rv = "\mathrm{d}"
+if match.group(2) is None:
+	snip.rv = match.group(1) + "^{2}"
 else:
-	snip.rv = "\mathrm{d}" + match.group(1)
+	snip.rv = match.group(1) + "^{"+ match.group(2) +"}"
 `$0
 endsnippet
-
-# 数学环境下中文需要mbox的解决
-# TODO 还有点问题 <23-09-19 20:38:39, Yangdatong> 
-#context "is_chinese_character('.mbox')"
-#pre_expand "add_chinese_tags(snip,'.mbox')"
-#snippet .mbox ".mbox" i
-#endsnippet
-
-# 数学环境下中文需要text的解决
-#context "is_chinese_character('.text')"
-#pre_expand "add_chinese_tags(snip,'.text')"
-#snippet .text ".text" i
-#endsnippet
-
-# 使用场景：复制了一段带有公式的文字段落
-# TODO 有问题 <23-09-19 20:39:03, YangJing> #
-#pre_expand "add_math_tags(snip,'.math')"
-#snippet .math ".math" i
-#endsnippet
-
-snippet selectOptions "\selectOptions"
-\selectOptions{$1}{$2}{$3}{$4}$0
+#-------------------- 7. *_{$1} ----------------
+priority 0
+context "math()"
+snippet '(?!p|i|h)([A-Za-z])(\d{1,3}|n|k|j)' "x_{\d}" ir
+`!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
 endsnippet
 
-snippet ding "ding" w
-\ding{${1|172,173,174,175,176|}} $0
+context "math()"
+snippet 'x(n|k|i|j|\d)(\+|-)(n|k|i|j|\d)' "x_{n+\d}" r
+x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
+endsnippet
+#-------------------- 8. lims_{x -> 0} ----------------
+context "math()"
+snippet lims "lims" i
+\lim\limits_{${1:x} \to ${2:0}}$0 
 endsnippet
 
+context "math()"
+snippet limss "limss" i
+\lim\limits_{\substack{${1:x} \to ${2:0} \\\ ${3:y} \to ${4:0}}}$0
+endsnippet
+#-------------------- 9. *_{$1}^{$2} ----------------
+context "math()"
+snippet log "log" i
+\log_{${1:a}}^\{${2:b}\}$0
+endsnippet
+
+context "math()"
+snippet C "C" i
+C_{${1:n}}^\{${2:k}\}$0
+endsnippet
+#-------------------- 10. 积分|累乘|累加 ---------------
+priority 1001
+context "display_math()"
+snippet int "int" i
+\int $0
+endsnippet
+
+priority 1001
+context "internel_math()"
+snippet int "int" i
+\dint $0
+endsnippet
+
+context "display_math()"
+snippet ints "ints" i
+\int_{${1:a}}^\{${2:b}\}$0
+endsnippet
+
+context "internel_math()"
+snippet ints "ints" i
+\dint_{${1:a}}^\{${2:b}\}$0
+endsnippet
+
+priority 3001
+context "display_math()"
+snippet '(sum|prod)' "sum|prod" ir
+\\`!p snip.rv=match.group(1)`_{${1:j=0}}^{${2:k}}$0
+endsnippet
+
+priority 3001
+context "internel_math()"
+snippet '(sum|prod)' "sum|prod" ir
+\\d`!p snip.rv=match.group(1)`_{${1:j=0}}^{${2:k}}$0
+endsnippet
+#-------------------- 11. 符号 -------------------------
 snippet #! "#!"
 %!TeX program = xelatex
 endsnippet
 
+context "math()"
+snippet '(\(|\)|\||\[|\])\1' "\bigg left right ()[]{}" wr
+`!p snip.rv = "\\bigg" + match.group(1)` $0
+endsnippet
+
+context "math()"
+snippet '(\(\)|\[\]|\|\|)' "parent" iAr
+`!p	snip.rv = match.group(1)[:1]` $1 `!p snip.rv = match.group(1)[1:]`$0
+endsnippet
+
+context "math()"
+snippet \{} "\{\}" iA
+\\{ $1 \\}$0
+endsnippet
+
+context "math()"
+snippet 'ell(\d)' "ell" r
+\ell_{`!p snip.rv = match.group(1)`}$0
+endsnippet
+
+context "math()"
+snippet '(g|l)eq' "\geq" ir
+\\`!p snip.rv = match.group(1)`eq $0
+endsnippet
+
+context "math()"
+snippet  b| "bigg|_{a}^{b}" w
+\bigg|_{$1}^{$2}$0
+endsnippet
+
+context "math()"
+snippet '(-|=)?(-|=)>' "\right" irA
+`!p 
+if match.group(1) is None:
+	if match.group(2) == '-':
+		snip.rv = "\\rightarrow"
+	else:
+		snip.rv = "\\Rightarrow"
+else:
+	if match.group(2) == match.group(1):
+		if match.group(2) == '-':
+			snip.rv = "\\longrightarrow"
+		else:
+			snip.rv = "\\quad \\Longrightarrow \\quad"
+` $0
+endsnippet
+
+context "math()"
+snippet '<(-|=)' "\left" iAr
+`!p 
+if match.group(1) == '-':
+	snip.rv = "\\leftarrow"
+else:
+	snip.rv = "\\Leftarrow"
+` $0
+endsnippet
+
+context "math()"
+snippet == "==" w
+\xlongequal{~ ${1:\mbox{${2:洛}}} ~} $0
+endsnippet
+
+snippet ** "bold" i
+\textbf{${1:${VISUAL}}}$0
+endsnippet
+
+snippet `` "bold" i
+\texttt{${1:${VISUAL}}}$0
+endsnippet
+
+snippet # "#" b
+\section{$1}
+endsnippet
+
+snippet ## "##" b
+\subsection{$1}
+endsnippet
+
+snippet ### "###" b
+\subsubsection{$1}
+endsnippet
+
+snippet #### "####"
+\paragraph{$1}
+endsnippet
+
+# ----------------------------------------
+# 这里两个一样的原因是：1001是为了判断当前是否处于\dint_{}^{}内，如果处于该环境那么只能响应\frac ，反之其他的行间公式可以响应\frac ，即1000
+priority 1001
+context "show_display_frac()" 
+snippet // "Fraction" i
+\dfrac{$1}{$2}$0
+endsnippet
+
+priority 1000
+context "internel_math()" 
+snippet // "Fraction" i
+\frac{$1}{$2}$0
+endsnippet
+
+context "display_math()"
+snippet // "Fraction" i
+\frac{$1}{$2}$0
+endsnippet
+
+priority 1001
+context "math()"
+snippet '^.*\)/' "() Fraction" wrA
+`!p
+stripped = match.string[:-1]
+depth = 0
+i = len(stripped) - 1
+while True:
+    if stripped[i] == ')': depth += 1
+    if stripped[i] == '(': depth -= 1
+    if depth == 0: break;
+    i -= 1
+snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
+`{$1}$0
+endsnippet
+
+priority 2001
+context "internel_math()"
+snippet '^.*\)/' "() Fraction" wrA
+`!p
+stripped = match.string[:-1]
+depth = 0
+i = len(stripped) - 1
+while True:
+    if stripped[i] == ')': depth += 1
+    if stripped[i] == '(': depth -= 1
+    if depth == 0: break;
+    i -= 1
+snip.rv = stripped[0:i] + "\\dfrac{" + stripped[i+1:-1] + "}"
+`{$1}$0
+endsnippet
+
+# ----------------------------------------
+# 这里两个一样的原因是：2002是为了判断当前是否处于\dint_{}^{}内，如果处于该环境那么只能响应\frac ，反之其他的行间公式可以响应\frac ，即2001
+priority 2002
+context "show_display_frac()" 
+snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
+\dfrac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
+
+priority 2001
+context "internel_math()"
+snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
+\frac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
+# ----------------------------------------
+priority 1001
+context "math()"
+snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
+\\frac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
+
+#-------------------- 12. 文档控件 ---------------------
 snippet fig "Figure environment" b
 \begin{figure}[${1:htpb}]
 	\centering
@@ -155,6 +491,11 @@ snippet minipage "minipage"
 	$3
 	\end{tikzpicture}}
 \end{minipage}
+endsnippet
+
+context "env("minipage")"
+snippet caption "caption" w
+\captionof{figure}{${1:CationName}}
 endsnippet
 
 pre_expand "create_table(snip)"
@@ -217,128 +558,6 @@ snippet \\ "jump to next line"
 $1 & $2 \\\
 endsnippet
 
-snippet it "\item"
-\item ${1:${VISUAL}}
-endsnippet
-
-# Itemize
-snippet item "itemize environment"
-\begin{itemize}
-`!p 
-# 如果段落非空，则在首字母处添加 " \item"
-if snip.v.text != "":
-		text = snip.v.text
-		paragraphs = re.split(r'\n\s*\n', text)
-		for i, paragraph in enumerate(paragraphs):
-				paragraph = paragraph.strip()
-				if paragraph:
-						paragraph = '  \item ' + paragraph
-				paragraphs[i] = paragraph
-		result = '\n\n'.join(paragraphs)
-		snip.rv = result
-	`$0
-\end{itemize}
-endsnippet
-
-context "env("itemize")"
-snippet - "\item" 
-\item ${1:${VISUAL}}
-endsnippet
-
-# Enumerate
-snippet enum "enumerate environment"
-\begin{enumerate}
-`!p 
-# 如果段落非空，则在首字母处添加 " \item"
-if snip.v.text != "":
-		text = snip.v.text
-		paragraphs = re.split(r'\n\s*\n', text)
-		for i, paragraph in enumerate(paragraphs):
-				paragraph = paragraph.strip()
-				if paragraph:
-						paragraph = '  \item ' + paragraph
-				paragraphs[i] = paragraph
-		result = '\n\n'.join(paragraphs)
-		snip.rv = result
-	`$0
-\end{enumerate}
-endsnippet
-
-snippet enuma "enumerate environment"
-\begin{enumerate}[(a)]
-  \item ${0}
-\end{enumerate}
-endsnippet
-
-snippet serial "serial environment"
-\begin{serialNumber}
-  \item ${0}
-\end{serialNumber}
-endsnippet
-
-context "env("serialNumber")"
-snippet - "\item" 
-\item ${1:${VISUAL}}
-endsnippet
-
-snippet enumi "enumerate environment"
-\begin{enumerate}[(i)]
-  \item ${0}
-\end{enumerate}
-endsnippet
-
-context "env("enumerate")"
-snippet - "\item" 
-\item ${1:${VISUAL}}
-endsnippet
-
-context "env("thebibliography")"
-snippet - "\bibitem" 
-\bibitem{${1:a}} ${2:作者}. \emph{${3:文献}}[M]. ${4:地点}:${5:出版社},${6:年份}.\url{${7:www.wiki.com}}
-endsnippet
-
-snippet lab "\label" w
-\label{${1:fig:}${2:figureName}}$0
-endsnippet
-
-snippet ref "ref" w
-\\${1|figref,tabref,exaref|}{${1/ref//g}:${2:LableName}}$0
-endsnippet
-
-#snippet ref "~\ref" w
-#~\ref{${1:fig:}${2:figureName}}$0
-#endsnippet
-
-#\label{fig:${5:${3/\W+/-/g}}}
-
-#snippet figref "~\ref" w
-#\figref{${1:fig:}${2:figureName}}$0
-#endsnippet
-#
-#snippet tabref "~\ref" w
-#\tabref{${1:fig:}${2:figureName}}$0
-#endsnippet
-
-snippet desc "Description" b
-\begin{description}
-	\item[$1] $0
-\end{description}
-endsnippet
-
-#newcommand
-snippet nc "\newcommand" b
-\newcommand{\\${1:cmd}}[${2:opt}]{${3:realcmd}} ${0}
-#usepackage
-endsnippet
-
-snippet up "\usepackage" b
-\usepackage{${1:package}} ${0}
-endsnippet
-
-snippet mb "\mbox" w
-\mbox{${1:${VISUAL}}}
-endsnippet
-
 snippet lst "lst"
 \begin{figure}[htp]
 	\centering
@@ -348,20 +567,92 @@ snippet lst "lst"
 	\caption{$0}
 \end{figure}
 endsnippet
-
-#snippet box "Box"
-#`!p snip.rv = '┌' + '─' * (len(t[1]) + 2) + '┐'`
-#│ $1 │
-#`!p snip.rv = '└' + '─' * (len(t[1]) + 2) + '┘'`
-#$0
-#endsnippet
-
-snippet box "box"
-\begin{tcolorbox}
-	$0
-\end{tcolorbox}
+#-------------------- 13. 列表 -------------------------
+context "envs(['enumerate','itemize','serialNumber'])"
+snippet - "\item" b
+\item ${1:${VISUAL}}
 endsnippet
 
+context "env("thebibliography")"
+snippet - "\bibitem" 
+\bibitem{${1:a}} ${2:作者}. \emph{${3:文献}}[M]. ${4:地点}:${5:出版社},${6:年份}.\url{${7:www.wiki.com}}
+endsnippet
+
+snippet it "\item"
+\item ${1:${VISUAL}}
+endsnippet
+
+snippet '(item|enum|serial)' "list environment" r
+`!p 
+if match.group(1) == 'item':
+	snip.rv = "\\begin{itemize}"
+elif match.group(1) == 'enum':
+	snip.rv = "\\begin{enumerate}"
+else:
+	snip.rv = "\\begin{serialNumber}"
+``!p
+if snip.v.text != "":
+		text = snip.v.text
+		paragraphs = re.split(r'\n\s*\n', text)
+		for i, paragraph in enumerate(paragraphs):
+				paragraph = paragraph.strip()
+				if paragraph:
+						paragraph = '  \item ' + paragraph
+				paragraphs[i] = paragraph
+		result = '\n\n'.join(paragraphs)
+		snip.rv = result
+`
+	$0
+`!p 
+if match.group(1) == 'item':
+	snip.rv = "\\end{itemize}"
+elif match.group(1) == 'enum':
+	snip.rv = "\\begin{enumerate}"
+else:
+	snip.rv = "\\end{serialNumber}"
+`
+endsnippet
+#-------------------- 14. $VISUAL ----------------------
+context "math()"
+snippet dis "dis" i
+\displaystyle{${VISUAL}$1}$0
+endsnippet
+
+context "math()"
+snippet sout "sout" i
+\sout{${VISUAL}$1}$0
+endsnippet
+
+context "math()"
+snippet //( "()visual" iA
+(${VISUAL})$0
+endsnippet
+
+#\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
+snippet '//(red|gree|grey|blu|yel)' "textcolor" ir
+\textcolor{`!p 
+text = match.group(1)
+if text == "gree":
+	snip.rv = "green"
+elif text == "blu":
+	snip.rv = "blue"
+elif text == "yel":
+	snip.rv = "yellow"
+else:
+	snip.rv = text
+`}{${1:${VISUAL}}}$0
+endsnippet
+
+context "math()"
+snippet //v "frac_visual" iA
+\\frac{${VISUAL}}{${1}}$0
+endsnippet
+
+snippet mb "\mbox" w
+\mbox{${1:${VISUAL}}}
+endsnippet
+
+#-------------------- 15. 画图Tikz ---------------------
 priority 1001
 context "env("tikzpicture")"
 snippet plot "Plot" w
@@ -489,279 +780,19 @@ context "env("tikzpicture")"
 snippet empty "empty"
 xtick=\empty,ytick=\empty
 endsnippet
-
-#-------------------- 类markdown --------------------
-snippet ** "bold" i
-\textbf{${1:${VISUAL}}}$0
+#-------------------- 16. 选项列表 ---------------------
+snippet lab "\label" w
+\label{${1|fig,tab,exa|}:${2:Name}}$0
 endsnippet
 
-snippet `` "bold" i
-\texttt{${1:${VISUAL}}}$0
+snippet ref "ref" w
+\\${1|figref,tabref,exaref|}{${1/ref//g}:${2:LableName}}$0
 endsnippet
 
-snippet # "#" b
-\section{$1}
+snippet ding "ding" w
+\ding{${1|172,173,174,175,176|}} $0
 endsnippet
-
-snippet ## "##" b
-\subsection{$1}
-endsnippet
-
-snippet ### "###" b
-\subsubsection{$1}
-endsnippet
-
-snippet #### "####"
-\paragraph{$1}
-endsnippet
-
-#-------------------- 简单的规则 --------------------
-context "math()"
-snippet '(\*|X|R)' "*"  ir
-`!p
-if match.group(1) == "*" :
-	snip.rv = "\\cdot"
-elif match.group(1) == "X":
-	snip.rv = "\\times"
-elif match.group(1) == "R":
-	snip.rv = "\\mathbb{R}"
-` $0
-endsnippet
-
-priority -200
-context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|phi|pi|pm|subset|sim|xi)' "all" r
-`!p snip.rv = "\\" + match.group(1)` $0
-endsnippet
-
-priority 0
-context "math()"
-snippet '(l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
-`!p 
-s = match.group(1)
-if s == "...":
-	s = "dots"
-if s == "l...":
-	s = "ldots"
-elif s == "~":
-	s = "sim"
-elif s == "al":
-	s = "alpha"
-elif s == "be":
-	s = "beta"
-elif s == "bec":
-	s = "because"
-elif s == "emp":
-	s = "empty"
-elif s == "inf":
-	s = "infty"
-elif s == "lam":
-	s = "lambda"
-elif s == "qqu":
-	s = "qquad"
-elif s == "qu":
-	s = "quad"
-elif s == "sig":
-	s = "sigma"
-elif s == "so":
-	s = "therefore"
-elif s == "sub":
-	s = "subset"
-#elif s == "vphi":
-#	s = "varphi"
-snip.rv = "\\" + s
-`$0
-endsnippet
-
-#begin，end
-snippet '(kai|solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
-`!p 
-s = match.group(1)
-if s == "sym":
-	s = "symbols"
-elif s == "the":
-	s = "theorem"
-elif s == "def":
-	s = "definition"
-elif s == "prop":
-	s = "proposition"
-elif s == "lem":
-	s = "lemma"
-elif s == "exam":
-	s = "example"
-elif s == "cor":
-	s = "corollary"
-elif s == "solu":
-	s = "solution"
-elif s == "rema":
-	s = "remark"
-snip.rv = "\\begin{" + s + "}"
-`
-	${1:${VISUAL}}$0
-`!p snip.rv = "\\end{" + s + "}"` 
-endsnippet
-
-
-#-------------------- 参数的规则 --------------------
-priority 1001
-context "math()"
-snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi|bar|parl)' "argment_all" ir
-`!p 
-s = match.group(1)
-if s == "del":
-	s = "Delta"
-elif s == "sq":
-	s = "sqrt"
-elif s == "vphi":
-	s = "varphi"
-elif s == "parl":
-	s = "partial"
-snip.rv = "\\" + s
-`{$1}$0
-endsnippet
-
-snippet 'sq(\d)' "sqrt[\d]{}" r
-\sqrt[`!p snip.rv = match.group(1)`]{$1}$0
-endsnippet
-
-snippet '(del|ln|sq)(x|y|z)' "argment_x_all" ir
-`!p 
-s = match.group(1)
-if s == "del":
-	s = "Delta"
-elif s == "sq":
-	s = "sqrt"
-snip.rv = "\\" + s
-`{`!p snip.rv = match.group(2)`}$0
-endsnippet
-
-#-------------------- 多个参数规则 --------------------
-#概率论用的比较频繁
-context "math()" 
-snippet P{} "P{}" i
-P\\{ $1 \\}$0
-endsnippet
-
-context "math()"
-snippet lims "lims" i
-\lim\limits_{${1:x} \to ${2:0}}$0 
-endsnippet
-
-context "math()"
-snippet limss "limss" i
-\lim\limits_{\substack{${1:x} \to ${2:0} \\\ ${3:y} \to ${4:0}}}$0
-endsnippet
-
-context "math()"
-snippet log "log" i
-\log_{${1:a}}^\{${2:b}\}$0
-endsnippet
-
-context "math()"
-snippet C "C" i
-C_{${1:n}}^\{${2:k}\}$0
-endsnippet
-
-priority 1001
-context "display_math()"
-snippet int "int" i
-\int $0
-endsnippet
-
-priority 1001
-context "internel_math()"
-snippet int "int" i
-\dint $0
-endsnippet
-
-context "display_math()"
-snippet ints "ints" i
-\int_{${1:a}}^\{${2:b}\}$0
-endsnippet
-
-context "internel_math()"
-snippet ints "ints" i
-\dint_{${1:a}}^\{${2:b}\}$0
-endsnippet
-
-priority 3001
-context "display_math()"
-snippet '(sum|prod)' "sum|prod" ir
-\\`!p snip.rv=match.group(1)`_{${1:j=0}}^{${2:k}}$0
-endsnippet
-
-priority 3001
-context "internel_math()"
-snippet '(sum|prod)' "sum|prod" ir
-\\d`!p snip.rv=match.group(1)`_{${1:j=0}}^{${2:k}}$0
-endsnippet
-
-context "math()"
-snippet Vert "\Vert" i
-\Vert ${1} \Vert $0
-endsnippet
-
-context "math()"
-snippet def "def"
-def($1)$0
-endsnippet
-
-#-------------------- 符号的规则 --------------------
-context "math()"
-snippet '(\(\)|\[\]|\|\|)' "parent" iAr
-`!p	snip.rv = match.group(1)[:1]` $1 `!p snip.rv = match.group(1)[1:]`$0
-endsnippet
-
-context "math()"
-snippet \{} "\{\}" iA
-\\{ $1 \\}$0
-endsnippet
-
-context "math()"
-snippet '(-)?->' "\right" irA
-`!p 
-if match.group(1) is None:
-	snip.rv = "\\rightarrow"
-else:
-	snip.rv = "\\longrightarrow"
-` $0
-endsnippet
-
-context "math()"
-snippet '(=)?=>' "\Right" irA
-`!p 
-if match.group(1) is None:
-	snip.rv = "\\Rightarrow"
-else:
-	snip.rv = "\\quad \\Longrightarrow \\quad"
-` $0
-endsnippet
-
-context "math()"
-snippet == "==" w
-\xlongequal{~ ${1:\mbox{洛}} ~} $0
-endsnippet
-
-context "math()"
-snippet <- "\left" iA
-\leftarrow $0
-endsnippet
-
-context "math()"
-snippet <= "\Left" iA
-\Leftarrow $0
-endsnippet
-
-#-------------------- 公式的规则 --------------------
-#snippet mk "Math" i
-#$${1}$`!p
-#if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
-#    snip.rv = ' '
-#else:
-#    snip.rv = ''
-#`${2}
-#endsnippet
-
+#-------------------- 17. 公式命令 ---------------------
 snippet mk "Math" i
 $${1}$$0
 endsnippet
@@ -778,13 +809,6 @@ snippet mkk "display math"
 \end{equation}
 endsnippet
 
-#context "env("proof")"
-#snippet mkk "display math"
-#$$
-#	$0
-#$$
-#endsnippet
-
 snippet equ "equation"
 \begin{equation}
 	${1:${VISUAL}}
@@ -796,165 +820,25 @@ snippet mkka "display math aligned"
 & ${1} \\\\${0}
 \end{align}
 endsnippet
-
-#-------------------- 套件的规则 --------------------
-snippet beg "begin{} / end{}" i
-\begin{$1}
-${2:${VISUAL}}
-\end{$1}
+#-------------------- 18. 特殊格式 ---------------------
+snippet up "\usepackage" b
+\usepackage{${1:package}} ${0}
 endsnippet
 
-#context "display_math()"
-context "math()"
-snippet cases "cases" i
-\begin{cases} 
-	${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
-	${4:f(x) = x}  ${5:,& ${6:x < 0}}
-\end{cases}
-endsnippet
-
-context "env("cases")"
-snippet \\ "jump to next line" 
-\\\
-${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
-endsnippet
-
-snippet ali "ali"
-\begin{align}
-	`!p 
-s = snip.v.text
-if s != '':
-	idx = s.find("=")
-	idx2 = s.find("&")
-	if idx != -1 and idx2 == -1:
-			new_s = s[:idx] + " & " + s[idx:]
-	elif idx == -1 and idx2 == -1:
-			new_s = "& " + s
-	else:
-			new_s = s
-	snip.rv = new_s + " \\\\"
-`$0
-\end{align}
-endsnippet
-
-
-snippet aligned "ali"
-\[\begin{aligned}
-	`!p 
-s = snip.v.text
-if s != '':
-	idx = s.find("=")
-	idx2 = s.find("&")
-	if idx != -1 and idx2 == -1:
-			new_s = s[:idx] + " & " + s[idx:]
-	elif idx == -1 and idx2 == -1:
-			new_s = "& " + s
-	else:
-			new_s = s
-	snip.rv = new_s + " \\\\"
-`$0
-\end{aligned}\]
-endsnippet
-
-context "env("aligned")"
-snippet \\ "jump to next line" 
-\\\
-&$1
-endsnippet
-
-context "env("align")"
-snippet \\ "jump to next line" 
-\\\
-&$1
-endsnippet
-#-------------------- VISUAL --------------------
-context "math()"
-snippet dis "dis" i
-\displaystyle{${VISUAL}$1}$0
+snippet selectOptions "\selectOptions"
+\selectOptions{$1}{$2}{$3}{$4}$0
 endsnippet
 
 context "math()"
-snippet sout "sout" i
-\sout{${VISUAL}$1}$0
+snippet '(max|min)' "'(max|min)'" r
+`!p snip.rv = "\\" + match.group(1)`{\\{ ${1:a} , ${2:b} \\}}$0
 endsnippet
 
 context "math()"
-snippet //( "()visual" iA
-(${VISUAL})$0
+snippet def "def"
+def($1)$0
 endsnippet
 
-#\textcolor{red/blue/green/black/white/cyan/magenta/yellow}{text}
-snippet '//(red|gree|grey|blu|yel)' "textcolor" ir
-\textcolor{`!p 
-text = match.group(1)
-if text == "gree":
-	snip.rv = "green"
-elif text == "blu":
-	snip.rv = "blue"
-elif text == "yel":
-	snip.rv = "yellow"
-else:
-	snip.rv = text
-`}{${1:${VISUAL}}}$0
-endsnippet
-
-context "math()"
-snippet //v "frac_visual" iA
-\\frac{${VISUAL}}{${1}}$0
-endsnippet
-
-#snippet i "mark" "re.match('(?:\${1,2})(.*?)\\1{1,2}$', snip.buffer[snip.line])" e
-# ----------------------------------------
-# 这里两个一样的原因是：1001是为了判断当前是否处于\dint_{}^{}内，如果处于该环境那么只能响应\frac ，反之其他的行间公式可以响应\frac ，即1000
-priority 1001
-context "show_display_frac()" 
-snippet // "Fraction" i
-\dfrac{$1}{$2}$0
-endsnippet
-
-priority 1000
-context "internel_math()" 
-snippet // "Fraction" i
-\frac{$1}{$2}$0
-endsnippet
-# ----------------------------------------
-
-context "display_math()"
-snippet // "Fraction" i
-\frac{$1}{$2}$0
-endsnippet
-
-priority 1001
-context "math()"
-snippet '^.*\)/' "() Fraction" wrA
-`!p
-stripped = match.string[:-1]
-depth = 0
-i = len(stripped) - 1
-while True:
-    if stripped[i] == ')': depth += 1
-    if stripped[i] == '(': depth -= 1
-    if depth == 0: break;
-    i -= 1
-snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
-`{$1}$0
-endsnippet
-
-priority 2001
-context "internel_math()"
-snippet '^.*\)/' "() Fraction" wrA
-`!p
-stripped = match.string[:-1]
-depth = 0
-i = len(stripped) - 1
-while True:
-    if stripped[i] == ')': depth += 1
-    if stripped[i] == '(': depth -= 1
-    if depth == 0: break;
-    i -= 1
-snip.rv = stripped[0:i] + "\\dfrac{" + stripped[i+1:-1] + "}"
-`{$1}$0
-endsnippet
 
 snippet sympy "sympyblock " w
 sympy $1 sympy$0
@@ -987,7 +871,21 @@ snip.rv = subprocess.check_output(['wolframscript', '-code', code])
 `
 endsnippet
 
-#---------- 多元微积分 ----------
+snippet 'sq(\d)' "sqrt[\d]{}" r
+\sqrt[`!p snip.rv = match.group(1)`]{$1}$0
+endsnippet
+#-------------------- 19. 微积分 -----------------------
+context "math()"
+snippet 'd(x|y|t|u|z)?' "dx" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "\mathrm{d}"
+else:
+	snip.rv = "\mathrm{d}" + match.group(1)
+`$0
+endsnippet
+
+
 context "math()"
 snippet 'x(0)?,y(0)?' "(x,y)" wr
 `!p
@@ -1002,9 +900,12 @@ context "math()"
 snippet 'fxy' "f(x,y)" wr
 f(x,y)
 endsnippet
+#-------------------- 20. 概率论 -----------------------
+context "math()" 
+snippet P{} "P{}" i
+P\\{ $1 \\}$0
+endsnippet
 
-#================== 正则 ==================
-#---------- 概率论 ----------
 context "math()"
 snippet 'C(\d{0,3})-(\d{0,3})' "C_{\d}^{\d}'" r
 `!p snip.rv = "C_{" + match.group(1) + "}^{" + match.group(2) + "}"`
@@ -1020,56 +921,11 @@ snippet 'P([A-C])\|([A-C])' "'P(A|B)'" r
 `!p snip.rv= "P(" + match.group(1) + "|" + match.group(2) + ")"`
 endsnippet
 
-#---------- 符号 ----------
 context "math()"
-snippet 'ell(\d)' "ell" r
-\ell_{`!p snip.rv = match.group(1)`}$0
+snippet Vert "\Vert" i
+\Vert ${1} \Vert $0
 endsnippet
-
-context "math()"
-snippet '(g|l)eq' "\geq" ir
-\\`!p snip.rv = match.group(1)`eq $0
-endsnippet
-
-#snippet i "mark" "re.match('(?:\${1,2})(.*?)\\1{1,2}$', snip.buffer[snip.line])" e
-context "math()"
-snippet '(\(|\)|\||\[|\])\1' "\bigg left right ()[]{}" wr
-`!p snip.rv = "\\bigg" + match.group(1)` $0
-endsnippet
-
-context "math()"
-snippet  b| "bigg|_{a}^{b}" w
-\bigg|_{$1}^{$2}$0
-endsnippet
-
-#---------- 上下标 ----------
-context "math()"
-snippet '([A-Za-z0-9]|\)|\}|\])srr' "x^{}" ir
-`!p	snip.rv = match.group(1)`^{$1}$0
-endsnippet
-
-context "math()"
-snippet '([A-Za-z0-9]|\)|\}|\])sr(\d{1,3}|x|n|m|\+|-)?' "x^{\d}" ir
-`!p 
-if match.group(2) is None:
-	snip.rv = match.group(1) + "^{2}"
-else:
-	snip.rv = match.group(1) + "^{"+ match.group(2) +"}"
-`$0
-endsnippet
-
-priority 0
-context "math()"
-snippet '(?!p|i|h)([A-Za-z])(\d{1,3}|n|k|j)' "x_{\d}" ir
-`!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
-endsnippet
-
-context "math()"
-snippet 'x(n|k|i|j|\d)(\+|-)(n|k|i|j|\d)' "x_{n+\d}" r
-x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
-endsnippet
-
-#---------- 三角函数 ----------
+#-------------------- 21. 三角函数 ---------------------
 priority 2001
 context "math()"
 snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(\d|n)?' "sin{}" ir
@@ -1104,8 +960,7 @@ if not thr is None:
 snip.rv = s + "{" + fou + "}"
 `$0
 endsnippet
-
-#---------- 原函数 ----------
+#-------------------- 22. *($1) ------------------------
 context "math()"
 snippet 'fgx' "f(g(x))" ir
 f(g(x))$0
@@ -1115,7 +970,6 @@ context "math()"
 snippet 'f'gx' "f(g(x))" ir
 f'(g(x))$0
 endsnippet
-
 
 priority 2001
 context "math()"
@@ -1165,28 +1019,7 @@ context "math()"
 snippet 'vphi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\vphi(x)" ir
 \\varphi(`!p snip.rv = match.group(1)`)$0
 endsnippet
-
-# ----------------------------------------
-# 这里两个一样的原因是：2002是为了判断当前是否处于\dint_{}^{}内，如果处于该环境那么只能响应\frac ，反之其他的行间公式可以响应\frac ，即2001
-priority 2002
-context "show_display_frac()" 
-snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
-\dfrac{`!p snip.rv = match.group(1)`}{$1}$0
-endsnippet
-
-priority 2001
-context "internel_math()"
-snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
-\frac{`!p snip.rv = match.group(1)`}{$1}$0
-endsnippet
-# ----------------------------------------
-priority 1001
-context "math()"
-snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
-\\frac{`!p snip.rv = match.group(1)`}{$1}$0
-endsnippet
-
-#================== Function ==================
+#-------------------- 23. 调用函数 ---------------------
 context "math()"
 pre_expand "create_matrix(snip)"
 snippet '^mat(\d+\*\d+)' "matrix" r
@@ -1206,7 +1039,7 @@ context "math()"
 pre_expand "create_matrix_middle(snip,\"v\")"
 snippet '.*\svmat(\d)\*(\d)' "matrix_middle" r
 endsnippet
-
+#-------------------- 24. Python Function --------------
 global !p
 def create_table(snip):
 	rows = snip.buffer[snip.line].split('*')[0]
@@ -1279,10 +1112,84 @@ def show_display_frac():
 		return True
 	else:
 		return False
+endglobal
+#-------------------- 25. VimTex API -------------------
+global !p
+def math():
+    return vim.eval('vimtex#syntax#in_mathzone()') == '1'
 
+def internel_math():
+    if math():
+        linebuf = vim.eval("getline('.')")
+        index = int(vim.eval("col('.')-1"))
+        count_before = linebuf[:index].count('$')
+        count_after = linebuf[index:].count('$')
+        # print(str(linebuf) + " <-----> " + str(count_before)+"|"+str(count_after))
+        if (count_after == 0 and count_before == 0):# or (count_after % 2 == 0 and count_before % 2 == 0):
+            return False
+        return True
+    else:
+        return False
+
+def display_math():
+		return math() and (not internel_math())
+
+def env(name):
+    [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
+    return x != '0' and y != '0'
+
+def noenv(name):
+    [x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
+    return x == '0' and y == '0'
+
+def envs(names):
+		for name in names:
+			[x, y] = vim.eval("vimtex#env#is_inside('" + name + "')")
+			if x != '0' and y != '0':
+				return True
+		return False
+
+
+#"""在字符串中的中文前后添加标识符"""
+def add_chinese_tags(snip,flag):
+	text = snip.buffer[snip.line][:-len(flag)]
+	snip.buffer[snip.line] = ''
+	pattern = r'([\u4e00-\u9fa5]+)'  # 匹配中文字符的正则表达式
+	replacement = r'\\text{\1}'  # 替换模式，使用\mbox{}包裹中文字符
+	result = re.sub(pattern, replacement, text)
+	snip.expand_anon(result + '$1')
+
+#"""在字符串中的math前后添加标识符"""
+def add_math_tags(snip,flag):
+	text = snip.buffer[snip.line][:-len(flag)]
+	snip.buffer[snip.line] = ''
+	#result = re.sub(r'[^a-zA-Z\u4e00-\u9fa5\s]+', lambda x: f'${x.group()}$', text)
+	snip.expand_anon(result + '$1')
+
+#"""判断最后i个字符是否为中文字符"""
+def is_end_chinese_character(flag):
+	linebuf = vim.eval("getline('.')")[:-len(flag)]
+	char = linebuf[-1]
+	if '\u4e00' <= char <= '\u9fa5':
+		return True
+	else:
+		return False
+
+#"""判断是否为中文字符"""
+def is_chinese_character(flag):
+	if not math():
+		return False
+	linebuf = vim.eval("getline('.')")[:-len(flag)]
+	pattern = re.compile(r'[\u4e00-\u9fa5]')
+	result = re.search(pattern, linebuf)
+	if result:
+		return True
+	else:
+		return False
 endglobal
 
-snippet main "main"
+#|------------------- 26. Template --------------------|
+snippet 'main|template|temp' "Template" r
 %!TeX program = xelatex
 `!p 
 # 创建一个包含所有路径的列表
