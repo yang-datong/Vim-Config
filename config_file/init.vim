@@ -396,6 +396,7 @@ if g:is_latex == 1
   set conceallevel=2
   let g:tex_conceal='abdmg'
   hi Conceal ctermbg=none
+  let g:tex_conceal_frac=1
 endif
 "======================================================================
 if g:is_markdown == 1
@@ -608,8 +609,8 @@ func! Run()
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'
   elseif &filetype == 'python'
-    "exec '!python3 %'
-    exec '!manim -pql % Demo'
+    exec '!python3 %'
+    "exec '!manim -pql % Demo'
   elseif &filetype == 'manim'
     exec '!manim -pql % Demo'
   elseif &filetype == 'sh'

@@ -37,7 +37,7 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|phi|pi|pm|subset|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|psi|phi|pi|pm|subset|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
@@ -154,10 +154,18 @@ snippet cases "cases" i
 \end{cases}
 endsnippet
 
+priority 1001
 context "env("cases")"
 snippet \\ "jump to next line" 
 \\\
 ${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
+endsnippet
+
+priority 1000
+context "envs(['aligned','align'])"
+snippet \\ "jump to next line" 
+\\\
+&$1
 endsnippet
 
 snippet '(aligned|ali)' "ali" br
@@ -186,12 +194,6 @@ if match.group(1) == 'ali':
 else:
 	snip.rv = "\\end{aligned}"
 `
-endsnippet
-
-context "envs(['aligned','align'])"
-snippet \\ "jump to next line" 
-\\\
-&$1
 endsnippet
 #-------------------- 6. *^{$1} ----------------
 context "math()"
@@ -247,14 +249,24 @@ endsnippet
 #-------------------- 10. 积分|累乘|累加 ---------------
 priority 1001
 context "display_math()"
-snippet int "int" i
-\int $0
+snippet '(i)?int' "int" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\int"
+else:
+	snip.rv = "\\iint"
+` $0
 endsnippet
 
 priority 1001
 context "internel_math()"
-snippet int "int" i
-\dint $0
+snippet '(i)?int' "int" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\dint"
+else:
+	snip.rv = "\\diint"
+` $0
 endsnippet
 
 context "display_math()"
@@ -585,7 +597,7 @@ if snip.v.text != "":
 if match.group(1) == 'item':
 	snip.rv = "\\end{itemize}"
 elif match.group(1) == 'enum':
-	snip.rv = "\\begin{enumerate}"
+	snip.rv = "\\end{enumerate}"
 else:
 	snip.rv = "\\end{serialNumber}"
 `
@@ -644,15 +656,15 @@ endsnippet
 priority 1001
 context "env("tikzpicture")"
 snippet plot "Plot" w
-\def\min{-10}
-\def\max{10}
+\def\min{${1:-9.7}}
+\def\max{${2:9.7}}
 \begin{axis}[
 	xlabel=$x$,ylabel=$f(x)$,
 	xmin= \min, xmax= \max,
 	ymin= \min, ymax= \max,
 	axis lines = middle]
 	\fill (0,0) node[above left] {$O$};
-	\addplot[domain=\min:\max,thick,smooth,red]{$1};
+	\addplot[domain=\min:\max,thick,smooth]{$3};
 \end{axis}
 endsnippet
 
@@ -661,19 +673,19 @@ snippet plot "Plot" w
 \begin{figure}[ht]
 	\centering
 	\begin{tikzpicture}
-		\def\min{-10}
-		\def\max{10}
+		\def\min{${1:-9.7}}
+		\def\max{${2:9.7}}
 		\begin{axis}[
 			xlabel=$x$,ylabel=$f(x)$,
 			xmin= \min, xmax= \max,
 			ymin= \min, ymax= \max,
 			axis lines = middle]
 			\fill (0,0) node[above left] {$O$};
-			\addplot[domain=\min:\max,thick,smooth,red]{$1};
+			\addplot[domain=\min:\max,thick,smooth]{$3};
 		\end{axis}
 	\end{tikzpicture}
-	\caption{$2}
-	\label{fig:${3:${2/\W+/-/g}}}
+	\caption{$4}
+	\label{fig:${5:${4/\W+/-/g}}}
 \end{figure}
 endsnippet
 
@@ -697,6 +709,11 @@ endsnippet
 context "env("tikzpicture")"
 snippet 'vec|->' "vec" r
 \addplot[->] coordinates {(${1:x1},${2:y1}) (${3:x2},${4:y2})};
+endsnippet
+
+context "env("tikzpicture")"
+snippet 'circle|circ|cir' "\draw circle" wr
+\draw (${1:0},${2:0}) circle (${2:1});
 endsnippet
 
 context "env("tikzpicture")"
@@ -731,7 +748,7 @@ endsnippet
 
 context "env("tikzpicture")"
 snippet '(func|add)' "function" r
-\addplot[${1:domain=${2:-10:10},}smooth,red]{${3:2 * x}};
+\addplot[${1:domain=${2:\min:\max},}smooth]{${3:2 * x}};
 endsnippet
 
 priority 1001
@@ -758,6 +775,21 @@ snippet node "Tikz node" w
 \end{tikzpicture}
 endsnippet
 
+context "env("tikzpicture")"
+snippet '(font|fon|small|tiny)' "font" wr
+font=${1|\small,\tiny|}
+endsnippet
+
+context "env("tikzpicture")"
+snippet '(below|above)' "position" wr
+`!p snip.rv=match.group(1)` ${1|left,right|}
+endsnippet
+
+context "env("tikzpicture")"
+snippet '(shift|shif|shi)' "shift" wr
+${1|xshift=,yshift=|}${2:1cm}
+endsnippet
+
 priority 1000
 context "env("tikzpicture")"
 snippet 'emp(ty|t)?' "empty" wr
@@ -774,13 +806,41 @@ else:
 	snip.rv = 'ytick=\empty,'
 `
 endsnippet
+
+snippet flow "flow"
+\begin{tikzpicture}
+	[sibling distance=10em,every node/.style = {shape=rectangle,rounded corners,draw}]
+
+	\node {主题}
+	child { node {子节点1} 
+		child { node {子节点2} 
+			child { node {子节点3} } }
+		child { node {子节点4} } };
+\end{tikzpicture}
+endsnippet
+
+snippet '(\\)?node(\s)?\{(.*)\}(\s)?-->' "-->" wr
+`!p
+one = match.group(1)
+the = match.group(3)
+if one is None:
+	one=''
+snip.rv = one + "node {" + the + "} child { node {"`${1:子节点}`!p
+snip.rv = "} }"
+`
+endsnippet
+
+snippet child "child"
+child { node {${1:子节点}} }$0
+endsnippet
 #-------------------- 16. 选项列表 ---------------------
 snippet lab "\label" w
 \label{${1|fig,tab,exa|}:${2:Name}}$0
 endsnippet
 
+#\label{fig:${5:${3/\W+/-/g}}}
 snippet ref "ref" w
-\\${1|figref,tabref,exaref|}{${1/ref//g}:${2:LableName}}$0
+\\${1|figref,tabref,exaref|}{${1/ref//g}:${3:${2/\W+/-/g}}}%$2
 endsnippet
 
 snippet ding "ding" w
@@ -801,6 +861,12 @@ snippet 'equ|mkk' "equation" wr
 \begin{equation}
 	${1:${VISUAL}}
 \end{equation}
+endsnippet
+
+snippet 'gather|gath|gat' "gather" wr
+\begin{gather}
+	${1:${VISUAL}}
+\end{gather}
 endsnippet
 
 snippet mkka "display math aligned"
@@ -861,14 +927,30 @@ endsnippet
 snippet 'sq(\d)' "sqrt[\d]{}" r
 \sqrt[`!p snip.rv = match.group(1)`]{$1}$0
 endsnippet
+
+context "math()"
+snippet '\s(\S+)\.(f|\(|\))' "'\s(.*)\.f'" wr
+`!p 
+if match.group(2) == 'f':
+	snip.rv = "\\frac{" + match.group(1) + "}{"
+else:
+	snip.rv = "(" + match.group(1) + ")"
+`$0`!p
+if match.group(2) == 'f':
+	snip.rv = "}"
+`
+endsnippet
 #-------------------- 19. 微积分 -----------------------
 context "math()"
-snippet 'd(x|y|t|u|z)?' "dx" wr
+snippet 'd(sig|x|y|t|u|z|r)?' "dx" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\mathrm{d}"
 else:
-	snip.rv = "\mathrm{d}" + match.group(1)
+	if match.group(1) == 'sig':
+		snip.rv = "\mathrm{d}\sigma"
+	else:
+		snip.rv = "\mathrm{d}" + match.group(1)
 `$0
 endsnippet
 
@@ -879,7 +961,12 @@ if match.group(1) is None:
 	snip.rv = "(x,y)"
 else:
 	snip.rv = "(x_{0},y_{0})"
-` $0
+`$0
+endsnippet
+#-------------------- 19.2. 微分方程 -----------------------
+context "math()"
+snippet '(p|q)x' "'(p|q)x'" wr
+`!p snip.rv = match.group(1)`(x)$0
 endsnippet
 #-------------------- 20. 概率论 -----------------------
 context "math()" 
@@ -993,6 +1080,20 @@ else:
 `(`!p snip.rv = match.group(2)`)$0
 endsnippet
 #-------------------- 23. 调用函数 ---------------------
+snippet .mmbox ".mmbox" b
+`!p
+linebuf=snip.v.text
+chinese = re.findall(r'[\u4e00-\u9fff]+', linebuf)
+for ch in chinese:
+	linebuf = linebuf.replace(ch, r'\mbox{' + ch + '}')
+snip.rv = linebuf
+`
+endsnippet
+
+pre_expand "wrap_chinese(snip,'.mbox')"
+snippet .mbox ".mbox" w
+endsnippet
+
 context "math()"
 pre_expand "create_matrix(snip)"
 snippet '^mat(\d+\*\d+)' "matrix" r
@@ -1121,6 +1222,15 @@ def is_chinese_character(flag):
 		return True
 	else:
 		return False
+
+def wrap_chinese(snip,flag):
+	linebuf = vim.eval("getline('.')")
+	chinese = re.findall(r'[\u4e00-\u9fff]+', linebuf)
+	for ch in chinese:
+		linebuf = linebuf.replace(ch, r'\mbox{' + ch + '}')
+	snip.buffer[snip.line] = ''
+	linebuf = linebuf.replace(flag, '')
+	snip.expand_anon(linebuf)
 endglobal
 #-------------------- 25. VimTex API -------------------
 global !p
