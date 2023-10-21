@@ -17,6 +17,22 @@ $0
 `!p snip.rv="endsnippet"`
 endsnippet
 
+snippet rv "rv"
+snip.rv = "$1"$0
+endsnippet
+
+snippet !p "!p"
+\`!p $0 \`
+endsnippet
+
+snippet !v "!v"
+\`!v $0 \`
+endsnippet
+
+snippet '(group|grou|gro|gr)(\d)?' "'group(\d)?'" wr
+`!p snip.rv = f"match.group({match.group(2)})"`
+endsnippet
+
 # We use a little hack so that the snippet is expanded
 # and parsed correctly
 snippet usnip "Ultisnips snippet definition" b

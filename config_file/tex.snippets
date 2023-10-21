@@ -1,4 +1,6 @@
 #defulat priority = 0 但是一旦设置会影响下面的所以snippet 直到设置一个新的 priority
+#python 字符串参数：{{表示字符串‘{’ 
+#`!p snip.rv = f"\\alpha_{{{match.group(1)}}}"`
 
 # Time <23-10-03 23:28:20, YangJing> #
 #+====================== 目录 =========================+
@@ -22,6 +24,7 @@
 #|------------------- 18. 特殊格式 --------------------|
 #|------------------- 19. 微积分 ----------------------|
 #|------------------- 20. 概率论 ----------------------|
+#|------------------- 20-2. 线性代数 ------------------|
 #|------------------- 21. 三角函数 --------------------|
 #|------------------- 22. *($1) -----------------------|
 #|------------------- 23. 调用函数 --------------------|
@@ -43,13 +46,15 @@ endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|X|R|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|X|R|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
 	s = "dots"
-if s == "l...":
+elif s == "l...":
 	s = "ldots"
+elif s == "v...":
+	s = "vdots"
 elif s == "~":
 	s = "sim"
 elif s == "al":
@@ -453,6 +458,19 @@ snippet 'figure|fig' "Figure environment" bwr
 \end{figure}
 endsnippet
 
+snippet animate "animate"
+\begin{figure}[H]
+	\centering
+	\ifnum\isAnimate=0
+		${2:\animategraphics[controls,autoplay=false,,width=0.7\textwidth]{30}{gif/${3:img17}-}{${4:1}}{${5:10}}}
+	\else
+		$2
+	\fi
+	\caption{${6:$3}}
+	\label{fig:${7:${3/\W+/-/g}}}
+\end{figure}
+endsnippet
+
 snippet 'subfigure|subf' "subfigure" wr
 \begin{figure}[htp]
 	\centering
@@ -840,7 +858,7 @@ endsnippet
 
 #\label{fig:${5:${3/\W+/-/g}}}
 snippet ref "ref" w
-\\${1|figref,tabref,exaref|}{${1/ref//g}:${3:${2/\W+/-/g}}}%$2
+\\${1|figref,tabref,exaref,eqref|}{${1/ref//g}:${3:${2/\W+/-/g}}}%$2
 endsnippet
 
 snippet ding "ding" w
@@ -893,36 +911,36 @@ snippet def "def"
 def($1)$0
 endsnippet
 
-snippet sympy "sympyblock " w
-sympy $1 sympy$0
-endsnippet
-
-priority 10000
-snippet 'sympy(.*)sympy' "sympy" wr
-`!p
-from sympy import *
-x, y, z, t = symbols('x y z t')
-k, m, n = symbols('k m n', integer=True)
-f, g, h = symbols('f g h', cls=Function)
-init_printing()
-snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').replace('{', '(').replace('}', ')') + ')')
-`
-endsnippet
-
-priority 1000
-snippet math "mathematicablock" w
-math $1 math$0
-endsnippet
-
-priority 10000
-snippet 'math(.*)math' "math" wr
-`!p
-import subprocess
-code = match.group(1)
-code = 'ToString[' + code + ', TeXForm]'
-snip.rv = subprocess.check_output(['wolframscript', '-code', code])
-`
-endsnippet
+#snippet sympy "sympyblock " w
+#sympy $1 sympy$0
+#endsnippet
+#
+#priority 10000
+#snippet 'sympy(.*)sympy' "sympy" wr
+#`!p
+#from sympy import *
+#x, y, z, t = symbols('x y z t')
+#k, m, n = symbols('k m n', integer=True)
+#f, g, h = symbols('f g h', cls=Function)
+#init_printing()
+#snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').replace('{', '(').replace('}', ')') + ')')
+#`
+#endsnippet
+#
+#priority 1000
+#snippet math "mathematicablock" w
+#math $1 math$0
+#endsnippet
+#
+#priority 10000
+#snippet 'math(.*)math' "math" wr
+#`!p
+#import subprocess
+#code = match.group(1)
+#code = 'ToString[' + code + ', TeXForm]'
+#snip.rv = subprocess.check_output(['wolframscript', '-code', code])
+#`
+#endsnippet
 
 snippet 'sq(\d)' "sqrt[\d]{}" r
 \sqrt[`!p snip.rv = match.group(1)`]{$1}$0
@@ -941,18 +959,19 @@ if match.group(2) == 'f':
 `
 endsnippet
 #-------------------- 19. 微积分 -----------------------
-context "math()"
-snippet 'd(sig|x|y|t|u|z|r)?' "dx" wr
-`!p 
-if match.group(1) is None:
-	snip.rv = "\mathrm{d}"
-else:
-	if match.group(1) == 'sig':
-		snip.rv = "\mathrm{d}\sigma"
-	else:
-		snip.rv = "\mathrm{d}" + match.group(1)
-`$0
-endsnippet
+# 我正在复习行列式，需要经常使用字母d，所以这里先注视掉
+#context "math()"
+#snippet 'd(sig|x|y|t|u|z|r)?' "dx" wr
+#`!p 
+#if match.group(1) is None:
+#	snip.rv = "\mathrm{d}"
+#else:
+#	if match.group(1) == 'sig':
+#		snip.rv = "\mathrm{d}\sigma"
+#	else:
+#		snip.rv = "\mathrm{d}" + match.group(1)
+#`$0
+#endsnippet
 
 context "math()"
 snippet 'x(0)?,y(0)?' "(x,y)" wr
@@ -993,6 +1012,54 @@ context "math()"
 snippet Vert "\Vert" i
 \Vert ${1} \Vert $0
 endsnippet
+#------------------- 20-2. 线性代数 --------------------
+context "math()"
+snippet det "det" i
+\det($1)$0
+endsnippet
+
+context "math()"
+snippet '(a|b|A|M)(\d|n|j|i)(\d|n|j|i)' "a" wr
+`!p
+snip.rv = match.group(1) + "_{" + match.group(2) + match.group(3) + "}"
+`$0
+endsnippet
+
+context "math()"
+snippet diag "diag"
+\diag{$1}$0
+endsnippet
+
+priority 1002
+context "math()"
+snippet '(al|be|k)(\d|n|m|i|s)' "'al(\d)'" wr
+`!p 
+if match.group(1) == 'al':
+	snip.rv = f"\\alpha_{{{match.group(2)}}}"
+elif match.group(1) == 'be':
+	snip.rv = f"\\beta_{{{match.group(2)}}}"
+elif match.group(1) == 'k':
+	snip.rv = f"k_{{{match.group(2)}}}"
+`
+endsnippet
+
+context "math()"
+snippet 'sequence|sequ|se(\+|\-)?' "sequence" wr
+${1:\alpha}_{1}`!p 
+if match.group(1) is None:
+	snip.rv = ","
+else:
+	snip.rv = match.group(1)
+`$1_{2}`!p 
+if match.group(1) is None:
+	snip.rv = ","
+else:
+	snip.rv = match.group(1)
+`\dots,$1_{${2:n}}$0
+endsnippet
+
+
+
 #-------------------- 21. 三角函数 ---------------------
 priority 2001
 context "math()"
@@ -1090,13 +1157,32 @@ snip.rv = linebuf
 `
 endsnippet
 
-pre_expand "wrap_chinese(snip,'.mbox')"
-snippet .mbox ".mbox" w
+pre_expand "wrap_chinese(snip,'linemb')"
+snippet linemb "one line convert mbox" w
 endsnippet
 
 context "math()"
 pre_expand "create_matrix(snip)"
 snippet '^mat(\d+\*\d+)' "matrix" r
+endsnippet
+
+context "math()"
+snippet 'mat\((.*)\)' "matrix" r
+`!p 
+input_str = match.group(1)
+output_str = ""
+pattern = r'(\d)(?=(\d))'  # 匹配中文字符的正则表达式
+replacement = r'\1 & '  # 替换模式，使用\mbox{}包裹中文字符
+output_str = re.sub(pattern, replacement, input_str)
+#output_str = output_str.lstrip(" & ")
+output_str = output_str.replace(',', ' \\\\ ')
+snip.rv = "\\begin{bmatrix} " + output_str + "\\end{bmatrix}"
+`
+endsnippet
+
+context "math()"
+snippet 'mat(n|m)\*(n|m)' "matn*m" wr
+\begin{bmatrix} a_{11} & a_{12} & \dots  & a_{1n}  \\  a_{21} & a_{22} & \dots  & a_{2n}  \\  \vdots  & \vdots  &  & \vdots   \\  a_{m1} & a_{m2} & \dots  & a_{mn} \end{bmatrix}
 endsnippet
 
 context "math()"
@@ -1147,8 +1233,13 @@ def create_matrix_middle(snip, types=0):
     body = ""
     anon_befor = "\\begin{"+types+"matrix} "
     for row in range(1, rows+1):
-        body += ' & '.join(['$' + str(row*columns+col)
-                           for col in range(1, columns+1)]) + "\\\\\\\\"
+        if row == rows :
+            terminator = ""
+        else:
+            terminator = "  \\\\\\\\  "
+        #body += ' & '.join(['$' + str(row*columns+col)
+        body += ' & '.join(['${' + str(row*columns+col) + ':x_{'+ str(row) + str(col) +'}}'
+                           for col in range(1, columns+1)]) + terminator
     anon_end = " \end{"+types+"matrix}"
     snip.expand_anon(old_str + anon_befor + body + anon_end)
 
@@ -1167,8 +1258,12 @@ def create_matrix(snip, types=0):
     anon_befor = "\\begin{"+types+"matrix}\n"
     body = ""
     for row in range(1, rows+1):
-        body += ' & '.join(['$' + str(row*columns+col)
-                           for col in range(1, columns+1)]) + "\\\\\\\n"
+        if row == rows :
+            terminator = "\n"
+        else:
+            terminator = "  \\\\\\\\  \n"
+        body += ' & '.join(['${' + str(row*columns+col) + ':x_{'+ str(row) + str(col) +'}}'
+                           for col in range(1, columns+1)]) + terminator
     anon_end = "\end{"+types+"matrix}"
     snip.expand_anon(anon_befor + body + anon_end)
 
@@ -1225,7 +1320,8 @@ def is_chinese_character(flag):
 
 def wrap_chinese(snip,flag):
 	linebuf = vim.eval("getline('.')")
-	chinese = re.findall(r'[\u4e00-\u9fff]+', linebuf)
+	linebuf = linebuf.replace("\\",'\\\\')
+	chinese = re.findall(r'[\u4e00-\u9fff，。！：、（）]+', linebuf)
 	for ch in chinese:
 		linebuf = linebuf.replace(ch, r'\mbox{' + ch + '}')
 	snip.buffer[snip.line] = ''

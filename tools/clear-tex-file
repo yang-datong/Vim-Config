@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 list=(*.lof *.lot *.aux *.fdb_latexmk *.fls *.log *.out *.synctex.gz *.toc *.xdv *.synctex\(busy\))
 
