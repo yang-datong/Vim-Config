@@ -1044,22 +1044,52 @@ elif match.group(1) == 'k':
 endsnippet
 
 context "math()"
-snippet 'sequence|sequ|se(\+|\-)?' "sequence" wr
+snippet '(sequence|sequ|se)(\+|\-)?' "sequence" wr
 ${1:\alpha}_{1}`!p 
-if match.group(1) is None:
+if match.group(2) is None:
 	snip.rv = ","
 else:
-	snip.rv = match.group(1)
+	snip.rv = match.group(2)
 `$1_{2}`!p 
-if match.group(1) is None:
+if match.group(2) is None:
 	snip.rv = ","
 else:
-	snip.rv = match.group(1)
-`\dots,$1_{${2:n}}$0
+	snip.rv = match.group(2)
+`\dots`!p 
+if match.group(2) is None:
+	snip.rv = ","
+else:
+	snip.rv = match.group(2)
+`$1_{${2:n}}$0
 endsnippet
 
+context "math()"
+snippet 'A(\d)x(\d)' "A" wr
+`!p snip.rv = f"A_{{{match.group(1)} \\times {match.group(2)}}}" `
+endsnippet
 
+context "math()"
+snippet '(eta|xi)(\d)' "'eta(\d)'" wr
+`!p snip.rv = f"\{match.group(1)}_{{{match.group(2)}}}" `
+endsnippet
 
+context "math()"
+snippet 'gamma|gama|gam' "'gamma|gama|gam'" wr
+\gamma $0
+endsnippet
+
+context "math()"
+snippet 'mat\((.*)\)' "matrix" r
+`!p 
+input_str = match.group(1)
+output_str = ""
+pattern = r'(-?\d)(?=(,|-?\d))'
+replacement = r'\1 & '  # 替换模式，使用\mbox{}包裹中文字符
+output_str = re.sub(pattern, replacement, input_str)
+output_str = output_str.replace(',', ' \\\\ ').replace('&  \\\\',' \\\\')
+snip.rv = "\\begin{bmatrix} " + output_str + "\\end{bmatrix}"
+`
+endsnippet
 #-------------------- 21. 三角函数 ---------------------
 priority 2001
 context "math()"
@@ -1167,22 +1197,8 @@ snippet '^mat(\d+\*\d+)' "matrix" r
 endsnippet
 
 context "math()"
-snippet 'mat\((.*)\)' "matrix" r
-`!p 
-input_str = match.group(1)
-output_str = ""
-pattern = r'(\d)(?=(\d))'  # 匹配中文字符的正则表达式
-replacement = r'\1 & '  # 替换模式，使用\mbox{}包裹中文字符
-output_str = re.sub(pattern, replacement, input_str)
-#output_str = output_str.lstrip(" & ")
-output_str = output_str.replace(',', ' \\\\ ')
-snip.rv = "\\begin{bmatrix} " + output_str + "\\end{bmatrix}"
-`
-endsnippet
-
-context "math()"
 snippet 'mat(n|m)\*(n|m)' "matn*m" wr
-\begin{bmatrix} a_{11} & a_{12} & \dots  & a_{1n}  \\  a_{21} & a_{22} & \dots  & a_{2n}  \\  \vdots  & \vdots  &  & \vdots   \\  a_{m1} & a_{m2} & \dots  & a_{mn} \end{bmatrix}
+\begin{bmatrix} a_{11} & a_{12} & \dots  & a_{1n}  \\\\  a_{21} & a_{22} & \dots  & a_{2n}  \\\\  \vdots  & \vdots  &  & \vdots   \\\\  a_{m1} & a_{m2} & \dots  & a_{mn} \end{bmatrix}
 endsnippet
 
 context "math()"
@@ -1238,7 +1254,7 @@ def create_matrix_middle(snip, types=0):
         else:
             terminator = "  \\\\\\\\  "
         #body += ' & '.join(['$' + str(row*columns+col)
-        body += ' & '.join(['${' + str(row*columns+col) + ':x_{'+ str(row) + str(col) +'}}'
+        body += ' & '.join(['${' + str(row*columns+col) + ':a_{'+ str(row) + str(col) +'}}'
                            for col in range(1, columns+1)]) + terminator
     anon_end = " \end{"+types+"matrix}"
     snip.expand_anon(old_str + anon_befor + body + anon_end)
