@@ -40,7 +40,7 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|psi|phi|pi|pm|subset|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|psi|phi|pi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
@@ -354,7 +354,7 @@ endsnippet
 
 context "math()"
 snippet == "==" w
-\xlongequal{~ ${1:\mbox{${2:洛}}} ~} $0
+\xlongequal{~ ${1:\mbox{\scriptsize ${2:洛}}} ~} $0
 endsnippet
 
 snippet '(\*|`)\1' "'(\*|`)'" r
@@ -1089,6 +1089,16 @@ output_str = re.sub(pattern, replacement, input_str)
 output_str = output_str.replace(',', ' \\\\ ').replace('&  \\\\',' \\\\')
 snip.rv = "\\begin{bmatrix} " + output_str + "\\end{bmatrix}"
 `
+endsnippet
+
+context "math()"
+snippet 'lam(\d)' "'lam(\d)'" wr
+`!p snip.rv = f"\lambda_{{{match.group(1)}}}" `
+endsnippet
+
+context "math()"
+snippet 'Lam|La' "Lam" wr
+\Lambda$0
 endsnippet
 #-------------------- 21. 三角函数 ---------------------
 priority 2001
