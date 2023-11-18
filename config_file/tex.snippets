@@ -91,7 +91,7 @@ endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
 context "math()"
-snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi|bar|parl)' "argment_all" ir
+snippet '(dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -100,8 +100,6 @@ elif s == "sq":
 	s = "sqrt"
 elif s == "vphi":
 	s = "varphi"
-elif s == "parl":
-	s = "partial"
 snip.rv = "\\" + s
 `{$1}$0
 endsnippet
@@ -960,33 +958,55 @@ if match.group(2) == 'f':
 endsnippet
 #-------------------- 19. 微积分 -----------------------
 # 我正在复习行列式，需要经常使用字母d，所以这里先注视掉
-#context "math()"
-#snippet 'd(sig|x|y|t|u|z|r)?' "dx" wr
-#`!p 
-#if match.group(1) is None:
-#	snip.rv = "\mathrm{d}"
-#else:
-#	if match.group(1) == 'sig':
-#		snip.rv = "\mathrm{d}\sigma"
-#	else:
-#		snip.rv = "\mathrm{d}" + match.group(1)
-#`$0
-#endsnippet
-
 context "math()"
-snippet 'x(0)?,y(0)?' "(x,y)" wr
-`!p
+snippet 'd(sig|x|y|t|u|z|r)?' "dx" wr
+`!p 
 if match.group(1) is None:
-	snip.rv = "(x,y)"
+	snip.rv = "\mathrm{d}"
 else:
-	snip.rv = "(x_{0},y_{0})"
+	if match.group(1) == 'sig':
+		snip.rv = "\mathrm{d}\sigma"
+	else:
+		snip.rv = "\mathrm{d}" + match.group(1)
 `$0
 endsnippet
+
+#context "math()"
+#snippet 'x(0)?,y(0)?' "(x,y)" wr
+#`!p
+#if match.group(1) is None:
+#	snip.rv = "(x,y)"
+#else:
+#	snip.rv = "(x_{0},y_{0})"
+#`$0
+#endsnippet
 #-------------------- 19.2. 微分方程 -----------------------
 context "math()"
 snippet '(p|q)x' "'(p|q)x'" wr
 `!p snip.rv = match.group(1)`(x)$0
 endsnippet
+#-------------------- 19.3. 偏导数 -----------------------
+context "math()"
+snippet '(parl|par|pal)sr' "'(parl|par|pal)sr'" r
+`!p snip.rv = "\partial^{2}{"`$1}$0
+endsnippet
+
+context "math()"
+snippet '(parl|par|pal)(xi|eta|mu|x|y|z|u)?' "parl" r
+`!p 
+two = match.group(2)
+if not two is None:
+	if two == 'xi':
+		two = "\\xi"
+	if two == 'eta':
+		two = "\\eta"
+	else:
+		snip.rv = f"\partial{{{two}}}"
+else:
+	snip.rv = "\partial"
+`
+endsnippet
+
 #-------------------- 20. 概率论 -----------------------
 context "math()" 
 snippet P{} "P{}" i
@@ -1392,7 +1412,7 @@ def envs(names):
 endglobal
 
 #|------------------- 26. Template --------------------|
-snippet 'main|template|temp' "Template" r
+snippet '^(english|math|template|temp)' "Template" r
 %!TeX program = xelatex
 `!p 
 # 创建一个包含所有路径的列表
@@ -1404,10 +1424,14 @@ paths_to_check = [
     os.path.join(os.path.expanduser("~"), "Documents"),  # 文档目录
     os.path.join(os.path.expanduser("~"), "Downloads"),  # 下载文件夹目录
     os.path.join(os.path.expanduser("~"), "Desktop/study/Math"),  # 常用目录
+    os.path.join(os.path.expanduser("~"), "Desktop/study/English"),  # 常用目录
 ]
 
 # 待检测的文件名
-file_to_check = "ctexmath.cls"
+if match.group(1) == 'english':
+	file_to_check = "tex.cls"
+else:
+	file_to_check = "ctexmath.cls"
 
 # 遍历每个路径并检测文件是否存在
 is_live = 0
@@ -1418,7 +1442,7 @@ for path in paths_to_check:
 		is_live = 1
 		break
 if is_live == 1:
-	snip.rv = "\documentclass{" + path + "/ctexmath}"
+	snip.rv = "\documentclass{" + path + f"/{file_to_check.replace('.cls','')}}}"
 else:
 	snip.rv = """\documentclass{ctexmath}"""
 `
@@ -1435,7 +1459,12 @@ $0
 %--------------------------------- Reference --------------------------------
 \newpage
 \begin{thebibliography}{1}
-	\bibitem{a} 作者. \emph{文献}[M]. 地点:出版社,年份.\url{www.google.com}
+`!p 
+if match.group(1) == 'english':
+	snip.rv = "\t" + r"\bibitem{a} Author. \emph{Literature}[M]. Venue:publishing:house,year.\url{www.google.com}"
+else:
+	snip.rv = "\t" + r"\bibitem{a} 作者. \emph{文献}[M]. 地点:出版社,年份.\url{www.google.com}"
+`
 \end{thebibliography}
 
 \end{document}
