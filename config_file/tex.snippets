@@ -250,25 +250,31 @@ snippet  b| "bigg|_{a}^{b}" w
 \bigg|_{$1}^{$2}$0
 endsnippet
 #-------------------- 10. 积分|累乘|累加 ---------------
-priority 1001
+priority 2001
 context "display_math()"
-snippet '(i)?int' "int" wr
+snippet '(i)?int(D|d)?' "int" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\\int"
 else:
-	snip.rv = "\\iint"
+	if match.group(2) is None:
+		snip.rv = "\\iint"
+	else:
+		snip.rv = "\\iint_{D}"
 ` $0
 endsnippet
 
-priority 1001
+priority 2001
 context "internel_math()"
-snippet '(i)?int' "int" wr
+snippet '(i)?int(D|d)?' "int" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\\dint"
 else:
-	snip.rv = "\\diint"
+	if match.group(2) is None:
+		snip.rv = "\\diint"
+	else:
+		snip.rv = "\\diint_{D}"
 ` $0
 endsnippet
 
@@ -320,7 +326,7 @@ endsnippet
 
 context "math()"
 snippet '(g|l)eq' "\geq" ir
-\\`!p snip.rv = match.group(1)`eq $0
+\\`!p snip.rv = match.group(1)`eqslant $0
 endsnippet
 
 context "math()"
@@ -672,15 +678,15 @@ endsnippet
 priority 1001
 context "env("tikzpicture")"
 snippet plot "Plot" w
-\def\min{${1:-9.7}}
-\def\max{${2:9.7}}
+\def\min{${1:-9.9}}
+\def\max{${2:9.9}}
 \begin{axis}[
 	xlabel=$x$,ylabel=$f(x)$,
 	xmin= \min, xmax= \max,
 	ymin= \min, ymax= \max,
 	axis lines = middle]
 	\fill (0,0) node[above left] {$O$};
-	\addplot[domain=\min:\max,thick,smooth]{$3};
+	\addplot[domain=\min:\max,smooth]{$3};
 \end{axis}
 endsnippet
 
@@ -689,15 +695,15 @@ snippet plot "Plot" w
 \begin{figure}[ht]
 	\centering
 	\begin{tikzpicture}
-		\def\min{${1:-9.7}}
-		\def\max{${2:9.7}}
+		\def\min{${1:-9.9}}
+		\def\max{${2:9.9}}
 		\begin{axis}[
 			xlabel=$x$,ylabel=$f(x)$,
 			xmin= \min, xmax= \max,
 			ymin= \min, ymax= \max,
 			axis lines = middle]
 			\fill (0,0) node[above left] {$O$};
-			\addplot[domain=\min:\max,thick,smooth]{$3};
+			\addplot[domain=\min:\max,smooth]{$3};
 		\end{axis}
 	\end{tikzpicture}
 	\caption{$4}
@@ -1099,15 +1105,21 @@ snippet 'gamma|gama|gam' "'gamma|gama|gam'" wr
 endsnippet
 
 context "math()"
-snippet 'mat\((.*)\)' "matrix" r
+snippet '(v)?mat\((.*)\)' "matrix" r
 `!p 
-input_str = match.group(1)
+flag = match.group(1)
+if not flag is None:
+	flag = 'vmatrix'
+else:
+	flag = 'bmatrix'
+input_str = match.group(2)
 output_str = ""
-pattern = r'(-?\d)(?=(,|-?\d))'
-replacement = r'\1 & '  # 替换模式，使用\mbox{}包裹中文字符
+#pattern = r'(-?\d)(?=(,|-?\d))' #可用
+pattern = r'(-?\w)(?=(,|-?\w))' #测试版 增加字母匹配
+replacement = r'\1 & '
 output_str = re.sub(pattern, replacement, input_str)
 output_str = output_str.replace(',', ' \\\\ ').replace('&  \\\\',' \\\\')
-snip.rv = "\\begin{bmatrix} " + output_str + "\\end{bmatrix}"
+snip.rv = f"\\begin{{{flag}}} " + output_str + f"\\end{{{flag}}}"
 `
 endsnippet
 
@@ -1207,6 +1219,7 @@ else:
 `(`!p snip.rv = match.group(2)`)$0
 endsnippet
 #-------------------- 23. 调用函数 ---------------------
+context "math()"
 snippet .mmbox ".mmbox" b
 `!p
 linebuf=snip.v.text
