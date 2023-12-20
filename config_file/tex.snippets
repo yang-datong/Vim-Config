@@ -46,7 +46,7 @@ endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|X|R|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|X|R|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -69,6 +69,8 @@ elif s == "inf":
 	s = "infty"
 elif s == "lam":
 	s = "lambda"
+elif s == "kap":
+	s = "kappa"
 elif s == "qqu":
 	s = "qquad"
 elif s == "qu":
@@ -149,7 +151,12 @@ snip.rv = "\\begin{" + s + "}"`
 `!p snip.rv = "\\end{" + s + "}"` 
 endsnippet
 
-context "math()"
+context "internel_math()"
+snippet cases "cases" i
+\begin{cases} ${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\ ${4:f(x) = x}  ${5:,& ${6:x < 0}} \end{cases}
+endsnippet
+
+context "display_math()"
 snippet cases "cases" i
 \begin{cases} 
 	${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
@@ -454,7 +461,7 @@ endsnippet
 
 #-------------------- 12. 文档控件 ---------------------
 snippet 'figure|fig' "Figure environment" bwr
-\begin{figure}[${1:htpb}]
+\begin{figure}[${1:H}]
 	\centering
 	${2:\includegraphics[width=0.8\textwidth]{$3}}
 	\caption{${4:$3}}
@@ -476,7 +483,7 @@ snippet animate "animate"
 endsnippet
 
 snippet 'subfigure|subf' "subfigure" wr
-\begin{figure}[htp]
+\begin{figure}[H]
 	\centering
 	\begin{subfigure}{0.45\textwidth}
 	\centering
@@ -665,7 +672,7 @@ snippet mb "\mbox" w
 endsnippet
 #-------------------- 15. 画图Tikz ---------------------
 snippet tikz "tikz"
-\begin{figure}[ht]
+\begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
 		$0
@@ -692,7 +699,7 @@ endsnippet
 
 priority 1000
 snippet plot "Plot" w
-\begin{figure}[ht]
+\begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
 		\def\min{${1:-9.9}}
@@ -954,7 +961,7 @@ context "math()"
 snippet '\s(\S+)\.(f|\(|\))' "'\s(.*)\.f'" wr
 `!p 
 if match.group(2) == 'f':
-	snip.rv = "\\frac{" + match.group(1) + "}{"
+	snip.rv = " \\frac{" + match.group(1) + "}{"
 else:
 	snip.rv = "(" + match.group(1) + ")"
 `$0`!p
@@ -965,7 +972,7 @@ endsnippet
 #-------------------- 19. 微积分 -----------------------
 # 我正在复习行列式，需要经常使用字母d，所以这里先注视掉
 context "math()"
-snippet 'd(sig|x|y|t|u|z|r)?' "dx" wr
+snippet 'd(sig|x|y|t|u|z|r|p)?' "dx" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\mathrm{d}"
