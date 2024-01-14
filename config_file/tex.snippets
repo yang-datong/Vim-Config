@@ -40,7 +40,7 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|mu|mp|neq|rho|psi|phi|pi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|in|iff|pi|mu|mp|neq|rho|psi|phi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
@@ -104,6 +104,11 @@ elif s == "vphi":
 	s = "varphi"
 snip.rv = "\\" + s
 `{$1}$0
+endsnippet
+
+context "math()==False"
+snippet __ "__"
+\underline{$1}$0
 endsnippet
 #-------------------- 4. \CMD{x} (alise) ---------------
 snippet '(del|ln|sq)(x|y|z)' "argment_x_all" ir
@@ -719,6 +724,13 @@ snippet plot "Plot" w
 endsnippet
 
 context "env("tikzpicture")"
+snippet '(fill|fillbetween)' "fillbetween" r
+%\usetikzlibrary{patterns}
+%\usepgfplotslibrary{fillbetween}
+\addplot[gray, pattern=north east lines] fill between[of=p1 and p2,soft clip={domain=${1:0}:${2:2}}];
+endsnippet
+
+context "env("tikzpicture")"
 snippet '(var|val)' "Variable" r
 \pgfmathsetmacro\\${1:val}{${2:1+1}};
 endsnippet
@@ -922,6 +934,17 @@ snippet def "def"
 def($1)$0
 endsnippet
 
+context "math()"
+snippet exp "exp" w
+\exp\\{ $1 \\}$0
+endsnippet
+
+priority 2001
+context "math()"
+snippet Domain "Domain" w
+D = \{ ${1:x},${2:y} ~|~ ${3:0} \leqslant $1 \leqslant ${4:1}, ${5:0} \leqslant $2 \leqslant ${6:1} \}
+endsnippet
+
 #snippet sympy "sympyblock " w
 #sympy $1 sympy$0
 #endsnippet
@@ -971,6 +994,7 @@ if match.group(2) == 'f':
 endsnippet
 #-------------------- 19. 微积分 -----------------------
 # 我正在复习行列式，需要经常使用字母d，所以这里先注视掉
+priority 2000
 context "math()"
 snippet 'd(sig|x|y|t|u|z|r|p)?' "dx" wr
 `!p 
@@ -1005,7 +1029,7 @@ snippet '(parl|par|pal)sr' "'(parl|par|pal)sr'" r
 endsnippet
 
 context "math()"
-snippet '(parl|par|pal)(xi|eta|mu|x|y|z|u)?' "parl" r
+snippet '(parl|par|pal)(xi|eta|mu|x|y|z|u|f)?' "parl" r
 `!p 
 two = match.group(2)
 if not two is None:
@@ -1051,6 +1075,7 @@ snippet det "det" i
 \det($1)$0
 endsnippet
 
+priority 1000
 context "math()"
 snippet '(a|b|A|M)(\d|n|j|i)(\d|n|j|i)' "a" wr
 `!p
@@ -1343,6 +1368,8 @@ def show_display_frac():
 		if re.match(r'.*\\dint_{(.*?)}$',str(linebuf[:index])) \
 		or re.match(r'.*\\dint_{(.*?)}\^{//}$',str(linebuf[:index])):
 			return False
+		return True
+	elif env("cases"):
 		return True
 	else:
 		return False
