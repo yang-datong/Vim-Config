@@ -41,7 +41,7 @@ check_os(){
 check_os
 check_cmd gdb gdb
 
-git clone https://hub.fastgit.org/scwuaptx/Pwngdb.git $HOME/.pwngdb
+git clone https://github.com/scwuaptx/Pwngdb.git $HOME/.pwngdb
 replace_symbols_link "$HOME/.gdbinit"        "$(pwd)/xx.gdbinit"
 replace_symbols_link "$HOME/.gdbinit-gef.py" "$(pwd)/xx.gdbinit-gef.py"
 replace_symbols_link "$HOME/.gef.rc"         "$(pwd)/xx.gef.rc"
