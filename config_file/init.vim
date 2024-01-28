@@ -374,31 +374,30 @@ if g:is_latex == 1
 
   if g:latex_full_compiled_mode == 0
     " 添加编译器参数： 编译器开启批处理模式
-    let g:vimtex_compiler_latexmk = { 
-          \ 'executable' : 'latexmk',
-          \ 'options' : [ 
-          \   '-file-line-error',
-          \   '-synctex=1',
-          \   '-interaction=batchmode']
-          \ }
-  else  " 全编译模式
     " 类似于C的编译器参数
+    if has('mac')
+      let macro_definition = '\def\Mac{true}'
+    else
+      let macro_definition = ''
+    endif
+  else  " 全编译模式
     let macro_definition = ''
           \ .'\def\StandardModel{true}'
           \ .'\def\ShowAfterClassExercises{true}'
           \ .'\def\UseInkscapeTools{true}'
   "        \ .'\def\ReleaseModel{true}'
-    let g:vimtex_compiler_latexmk = { 
-          \ 'executable' : 'latexmk',
-          \ 'options' : [ 
-          \   '-file-line-error',
-          \   '-synctex=1',
-          \   '-interaction=batchmode',
-          \   '-pretex=' . shellescape(macro_definition) ,
-          \   '-usepretex'],
-          \ }
-          "\   '-jobname=' . expand('%:r') . '-全编译',
   endif
+
+  let g:vimtex_compiler_latexmk = { 
+        \ 'executable' : 'latexmk',
+        \ 'options' : [ 
+        \   '-file-line-error',
+        \   '-synctex=1',
+        \   '-interaction=batchmode',
+        \   '-pretex=' . shellescape(macro_definition) ,
+        \   '-usepretex'],
+        \ }
+        "\   '-jobname=' . expand('%:r') . '-全编译',
   "\   '-interaction=nonstopmode',
   "\   '-interaction=batchmode', "最低交互模式，编译速度最快
   "-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
