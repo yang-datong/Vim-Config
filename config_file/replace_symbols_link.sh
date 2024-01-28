@@ -44,11 +44,13 @@ replace_symbols_link "$HOME/.clang-format" "$(pwd)/xx.clang-format"
 replace_symbols_link "$HOME/.bashrc" "$(pwd)/../xx.bashrc"
 replace_symbols_link "$HOME/.zshrc" "$(pwd)/../xx.zshrc"
 
-#if [ "$(uname)" == "Darwin" ];then
 	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
 	replace_symbols_link "$HOME/.config/nvim/yj.lua " "$(pwd)/yj.lua"
-	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config.fish"
-#fi
+if [ "$(uname)" == "Darwin" ];then
+	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_macos.fish"
+else
+	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_ubuntu.fish"
+fi
 
 for file in *.snippets;do
 	replace_symbols_link "$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/$file" "$(pwd)/$file"

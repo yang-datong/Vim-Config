@@ -25,8 +25,6 @@
 
 
 
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -34,6 +32,7 @@
 let g:is_latex = 1  "Latex
 let g:is_markdown= 1  "Markdown
 let g:is_lua= 1  "Lua config
+let g:latex_full_compiled_mode = 0 "1：开启vimtex 编译传入参数 0：不传入参数
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -306,8 +305,11 @@ xmap <silent> <C-x> <Plug>(coc-cursors-range)
 if g:is_latex == 1
   let g:coc_global_extensions = ['coc-texlab']
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
-  if (system('command -v texlab') =~ 'texlab') == 0
-    echo "Please use -> brew install texlab"
+
+  if has('mac')
+    if (system('command -v texlab') =~ 'texlab') == 0
+      echo "Please use -> brew install texlab"
+    endif
   endif
   "Must -> brew install --HEAD texlab
 endif
@@ -363,30 +365,40 @@ if g:is_latex == 1
     " Use zathura 
     let g:vimtex_view_general_viewer = 'zathura'
     let g:vimtex_view_method='zathura'
-    let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+    "let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
   endif
 
   let g:vimtex_compiler_progname = 'nvr' 
     " 设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
   "let g:vimtex_compiler_pdflatex = {'options' : ['-interaction=batchmode']}
 
-  " 类似于C的编译器参数
-  let macro_definition = ''
-        \ .'\def\StandardModel{true}'
-        \ .'\def\ShowAfterClassExercises{true}'
-        \ .'\def\UseInkscapeTools{true}'
-"        \ .'\def\ReleaseModel{true}'
-
-  " 添加编译器参数： 编译器开启批处理模式
-  let g:vimtex_compiler_latexmk = { 
-        \ 'executable' : 'latexmk',
-        \ 'options' : [ 
-        \   '-file-line-error',
-        \   '-synctex=1',
-        \   '-interaction=batchmode',
-        \   '-pretex=' . shellescape(macro_definition) ,
-        \   '-usepretex',
-        \ ],}
+  if g:latex_full_compiled_mode == 0
+    " 添加编译器参数： 编译器开启批处理模式
+    let g:vimtex_compiler_latexmk = { 
+          \ 'executable' : 'latexmk',
+          \ 'options' : [ 
+          \   '-file-line-error',
+          \   '-synctex=1',
+          \   '-interaction=batchmode']
+          \ }
+  else  " 全编译模式
+    " 类似于C的编译器参数
+    let macro_definition = ''
+          \ .'\def\StandardModel{true}'
+          \ .'\def\ShowAfterClassExercises{true}'
+          \ .'\def\UseInkscapeTools{true}'
+  "        \ .'\def\ReleaseModel{true}'
+    let g:vimtex_compiler_latexmk = { 
+          \ 'executable' : 'latexmk',
+          \ 'options' : [ 
+          \   '-file-line-error',
+          \   '-synctex=1',
+          \   '-interaction=batchmode',
+          \   '-pretex=' . shellescape(macro_definition) ,
+          \   '-usepretex'],
+          \ }
+          "\   '-jobname=' . expand('%:r') . '-全编译',
+  endif
   "\   '-interaction=nonstopmode',
   "\   '-interaction=batchmode', "最低交互模式，编译速度最快
   "-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
@@ -581,7 +593,12 @@ endfunc
 " }
 
 " Fast start file execution {
-map <M-r> :call Run()<CR>
+if has('mac')
+  map <M-r> :call Run()<CR>
+elseif has('linux')
+  map <C-r> :call Run()<CR>
+endif
+
 func! Run()
   exec "w"
   if &filetype == 'c'
