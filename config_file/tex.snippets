@@ -583,13 +583,9 @@ $1 & $2 \\\
 endsnippet
 
 snippet 'lstlisting|lst' "lst" wr
-\begin{figure}[htp]
-	\centering
-	\begin{lstlisting}[basicstyle=\small]
-	${1:${VISUAL}}
-	\end{lstlisting}
-	\caption{$0}
-\end{figure}
+\begin{lstlisting}
+${1:${VISUAL}}
+\end{lstlisting}
 endsnippet
 #-------------------- 13. 列表 -------------------------
 context "envs(['enumerate','itemize','serialNumber'])"

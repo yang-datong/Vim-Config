@@ -17,9 +17,6 @@ shopt -s checkwinsize
 #在每个命令之后检查窗口大小，并在必要时
 #更新LINES和COLUMNS的值
 
-export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
 alias cl='clear'
