@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+files=(Android.mk Application.mk build.sh gdb.sh)
+
+for file in ${files[@]};do
+	if [ -f $file ];then
+		rm $file
+	fi
+done

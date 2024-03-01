@@ -1,0 +1,103 @@
+#!/bin/bash
+current_work_path=`pwd`
+
+
+file="Android.mk"
+if [ ! -f $file ];then
+	cat << EOF > Android.mk
+# 一个Android.mk file首先必须定义好LOCAL_PATH变量。
+# 它用于在开发树中查找源文件。在这个例子中，宏函数’my-dir’,
+# 由编译系统提供，用于返回当前路径（即包含Android.mk file文件的目录）。
+LOCAL_PATH := \$(call my-dir)
+# CLEAR_VARS由编译系统提供，
+# 指定让GNU MAKEFILE为你清除许多LOCAL_XXX变量（例如 LOCAL_MODULE, LOCAL_SRC_FILES, LOCAL_STATIC_LIBRARIES, 等等...),除LOCAL_PATH 。这是必要的，
+# 因为所有的编译控制文件都在同一个GNU MAKE执行环境中，所有的变量都是全局的。
+include \$(CLEAR_VARS)
+# LOCAL_MODULE变量必须定义，以标识你在Android.mk文件中描述的每个模块。名称必须是唯一的，而且不包含任何空格。
+# 注意编译系统会自动产生合适的前缀和后缀，换句话说，一个被命名为'foo'的共享库模块，将会生成'libfoo.so'文件。
+LOCAL_MODULE    := demo
+# LOCAL_SRC_FILES变量必须包含将要编译打包进模块中的C或C++源代码文件。注意，你不用在这里列出头文件和包含文件，
+# 因为编译系统将会自动为你找出依赖型的文件；仅仅列出直接传递给编译器的源代码文件就好。
+LOCAL_SRC_FILES := demo.c
+# BUILD_EXECUTABLE 表示以一个可执行程序的方式进行编译
+# BUILD_SHARED_LIBRARY 表示动态链接库的方式进行编译
+include \$(BUILD_EXECUTABLE)
+EOF
+fi
+
+file="Application.mk"
+if [ ! -f $file ];then
+	cat << EOF > Application.mk
+APP_ABI := armeabi-v7a arm64-v8a
+APP_OPTIM := debug
+EOF
+fi
+
+file="build.sh"
+if [ ! -f $file ];then
+	cat << EOF > build.sh
+#!/bin/bash
+set -e
+
+file="/data/local/tmp/load_gdbserver.sh"
+
+main(){
+    ndk-build NDK_PROJECT_PATH=. NDK_APPLICATION_MK=Application.mk APP_BUILD_SCRIPT=Android.mk  NDK_DEBUG=1 NDK_HOST_32BIT=1  #32bit"
+    adb push ./obj/local/arm64-v8a/\$out /data/local/tmp/
+    #adb push ./obj/local/armeabi-v7a/\$out /data/local/tmp/
+
+    echo -e "\\033[31m是否需要执行远程程序，gdbserver挂起操作？[y/N]\\033[0m"
+    read ok
+
+    if [ "\$ok" == "y" ];then
+        #\$(adb shell "su -c 'cd /data/local/tmp && ./gdbserver :9090 \$out'")
+        #这里的:9090表示只要是同局域网都可以访问
+        #demo表示需要调试的可执行二进制文件
+
+        #adb_cmd "echo cGlkPSQocHMgLWVmIHwgZ3JlcCAtdiAiZ3JlcCJ8ICBncmVwIGdkYnNlcnZlciB8IGF3ayAne3ByaW50ICQyfScpCmlmIFsgLW4gIiRwaWQiIF07dGhlbgoJZWNobyAkcGlkO2tpbGwgJHBpZApmaQpjZCAvZGF0YS9sb2NhbC90bXAgJiYgLi9nZGJzZXJ2ZXIgOjkwOTAgZGVtbyAmCnBpZD0kKHBzIC1lZiB8IGdyZXAgLXYgImdyZXAifCAgZ3JlcCBnZGJzZXJ2ZXIgfCBhd2sgJ3twcmludCAkMn0nKQppZiBbIC1uICIkcGlkIiBdO3RoZW4gIGVjaG8gInN0YXJ0IGdkYnNlcnZlciBkZW1vIHN1Y2Nlc3MhISI7ZXhpdDsgZmkK | base64 -d > ${file} && chmod +x ${file} && ${file}"
+        echo "请执行：adb shell \\"su -c 'cd /data/local/tmp && ./gdbserver :9090 \$out'\\" ,然后就可以使用./gdb.sh 进行挂起了"
+    fi
+}
+
+adb_cmd(){
+    adb shell "su -c '\$*'"
+}
+
+if [ ! \$1 ];then
+    out=demo
+fi
+
+main
+EOF
+
+chmod +x build.sh
+fi
+
+file="gdb.sh"
+if [ ! -f $file ];then
+	if [ ! -x "$(command -v gdb-multiarch)" ];then
+		echo -e "\033[31minstall gdb-multiarch\033[0m"
+		exit
+	fi
+	cat  << EOF > gdb.sh
+#!/bin/bash
+adb forward tcp:9090 tcp:9090  #转发局域网端口到本地
+
+			#指定带有符号表（obj/目录下)的可执行文件
+			#set solib-search-path：lib的路径，如果可执行文件依赖了lib就需要指定它
+gdb-multiarch -ex "file ./obj/local/arm64-v8a/demo" \\
+		-ex "set solib-search-path ./obj/local/arm64-v8a" \\
+		-ex "target remote localhost:9090"  #连接远程9090端口
+		#-ex "set architecture aarch64" \\
+		#-ex "set solib-absolute-prefix ./" \\
+		#-ex "set architecture aarch64:ilp32" \\
+EOF
+
+chmod +x gdb.sh
+fi
+
+
+file="demo.c"
+if [ ! -f $file ];then
+	echo "I2luY2x1ZGUgPHN0ZGlvLmg+CmludCBtYWluKCl7CglwcmludGYoIiVzXG4iLCAiaGl+Iik7CglyZXR1cm4gMDsKfQoK" | base64 -d > $file
+fi
