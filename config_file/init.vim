@@ -252,7 +252,7 @@ Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
 Plug 'vim-autoformat/vim-autoformat'
 "let g:autoformat_verbosemode=1 "调试format
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
-"autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
+autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
 noremap <C-p> :Autoformat<CR>
   "python-格式化: pip install autopep8
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
@@ -513,6 +513,7 @@ endif
 
 " Latex fast open Inkscape {
 inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
+"pip3 install inkscape-figures
 " }
 
 " Check current line end char is ";" {

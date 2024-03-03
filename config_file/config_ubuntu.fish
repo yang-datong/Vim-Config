@@ -5,6 +5,7 @@ xmodmap -e 'keycode 180 = Escape'
 
 set -x PATH $PATH $HOME/.local/bin/
 set -x PATH $PATH $HOME/Android/Sdk/ndk/21.1.6352462
+set -x PATH $PATH $HOME/MySoftWare/Inkscape
 set -x JAVA_HOME $HOME/MySoftWare/android-studio/jbr
 set -x ANDROID_NDK_ROOT $HOME/Android/Sdk/ndk/25.1.8937393
 
