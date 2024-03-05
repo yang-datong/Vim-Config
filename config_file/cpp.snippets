@@ -1,5 +1,14 @@
 priority -50
 
+
+snippet '(\(\)|\[\]|\|\|)' "parent" ir
+`!p	snip.rv = match.group(1)[:1]` $1 `!p snip.rv = match.group(1)[1:]`$0
+endsnippet
+
+#snippet () "parent" i
+#( $1 )$0
+#endsnippet
+
 snippet test-reg "test"
 ${1} --> ${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}$2${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}
 endsnippet
@@ -71,9 +80,9 @@ snippet cout
 std::cout << ${1} << std::endl;
 endsnippet
 
-snippet < "add <<" "re.match('^[\s|cout|std::cout].*[endl|std::endl;]$', snip.buffer[snip.line])" eiA
- << $0
-endsnippet
+#snippet < "add <<" "re.match('^[\s|cout|std::cout].*[endl|std::endl;]$', snip.buffer[snip.line])" eiA
+# << $0
+#endsnippet
 
 snippet cin
 std::cin >> ${1};
@@ -87,19 +96,19 @@ snippet string= "string_nullptr"
 std::string $1 = nullptr;
 endsnippet
 
-snippet '(int|char|size_t|uint8_t)=(\*)?' "autoVarible" r
-`!p snip.rv = match.group(1)` `!p
-if(match.group(2)):
-	snip.rv = match.group(2)
-`${1:name} = `!p
-if ( match.group(2) and snip.ft == "cpp"):
-	snip.rv = "${2:nullptr}"
-elif (match.group(2) and snip.ft == "c"):
-	snip.rv = "${2:NULL}"
-else:
-	snip.rv = "0"
-`;
-endsnippet
+#snippet '(int|char|size_t|uint8_t)=(\*)?' "autoVarible" r
+#`!p snip.rv = match.group(1)` `!p
+#if(match.group(2)):
+#	snip.rv = match.group(2)
+#`${1:name} = `!p
+#if ( match.group(2) and snip.ft == "cpp"):
+#	snip.rv = "${2:nullptr}"
+#elif (match.group(2) and snip.ft == "c"):
+#	snip.rv = "${2:NULL}"
+#else:
+#	snip.rv = "0"
+#`;
+#endsnippet
 
 snippet '(int|char|size_t|uint8_t)\[\]' "varible[]" wr
 `!p snip.rv = match.group(1)` ${1:name}[] = {0};

@@ -1,0 +1,12 @@
+#!/bin/bash
+adb logcat -c
+echo "已清理日志，请运行Crash操作[Y/n]"
+read ok
+
+if [ "$ok" == "n" ];then
+	exit
+else
+	date=$(date +"%Y%m%d%H%M%S")
+	adb logcat -d "*:W" > ./log-${date}.log
+	echo -e "\033[31m完成，日志已写入到文件./log-${date}.log \033[0m"
+fi

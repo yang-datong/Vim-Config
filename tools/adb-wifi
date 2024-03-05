@@ -6,4 +6,4 @@ if [ -s "$IP" ];then
 	echo -e "\033[31mUnable to find the device\033[0m";exit
 fi
 
-adb tcpip 5555 && adb connect $IP
+adb tcpip 5555 && adb connect $IP:5555
