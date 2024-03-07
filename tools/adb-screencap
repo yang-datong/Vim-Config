@@ -1,7 +1,12 @@
 #!/bin/bash
-adb shell screencap -p /sdcard/tmp.png && adb pull /sdcard/tmp.png 
-
-echo -e "\033[31mOutput to tmp.png , Opening ... \033[0m"
-
-open ./tmp.png
+#adb shell screencap -p /sdcard/tmp.png && adb pull /sdcard/tmp.png
+if [ $1 ];then
+	output="$1"
+else
+	output="tmp.png"
+	echo "No output file name is specified, and the default to $output"
+fi
+adb shell screencap -p > $output
+echo -e "\033[31mOutput to $output, Opening ... \033[0m"
+open $output
 
