@@ -9,7 +9,7 @@
 sudo dpkg --add-architecture i386 #32bit sup
 
 if [ ! -d /etc/apt/keyrings ];then
-	sudo mkdir -pm755 /etc/apt/keyrings #添加 Wine 存储库密钥
+	sudo mkdir -pm 755 /etc/apt/keyrings #添加 Wine 存储库密钥
 fi
 
 if [ ! -f /etc/apt/keyrings/winehq-archive.key ];then
