@@ -1,190 +1,40 @@
-priority -50
+# Time <24-03-08 10:40:48, Yangdatong> 
+#+====================== 目录 =========================+
+#|------------------- 1. Head Env ---------------------|
+#|------------------- 2. Class Env --------------------|
+#|------------------- 3. Function Env -----------------|
+#|------------------- 4. Function(Kit) Env ------------|
+#|------------------- 5. Global Env -------------------|
+#|------------------- 6. Python function --------------|
+#|------------------- 7. Template ---------------------|
+#+====================== 目录 =========================+
 
 
-snippet '(\(\)|\[\]|\|\|)' "parent" ir
-`!p	snip.rv = match.group(1)[:1]` $1 `!p snip.rv = match.group(1)[1:]`$0
-endsnippet
-
-#snippet () "parent" i
-#( $1 )$0
+#snippet test-reg "test"
+#${1} --> ${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}$2${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}
 #endsnippet
+##如果都不满足,则默认为满足条件1 来显示，这个语法在 
+##https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt 下的：
+##4.7 Transformations                               *UltiSnips-transformations*
+##A transformation has the following syntax: >
+##   ${<tab_stop_no/regular_expression/replacement/options}
 
-snippet test-reg "test"
-${1} --> ${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}$2${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}
-endsnippet
-#如果都不满足,则默认为满足条件1 来显示，这个语法在 
-#https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt 下的：
-#4.7 Transformations                               *UltiSnips-transformations*
-#A transformation has the following syntax: >
-#   ${<tab_stop_no/regular_expression/replacement/options}
 
+
+
+
+
+
+
+
+
+
+
+
+
+#-------------------- 1. Head Env ---------------
 pre_expand "write_inclde_file(snip)"
 snippet head "head" b
-endsnippet
-
-snippet whileread "whileread"
-std::ifstream f("filename.txt");
-if (f.is_open()) {
-	std::string line;
-	while (std::getline(f, line)) {
-		//_labels_name.push_back(line);
-	}
-	f.close();
-}
-endsnippet
-
-snippet write_string "write string"
-#include <fstream>
-std::ofstream ofs("log.txt");
-ofs << "${1:content}" << std::endl;
-myfile.close();
-endsnippet
-
-snippet time "call function time"
-struct timespec start_time, end_time;
-clock_gettime(CLOCK_REALTIME, &start_time);
-${1:funcation();}$0
-clock_gettime(CLOCK_REALTIME, &end_time);
-std::cout << "Number of seconds -> "  <<  end_time.tv_sec - start_time.tv_sec << std::endl;
-endsnippet
-
-snippet '^\s{0,4}([a-z|A-Z|_].*).if' ".if" r
-	if(`!p snip.rv = match.group(1)`){
-		$0
-	}
-endsnippet
-
-snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
-	if(!`!p snip.rv = match.group(1)`){
-		std::cerr << "\033[31mFail `!p snip.rv = match.group(1)` is nullptr\033[0m" << std::endl;
-		return ${1:-1};
-	}
-endsnippet
-
-#snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
-#	if(!`!p snip.rv = match.group(1)`){
-#		fprintf(stderr, "Fail `!p snip.rv = match.group(1)` is nullptr \n");
-#		return ${1:-1};
-#	}
-#endsnippet
-
-snippet '^\s{0,4}([a-z|A-Z|_].*).err' ".err" r
-	if(`!p snip.rv = match.group(1)`){
-		fprintf(stderr, "Error `!p snip.rv = match.group(1)`\n");
-		return ${1:-1};
-	}
-endsnippet
-
-#std::cout << ${1:"info : "}${1/([^"])*(".)?.*/(?2: << : << std\:\:endl;)/}$2${1/([^"])*(".)?.*/(?2: << std\:\:endl;)/}
-snippet cout
-std::cout << ${1} << std::endl;
-endsnippet
-
-#snippet < "add <<" "re.match('^[\s|cout|std::cout].*[endl|std::endl;]$', snip.buffer[snip.line])" eiA
-# << $0
-#endsnippet
-
-snippet cin
-std::cin >> ${1};
-endsnippet
-
-snippet cerr
-std::cerr << "\033[31m${1:Fail}\033[0m" << std::endl;
-endsnippet
-
-snippet string= "string_nullptr"
-std::string $1 = nullptr;
-endsnippet
-
-#snippet '(int|char|size_t|uint8_t)=(\*)?' "autoVarible" r
-#`!p snip.rv = match.group(1)` `!p
-#if(match.group(2)):
-#	snip.rv = match.group(2)
-#`${1:name} = `!p
-#if ( match.group(2) and snip.ft == "cpp"):
-#	snip.rv = "${2:nullptr}"
-#elif (match.group(2) and snip.ft == "c"):
-#	snip.rv = "${2:NULL}"
-#else:
-#	snip.rv = "0"
-#`;
-#endsnippet
-
-snippet '(int|char|size_t|uint8_t)\[\]' "varible[]" wr
-`!p snip.rv = match.group(1)` ${1:name}[] = {0};
-$0
-endsnippet
-
-
-snippet malloc "malloc"
-$2 $3 = ($2) malloc(${1:size});
-$0
-//if($3){
-//	free($3);
-//	$3 = nullptr;
-//}
-endsnippet
-
-snippet fopen "fopen"
-FILE *f = fopen($1, "${2:rb}");
-if(!f){
-	std::cerr << "Open file failed" << std::endl;
-	return -1;
-}
-$0
-endsnippet
-
-snippet fread "fread"
-int readLen = fread(${1:buf},1,${2:size},${3:stream});
-if(readLen > 0){
-	$0
-}
-endsnippet
-
-snippet fclose "fclose"
-if($1){
-	fclose($1);
-	$1 = nullptr;
-}
-endsnippet
-
-snippet file_write "file_write"
-const char* filename = "${1:file}";
-FILE *f = fopen(filename, "${2:wb}");
-if(!f){
-	std::cerr << "Open file failed" << std::endl;
-	return -1;
-}
-const char* text = "${3:Write this to the file}";
-fprintf(f, "%s", text);
-$0
-if(f){
-	fclose(f);
-	f = nullptr;
-}
-endsnippet
-
-snippet file_open "file_open"
-const char* filename = "${1:file}";
-FILE *f = fopen(filename, "${2:rb}");
-if(!f){
-	std::cerr << "Open file failed" << std::endl;
-	return -1;
-}
-$0
-if(f){
-	fclose(f);
-	f = nullptr;
-}
-endsnippet
-
-snippet ret "ret"
-return ${1:nullptr};
-endsnippet
-
-snippet incc "Inc"
-#include <${1:stdio}${1/([^std]|stdstd)*(std.)?.*/(?2:.h:)/}>
-$0
 endsnippet
 
 snippet inc "inc"
@@ -197,98 +47,9 @@ else:
 $2
 endsnippet
 
-snippet free "free"
-if($1 != nullptr){
-	free($1);
-	$1 = nullptr;
-}
-endsnippet
-
-snippet do-while "do-while"
-do{
-	$0
-}while(${1:1})
-endsnippet
-
-snippet while "while"
-while(${1:1}){
-	$0
-}
-endsnippet
-
-snippet while1 "while1"
-while(1){
-	$0
-}
-endsnippet
-
-snippet pri "pri"
-private:
-	$0
-endsnippet
-
-snippet pub "pub"
-public:
-	$0
-endsnippet
-
-snippet class-data "class"
-class `!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`{
-	public:
-		`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
-		~`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
-		$0
-};
-endsnippet
-
-snippet cclass "cclass"
-class ${1:C`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
-	public:
-		$0
-};
-endsnippet
-
-snippet class "class"
-class ${1:`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
-	public:
-		$0
-};
-endsnippet
-
-snippet ifel "ifel"
-if($1){
-	$3
-}else if($2){
-	$0
-}
-endsnippet
-
-snippet if "if"
-if($1){
-	$2
-}
-endsnippet
-
-snippet elif "elif" i
-else if($1){
-	$2
-}
-endsnippet
-
-snippet else "else" i
-else{
-	$0
-}
-endsnippet
-
-snippet switch
-switch (${1:/* variable */}) {
-	case ${2:/* variable case */}:
-		${3}
-		${4:break;}${5}
-	default:
-		${6}
-}
+snippet incc "Inc"
+#include <${1:stdio}${1/([^std]|stdstd)*(std.)?.*/(?2:.h:)/}>
+$0
 endsnippet
 
 snippet def "#define ..."
@@ -316,82 +77,6 @@ ${1:#pragma mark -
 $0
 endsnippet
 
-snippet mainn "mainn() "
-#include <getopt.h>
-
-#define VERSION 1
-
-std::string file = "";
-
-void CheckArgument(int argc,char *argv[]){
-    const char* short_opts = "hvf:";
-    const option long_opts[] = {
-        {"help", no_argument, nullptr, 'h'},
-        {"version", no_argument, nullptr, 'v'},
-        {"file", required_argument, nullptr, 'f'},
-        {nullptr, no_argument, nullptr, 0}
-    };
-
-    int opt;
-    while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) != -1) {
-        switch (opt) {
-            case 'h':
-                std::cout << "Usage: " << argv[0] << " [options] [--] argument-1 argument-2 \
-                    \n\n  Options:\
-                      \n  -h, --help           Display this message\
-                      \n  -v, --version        Display version\
-                      \n  -f, --file FILE      Test input argument\
-                      \n";
-                exit(0);
-            case 'v':
-                std::cout << "Version: " << VERSION << "\n";
-                exit(0);
-            case 'f':
-                file = optarg;
-                break;
-            default:
-                std::cout << "Unknown option: " << opt << "\n";
-                exit(1);
-        }
-    }
-}
-
-
-int main(int argc, char *argv[]){
-    CheckArgument(argc,argv);
-		${1:if(file)}
-
-		return 0;
-}
-endsnippet
-
-snippet main "main() (main)"
-int main(){
-	${VISUAL}$0
-	return 0;
-}
-endsnippet
-
-snippet fori "for int loop (fori)"
-for (int i = 0; i < ${1}; i++) {
-	${VISUAL}$2
-}
-endsnippet
-
-snippet 'for|fore' "foreach" wr
-for (const auto& ${1:it} : ${2:container}) {
-	${0}
-}
-endsnippet
-
-snippet try
-try {
-	$2
-}catch(${1:...}) {
-	$0
-}
-endsnippet
-
 snippet once "Include header once only guard"
 #ifndef ${1:`!p
 if not snip.c:
@@ -408,19 +93,330 @@ ${VISUAL}$0
 #endif /* end of include guard: $1 */
 endsnippet
 
-snippet fprintf "fprintf ..."
-fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}
+
+
+#-------------------- 2. Class Env ---------------
+snippet class "class"
+class ${1:`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
+	public:
+		$0
+};
 endsnippet
 
-snippet el "else if .. (eli)"
+snippet cclass "cclass"
+class ${1:C`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
+	public:
+		$0
+};
+endsnippet
+
+snippet class-data "class"
+class `!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`{
+	public:
+		`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
+		~`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
+		$0
+};
+endsnippet
+
+snippet pri "pri"
+private:
+	$0
+endsnippet
+
+snippet pub "pub"
+public:
+	$0
+endsnippet
+
+#-------------------- 2. Function Env ---------------
+context "function()"
+snippet '(int|char|size_t|uint8_t)\[\]=' "varible[]" r
+`!p snip.rv = match.group(1)` ${1:name}[] = {0};
+$0
+endsnippet
+
+context "function()"
+snippet '(int|char|size_t|uint8_t|string)(\*)?=' "autoVarible" r
+`!p
+if match.group(1) == "string":
+	snip.rv = "std::string"
+else:
+	snip.rv = match.group(1)
+` `!p
+if(match.group(2)):
+	snip.rv = match.group(2)
+`${1:name} = `!p
+if ( match.group(2) and snip.ft == "cpp"):
+	snip.rv = "nullptr"
+elif (match.group(2) and snip.ft == "c"):
+	snip.rv = "NULL"
+elif (match.group(1) == "string" and snip.ft == "cpp"):
+	snip.rv = "nullptr"
+else:
+	snip.rv = "0"`;
+endsnippet
+
+context "function()"
+snippet if "if"
+if($1){
+	$2
+}
+endsnippet
+
+context "function()"
+snippet 'else|el' "else" ir
+else{
+	$0
+}
+endsnippet
+
+priority 1001
+context "function()"
+snippet 'elseif|elif' "else if .. (eli)" ir
 else if (${1:/* condition */}) {
 	${VISUAL}$0
 }
 endsnippet
 
-#printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
-snippet echo "printf .. (printf)"
+context "function()"
+snippet ifel "ifel"
+if($1){
+	$3
+}else if($2){
+	$0
+}
+endsnippet
+
+context "function()"
+snippet echo "echo hi"
 std::cout << "hi~" << std::endl;
+endsnippet
+
+context "function()"
+snippet 'printf|print' "printf .. (printf)" r
+printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+context "function()"
+snippet fprintf "fprintf ..."
+fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet < "add <<" "re.match('^(std::|\s+std::)?cout << .*? << (std::)?endl;$', snip.buffer[snip.line])" e
+ << $0
+endsnippet
+
+snippet << "add <<" "re.match('^(std::|\s+std::)?cout << .*? << (std::)?endl;$', snip.buffer[snip.line])" e
+ << $0
+endsnippet
+
+context "function()"
+snippet cin
+std::cin >> ${1};
+endsnippet
+
+context "function()"
+snippet cout
+std::cout << ${1} << std::endl;
+endsnippet
+
+context "function()"
+snippet cerr
+std::cerr << "\033[31m${1:Fail}\033[0m" << std::endl;
+endsnippet
+
+context "function()"
+snippet malloc "malloc"
+$2 $3 = ($2) malloc(${1:size});
+$0
+//if($3){
+//	free($3);
+//	$3 = nullptr;
+//}
+endsnippet
+
+context "function()"
+snippet free "free"
+if($1 != nullptr){
+	free($1);
+	$1 = nullptr;
+}
+endsnippet
+
+context "function()"
+snippet ret "ret"
+return ${1:nullptr};
+endsnippet
+
+context "function()"
+snippet '^\s{0,4}([a-z|A-Z|_].*).if' ".if" r
+	if(`!p snip.rv = match.group(1)`){
+		$0
+	}
+endsnippet
+
+context "function()"
+snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
+	if(!`!p snip.rv = match.group(1)`){
+		std::cerr << "\033[31mFail `!p snip.rv = match.group(1)` is nullptr\033[0m" << std::endl;
+		return ${1:-1};
+	}
+endsnippet
+
+context "function()"
+snippet '^\s{0,4}([a-z|A-Z|_].*).err' ".err" r
+	if(`!p snip.rv = match.group(1)`){
+		fprintf(stderr, "Error `!p snip.rv = match.group(1)`\n");
+		return ${1:-1};
+	}
+endsnippet
+
+snippet try
+try {
+	$2
+}catch(${1:...}) {
+	$0
+}
+endsnippet
+
+context "function()"
+snippet while "while"
+while(${1:1}){
+	$0
+}
+endsnippet
+
+context "function()"
+snippet while1 "while1"
+while(1){
+	$0
+}
+endsnippet
+
+context "function()"
+snippet do-while "do-while"
+do{
+	$0
+}while(${1:1})
+endsnippet
+
+context "function()"
+snippet switch
+switch (${1:/* variable */}) {
+	case ${2:/* variable case */}:
+		${3}
+		${4:break;}${5}
+	default:
+		${6}
+}
+endsnippet
+
+context "function()"
+snippet 'fore|for' "foreach" wr
+for (const auto &${1:it} : ${2:container}) {
+	${0}
+}
+endsnippet
+
+context "function()"
+snippet fori "for int loop (fori)"
+for (int i = 0; i < ${1}; i++) {
+	${VISUAL}$2
+}
+endsnippet
+
+context "function()"
+snippet fopen "fopen"
+FILE *f = fopen($1, "${2:rb}");
+if(!f){
+	std::cerr << "Open file failed" << std::endl;
+	return -1;
+}
+$0
+endsnippet
+
+context "function()"
+snippet fread "fread"
+int readLen = fread(${1:buf},1,${2:size},${3:stream});
+if(readLen > 0){
+	$0
+}
+endsnippet
+
+context "function()"
+snippet fclose "fclose"
+if($1){
+	fclose($1);
+	$1 = nullptr;
+}
+endsnippet
+
+#-------------------- 4. Function(Kit) Env ---------------
+context "function()"
+snippet time "call function time"
+struct timespec start_time, end_time;
+clock_gettime(CLOCK_REALTIME, &start_time);
+${1:function();}$0
+clock_gettime(CLOCK_REALTIME, &end_time);
+std::cout << "Number of seconds -> "  <<  end_time.tv_sec - start_time.tv_sec << std::endl;
+endsnippet
+
+context "function()"
+snippet while_read "while read"
+std::ifstream f("filename.txt");
+if (f.is_open()) {
+	std::string line;
+	while (std::getline(f, line)) {
+		//_labels_name.push_back(line);
+	}
+	f.close();
+}
+endsnippet
+
+context "function()"
+snippet write_string "write string"
+#include <fstream>
+std::ofstream ofs("log.txt");
+ofs << "${1:content}" << std::endl;
+myfile.close();
+endsnippet
+
+context "function()"
+snippet file_write "file_write"
+const char* filename = "${1:file}";
+FILE *f = fopen(filename, "${2:wb}");
+if(!f){
+	std::cerr << "Open file failed" << std::endl;
+	return -1;
+}
+const char* text = "${3:Write this to the file}";
+fprintf(f, "%s", text);
+$0
+if(f){
+	fclose(f);
+	f = nullptr;
+}
+endsnippet
+
+context "function()"
+snippet file_open "file_open"
+const char* filename = "${1:file}";
+FILE *f = fopen(filename, "${2:rb}");
+if(!f){
+	std::cerr << "Open file failed" << std::endl;
+	return -1;
+}
+$0
+if(f){
+	fclose(f);
+	f = nullptr;
+}
+endsnippet
+
+#-------------------- 5. Global Env ---------------
+snippet '(\(\)|\[\]|\|\||"")' "parent" ir
+`!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
 endsnippet
 
 snippet st "struct"
@@ -429,33 +425,32 @@ struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
 };
 endsnippet
 
-snippet func "function" b
+snippet 'func|fun' "function" br
 ${1:void} ${2:function_name}($3){
 	${VISUAL}$0
 	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
-${1/(void)*(int|string|std::string|char\*|char\ \*|char)*/(?2:	return NULL;\\n}:})/}
+`!p 
+if t[1] != "void":
+	if t[1] == "int":
+		snip.rv = "	return 0;\n"
+	elif t[1] == "char":
+		snip.rv = "	return NULL;\n"
+	else:
+		snip.rv = "	return nullptr;\n"
+`}
 endsnippet
-#snippet func "function" b
-#${1:void} ${2:function_name}($3){
-#	${VISUAL}$0
-#
-#	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
-#	${1/(void)*(int|bool|string|std::string)*/(?2:return :)/}$4${1/(void)*(int|bool|string|std::string)*/(?2:;)/}
-#}
-#endsnippet
 
-snippet func_construction "construction"
+snippet 'func_construction|func_con|func_c' "construction" br
 $1::$1($2){
 	$0
 }
 endsnippet
 
-snippet fund "function declaration" b
+snippet 'func_declaration|func_decla|func_d' "function declaration" br
 ${1:void} ${2:function_name}($3);
 endsnippet
 
-# vim:ft=snippets:
-
+#-------------------- 6. Python function ---------------
 global !p
 def write_inclde_file(snip):
 		perfix = vim.eval("expand('%:r')")
@@ -471,5 +466,70 @@ def write_inclde_file(snip):
 		#else:
 		#	snip.expand_anon("#include \"" + file + "\"")
 		snip.expand_anon("#include \"" + file + "\"\n")
+
+def function():
+# TODO 有点Bug，不一定有用 <24-03-08 11:14:02, YangJing> #
+	#tag_name = vim.eval("tagbar#currenttag('%s', '', 'f', 'scoped-stl')") #这里必须执行，先获取标签，再获取类型
+	#tag_type = vim.eval("tagbar#currenttagtype('%s ', '')")
+	##snip.expand_anon(tag_type)
+	#return tag_type == 'function '
+	return True
 endglobal
 
+
+#-------------------- 7. Template ---------------
+snippet main "main() (main)" b
+int main(){
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet 'temp|mainn' "mainn() " br
+#include <getopt.h>
+#include <iostream>
+
+#define VERSION 1
+
+std::string file = "";
+
+void CheckArgument(int argc, char *argv[]) {
+  const char *short_opts = "hvf:";
+  const option long_opts[] = {{"help", no_argument, nullptr, 'h'},
+                              {"version", no_argument, nullptr, 'v'},
+                              {"file", required_argument, nullptr, 'f'},
+                              {nullptr, no_argument, nullptr, 0}};
+
+  int opt;
+  while ((opt = getopt_long(argc, argv, short_opts, long_opts, nullptr)) !=
+         -1) {
+    switch (opt) {
+    case 'h':
+      std::cout << "Usage: " << argv[0]
+                << " [options] [--] argument-1 argument-2 \
+                    \n\n  Options:\
+                      \n  -h, --help           Display this message\
+                      \n  -v, --version        Display version\
+                      \n  -f, --file FILE      Test input argument\
+                      \n";
+      exit(0);
+    case 'v':
+      std::cout << "Version: " << VERSION << "\n";
+      exit(0);
+    case 'f':
+      file = optarg;
+      break;
+    default:
+      std::cout << "Unknown option: " << opt << "\n";
+      exit(1);
+    }
+  }
+}
+
+int main(int argc, char *argv[]) {
+  CheckArgument(argc, argv);
+	${1:if(file)}
+
+  return 0;
+}
+endsnippet

@@ -1,0 +1,121 @@
+#!/bin/bash
+#`wmctrl`是一个命令行工具，可以在X Window System（如Ubuntu）上控制窗口。`-r`和`-e`是`wmctrl`的两个选项，它们的含义如下：
+#
+#- `-r <窗口> `：这个选项用于选择你想要操作的窗口。你可以使用窗口的标题或者特殊的字符串`:ACTIVE:`来选择窗口。`:ACTIVE:`表示当前活动的窗口。
+#
+#- `-e <重定位>`：这个选项用于改变窗口的位置和大小。`<重定位>`是一个由逗号分隔的五个数字的列表，格式如下：
+#    - `<重定位> = <重定位方式>,<x>,<y>,<宽度>,<高度>`
+#    - `<重定位方式>`：0表示使用绝对位置，1表示使用相对于当前位置的位置。
+#    - `<x>`和`<y>`：窗口的新位置。
+#    - `<宽度>`和`<高度>`：窗口的新大小。如果某个值为-1，那么对应的属性将不会改变。
+#
+#`wmctrl -r :ACTIVE: -e 0,0,0,500,500`这个命令会将当前活动的窗口移动到屏幕的左上角，并将窗口的大小设置为500x500。
+#
+ScriptVersion="1.0"
+
+unset key
+unset file
+unset directory
+
+wid=$(xwininfo -root | grep Width | awk '{print $2}')
+hei=$(xwininfo -root | grep Height | awk '{print $2}')
+
+if [ "$(xrandr 2>/dev/null | grep ' connected' | wc -l )" == "1" ];then
+	half_wid=$(expr $wid / 2)
+	half_hei=$(expr $hei / 2)
+else
+	half_wid=$(expr $wid / 4)
+	half_hei=$(expr $hei / 2)
+fi
+
+windwos_name=":ACTIVE:"
+
+main(){
+	local offset=0
+	if [ "$second_screen" == "2" ];then
+		offset=$wid
+	fi
+	if [ "$key" == "left" ];then
+		#置于左半屏幕
+		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$hei
+	elif [ "$key" == "right" ];then
+		#置于右半屏幕
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$hei
+	elif [ "$key" == "u" ];then
+		#置于左上屏幕
+		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$half_hei
+	elif [ "$key" == "i" ];then
+		#置于右上屏幕
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$half_hei
+	elif [ "$key" == "j" ];then
+		#置于左下屏幕
+		wmctrl -r $windwos_name -e 2,$offset,$half_hei,$half_wid,$half_hei
+	elif [ "$key" == "k" ];then
+		#置于右下屏幕
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$half_hei,$half_wid,$half_hei
+	elif [ "$key" == "top" ];then
+		#置于上半屏幕
+		wmctrl -r $windwos_name -e 2,0,0,$wid,$half_hei
+	elif [ "$key" == "down" ];then
+		#置于下半屏幕
+		wmctrl -r $windwos_name -e 2,0,$half_hei,$wid,$half_hei
+	elif [ "$key" == "center" ];then
+		#居中屏幕
+		get_current_windows_size
+	fi
+}
+
+get_current_windows_size(){
+	windows_wid=$(xwininfo -id $(xdotool getactivewindow) | awk '/Width/ {print $2}')
+	windows_hei=$(xwininfo -id $(xdotool getactivewindow) | awk '/Height/ {print $2}')
+	wmctrl -r $windwos_name -e 2,$(expr $(expr $wid - $windows_wid ) / 2),$(expr $(expr $hei - $windows_hei ) / 2),$windows_wid,$windows_hei
+}
+
+
+usage (){
+	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+
+	Options:
+	-h, --help                  Display this message
+	-d, --debug                 Debug model run
+	-v, --version               Display script version
+	-p, Screen to be displayed, E.g: -p [1|2] Suitable for multiple monitors
+	-l, Move windows to Left
+	-r, Move windows to Right
+	-u, Move windows to Left-Up
+	-i, Move windows to Right-Up
+	-j, Move windows to Left-Down
+	-k, Move windows to Right-Down"
+
+}
+
+while getopts ":hp:vlruijkctdw:D:-:" opt; do
+	case "${opt}" in
+		h) usage && exit 0;;
+		p) second_screen="${OPTARG}";;
+		v) echo "$0 -- Version $ScriptVersion"; exit ;;
+		l) key="left";;
+		r) key="right";;
+		u) key="u";;
+		i) key="i";;
+		j) key="j";;
+		k) key="k";;
+		t) key="top";;
+		d) key="down";;
+		c) key="center";;
+		w) windwos_name="${OPTARG}";;
+		D) directory=${OPTARG};;
+		-) case "${OPTARG}" in
+			help) usage && exit 0;;
+			version)    echo "$0 -- Version $ScriptVersion"; exit ;;
+			file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
+			directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
+			*)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+		esac;;
+	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+esac
+done
+shift $((OPTIND-1))
+
+main "$@"
