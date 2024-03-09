@@ -626,8 +626,14 @@ func! Run()
   elseif &filetype == 'JavaScript'
     exec '!python3 ./exp.py'
   elseif &filetype == 'python'
-    exec '!python3 %'
-    "exec '!manim -pql % Demo'
+    let firstLine = getline(1)
+    if stridx(firstLine, '#manim') == 0
+      let remainingChars = strpart(firstLine, strlen('#manim'))
+      echo remainingChars
+      exec '!manim ' remainingChars ' % Demo'
+    else
+      exec '!python3 %'
+    endif
   elseif &filetype == 'manim'
     exec '!manim -pql % Demo'
   elseif &filetype == 'sh'
