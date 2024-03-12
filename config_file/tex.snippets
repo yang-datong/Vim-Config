@@ -538,7 +538,7 @@ snippet tab "Table environment" b
 \end{table}
 endsnippet
 
-snippet 'longtable|long(\d)' "longtable" rwb
+snippet 'longtable(\d)|long(\d)' "longtable" rb
 %\newcolumntype{L}{>{\arraybackslash}p{5cm}}
 \begin{longtable}{`!p snip.rv = "c"*int(match.group(1))`}
 	%------------ Name ---------------
@@ -551,7 +551,7 @@ snippet 'longtable|long(\d)' "longtable" rwb
 	\endfirsthead
 	%---------- Breakable --------------
 	\bottomrule()
-	\multicolumn{`!p int(match.group(1))`}{r}{续下页}
+	\multicolumn{`!p snip.rv = str(match.group(1))`}{r}{续下页}
 	\endfoot
 	%------------ Bottom ---------------
 	\bottomrule()
