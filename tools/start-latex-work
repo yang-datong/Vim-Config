@@ -1,0 +1,281 @@
+#!/bin/bash
+#set -e
+ScriptVersion="2.0" #添加Ubuntu系统
+
+keyboard_file=".keyboard.py"
+linux_keyboard_file="ubuntu_move_windows"
+study_database_file="$HOME/.start_study_database.db"
+all_parameter="$0 $@"
+interrupt_counter=0
+open_math_env_webside=0
+is_tex=1
+
+main_Ubuntu(){
+  if [ -n "$(pgrep zathura)" ];then
+    echo -e "\033[31m检测到后台存在zathura窗口，需要关闭全部窗口再启动，是否关闭？[y/N] \033[0m"
+    read ok
+    if [ "$ok" == y ];then
+      killall zathura
+      sleep 1
+    else
+      exit
+    fi
+  fi
+
+  #check_foot_sh_file_exitst
+  current_window_id=$(xdotool getactivewindow)
+  #echo -e "\033[31m找到terminal id: $current_window_id\033[0m"
+  gnome-extensions disable ubuntu-dock@ubuntu.com
+  gnome-extensions enable gtktitlebar@velitasali.github.io
+
+  if [ $pdf ];then
+    #open pdf into Upper right corner
+    zathura "${pdf}" 2> /dev/null &
+    zathura_pdf_pid=$!
+    #echo "zathura 已在后台执行 pid为 $zathura_pdf_pid"
+
+    #等待窗口完全加载
+    while true;do
+      if [ "$(ps -p $zathura_pdf_pid -o comm=)" == "zathura" ];then
+        sleep 0.5
+        break
+      fi
+      let interrupt_counter+=1
+      if [[ $interrupt_counter > 100 ]];then
+        exit
+      fi
+    done
+
+    zathura_pdf_id=$(wmctrl -lp | grep $(pgrep zathura) | awk '{print $1}')
+    #echo -e "zathura pdf windows_id: $zathura_pdf_id"
+    xdotool windowactivate $zathura_pdf_id && $linux_keyboard_file -i -p 1
+    #xdg-open ${pdf} && $linux_keyboard_file -w $(basename $pdf) -i -p 1
+  fi
+
+  {
+    sleep 1.5
+
+    while true;do
+      if [ $zathura_pdf_pid ];then
+        zathura_tex_show_id=$(wmctrl -lp | grep $(pgrep zathura | grep -v $zathura_pdf_pid 2> /dev/null) 2> /dev/null | awk '{print $1}')
+      else
+        zathura_tex_show_id=$(wmctrl -lp | grep $(pgrep zathura) 2> /dev/null | awk '{print $1}')
+      fi
+      if [ $zathura_tex_show_id ];then
+        break
+      fi
+      sleep 0.5
+      let interrupt_counter+=1
+      if [[ $interrupt_counter > 100 ]];then
+        exit
+      fi
+    done
+    #echo -e "找到zathura_tex_show_id: $zathura_tex_show_id"
+    xdotool windowactivate $zathura_tex_show_id && $linux_keyboard_file -l -p 1
+
+    if [ "$open_math_env_webside" == "1" ];then
+      google-chrome https://bing.com/chat https://zs.symbolab.com/solver
+    fi
+
+    #焦点回给到vim进行代码编辑
+    xdotool windowactivate $current_window_id
+  }&
+
+  if [ $pdf ];then
+    xdotool windowactivate $current_window_id && $linux_keyboard_file -k -p 1
+  else
+    xdotool windowactivate $current_window_id && $linux_keyboard_file -r -p 1
+  fi
+  if [ $is_tex == 1 ];then
+    nvim -c "execute 'VimtexCompile' | execute 'lua require(\"notify\")(\"Welcome to Math\")'" $file
+  fi
+
+  quit
+}
+
+
+main_Mac(){
+  check_foot_py_file_exitst
+  osascript -e 'tell application "System Events" to tell dock preferences to set autohide to true'
+
+  if [ $pdf ];then
+    #open pdf into Upper right corner
+    open ${pdf}
+    sleep 0.1
+
+    osascript -e 'tell application "preview" to activate'
+    osascript -e 'tell application "System Events"
+    key down {control, option}
+    key code 34
+    key up {control, option}
+  end tell'
+  fi
+
+  sleep 0.2
+
+  #vim into Down right corner
+  osascript -e 'tell application "iTerm2" to activate'
+  if [ $pdf ];then
+    osascript -e 'tell application "System Events"
+    key down {control, option}
+    key code 40
+    key up {control, option}
+  end tell'
+else
+  osascript -e 'tell application "System Events"
+  key down {control, option}
+  key code 124
+  key up {control, option}
+end tell'
+  fi
+
+  {
+    #sleep 0.2
+    if [ $is_tex == 1 ];then
+      osascript -e 'tell application "System Events"
+      if not (exists process "Skim") then
+        tell application "Skim" to activate
+      end if
+    end tell'
+  else
+    osascript -e 'tell application "System Events"
+    if not (exists process "Google Chrome") then
+      tell application "Google Chrome" to activate
+    end if
+  end tell'
+    fi
+
+    if [ $is_tex == 1 ];then
+      osascript -e 'tell application "Skim" to activate'
+    else
+      osascript -e 'tell application "Google Chrome" to activate'
+    fi
+
+    osascript -e 'tell application "System Events"
+    key down {control, option}
+    key code 123
+    key up {control, option}
+  end tell'
+
+  if [ $is_tex == 1 ];then
+    osascript -e 'tell application "System Events"
+    key down {command, shift}
+    key code 15
+    key up {command, shift}
+  end tell'
+  fi
+
+  osascript -e 'tell application "iTerm2" to activate'
+}&
+
+if [ $is_tex == 1 ];then
+  nvim -c "execute 'VimtexCompile' | execute 'lua require(\"notify\")(\"Welcome to Math\")'" $file
+else
+  nvim -c 'MarkdownPreview' "$file"
+fi
+
+quit
+
+osascript -e 'tell application "iTerm2" to activate'
+osascript -e 'tell application "System Events"
+key down {control, option}
+key code 124
+key up {control, option}
+end tell'
+
+if [ $is_tex == 1 ];then
+  osascript -e 'tell application "Skim" to activate'
+else
+  osascript -e 'tell application "Google Chrome" to activate'
+fi
+osascript -e 'tell application "System Events"
+key down {control, option}
+key code 123
+key up {control, option}
+end tell'
+
+#get focus to iTerm2
+osascript -e 'tell application "iTerm2" to activate'
+}
+
+check_foot_py_file_exitst(){
+  if [ ! -f ${keyboard_file} ];then
+    echo "IyEvdXNyL2Jpbi9lbnYgcHl0aG9uCiMgLSotIGNvZGluZzogVVRGLTggLSotCmZyb20gcHlrZXlib2FyZCBpbXBvcnQgKgpmcm9tIHB5bW91c2UgaW1wb3J0ICoKZnJvbSBzeXMgaW1wb3J0ICoKCm0gPSBQeU1vdXNlKCkKayA9IFB5S2V5Ym9hcmQoKQoKCmlmIChzeXMuYXJndlsxXSA9PSAiQy10YWIiKToKICAgIHhfZGltLCB5X2RpbSA9IG0uc2NyZWVuX3NpemUoKQogICAgay5wcmVzc19rZXlzKFsnQ29tbWFuZCcsJ1RhYiddKQplbGlmIChzeXMuYXJndlsxXSA9PSAibWFyayIpOgogICAgay5wcmVzc19rZXlzKFsnYCcsJy4nXSkKZWxzZToKICAgIGsucHJlc3Nfa2V5cyhbJ0NvbnRyb2wnLCdBbHRlcm5hdGUnLHN5cy5hcmd2WzFdXSkKICAgIGsucmVsZWFzZV9rZXkoJ0NvbnRyb2wnKQogICAgay5yZWxlYXNlX2tleSgnQWx0ZXJuYXRlJykKICAgIGsucmVsZWFzZV9rZXkoc3lzLmFyZ3ZbMV0pCgoj54K55Ye75Lit5b+DCiNtLmNsaWNrKHhfZGltLzIrMTAwLCB5X2RpbS8yKzEwMCkKI+i+k+WFpeWtl+espgojay50eXBlX3N0cmluZygnOk1hcmtkb3duUHJldmlldycpCiPmjInkvY8KI2sucHJlc3Nfa2V5KCdDb21tYW5kJykKI+WNleWHuwojay50YXBfa2V5KCdjJykK" | base64 -d > ./${keyboard_file} && chmod +x ./${keyboard_file}
+  fi
+}
+
+#check_foot_sh_file_exitst(){
+#  echo ""
+#}
+
+usage (){
+  echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+
+  Options:
+  -h, --help       Display this message
+  -d, --debug      Debug model run
+  -p, --posix      Posix model parse shell command
+  -v, --version    Display script version
+  -f, --file FILE  Test input argument"
+}
+
+quit(){
+  if [ "$(uname)" == "Linux" ];then
+    gnome-extensions enable ubuntu-dock@ubuntu.com
+    gnome-extensions disable gtktitlebar@velitasali.github.io
+  else
+    osascript -e 'tell application "System Events" to tell dock preferences to set autohide to false'
+  fi
+  colse_study_date=$(date +"%Y-%m-%d-%H-%M-%S")
+
+  if [ ! -f $study_database_file ];then
+    echo "开始学习时间 结束学习时间 执行命令 编写的文件 所使用的PDF" > $study_database_file
+  fi
+  echo "$start_study_date $colse_study_date "\'$all_parameter\'" "\'$file\'" "\'$pdf"\'" >> $study_database_file
+}
+
+while getopts ":hdp:vf:q-:" opt; do
+  case "${opt}" in
+    h) usage && exit 0;;
+    d) set -x ;;
+    p) pdf=${OPTARG};;
+    v) echo "$0 -- Version $ScriptVersion"; exit ;;
+    f) file=${OPTARG};;
+    q) quit; exit;;
+    -) case "${OPTARG}" in
+      help) usage && exit 0;;
+      debug)    set -x ;;
+      pdf)      pdf=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      env)      open_math_env_webside=1; OPTIND=$((OPTIND+1));;
+      version)  echo "$0 -- Version $ScriptVersion"; exit ;;
+      file)     echo "file=${!OPTIND}"; OPTIND=$((OPTIND+1));;
+      quit)     quit; exit;;
+      *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+    esac;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+esac
+done
+shift $((OPTIND-1))
+
+
+if [ -z "$file" ];then  echo -e "\033[31mtarget file ?\033[0m" ;exit;fi
+path=$(dirname "$file")
+
+start_study_date=$(date +"%Y-%m-%d-%H-%M-%S")
+if [ "$(uname)" == "Linux" ];then
+  main_Ubuntu
+else
+  main_Mac
+fi
+# 获取当前Docker栏的状态
+#is_hidden=$(osascript -e 'tell application "System Events" to tell dock preferences to get autohide')
+
+# 如果Docker栏已隐藏，则显示它；否则隐藏它
+#if [ "$is_hidden" = "true" ]; then
+#    osascript -e 'tell application "System Events" to tell dock preferences to set autohide to false'
+#else
+#    osascript -e 'tell application "System Events" to tell dock preferences to set autohide to true'
+#fi
+
+#https://eastmanreference.com/complete-list-of-applescript-key-codes

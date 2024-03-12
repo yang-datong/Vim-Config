@@ -24,7 +24,6 @@
 
 
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -183,9 +182,10 @@ noremap <Leader>h :<C-u>split<CR>
 noremap <Leader>v :<C-u>vsplit<CR>
 " }
 " Tabs {
-nnoremap <Tab> gt
-nnoremap <S-Tab> gT
-nnoremap <silent> <S-t> :tabnew<CR>
+nnoremap <Tab> :wincmd w<CR> "切换窗口
+"nnoremap <Tab> gt
+"nnoremap <S-Tab> gT
+"nnoremap <silent> <S-t> :tabnew<CR>
 " }
 " Terminal {
 nnoremap <silent> <Leader>t :terminal<CR>
