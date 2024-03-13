@@ -1,0 +1,104 @@
+#!/bin/bash
+ScriptVersion="1.0"
+
+# 使用场景：当你想要将你的ssh公钥发给你朋友，但是你朋友拿到了"id_rsa.pub"文件也不知道放在哪里，那么你可以将移动脚本的步骤些为一个脚本，然后将你的"id_rsa.pub"文件放在名为connect_ssh.sh脚本文件中，并告诉你朋友只需要执行connect_ssh.sh这个脚本文件就可以了，那么你的脚本文件可以是如下：
+# move_to_home_dir.sh：
+# ------------------------------------
+# | mv id_rsa.pub $HOME/.ssh         |
+# ------------------------------------
+#
+#然后使用命令：generate_self_archive move_to_home_dir.sh id_rsa.pub connect_ssh.sh
+#
+#将命令输出的文件发送给你朋友执行就可以完成移动文件的操作啦
+
+unset file
+unset directory
+
+main(){
+  cat << EOF >  $output_bash_script
+#!/bin/bash
+set -e
+
+#-------------------- Generate Content --------------------
+ARCHIVE_START_LINE=\$(awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' \$0)
+date=\$(date +"%Y%m%d%H%M%S")
+tail -n+\${ARCHIVE_START_LINE} \$0 > ./temp_\$date.zip
+unzip temp_\$date.zip > /dev/null && rm temp_\$date.zip
+EOF
+
+echo "#-------------------- $1 --------------------" >> $output_bash_script
+cat $bash_script >> $output_bash_script
+echo "#------------------------------------------" >> $output_bash_script
+echo -e "exit 0 \n__ARCHIVE_BELOW__" >> $output_bash_script
+
+date=$(date +"%Y%m%d%H%M%S")
+zip -r temp_$date.zip $archive_obj > /dev/null
+cat temp_$date.zip >> $output_bash_script && rm temp_$date.zip
+chmod +x $output_bash_script
+echo -e "\033[31mOutput Bash script -> $output_bash_script\033[0m"
+}
+
+#Checkout is install
+check_cmd(){
+  local obj=$1
+  if [ ! -x "$(command -v $obj)" ];then
+    echo "Not found $obj"
+  fi
+}
+
+
+usage (){
+  echo "Usage :  $(basename "$0") [options] [--] [*.sh] [file|directory] [Output script name](option)
+
+  Options:
+  -h, --help                  Display this message
+  -d, --debug                 Debug model run
+  -p, --posix                 Posix model parse shell command
+  -v, --version               Display script version
+  -f, --file FILE             Target file
+  -D, --directory DIRECTORY   Target directory"
+}
+
+while getopts ":hdpvf:D:-:" opt; do
+  case "${opt}" in
+    h) usage && exit 0;;
+    d) set -x ;;
+    p) set -o posix ;;
+    v) echo "$0 -- Version $ScriptVersion"; exit ;;
+    f) file=${OPTARG};;
+    D) directory=${OPTARG};;
+    -) case "${OPTARG}" in
+      help) usage && exit 0;;
+      debug)      set -x ;;
+      posix)      set -o posix ;;
+      version)    echo "$0 -- Version $ScriptVersion"; exit ;;
+      file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+    esac;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+esac
+done
+shift $((OPTIND-1))
+
+if [ $# -lt 2 ];then usage;exit 0;fi
+
+bash_script="$(basename $1)"
+archive_obj="$(basename $2)"
+
+if [ ! ${bash_script##*.} == "sh" ];then usage;exit 0;fi
+
+if [ $3 ];then
+  if [ "${3##*.}" == "sh"  ];then
+    output_bash_script="$3"
+  else
+    output_bash_script="$3.sh"
+  fi
+else
+  output_bash_script="${bash_script%.*}-with-${archive_obj%.*}.sh"
+fi
+
+check_cmd "zip"
+check_cmd "unzip"
+main "$@"
