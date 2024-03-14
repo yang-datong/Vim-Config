@@ -32,7 +32,7 @@ let g:is_latex=1  "Latex
 let g:is_markdown=1  "Markdown
 let g:is_lua=1  "Lua config
 let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传入参数
-let g:is_vim_stutio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式
+let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -105,7 +105,7 @@ set noruler "关闭右下角的状态栏，不显示光标位置信息。
 set laststatus=0 "设置状态行的显示方式，0表示不显示状态行。
 set noshowcmd "在命令行不显示正在输入的命令。
 
-if g:is_vim_stutio == 1
+if g:is_vim_studio == 1
   set number
   set laststatus=2
   set statusline=file:[%<%f],\ funciton:[%{coc#status()}%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
@@ -353,7 +353,7 @@ Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 let g:tagbar_position = 'vertical'
 "Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 noremap <F2> :TagbarToggle <CR>
-if g:is_vim_stutio == 1
+if g:is_vim_studio == 1
   autocmd VimEnter * nested :TagbarOpen
 endif
 "======================================================================
