@@ -28,10 +28,11 @@
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Whether to enable plug-in(0->off | 1->on){
-let g:is_latex = 1  "Latex
-let g:is_markdown= 1  "Markdown
-let g:is_lua= 1  "Lua config
-let g:latex_full_compiled_mode = 0 "1：开启vimtex 编译传入参数 0：不传入参数
+let g:is_latex=1  "Latex
+let g:is_markdown=1  "Markdown
+let g:is_lua=1  "Lua config
+let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传入参数
+let g:is_vim_stutio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -41,6 +42,8 @@ let g:latex_full_compiled_mode = 0 "1：开启vimtex 编译传入参数 0：不�
 if has("mac")
   let g:python3_host_prog='/usr/local/bin/python3.9' "Mac -> Open
   set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
+elseif has('linux')
+  set path+=/usr/include/c++/11/
 endif
 " }
 " Attribute {
@@ -94,13 +97,26 @@ set scrolloff=3
 "set listchars=tab:>-          " Use >--- for tabs
 " }
 " Status {
-set title
-set titleold="Terminal"
-set titlestring=%F
-set noshowmode
-set noruler
-set laststatus=0
-set noshowcmd
+set title "启用终端的标题栏显示当前编辑的文件名
+set titleold="Terminal" "在Vim退出后，终端的标题将被设置为"Terminal"
+set titlestring=%F "表示完整的文件路径显示
+set noshowmode "关闭命令行模式提示，如 – INSERT – 等。
+set noruler "关闭右下角的状态栏，不显示光标位置信息。
+set laststatus=0 "设置状态行的显示方式，0表示不显示状态行。
+set noshowcmd "在命令行不显示正在输入的命令。
+
+if g:is_vim_stutio == 1
+  set number
+  set laststatus=2
+  set statusline=file:[%<%f],\ funciton:[%{coc#status()}%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
+"set statusline=%<%f\ %h%m%r%=\ %P
+"%<%f：显示文件的完整路径。
+"%h%m%r：显示文件的状态，h 代表帮助文件，m 代表修改过的文件，r 代表只读文件。
+"%=：左右两边的内容平分状态栏。
+"%-14.(%l,%c%V%)：显示光标位置，包括行号（%l）和列号（%c 和 %V）。
+"%P：显示光标的百分比位置。
+endif
+
 " }
 " Close the pop-up window {
 " 影响主要是在编写代码时会弹出函数定义框，需要手动关闭影响布局
@@ -337,6 +353,9 @@ Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 let g:tagbar_position = 'vertical'
 "Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 noremap <F2> :TagbarToggle <CR>
+if g:is_vim_stutio == 1
+  autocmd VimEnter * nested :TagbarOpen
+endif
 "======================================================================
 " Color thems
 Plug 'junegunn/seoul256.vim'
@@ -549,7 +568,12 @@ endfunc
 "}
 
 " Fast into head file {
-map <C-h> :call IntoHeadrFile()<CR>
+if has('mac')
+  map <C-h> :call IntoHeadrFile()<CR>
+elseif has('linux')
+  " TODO  <24-03-14 11:14:19, YangJing> "
+  map <M-h> :call IntoHeadrFile()<CR>
+endif
 func! IntoHeadrFile()
   "let filename = expand('%:r')
   let filename = expand('%:t:r')
@@ -650,7 +674,7 @@ endfunc
 "                  5. 自动执行命令区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Save mksession on vimleave {
-if &filetype == 'cpp'
+if &filetype == 'cpp' || isdirectory(expand("%:p"))
   autocmd VimLeave * mksession!
 endif
 "}

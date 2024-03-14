@@ -1,0 +1,12 @@
+#!/bin/bash
+
+unset option
+if [ -f Session.vim ];then
+	option="-S Session.vim"
+else
+	option=""
+fi
+
+sed 's/let g:is_vim_stutio=0/let g:is_vim_stutio=1/' $HOME/.config/nvim/init.vim > /tmp/init_studio.vim
+
+nvim -u /tmp/init_studio.vim ${option} -c "execute 'lua require(\"notify\")(\"Welcome to VIM-Studio\")'" $1

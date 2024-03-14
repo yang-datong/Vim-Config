@@ -3,7 +3,9 @@
 main(){
 	adb shell "/data/local/tmp/.bash --version" || install_bash
 	person=$(root)
-	adb shell "$1" || person=$(user)
+	if [ ! $(adb shell 'id -u') == '0' ];then #进入shell即为非root的情况
+		adb shell "$1" || person=$(user) #再次检测su是否成功提权，否则为普通用户
+	fi
 	echo $person | base64 -d > /tmp/into_adb_shell.expect && expect /tmp/into_adb_shell.expect
 }
 
@@ -15,13 +17,13 @@ install_bash(){
 		abi="aarch64"
 	fi
 
-	if [ ! -f "bash-linux-${abi}" ];then
+	if [ ! -f "/tmp/bash-linux-${abi}" ];then
 		wget https://github.com/robxu9/bash-static/releases/download/${version}/bash-linux-${abi}
 	fi
 
 	adb push bash-linux-${abi} /data/local/tmp/.bash
 	adb shell "chmod +x /data/local/tmp/.bash"
-	rm bash-linux-${abi}
+	mv bash-linux-${abi} /tmp/
 }
 
 
@@ -37,9 +39,4 @@ root(){
 	#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgImNkICRwYXRoXG4ifQpleHBlY3QgIiojICIge3NlbmQgIi4vYmFzaFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiaWRcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGNsPWNsZWFyXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBscz0nbHMgLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxsPSdscyAtbEZoIC0tY29sb3InXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBkdT0nZHUgLXNoJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
 }
 
-current_divece_id=$(adb devices | grep "device\$" | awk '{print $1}')
-if [ "$current_divece_id" == "MPS0123811000255" ];then #这个设备比较特殊，进入shell默认就是root
-	echo $(root) | base64 -d > /tmp/into_adb_shell.expect && expect /tmp/into_adb_shell.expect
-else
-	main "su -c 'id'"
-fi
+main "su -c 'id'"

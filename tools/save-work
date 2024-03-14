@@ -1,12 +1,10 @@
 #!/bin/bash
-
-exit
-#set -x -v  -e
+set -e
 
 echo "确定要保存吗？会覆盖原来的文件! [y/n]"
 read is_ok
 
-function save(){
+function to_icloud(){
 	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
 	cp -vr ~/Desktop/demo1 ./  #save demo1
 	cp -vr ~/.config/nvim/init.vim  ./sh_foot/  #save nvim config
@@ -15,8 +13,17 @@ function save(){
 	echo -e "\033[31m[🍺!!!!!!!!!!!Done!!!!!!!!!!!]"
 }
 
+function to_github(){
+	work_dirs=($HOME/sh_foot $HOME/Desktop/Study $HOME/Desktop/MD-Note)
+	for i in ${work_dirs[@]};do
+		pushd "$i"
+		git add . && git commit -m "Auto commit from[$0]" && git push
+		popd
+	done
+	echo "Done!"
+}
+
 if [ $is_ok = 'y' ];then
-	save
-else
-	exit
+	#to_icloud
+	to_github
 fi

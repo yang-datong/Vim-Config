@@ -157,7 +157,7 @@ picture-uri='file:///home/hi/Figure/DeskImage.jpg'
 sort-order=['org.gnome.Contacts.desktop', 'org.gnome.Documents.desktop', 'org.gnome.Nautilus.desktop']
 
 [org/gnome/desktop/session]
-idle-delay=uint32 900
+idle-delay=uint32 3600
 
 [org/gnome/desktop/wm/keybindings]
 activate-window-menu=@as []

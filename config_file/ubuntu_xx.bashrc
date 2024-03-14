@@ -1,14 +1,22 @@
-if status is-interactive
-
 #Ubuntu 20.04
+
+PS1='\033[1;37m\$ \033[0m'
+export HISTCONTROL=ignoredups:erasedups
+export HISTSIZE=100000
+export HISTFILESIZE=100000
+shopt -s histappend
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+shopt -s checkwinsize #在每个命令之后检查窗口大小，并在必要时更新LINES和COLUMNS的值
+
 xmodmap -e 'keycode 180 = Escape'
 
-set -x PATH $PATH $HOME/.local/bin/
-set -x PATH $PATH $HOME/Android/Sdk/ndk/21.4.7075529
-set -x PATH $PATH $HOME/MySoftWare/Inkscape
-set -x PATH $PATH $HOME/MySoftWare/jadx/bin
-set -x JAVA_HOME $HOME/MySoftWare/android-studio/jbr
-set -x ANDROID_NDK_ROOT $HOME/Android/Sdk/ndk/25.1.8937393
+export PATH=$PATH:$HOME/.local/bin/
+export PATH=$PATH:$HOME/Android/Sdk/ndk/21.4.7075529
+export PATH=$PATH:$HOME/MySoftWare/Inkscape
+export PATH=$PATH:$HOME/MySoftWare/jadx/bin
+export JAVA_HOME=$HOME/MySoftWare/android-studio/jbr
+export ANDROID_NDK_ROOT=$HOME/Android/Sdk/ndk/25.1.8937393
 
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
@@ -16,6 +24,7 @@ alias huya="echo '15886670991, qweasdzxc123'"
 alias ip='curl -s -m 5 https://ipleak.net/json/'
 
 alias cl='clear'
+alias ls='ls --color'
 alias rm='trash'
 alias rm-rf='rm -rf'
 alias du='du -sh'
@@ -39,5 +48,8 @@ alias gcc='gcc -std=c11 -Wall'
 alias g++='g++ -std=c++11 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
-if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
-end
+
+
+
+
+

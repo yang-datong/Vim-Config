@@ -41,15 +41,16 @@ replace_symbols_link(){
 replace_symbols_link "$HOME/.config/nvim/filetype.vim" "$(pwd)/filetype.vim"
 replace_symbols_link "$HOME/compile_flags.txt" "$(pwd)/compile_flags.txt"
 replace_symbols_link "$HOME/.clang-format" "$(pwd)/xx.clang-format"
-replace_symbols_link "$HOME/.bashrc" "$(pwd)/../xx.bashrc"
 replace_symbols_link "$HOME/.zshrc" "$(pwd)/../xx.zshrc"
 
 	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
 	replace_symbols_link "$HOME/.config/nvim/yj.lua " "$(pwd)/yj.lua"
 if [ "$(uname)" == "Darwin" ];then
 	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_macos.fish"
+	replace_symbols_link "$HOME/.bashrc" "$(pwd)/macos_xx.bashrc"
 else
 	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_ubuntu.fish"
+	replace_symbols_link "$HOME/.bashrc" "$(pwd)/ubuntu_xx.bashrc"
 fi
 
 for file in *.snippets;do

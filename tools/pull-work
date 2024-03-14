@@ -1,12 +1,11 @@
 #!/bin/bash
+set -e
 
-exit
-#set -x -v -e
-echo "确定要拉取吗？会覆盖原来的文件! [y/n]"
+echo "确定要拉取吗？会覆盖原来的文件! [y/N]"
 
 read is_ok
 
-function save(){
+function from_icloud(){
 	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
 	cp -rv ./sh_foot/init.vim ~/.config/nvim/init.vim
 	cp -rv ./sh_foot/markdown.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/markdown.snippets
@@ -15,9 +14,19 @@ function save(){
 	echo -e "\033[31m[🍺##########Done#############]"
 }
 
+function from_github(){
+	work_dirs=($HOME/sh_foot $HOME/Desktop/Study $HOME/Desktop/MD-Note)
+	for i in ${work_dirs[@]};do
+		pushd "$i"
+		git pull
+		popd
+	done
+	echo "Done!"
+}
 
 if [ $is_ok = 'y' ];then
-	save
+	#from_icloud
+	from_github
 fi
 
 
