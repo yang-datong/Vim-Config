@@ -44,7 +44,7 @@ replace_symbols_link "$HOME/.clang-format" "$(pwd)/xx.clang-format"
 replace_symbols_link "$HOME/.zshrc" "$(pwd)/../xx.zshrc"
 
 	replace_symbols_link "$HOME/.config/nvim/init.vim" "$(pwd)/init.vim"
-	replace_symbols_link "$HOME/.config/nvim/yj.lua " "$(pwd)/yj.lua"
+	replace_symbols_link "$HOME/.config/nvim/yj.lua" "$(pwd)/yj.lua"
 if [ "$(uname)" == "Darwin" ];then
 	replace_symbols_link "$HOME/.config/fish/config.fish" "$(pwd)/config_macos.fish"
 	replace_symbols_link "$HOME/.bashrc" "$(pwd)/macos_xx.bashrc"
