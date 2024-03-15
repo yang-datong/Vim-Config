@@ -1,0 +1,9 @@
+-std=c++14
+-I/usr/include/c++/11
+-I/usr/include/x86_64-linux-gnu/c++/11
+-I/usr/include/c++/11/backward
+-I/usr/lib/gcc/x86_64-linux-gnu/11/include
+-I/usr/local/include
+-I/usr/include/x86_64-linux-gnu
+-I/usr/include
+-I/home/hi/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/

@@ -27,12 +27,15 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Whether to enable plug-in(0->off | 1->on){
+" Whether to enable plug-in(0->off | 1->on){
 let g:is_latex=1  "Latex
-let g:is_markdown=1  "Markdown
+let g:is_markdown=0  "Markdown
 let g:is_lua=1  "Lua config
+" }
+" Whether to enable plug-in(0->off | 1->on){
 let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传入参数
-let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式
+let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式(已添加到脚本vimm中，不需要手动调整）
+let g:is_Android_jni=1 "1：将添加Android-JNI头文件到path中，0：不添加
 "}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -40,16 +43,29 @@ let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
 if has("mac")
-  let g:python3_host_prog='/usr/local/bin/python3.9' "Mac -> Open
-  set path+=~/Library/Android/sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include "Android JNI
+  let g:python3_host_prog='/usr/local/bin/python3.9'
 elseif has('linux')
-  set path+=/usr/include/c++/11/
+  set path+=/usr/include/c++/11
+  set path+=/usr/include/x86_64-linux-gnu/c++/11
+  set path+=/usr/include/c++/11/backward
+  set path+=/usr/lib/gcc/x86_64-linux-gnu/11/include
+  set path+=/usr/local/include
+  set path+=/usr/include/x86_64-linux-gnu
+  set path+=/usr/include
+endif
+
+if g:is_Android_jni == 1
+  if has("mac")
+    set path+=expand('$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include')
+  elseif has('linux')
+    set path+=expand('$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include')
+  endif
 endif
 " }
 " Attribute {
 if has("mac")
   set clipboard=unnamed  "共享剪贴板
-else
+elseif has('linux')
   set clipboard=unnamedplus
 endif
 set autoindent "自动缩进
@@ -168,7 +184,7 @@ if has("mac")
   :nnoremap ∆ <C-w>j
   :nnoremap ˚ <C-w>k
   :nnoremap ¬ <C-w>l
-else
+elseif has('linux')
   :tnoremap <A-h> <C-\><C-n><C-w>h
   :tnoremap <A-j> <C-\><C-n><C-w>j
   :tnoremap <A-k> <C-\><C-n><C-w>k
@@ -198,13 +214,13 @@ noremap <Leader>h :<C-u>split<CR>
 noremap <Leader>v :<C-u>vsplit<CR>
 " }
 " Tabs {
-nnoremap <Tab> :wincmd w<CR> "切换窗口
+nnoremap <silent> <Tab> :wincmd w<CR> "切换窗口
 "nnoremap <Tab> gt
 "nnoremap <S-Tab> gT
 "nnoremap <silent> <S-t> :tabnew<CR>
 " }
 " Terminal {
-nnoremap <silent> <Leader>t :terminal<CR>
+nnoremap <silent> <Leader>t :terminal<CR> "在vim中打开terminal
 " exit 'terminal' mode
 :tnoremap <Esc> <C-\><C-n>
 "}
@@ -238,7 +254,7 @@ if has("nvim")
 else
   let s:vim_plug_dir=expand('~/.vim/autoload')
 endif
-" Vim-Plug {
+
 if !filereadable(s:vim_plug_dir.'/plug.vim')
   execute '!wget https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim -P '.s:vim_plug_dir
   let s:install_plug=1
@@ -250,11 +266,14 @@ else
   call plug#begin('~/.vim/plugged')
 endif
 "======================================================================
-Plug 'Shougo/unite.vim'
+Plug 'Shougo/unite.vim' "跟Coc有点类似，但基本被Coc取代了，它的目标是建一个用户界面（UI），可以从各种不同的源（如文件、缓冲区、最近使用的文件或寄存器）中搜索和显示信息。你可以在 unite 窗口中对目标执行多个预定义的操作。比如：
+"1. 显示文件和缓冲区：运行 :Unite file buffer，它会在 unite 窗口中列出当前目录中的所有文件和缓冲区，你可以通过按 j 和 k 键在列表中选择其中一个文件或缓冲区。
+"2. 使用过滤器：如果你想筛选文件，可以运行 :Unite -input=foo file，其中 foo 是你的过滤条件。这将只显示文件名中包含 foo 的文件。
+"类似与在vim里面重新配置一些“自己”的东西
 "======================================================================
 "Plug 'Shougo/neomru.vim'
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "代码提示 .可以提示snippet的代码
-Plug 'Shougo/ddc.vim'
+"Plug 'Shougo/ddc.vim' "代码提示
 "======================================================================
 Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
 "======================================================================
@@ -263,7 +282,7 @@ noremap <Leader>gs :Gstatus<CR>
 noremap <Leader>gb :Gblame<CR>
 noremap <Leader>gd :Gvdiff<CR>
 "======================================================================
-Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
+"Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
 "======================================================================
 Plug 'vim-autoformat/vim-autoformat'
 "let g:autoformat_verbosemode=1 "调试format
@@ -294,7 +313,6 @@ inoremap <silent><expr> <Down>
       \ CheckBackspace() ? "\<Down>" :
       \ coc#refresh()
 inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
-"inoremap <expr> <Cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 " 检查光标是否在一行的开头，或者光标前面的字符是否是空白字符
@@ -304,20 +322,22 @@ function! CheckBackspace() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 " https://github.com/neoclide/coc.nvim
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+"nmap <silent> [g <Plug>(coc-diagnostic-prev)
+"nmap <silent> ]g <Plug>(coc-diagnostic-next)
 " Coc-vim jump definition
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-nmap <leader>ac  <Plug>(coc-codeaction-cursor)
-nmap <leader>as  <Plug>(coc-codeaction-source)
-nmap <leader>qf  <Plug>(coc-fix-current)
-nmap <leader>rn <Plug>(coc-rename)
+nmap <silent> gd <Plug>(coc-definition) "全能包括了vim默认的gf功能
+nmap <silent> gf <Plug>(coc-definition) "不使用vim的gf
+nmap <silent> gt <Plug>(coc-type-definition) "对变量使用，比如对uint8_t使用会跳到typedef处，但是gd也可以跳，目前不太清楚有什么区别
+nmap <silent> gi <Plug>(coc-implementation) "貌似没什么用
+nmap <silent> gr <Plug>(coc-references) "通过小窗口的方式，查看交叉引用
+"nmap <leader>ac  <Plug>(coc-codeaction-cursor) "用于在光标位置应用代码操作的重映射键
+"nmap <leader>as  <Plug>(coc-codeaction-source) "应用代码操作的重新映射键会影响整个缓冲区
+nmap <leader>qf  <Plug>(coc-fix-current) "快速修复操作代码建议
+nmap <leader>rn <Plug>(coc-rename) "当前文件内字符共同重新命令
 nmap <silent> <C-c> <Plug>(coc-cursors-position)
 nmap <silent> <C-x> <Plug>(coc-cursors-word) "冲突翻页
 xmap <silent> <C-x> <Plug>(coc-cursors-range)
+
 if g:is_latex == 1
   let g:coc_global_extensions = ['coc-texlab']
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
@@ -380,7 +400,7 @@ if g:is_latex == 1
     let g:vimtex_view_general_viewer = 'skim'
     let g:vimtex_view_method = 'skim'
     let g:vimtex_view_general_options = '-r @line @pdf @tex'
-  else
+  elseif has('linux')
     " Use zathura 
     let g:vimtex_view_general_viewer = 'zathura'
     let g:vimtex_view_method='zathura'
@@ -481,6 +501,10 @@ Plug 'deris/vim-shot-f' "高亮f/F,t/T命令
 "======================================================================
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+"主要是使用 Files查找文件，以及Ag查找字符
+"Ag功能需要额外安装：
+"Mac: brew install the_silver_searcher
+"Ubuntu: apt install  silversearcher-ag
 "======================================================================
 call plug#end()
 
@@ -733,6 +757,18 @@ endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  6. unite插件扩展区域                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"- `autocmd FileType unite call s:unite_my_settings()`：这行代码的意思是，当你打开的文件类型（FileType）是 unite 时，会自动调用 `s:unite_my_settings()` 这个函数。
+"
+"- `function! s:unite_my_settings()`：这是一个函数的定义，函数名为 `s:unite_my_settings`。这个函数中的代码主要是对 unite 插件的一些设置进行了自定义。
+"
+"- `imap <buffer> jj <Plug>(unite_insert_leave)`：这行代码的意思是，在插入模式（insert mode）下，当你在当前缓冲区（buffer）输入 `jj` 时，会触发 unite 插件的 `unite_insert_leave` 动作。
+"
+"- `imap <buffer><expr> j unite#smart_map('j', '')`：这行代码的意思是，在插入模式下，当你在当前缓冲区输入 `j` 时，会触发 unite 插件的 `smart_map` 动作。
+"
+"- `let g:deoplete#enable_at_startup = 1`：这行代码的意思是，当你启动 Vim 时，会自动启用 deoplete 插件。
+"
+"- `inoremap <expr><tab> pumvisible() ? "\<c-n>" :"\<tab>"`：这行代码的意思是，在插入模式下，当你输入 Tab 键时，如果弹出菜单（popup menu）是可见的，那么就会触发 `<C-n>` 动作，否则就会触发 `<Tab>` 动作。
+
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
   " Overwrite settings.
