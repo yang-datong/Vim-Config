@@ -350,7 +350,7 @@ let g:coc_global_extensions = ['coc-snippets'] "自动安装snippets
 " }
 "======================================================================
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
-let g:tagbar_position = 'vertical'
+"let g:tagbar_position = 'vertical'
 "Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 noremap <F2> :TagbarToggle <CR>
 if g:is_vim_studio == 1
@@ -462,6 +462,9 @@ noremap <C-1> :NERDTreeToggle<CR>
 noremap <F1> :NERDTreeToggle<CR>
 " Close NERDTree if no other window open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+if g:is_vim_studio == 1
+  autocmd VimEnter * nested :NERDTreeToggle
+endif
 " }
 "======================================================================
 "Plug 'suan/vim-commentary'
@@ -475,6 +478,9 @@ if has("nvim")
 endif
 "======================================================================
 Plug 'deris/vim-shot-f' "高亮f/F,t/T命令
+"======================================================================
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 "======================================================================
 call plug#end()
 

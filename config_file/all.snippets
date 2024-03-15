@@ -128,12 +128,12 @@ endsnippet
 
 priority -100
 snippet todo "TODO comment" bw
-`!p snip.rv=get_comment_format()[0]` TODO ${1:} <`!v strftime('%y-%m-%d %T')`, YangJing> `!p snip.rv=get_comment_format()[2]`
+`!p snip.rv=get_comment_format()[0]` TODO YangJing ${1:} <`!v strftime('%y-%m-%d %T')`> `!p snip.rv=get_comment_format()[2]`
 endsnippet
 
 priority -200
 snippet todo "todo" w
-TODO ${1:} <`!v strftime('%y-%m-%d %T')`, Yangdatong> 
+TODO ${1:} <`!v strftime('%y-%m-%d %T')`, YangJing> 
 endsnippet
 
 ##########
