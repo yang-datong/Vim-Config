@@ -7,6 +7,9 @@ set -x PATH $PATH $HOME/.local/bin/
 set -x PATH $PATH $HOME/Android/Sdk/ndk/21.4.7075529
 set -x PATH $PATH $HOME/MySoftWare/Inkscape
 set -x PATH $PATH $HOME/MySoftWare/jadx/bin
+
+set -x SH_FOOT $HOME/sh_foot
+set -x CLOUD /run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
 set -x JAVA_HOME $HOME/MySoftWare/android-studio/jbr
 set -x ANDROID_NDK_ROOT $HOME/Android/Sdk/ndk/25.1.8937393
 
@@ -33,6 +36,7 @@ alias docker='sudo docker'
 alias load-frida-hw='adb shell "setenforce 0 && /data/local/tmp/hluPatched-android-arm64 &"'
 
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
+alias diff='colordiff -w' #brew install colordiff
 alias clang='clang -std=c11 -Wall'
 alias clang++='clang++ -std=c++11 -Wall'
 alias gcc='gcc -std=c11 -Wall'

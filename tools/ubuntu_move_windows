@@ -22,11 +22,10 @@ hei=$(xwininfo -root | grep Height | awk '{print $2}')
 
 if [ "$(xrandr 2>/dev/null | grep ' connected' | wc -l )" == "1" ];then
 	half_wid=$(expr $wid / 2)
-	half_hei=$(expr $hei / 2)
 else
 	half_wid=$(expr $wid / 4)
-	half_hei=$(expr $hei / 2)
 fi
+half_hei=$(expr $hei / 2)
 
 windwos_name=":ACTIVE:"
 

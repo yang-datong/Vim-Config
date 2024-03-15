@@ -6,8 +6,8 @@ target_path="/usr/local/bin"
 self=$(basename $0)
 
 main(){
-	for file in `ls | grep -v $self`;do
-		replace_symbols_link "${target_path}/${file}" "$(pwd)/$file"
+	for file in `ls $SH_FOOT/tools | grep -v $self`;do
+		replace_symbols_link "${target_path}/${file}" "$SH_FOOT/tools/$file"
 	done
 }
 

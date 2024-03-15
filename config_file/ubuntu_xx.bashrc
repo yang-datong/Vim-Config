@@ -15,6 +15,9 @@ export PATH=$PATH:$HOME/.local/bin/
 export PATH=$PATH:$HOME/Android/Sdk/ndk/21.4.7075529
 export PATH=$PATH:$HOME/MySoftWare/Inkscape
 export PATH=$PATH:$HOME/MySoftWare/jadx/bin
+
+export SH_FOOT=$HOME/sh_foot
+export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
 export JAVA_HOME=$HOME/MySoftWare/android-studio/jbr
 export ANDROID_NDK_ROOT=$HOME/Android/Sdk/ndk/25.1.8937393
 
@@ -23,8 +26,8 @@ alias phone='echo 15886670991'
 alias huya="echo '15886670991, qweasdzxc123'"
 alias ip='curl -s -m 5 https://ipleak.net/json/'
 
-alias cl='clear'
 alias ls='ls --color'
+alias cl='clear'
 alias rm='trash'
 alias rm-rf='rm -rf'
 alias du='du -sh'
@@ -42,14 +45,9 @@ alias docker='sudo docker'
 alias load-frida-hw='adb shell "setenforce 0 && /data/local/tmp/hluPatched-android-arm64 &"'
 
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
+alias diff='colordiff -w' #brew install colordiff
 alias clang='clang -std=c11 -Wall'
 alias clang++='clang++ -std=c++11 -Wall'
 alias gcc='gcc -std=c11 -Wall'
 alias g++='g++ -std=c++11 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
-
-
-
-
-
-
