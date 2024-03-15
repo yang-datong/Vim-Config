@@ -277,12 +277,12 @@ Plug 'Shougo/unite.vim' "跟Coc有点类似，但基本被Coc取代了，它的�
 "======================================================================
 Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
 "======================================================================
-Plug 'tpope/vim-fugitive' "vim 里面执行git操作如:Git diff
-noremap <Leader>gs :Gstatus<CR>
-noremap <Leader>gb :Gblame<CR>
-noremap <Leader>gd :Gvdiff<CR>
+Plug 'tpope/vim-fugitive'
+noremap <Leader>gs :Git<CR>
+"noremap <Leader>gb :Gblame<CR> "不知道怎么用
+noremap <Leader>gd :Gvdiff<CR> "很好用，再也不用使用cp new_file tmp && git restore new_file && vim -d new_file tmp了
 "======================================================================
-"Plug 'sheerun/vim-polyglot' "语法高亮，coc.vim 也可以实现
+Plug 'sheerun/vim-polyglot' "语法高亮，代码缩进
 "======================================================================
 Plug 'vim-autoformat/vim-autoformat'
 "let g:autoformat_verbosemode=1 "调试format
@@ -306,37 +306,36 @@ endif
   "Shell : go install mvdan.cc/sh/v3/cmd/shfmt@latest (需要安装go)
 "======================================================================
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-set hidden
-set updatetime=100
-inoremap <silent><expr> <Down>
-      \ coc#pum#visible() ? coc#pum#next(1) :
-      \ CheckBackspace() ? "\<Down>" :
-      \ coc#refresh()
-inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-" 检查光标是否在一行的开头，或者光标前面的字符是否是空白字符
-" abort关键字用于在出现错误时立即终止函数
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-" https://github.com/neoclide/coc.nvim
-"nmap <silent> [g <Plug>(coc-diagnostic-prev)
-"nmap <silent> ]g <Plug>(coc-diagnostic-next)
-" Coc-vim jump definition
-nmap <silent> gd <Plug>(coc-definition) "全能包括了vim默认的gf功能
-nmap <silent> gf <Plug>(coc-definition) "不使用vim的gf
-nmap <silent> gt <Plug>(coc-type-definition) "对变量使用，比如对uint8_t使用会跳到typedef处，但是gd也可以跳，目前不太清楚有什么区别
-nmap <silent> gi <Plug>(coc-implementation) "貌似没什么用
-nmap <silent> gr <Plug>(coc-references) "通过小窗口的方式，查看交叉引用
-"nmap <leader>ac  <Plug>(coc-codeaction-cursor) "用于在光标位置应用代码操作的重映射键
-"nmap <leader>as  <Plug>(coc-codeaction-source) "应用代码操作的重新映射键会影响整个缓冲区
-nmap <leader>qf  <Plug>(coc-fix-current) "快速修复操作代码建议
-nmap <leader>rn <Plug>(coc-rename) "当前文件内字符共同重新命令
-nmap <silent> <C-c> <Plug>(coc-cursors-position)
-nmap <silent> <C-x> <Plug>(coc-cursors-word) "冲突翻页
-xmap <silent> <C-x> <Plug>(coc-cursors-range)
+"set updatetime=100
+"inoremap <silent><expr> <Down>
+"      \ coc#pum#visible() ? coc#pum#next(1) :
+"      \ CheckBackspace() ? "\<Down>" :
+"      \ coc#refresh()
+"inoremap <expr> <Up> coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"
+"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+"                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+"" 检查光标是否在一行的开头，或者光标前面的字符是否是空白字符
+"" abort关键字用于在出现错误时立即终止函数
+"function! CheckBackspace() abort
+"  let col = col('.') - 1
+"  return !col || getline('.')[col - 1]  =~# '\s'
+"endfunction
+"" https://github.com/neoclide/coc.nvim
+""nmap <silent> [g <Plug>(coc-diagnostic-prev)
+""nmap <silent> ]g <Plug>(coc-diagnostic-next)
+"" Coc-vim jump definition
+"nmap <silent> gd <Plug>(coc-definition) "全能包括了vim默认的gf功能
+"nmap <silent> gf <Plug>(coc-definition) "不使用vim的gf
+"nmap <silent> gt <Plug>(coc-type-definition) "对变量使用，比如对uint8_t使用会跳到typedef处，但是gd也可以跳，目前不太清楚有什么区别
+"nmap <silent> gi <Plug>(coc-implementation) "貌似没什么用
+"nmap <silent> gr <Plug>(coc-references) "通过小窗口的方式，查看交叉引用
+""nmap <leader>ac  <Plug>(coc-codeaction-cursor) "用于在光标位置应用代码操作的重映射键
+""nmap <leader>as  <Plug>(coc-codeaction-source) "应用代码操作的重新映射键会影响整个缓冲区
+"nmap <leader>qf  <Plug>(coc-fix-current) "快速修复操作代码建议
+"nmap <leader>rn <Plug>(coc-rename) "当前文件内字符共同重新命令
+"nmap <silent> <C-c> <Plug>(coc-cursors-position)
+"nmap <silent> <C-x> <Plug>(coc-cursors-word) "冲突翻页
+"xmap <silent> <C-x> <Plug>(coc-cursors-range)
 
 if g:is_latex == 1
   let g:coc_global_extensions = ['coc-texlab']
@@ -346,27 +345,10 @@ if g:is_latex == 1
     if (system('command -v texlab') =~ 'texlab') == 0
       echo "Please use -> brew install texlab"
     endif
-  endif
-  "Must -> brew install --HEAD texlab
+  endif    "Must -> brew install --HEAD texlab
 endif
 let g:coc_global_extensions = ['coc-clangd'] "自动安装clangd
 let g:coc_global_extensions = ['coc-snippets'] "自动安装snippets
-" Option {
-  "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
-    "- CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
-  "语法检查：
-    "- python : CocInstall coc-pyright
-    "- js : coc-eslint
-    "- shell: brew install shellcheck
-  "显示snipt片段的提示: 
-    "- CocInstall coc-snippets
-  "clangd 配置语法识别参数: 
-    "- 文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
-  "Coc 自动导入包 CocAction 类似于java import 包
-
-  "卸载：
-    "- :CocList extensions
-    "- 选中按<Tab> 再按u
 " }
 "======================================================================
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
@@ -758,60 +740,55 @@ endfunc
 "                  6. unite插件扩展区域                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "- `autocmd FileType unite call s:unite_my_settings()`：这行代码的意思是，当你打开的文件类型（FileType）是 unite 时，会自动调用 `s:unite_my_settings()` 这个函数。
-"
 "- `function! s:unite_my_settings()`：这是一个函数的定义，函数名为 `s:unite_my_settings`。这个函数中的代码主要是对 unite 插件的一些设置进行了自定义。
-"
 "- `imap <buffer> jj <Plug>(unite_insert_leave)`：这行代码的意思是，在插入模式（insert mode）下，当你在当前缓冲区（buffer）输入 `jj` 时，会触发 unite 插件的 `unite_insert_leave` 动作。
-"
 "- `imap <buffer><expr> j unite#smart_map('j', '')`：这行代码的意思是，在插入模式下，当你在当前缓冲区输入 `j` 时，会触发 unite 插件的 `smart_map` 动作。
-"
 "- `let g:deoplete#enable_at_startup = 1`：这行代码的意思是，当你启动 Vim 时，会自动启用 deoplete 插件。
-"
 "- `inoremap <expr><tab> pumvisible() ? "\<c-n>" :"\<tab>"`：这行代码的意思是，在插入模式下，当你输入 Tab 键时，如果弹出菜单（popup menu）是可见的，那么就会触发 `<C-n>` 动作，否则就会触发 `<Tab>` 动作。
 
-autocmd FileType unite call s:unite_my_settings()
-function! s:unite_my_settings()"{{{
-  " Overwrite settings.
-  imap <buffer> jj      <Plug>(unite_insert_leave)
-  "imap <buffer> <C-w>     <Plug>(unite_delete_backward_path)
-
-  imap <buffer><expr> j unite#smart_map('j', '')
-  imap <buffer> <TAB>   <Plug>(unite_select_next_line)
-  imap <buffer> <C-w>     <Plug>(unite_delete_backward_path)
-  imap <buffer> '     <Plug>(unite_quick_match_default_action)
-  nmap <buffer> '     <Plug>(unite_quick_match_default_action)
-  imap <buffer><expr> x
-        \ unite#smart_map('x', "\<Plug>(unite_quick_match_jump)")
-  nmap <buffer> x     <Plug>(unite_quick_match_jump)
-  nmap <buffer> <C-z>     <Plug>(unite_toggle_transpose_window)
-  imap <buffer> <C-z>     <Plug>(unite_toggle_transpose_window)
-  nmap <buffer> <C-j>     <Plug>(unite_toggle_auto_preview)
-  nmap <buffer> <C-r>     <Plug>(unite_narrowing_input_history)
-  imap <buffer> <C-r>     <Plug>(unite_narrowing_input_history)
-  nnoremap <silent><buffer><expr> l
-        \ unite#smart_map('l', unite#do_action('default'))
-
-  let unite = unite#get_current_unite()
-  if unite.profile_name ==# 'search'
-    nnoremap <silent><buffer><expr> r     unite#do_action('replace')
-  else
-    nnoremap <silent><buffer><expr> r     unite#do_action('rename')
-  endif
-
-  nnoremap <silent><buffer><expr> cd     unite#do_action('lcd')
-  nnoremap <buffer><expr> S      unite#mappings#set_current_sorters(
-        \ empty(unite#mappings#get_current_sorters()) ?
-
-  " Runs "split" action by <C-s>.
-  imap <silent><buffer><expr> <C-s>     unite#do_action('split')
-endfunction"}}}
-" }
-
-" deoplete {
-  let g:deoplete#enable_at_startup = 1
-  "let g:deoplete#enable_smart_case = 1
-
-  "deoplete tab-complete
-  inoremap <expr><tab> pumvisible() ? "\<c-n>" :"\<tab>"
-  " }
-  "" }
+"autocmd FileType unite call s:unite_my_settings()
+"function! s:unite_my_settings()"{{{
+"  " Overwrite settings.
+"  imap <buffer> jj      <Plug>(unite_insert_leave)
+"  "imap <buffer> <C-w>     <Plug>(unite_delete_backward_path)
+"
+"  imap <buffer><expr> j unite#smart_map('j', '')
+"  imap <buffer> <TAB>   <Plug>(unite_select_next_line)
+"  imap <buffer> <C-w>     <Plug>(unite_delete_backward_path)
+"  imap <buffer> '     <Plug>(unite_quick_match_default_action)
+"  nmap <buffer> '     <Plug>(unite_quick_match_default_action)
+"  imap <buffer><expr> x
+"        \ unite#smart_map('x', "\<Plug>(unite_quick_match_jump)")
+"  nmap <buffer> x     <Plug>(unite_quick_match_jump)
+"  nmap <buffer> <C-z>     <Plug>(unite_toggle_transpose_window)
+"  imap <buffer> <C-z>     <Plug>(unite_toggle_transpose_window)
+"  nmap <buffer> <C-j>     <Plug>(unite_toggle_auto_preview)
+"  nmap <buffer> <C-r>     <Plug>(unite_narrowing_input_history)
+"  imap <buffer> <C-r>     <Plug>(unite_narrowing_input_history)
+"  nnoremap <silent><buffer><expr> l
+"        \ unite#smart_map('l', unite#do_action('default'))
+"
+"  let unite = unite#get_current_unite()
+"  if unite.profile_name ==# 'search'
+"    nnoremap <silent><buffer><expr> r     unite#do_action('replace')
+"  else
+"    nnoremap <silent><buffer><expr> r     unite#do_action('rename')
+"  endif
+"
+"  nnoremap <silent><buffer><expr> cd     unite#do_action('lcd')
+"  nnoremap <buffer><expr> S      unite#mappings#set_current_sorters(
+"        \ empty(unite#mappings#get_current_sorters()) ?
+"
+"  " Runs "split" action by <C-s>.
+"  imap <silent><buffer><expr> <C-s>     unite#do_action('split')
+"endfunction"}}}
+"" }
+"
+"" deoplete {
+"  let g:deoplete#enable_at_startup = 1
+"  "let g:deoplete#enable_smart_case = 1
+"
+"  "deoplete tab-complete
+"  inoremap <expr><tab> pumvisible() ? "\<c-n>" :"\<tab>"
+"  " }
+"  "" }
