@@ -18,7 +18,9 @@ end
 
 -- "" Coc-vim jump definition
 keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})  --全能包括了vim默认的gf功能
-keyset("n", "gf", "<Plug>(coc-definition)", {silent = true}) --不使用vim的gf
+if not vim.bo.filetype == 'tex'  then
+	keyset("n", "gf", "<Plug>(coc-definition)", {silent = true}) --不使用vim的gf
+end
 keyset("n", "gt", "<Plug>(coc-type-definition)", {silent = true}) --对变量使用，比如对uint8_t使用会跳到typedef处，但是gd也可以跳，目前不太清楚有什么区别
 keyset("n", "gi", "<Plug>(coc-implementation)", {silent = true}) --貌似没什么用
 keyset("n", "gr", "<Plug>(coc-references)", {silent = true}) --通过小窗口的方式，查看交叉引用
@@ -37,9 +39,9 @@ keyset("x", "<C-x>", "<Plug>(coc-cursors-range)", {silent = true})
 --    "- python : CocInstall coc-pyright
 --    "- js : coc-eslint
 --    "- shell: brew install shellcheck
---  "显示snipt片段的提示: 
+--  "显示snipt片段的提示:
 --    "- CocInstall coc-snippets
---  "clangd 配置语法识别参数: 
+--  "clangd 配置语法识别参数:
 --    "- 文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
 --  "Coc 自动导入包 CocAction 类似于java import 包
 --

@@ -288,7 +288,7 @@ Plug 'vim-autoformat/vim-autoformat'
 "let g:autoformat_verbosemode=1 "调试format
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
 autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
-noremap <C-p> :Autoformat<CR>
+"noremap <C-p> :Autoformat<CR>
   "python-格式化: pip install autopep8
   "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
 if (system('command -v clang-format') =~ 'clang-format') == 0
@@ -513,9 +513,9 @@ colorscheme seoul256
 " Unite Configure {
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 nnoremap <Leader>f :<C-u>Unite file_rec/neovim<CR>
-nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
-nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
-nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
+"nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
+"nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
+"nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
 " Start insert.
 call unite#custom#profile('default', 'context', { 'start_insert': 1 })
 " }
@@ -541,6 +541,10 @@ endif
 "        echo "无效的输入"
 "    endif
 "endfunction
+
+" Back to <gf> window buffers{
+nnoremap gF <C-o> 
+" }
 
 " Latex fast open Inkscape {
 inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
@@ -581,13 +585,11 @@ endfunc
 
 " Fast into head file {
 if has('mac')
-  map <C-h> :call IntoHeadrFile()<CR>
+  map <silent> <C-h> :call IntoHeadrFile()<CR>
 elseif has('linux')
-  " TODO  <24-03-14 11:14:19, YangJing> "
-  map <M-h> :call IntoHeadrFile()<CR>
+  map <silent> <S-h> :call IntoHeadrFile()<CR>
 endif
 func! IntoHeadrFile()
-  "let filename = expand('%:r')
   let filename = expand('%:t:r')
   let filetype = expand('%:e')
   if filetype == 'cpp'
@@ -651,8 +653,8 @@ func! Run()
       exec '!make && ./a.out'
     else
       let firstLine = getline(1)
-      if stridx(firstLine, '//g++') == 0
-        let remainingChars = strpart(firstLine, strlen('//g++'))
+      if stridx(firstLine, '// g++') == 0
+        let remainingChars = strpart(firstLine, strlen('// g++'))
         echo remainingChars
         exec '!g++ % -o %< -g -w ' remainingChars '&& ./%<'
       else
@@ -670,8 +672,6 @@ func! Run()
     else
       exec '!python3 %'
     endif
-  elseif &filetype == 'manim'
-    exec '!manim -pql % Demo'
   elseif &filetype == 'sh'
     :! bash %
   elseif &filetype == 'tex'
@@ -680,10 +680,6 @@ func! Run()
     :MarkdownPreview
   endif
 endfunc
-" }
-
-" Back to <gf> window buffers{
-nnoremap gF <C-o> 
 " }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -730,7 +726,7 @@ func SetTitle()
     call setline(2,"")
   endif
   if &filetype == 'python'
-    call setline(1, "#!/usr/local/bin/python3.9")
+    call setline(1, "#!/usr/local/bin/python3")
   endif
   autocmd BufNewFile * normal G
 endfunc
