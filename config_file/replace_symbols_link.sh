@@ -1,6 +1,28 @@
 #!/bin/bash
 set -e
 
+main(){
+	if [ "$(uname)" == "Darwin" ];then
+		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/macos_config.fish"
+		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/macos_xx.bashrc"
+		replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/macos_compile_flags.txt"
+	else
+		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/ubuntu_config.fish"
+		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/ubuntu_xx.bashrc"
+		replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/ubuntu_compile_flags.txt"
+	fi
+	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/filetype.vim"
+	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
+	replace_symbols_link "$HOME/.zshrc"                            "$SH_FOOT/config_file/../xx.zshrc"
+	replace_symbols_link "$HOME/.config/nvim/init.vim"             "$SH_FOOT/config_file/init.vim"
+	replace_symbols_link "$HOME/.config/nvim/yj.lua"               "$SH_FOOT/config_file/yj.lua"
+	replace_symbols_link "$HOME/.config/nvim/coc-settings.json"    "$SH_FOOT/config_file/coc-settings.json"
+
+	for file in *.snippets;do
+		replace_symbols_link "$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/$file" "$SH_FOOT/config_file/$file"
+	done
+}
+
 replace_symbols_link(){
 	file="$1"
 	really_file="$2"
@@ -20,22 +42,8 @@ replace_symbols_link(){
 	fi
 }
 
-if [ "$(uname)" == "Darwin" ];then
-	replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/macos_config.fish"
-	replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/macos_xx.bashrc"
-	replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/macos_compile_flags.txt"
-else
-	replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/ubuntu_config.fish"
-	replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/ubuntu_xx.bashrc"
-	replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/ubuntu_compile_flags.txt"
+if [ ! $SH_FOOT ];then
+	echo -e "\033[31m未定义\$SH_FOOT\033[0m";exit
 fi
-replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/filetype.vim"
-replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
-replace_symbols_link "$HOME/.zshrc"                            "$SH_FOOT/config_file/../xx.zshrc"
-replace_symbols_link "$HOME/.config/nvim/init.vim"             "$SH_FOOT/config_file/init.vim"
-replace_symbols_link "$HOME/.config/nvim/yj.lua"               "$SH_FOOT/config_file/yj.lua"
-replace_symbols_link "$HOME/.config/nvim/coc-settings.json"    "$SH_FOOT/config_file/coc-settings.json"
 
-for file in *.snippets;do
-	replace_symbols_link "$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/$file" "$SH_FOOT/config_file/$file"
-done
+main

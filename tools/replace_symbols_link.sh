@@ -40,4 +40,8 @@ replace_symbols_link(){
 	fi
 }
 
+if [ ! $SH_FOOT ];then
+	echo -e "\033[31m未定义\$SH_FOOT\033[0m";exit
+fi
+
 main
