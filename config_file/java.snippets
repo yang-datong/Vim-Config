@@ -374,6 +374,10 @@ snippet pl "println"  b
 System.out.println($1);$0
 endsnippet
 
+snippet sout "println" b
+System.out.println($1);$0
+endsnippet
+
 snippet pr "private" b
 private $0
 endsnippet
@@ -432,12 +436,16 @@ while ($1)`!p nl(snip)`{
 }
 endsnippet
 
-snippet loge "loge"
-Log.e(${1:TAG}, "${2:Content}");
+snippet 'log(e|w|d|i)' "loge" r
+Log.`!p snip.rv = match.group(1)`(${1:"----I--am--Root-----"}, "${2:Content}");
+endsnippet
+
+snippet logw "logw"
+Log.e(${1:"----I--am--Root-----"}, "${2:Content}");
 endsnippet
 
 snippet hi "hi"
-Log.e("----I--am--Root-----", "hi~");
+Log.e("----I--am--Root-----", Log.getStackTraceString(new Throwable()));
 endsnippet
 
 # vim:ft=snippets:

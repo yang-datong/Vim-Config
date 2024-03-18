@@ -551,6 +551,12 @@ inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" 
 "pip3 install inkscape-figures
 " }
 
+" Fast add Comment in C/C++ {
+if &filetype == 'cpp'
+  vnoremap <silent> <C-_> :norm 0i//<CR>
+endif
+" }
+
 " Check current line end char is ";" {
 if &filetype == 'cpp'
   if has('mac')
