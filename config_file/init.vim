@@ -289,8 +289,9 @@ Plug 'vim-autoformat/vim-autoformat'
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
 autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
 "noremap <C-p> :Autoformat<CR>
-  "python-格式化: pip install autopep8
-  "C\C++\Java : 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
+  "Python-格式化: pip install autopep8
+  "C\C++: 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
+  "Java: apt install astyle
 if (system('command -v clang-format') =~ 'clang-format') == 0
   echo "Please use -> brew install clang-format"
 endif

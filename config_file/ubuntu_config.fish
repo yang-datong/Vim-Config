@@ -33,7 +33,10 @@ alias reboot='sudo reboot'
 alias shutdown='sudo shutdown -h now'
 alias apt='sudo apt'
 alias docker='sudo docker'
+
+#---------- TMP ----------
 alias load-frida-hw='adb shell "setenforce 0 && /data/local/tmp/hluPatched-android-arm64 &"'
+#---------- TMP ----------
 
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
 alias diff='colordiff -w' #brew install colordiff

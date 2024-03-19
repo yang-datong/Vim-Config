@@ -15,15 +15,16 @@ install_bash(){
 	abi=$(adb shell getprop ro.product.cpu.abi)
 	if [ "$abi" == "arm64-v8a" ];then
 		abi="aarch64"
+	elif [ "$abi" == "x86_64" ];then
+		abi="x86_64"
 	fi
 
 	if [ ! -f "/tmp/bash-linux-${abi}" ];then
-		wget https://github.com/robxu9/bash-static/releases/download/${version}/bash-linux-${abi}
+		wget https://github.com/robxu9/bash-static/releases/download/${version}/bash-linux-${abi} -O /tmp/bash-linux-${abi}
 	fi
 
-	adb push bash-linux-${abi} /data/local/tmp/.bash
+	adb push /tmp/bash-linux-${abi} /data/local/tmp/.bash
 	adb shell "chmod +x /data/local/tmp/.bash"
-	mv bash-linux-${abi} /tmp/
 }
 
 

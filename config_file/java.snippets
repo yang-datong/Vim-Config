@@ -440,10 +440,6 @@ snippet 'log(e|w|d|i)' "loge" r
 Log.`!p snip.rv = match.group(1)`(${1:"----I--am--Root-----"}, "${2:Content}");
 endsnippet
 
-snippet logw "logw"
-Log.e(${1:"----I--am--Root-----"}, "${2:Content}");
-endsnippet
-
 snippet hi "hi"
 Log.e("----I--am--Root-----", Log.getStackTraceString(new Throwable()));
 endsnippet
