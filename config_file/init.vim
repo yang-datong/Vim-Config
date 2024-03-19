@@ -580,14 +580,13 @@ endif
 "}
 
 " Command {  "Expand t-o-d-o list
-"execute ':vimgrep /tod/gj % | copen'
-:command TODO :vimgrep /TODO/gj % | copen
-" TODO YangJing 有BUG它的窗口总是在最后一个窗口中打开（多窗口时） <24-03-19 20:41:25> "
+:command TODO :vimgrep /TODO/gj % | botright copen 
   "vimgrep 是 Vim 的内置命令，用于在文件中搜索指定的模式。
   "/t-o-d-o/ 是要搜索的模式，即 “t-o-d-o” 字符串。
   ""g 表示全局搜索，即搜索整个文件。
   "j 表示 “jump”，即在搜索完成后不跳转到第一个匹配的位置。
   "% 表示当前文件。
+  "botright：窗口在最后一个窗口的底部弹出（多窗口时）
   "copen：这个命令打开一个新窗口显示所有的搜索结果
 "}
 
