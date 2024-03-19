@@ -39,8 +39,6 @@ keyset("x", "<C-x>", "<Plug>(coc-cursors-range)", {silent = true})
 --    "- python : CocInstall coc-pyright
 --    "- js : coc-eslint
 --    "- shell: brew install shellcheck
---  "显示TODO List:
---  CocInstall coc-todo-tree
 --  "显示snipt片段的提示:
 --    "- CocInstall coc-snippets
 --  "clangd 配置语法识别参数:
