@@ -1,7 +1,37 @@
 -- vim.notify("This is an error message", "error")
 -- require("notify")("My super important message")
-
 vim.opt.termguicolors = true
+
+--============================== UltiSnips ========================================
+function GetAllSnippets()
+  vim.cmd('call UltiSnips#SnippetsInCurrentScope(1)')
+  local list = {}
+  for key, info in pairs(vim.g.current_ulti_dict_info) do
+    table.insert(list, key)
+  end
+  table.sort(list)
+
+  local show = ""
+  local tmp = list[1]
+  for _, cmd in ipairs(list) do
+    if cmd:sub(1, 1) == tmp:sub(1, 1) then
+      show = show .. cmd .. "\t"
+    else
+      show = show .. "\n" .. cmd .. "\t"
+      tmp = cmd
+    end
+  end
+
+  vim.notify(show, "info", {
+      title = "List of all available snippets for the current file",
+      on_open = function(win)
+        local buf = vim.api.nvim_win_get_buf(win)
+        vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+      end,
+    })
+
+end
+
 --============================== Coc vim ========================================
 vim.opt.updatetime = 300 -- or 100
 local keyset = vim.keymap.set
@@ -12,14 +42,14 @@ keyset("i", "<cr>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r
 -- 检查光标是否在一行的开头，或者光标前面的字符是否是空白字符
 
 function _G.CheckBackspace()
-	local col = vim.fn.col('.') - 1
-	return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
+  local col = vim.fn.col('.') - 1
+  return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
 end
 
 -- "" Coc-vim jump definition
 keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})  --全能包括了vim默认的gf功能
 if not vim.bo.filetype == 'tex'  then
-	keyset("n", "gf", "<Plug>(coc-definition)", {silent = true}) --不使用vim的gf
+  keyset("n", "gf", "<Plug>(coc-definition)", {silent = true}) --不使用vim的gf
 end
 keyset("n", "gt", "<Plug>(coc-type-definition)", {silent = true}) --对变量使用，比如对uint8_t使用会跳到typedef处，但是gd也可以跳，目前不太清楚有什么区别
 keyset("n", "gi", "<Plug>(coc-implementation)", {silent = true}) --貌似没什么用
