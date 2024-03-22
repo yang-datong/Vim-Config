@@ -342,11 +342,13 @@ endif
 "======================================================================
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 "let g:tagbar_position = 'vertical'
-"Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 noremap <F2> :TagbarToggle <CR>
 if g:is_vim_studio == 1
   autocmd VimEnter * nested :TagbarOpen
 endif
+let g:tagbar_sort= 0 
+"关闭函数等排序（默认会按照函数首字母来排序，不好定义源代码）
+"Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 "======================================================================
 " Color thems
 Plug 'junegunn/seoul256.vim'
@@ -525,7 +527,27 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Back to <gf> window buffers{
+" Open current gdb window {
+:command Gdb call OpenWindowIntoGDB()
+:command GDB call OpenWindowIntoGDB()
+nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB()<CR>
+
+func OpenWindowIntoGDB()
+  if &filetype == 'cpp' || &filetype == 'c'
+    if filereadable(expand('%:t:r'))
+      let gdb_file = expand('%:t:r')
+    elseif filereadable("a.out")
+      let gdb_file = "a.out"
+    endif
+    if has('mac')
+      echo "todo"
+    elseif has('Linux')
+      exec "!terminator -x fish -c 'pwd && gdb " .  gdb_file . "; exec fish'"
+    endif
+  endif
+endfunc
+" }
+" Back to <gf> window buffers {
 nnoremap gF <C-o>
 " }
 
@@ -541,6 +563,8 @@ if &filetype == 'cpp' || &filetype == 'c' || &filetype == 'java'
   vnoremap <silent> <C-_> :norm 0i//<CR>
 elseif &filetype == 'sh'
   vnoremap <silent> <C-_> :norm 0i#<CR>
+elseif &filetype == 'tex'
+  vnoremap <silent> <C-_> :norm 0i%<CR>
 endif
 " }
 
@@ -716,7 +740,7 @@ au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent exe
 " }
 
 "Auto add File Content{
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py,*.tex exec ":call SetTitle()"
+autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 func SetTitle()
   if &filetype == 'sh'
     call setline(1, "#!/bin/bash")

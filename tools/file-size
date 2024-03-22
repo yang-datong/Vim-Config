@@ -1,25 +1,11 @@
 #!/bin/bash
 
-kb=$1
-
-if [ -z "$kb" ];then
-	kb=96
+if [ ! $1 ];then
+	echo -e "\033[31m需要指定一个文件\033[0m" ; exit
 fi
 
-echo -n "Bit  -> "
-echo "scale=5;${kb}*1024*8" | bc
+file="$1"
 
-echo -n "Byts -> "
-echo "scale=5;${kb}*1024" | bc
-
-echo -n "KB   -> "
-echo "scale=5;${kb}" | bc
-
-echo -n "MB   -> "
-echo "scale=5;${kb}/1024" | bc
-
-echo -n "GB   -> "
-echo "scale=5;${kb}/1024/1024" | bc
-
-echo -n "TB   -> "
-echo "scale=5;${kb}/1024/1024/1024" | bc
+echo -e "\033[32mbits(比特):\033[0m" #$(expr $(du -b $file) * 8)
+echo -e "\033[32mbytes(字节):\033[0m" $(du -b $file) 
+echo -e "\033[32mbytes(兆):\033[0m" $(du -h $file)

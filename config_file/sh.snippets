@@ -89,12 +89,12 @@ for i in ${1};do
 done
 endsnippet
 
-snippet '\s(.*)\.name' "perfix" r
-	file_name=\$\{`!p snip.rv = match.group(1)`%.*\}$0
+snippet '([A-Za-z].*)\.name' "perfix" r
+file_name=\$\{`!p snip.rv = match.group(1)`%.*\}$0
 endsnippet
 
-snippet '\s(.*)\.type' "perfix" r
-	file_type=\$\{`!p snip.rv = match.group(1)`##*.\}$0
+snippet '([A-Za-z].*)\.type' "perfix" r
+file_type=\$\{`!p snip.rv = match.group(1)`##*.\}$0
 endsnippet
 
 snippet perfix "perfix"

@@ -33,6 +33,7 @@ function GetAllSnippets()
 end
 
 --============================== Coc vim ========================================
+--coc的函数补充后使用<C-j> <C-k>来跳转到上、下参数
 vim.opt.updatetime = 300 -- or 100
 local keyset = vim.keymap.set
 local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}

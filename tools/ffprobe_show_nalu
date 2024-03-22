@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ ! $1 ];then
+	echo -e "\033[31mNeed target .h264/.h265 file\033[0m";exit
+fi
+
+file="$1"
+file_type=${file##*.}
+if [[ "$file_type" == "h264" || "$file_type" == "h265" ]];then
+	ffprobe -loglevel quiet -show_packets -print_format csv $file
+	#ffprobe -loglevel quiet -show_packets -print_format csv demo.h264
+fi

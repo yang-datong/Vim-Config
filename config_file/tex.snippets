@@ -1491,7 +1491,7 @@ def envs(names):
 endglobal
 
 #|------------------- 26. Template --------------------|
-snippet '^(english|math|template|temp)' "Template" r
+snippet '^(code|english|math|template|temp)' "Template" r
 %!TeX program = xelatex
 `!p 
 # 创建一个包含所有路径的列表
@@ -1509,6 +1509,8 @@ paths_to_check = [
 # 待检测的文件名
 if match.group(1) == 'english':
 	file_to_check = "tex.cls"
+elif match.group(1) == 'code':
+	file_to_check = "code.cls"
 else:
 	file_to_check = "ctexmath.cls"
 
