@@ -10,7 +10,31 @@ interrupt_counter=0
 open_math_env_webside=0
 is_tex=1
 
+check_parameter_legal(){
+  if [ -z "$file" ];then
+    if [ $1 ];then
+      file_type=${1##*.}
+      if [[ "$file_type" == "md" || "$file_type" == "tex" ]]; then
+        file="$1"
+      else
+        echo -e "\033[31m只支持选择.tex文件\033[0m"
+        exit
+      fi
+    else
+      echo -e "\033[31mtarget file ?\033[0m"
+      exit
+    fi
+  fi
+
+  #  替换为绝对路径 # 
+  file="$(realpath "$file")"
+  if [ $pdf ];then
+    pdf="$(realpath "$pdf")"
+  fi
+}
+
 main_Ubuntu(){
+  check_parameter_legal "$@"
   if [ -n "$(pgrep zathura)" ];then
     echo -e "\033[31m检测到后台存在zathura窗口，需要关闭全部窗口再启动，是否关闭？[y/N] \033[0m"
     read ok
@@ -22,9 +46,15 @@ main_Ubuntu(){
     fi
   fi
 
-  #check_foot_sh_file_exitst
   current_window_id=$(xdotool getactivewindow)
-  #echo -e "\033[31m找到terminal id: $current_window_id\033[0m"
+  if [ ! $current_window_id ];then #如果是后台启动的会有无窗口的情况
+    current_window_id=$(wmctrl -lp | grep $(pgrep terminator) | awk '{print $1}')
+    #这里使用SHELL名字来获取进程，不知道会不会有问题
+    if [ ! $current_window_id ];then
+      echo -e "\033[31m未找到terminal id\033[0m"
+      exit
+    fi
+  fi
   gnome-extensions disable ubuntu-dock@ubuntu.com
   gnome-extensions enable gtktitlebar@velitasali.github.io
 
@@ -87,7 +117,8 @@ main_Ubuntu(){
     xdotool windowactivate $current_window_id && $linux_keyboard_file -r -p 1
   fi
   if [ $is_tex == 1 ];then
-    nvim -c "execute 'VimtexCompile' | execute 'lua require(\"notify\")(\"Welcome to Math\")'" $file
+    nvim -c "execute 'VimtexCompile' | execute 'lua require(\"notify\")(\"Welcome to Math\")'" $file 
+    #这里阻塞了，执行到上面nvim就阻塞了
   fi
 
   quit
@@ -95,6 +126,7 @@ main_Ubuntu(){
 
 
 main_Mac(){
+  check_parameter_legal
   check_foot_py_file_exitst
   osascript -e 'tell application "System Events" to tell dock preferences to set autohide to true'
 
@@ -204,9 +236,10 @@ check_foot_py_file_exitst(){
   fi
 }
 
-#check_foot_sh_file_exitst(){
-#  echo ""
-#}
+use_history_info(){
+  file=$(cat .start_study_database.db | tail -1 | awk '{print $3}')
+  pdf=$(cat .start_study_database.db | tail -1 | awk '{print $4}')
+}
 
 usage (){
   echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
@@ -226,12 +259,13 @@ quit(){
   else
     osascript -e 'tell application "System Events" to tell dock preferences to set autohide to false'
   fi
-  colse_study_date=$(date +"%Y-%m-%d-%H-%M-%S")
+  colse_study_date=$(date +"%Y-%m-%d-%H:%M:%S")
 
   if [ ! -f $study_database_file ];then
-    echo "开始学习时间 结束学习时间 执行命令 编写的文件 所使用的PDF" > $study_database_file
+    echo "开始学习时间 结束学习时间 所编写的文件 所使用的PDF" > $study_database_file
   fi
-  echo "$start_study_date $colse_study_date "\'$all_parameter\'" "\'$file\'" "\'$pdf"\'" >> $study_database_file
+  echo "$start_study_date $colse_study_date $file $pdf" >> $study_database_file
+  #  TODO YangJing 如果file,pdf中包含空格的情况 <24-03-24 00:06:27> #
 }
 
 while getopts ":hdp:vf:q-:" opt; do
@@ -249,6 +283,7 @@ while getopts ":hdp:vf:q-:" opt; do
       env)      open_math_env_webside=1; OPTIND=$((OPTIND+1));;
       version)  echo "$0 -- Version $ScriptVersion"; exit ;;
       file)     echo "file=${!OPTIND}"; OPTIND=$((OPTIND+1));;
+      history)  use_history_info;;
       quit)     quit; exit;;
       *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
     esac;;
@@ -258,28 +293,11 @@ esac
 done
 shift $((OPTIND-1))
 
-
-if [ -z "$file" ];then
-  if [ $1 ];then
-    file_type=${1##*.}
-    if [[ "$file_type" == "md" || "$file_type" == "tex" ]]; then
-      file="$1"
-    else
-      echo -e "\033[31m只支持选择.tex文件\033[0m"
-      exit
-    fi
-  else
-    echo -e "\033[31mtarget file ?\033[0m"
-    exit
-  fi
-fi
-path=$(dirname "$file")
-
-start_study_date=$(date +"%Y-%m-%d-%H-%M-%S")
+start_study_date=$(date +"%Y-%m-%d-%H:%M:%S")
 if [ "$(uname)" == "Linux" ];then
-  main_Ubuntu
+  main_Ubuntu "$@"
 else
-  main_Mac
+  main_Mac "$@"
 fi
 # 获取当前Docker栏的状态
 #is_hidden=$(osascript -e 'tell application "System Events" to tell dock preferences to get autohide')
