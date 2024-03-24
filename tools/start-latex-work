@@ -237,8 +237,8 @@ check_foot_py_file_exitst(){
 }
 
 use_history_info(){
-  file=$(cat .start_study_database.db | tail -1 | awk '{print $3}')
-  pdf=$(cat .start_study_database.db | tail -1 | awk '{print $4}')
+  file=$(cat $study_database_file | tail -1 | awk '{print $3}')
+  pdf=$(cat $study_database_file | tail -1 | awk '{print $4}')
 }
 
 usage (){

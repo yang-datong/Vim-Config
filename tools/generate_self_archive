@@ -1,5 +1,6 @@
 #!/bin/bash
 ScriptVersion="1.0"
+set -e
 
 # 使用场景：当你想要将你的ssh公钥发给你朋友，但是你朋友拿到了"id_rsa.pub"文件也不知道放在哪里，那么你可以将移动脚本的步骤些为一个脚本，然后将你的"id_rsa.pub"文件放在名为connect_ssh.sh脚本文件中，并告诉你朋友只需要执行connect_ssh.sh这个脚本文件就可以了，那么你的脚本文件可以是如下：
 # move_to_home_dir.sh：
@@ -10,6 +11,7 @@ ScriptVersion="1.0"
 #然后使用命令：generate_self_archive move_to_home_dir.sh id_rsa.pub connect_ssh.sh
 #
 #将命令输出的文件发送给你朋友执行就可以完成移动文件的操作啦
+# 不支持绝对路径的打包！！！！ 只能是在同一目录下的两个对象打包！！
 
 unset file
 unset directory
@@ -27,12 +29,15 @@ unzip temp_\$date.zip > /dev/null && rm temp_\$date.zip
 EOF
 
 echo "#-------------------- $1 --------------------" >> $output_bash_script
-cat $bash_script >> $output_bash_script
+cat $bash_script_ab >> $output_bash_script
 echo "#------------------------------------------" >> $output_bash_script
 echo -e "exit 0 \n__ARCHIVE_BELOW__" >> $output_bash_script
 
 date=$(date +"%Y%m%d%H%M%S")
 zip -r temp_$date.zip $archive_obj > /dev/null
+if [ ! -f "temp_$date.zip" ];then
+  echo -e "\033[31m找不到文件   temp_$date.zip\033[0m";exit
+fi
 cat temp_$date.zip >> $output_bash_script && rm temp_$date.zip
 chmod +x $output_bash_script
 echo -e "\033[31mOutput Bash script -> $output_bash_script\033[0m"
@@ -84,8 +89,20 @@ shift $((OPTIND-1))
 
 if [ $# -lt 2 ];then usage;exit 0;fi
 
+if [ ! -f "$1"  ];then
+  echo -e "\033[31mNot found file $1\033[0m"; exit
+fi
+
+if [ ! -d "$2"  ];then
+  if [ ! -f "$2"  ];then
+    echo -e "\033[31mNot found file $2\033[0m"; exit
+  fi
+fi
+
 bash_script="$(basename $1)"
 archive_obj="$(basename $2)"
+bash_script_ab="$1"
+archive_obj_ab="$2"
 
 if [ ! ${bash_script##*.} == "sh" ];then usage;exit 0;fi
 
