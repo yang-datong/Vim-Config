@@ -34,7 +34,6 @@ check_parameter_legal(){
 }
 
 main_Ubuntu(){
-  check_parameter_legal "$@"
   if [ -n "$(pgrep zathura)" ];then
     echo -e "\033[31m检测到后台存在zathura窗口，需要关闭全部窗口再启动，是否关闭？[y/N] \033[0m"
     read ok
@@ -126,7 +125,6 @@ main_Ubuntu(){
 
 
 main_Mac(){
-  check_parameter_legal
   check_foot_py_file_exitst
   osascript -e 'tell application "System Events" to tell dock preferences to set autohide to true'
 
@@ -292,6 +290,8 @@ while getopts ":hdp:vf:q-:" opt; do
 esac
 done
 shift $((OPTIND-1))
+
+check_parameter_legal "$@"
 
 start_study_date=$(date +"%Y-%m-%d-%H:%M:%S")
 if [ "$(uname)" == "Linux" ];then

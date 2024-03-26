@@ -273,6 +273,17 @@ check_cmd(){
 }
 endsnippet
 
+snippet check_py_pack "check_py_pack"
+#Checkout pip package is install
+check_py_pack(){
+	local cmd=\$1
+	pip3 show $cmd
+	if [ $? == 1 ];then
+		pip3 install $cmd
+	fi
+}
+endsnippet
+
 snippet adb "adb"
 cmd(){
 	adb shell "\$1" || {

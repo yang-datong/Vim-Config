@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #https://www.debugwar.com/article/activate-IDAPython-with-wine-IDA-under-linux
-#
+
+ubuntu(){
 if [ ! -x "$(command -v wine)" ];then
 	echo "wine not installed ....."
 	exit
@@ -47,3 +48,15 @@ wine python.exe -m pip install keystone-engine six yara
 #下面的命令主要是针对（出问题了再运行）:使用Apply patches to保存修改时提示patching canceled..
 #https://blog.csdn.net/FigBB/article/details/134856961
 #cp $HOME/.wine/drive_c/Program\ Files/Python3/Lib/site-packages/PyQt5/sip.cp310-win_amd64.pyd $HOME/IDA_Pro_7.7/python/3/PyQt5/sip.pyd
+}
+
+#Check OS System
+check_os(){
+	case "$(uname)" in
+	"Darwin") echo "未适配，不建议Mac OS用wine";;
+	"Linux") ubuntu;;
+	*)echo "Windows has not been tested for the time being";exit 1
+	esac
+}
+
+check_os

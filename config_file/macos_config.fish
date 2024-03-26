@@ -11,8 +11,7 @@ set -x PATH $PATH /Applications/Inkscape.app/Contents/MacOS/
 set -x SH_FOOT $HOME/sh_foot
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
 set -x JAVA_HOME /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-set -x ANDROID_NDK_ROOT $HOME/Android/Sdk/ndk/25.1.8937393
-#set -x HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+set -x ANDROID_NDK_ROOT $HOME/Library/Android/Sdk/ndk/25.1.8937393
 
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'

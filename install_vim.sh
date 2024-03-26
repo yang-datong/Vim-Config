@@ -1,9 +1,11 @@
 #!/bin/bash
 
+echo -e "\033[31m已弃用，请使用install_neovim.sh\033[0m"
+exit
 
-	cp ./xx.vimrc $HOME/.vimrc
-  sudo update-alternatives --config gcc #切换为gcc-8
-	vim -c "PlugInstall"
+#cp $SH_FOOT/xx.vimrc $HOME/.vimrc
+#sudo update-alternatives --config gcc #切换为gcc-8
+#vim -c "PlugInstall"
 
 
 build(){

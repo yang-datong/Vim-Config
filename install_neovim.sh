@@ -15,44 +15,34 @@ check_os(){
 check_cmd(){
 	local obj=$1
 	local cmd=$2
-	if [[ "$cmd" == "python3.9" && "$cc" == "brew" ]];then
-		cmd="python@3.9"
-	fi
 	if [ ! -x "$(command -v $obj)" ];then
 		echo "$obj installing ....."
 		$cc install $cmd
 	fi
 }
 
-main(){
-	check_cmd wget wget
-	check_cmd node nodejs
-	check_cmd python3.9 python3.9
-	if [[ ! -x "$(command -v "pip")" &&  ! -x "$(command -v "pip3")" ]];then
-		#wget https://bootstrap.pypa.io/get-pip.py
-		#python3 get-pip.py  #下载最新版pip，如果用python2执行则下载pip2，反之
-		$cc install python3-pip
+check_py_pack(){
+	local cmd=$1
+	pip3 show $cmd
+	if [ $? == 1 ];then
+		pip3 install $cmd
 	fi
-	#brew install neovim yarn 
-	pip3 install pynvim -i https://pypi.tuna.tsinghua.edu.cn/simple
-	#err=$(pip3 show pynvim)
-	#if [ "$err" == "1" ];then	pip3 install pynvim;fi
+}
+
+main(){
+	check_cmd node nodejs
 	check_cmd nvim neovim
+	check_py_pack pynvim
 
 	#into main work
 	if [ ! -d $HOME/.config/nvim ];then
 		mkdir $HOME/.config/nvim
 	fi
-	cd $HOME/.config/nvim
-	cp $HOME/sh_foot/config_file/init.vim  ./init.vim
 
-	$cc install clang-format #clangd
+	cp $SH_FOOT/config_file/init.vim  $HOME/.config/nvim/init.vim
 
 	#download plugins
 	nvim -c "PlugInstall"
-
-	path=$(dirname $(find . -name "c.snippets"))/
-	cp $HOME/sh_foot/config_file/*.snippets $path
 
 	read -p "is need set markdown theme?[y/N]" theme
 	if [ "$theme" == "y" ];then
@@ -68,11 +58,10 @@ main(){
 }
 
 set_markdown_theme(){
-	file="${HOME}/.config/nvim/plugged/markdown-preview.nvim/app/_static"
-	cp ./markdown_theme_file/markdown.css $file/markdown.css
-	cp ./markdown_theme_file/page.css $file/page.css
+	file="$HOME/.config/nvim/plugged/markdown-preview.nvim/app/_static"
+	cp $SH_FOOT/markdown_theme_file/markdown.css $file/markdown.css
+	cp $SH_FOOT/markdown_theme_file/page.css $file/page.css
 }
 
 check_os
 main
-#set_markdown_theme

@@ -32,7 +32,7 @@ cc="brew"
 #Check OS System
 check_os(){
 	case "$(uname)" in
-	"Darwin") cc="brew";;
+	"Darwin") echo "无法使用gef,用docker跑linux程序吧";exit ;;
 	"Linux") cc="sudo apt -y";;
 	*)echo "Windows has not been tested for the time being";exit 1
 	esac
@@ -41,7 +41,10 @@ check_os(){
 check_os
 check_cmd gdb gdb
 
-git clone https://github.com/scwuaptx/Pwngdb.git $HOME/.pwngdb
-replace_symbols_link "$HOME/.gdbinit"        "$(pwd)/xx.gdbinit"
-replace_symbols_link "$HOME/.gdbinit-gef.py" "$(pwd)/xx.gdbinit-gef.py"
-replace_symbols_link "$HOME/.gef.rc"         "$(pwd)/xx.gef.rc"
+if [ ! -d $HOME/.pwngdb ];then
+	git clone https://github.com/scwuaptx/Pwngdb.git $HOME/.pwngdb
+fi
+
+replace_symbols_link "$HOME/.gdbinit"        "$SH_FOOT/xx.gdbinit"
+replace_symbols_link "$HOME/.gdbinit-gef.py" "$SH_FOOT/xx.gdbinit-gef.py"
+replace_symbols_link "$HOME/.gef.rc"         "$SH_FOOT/xx.gef.rc"

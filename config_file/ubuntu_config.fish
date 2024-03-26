@@ -1,8 +1,6 @@
 if status is-interactive
 
 #Ubuntu 20.04
-xmodmap -e 'keycode 180 = Escape'
-
 set -x PATH $PATH $HOME/.local/bin/
 set -x PATH $PATH $HOME/Android/Sdk/ndk/21.4.7075529
 set -x PATH $PATH $HOME/MySoftWare/jadx/bin

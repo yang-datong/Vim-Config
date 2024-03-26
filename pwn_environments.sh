@@ -1,8 +1,12 @@
 #!/bin/sh
 
+#以前打比赛时候写的
+
+cat $0;exit
+
 #model
 #path
-cd ~
+cd $HOME
 
 #注释
 #change pip source

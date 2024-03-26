@@ -1,11 +1,14 @@
 #!/bin/bash
 #https://www.linuxmi.com/ubuntu-install-new-wine.html
-#
-#
+set -e
+
 #Linux下的路径: /home/hacksign/.wine/drive_c/Program Files/Python3/
 #对应wine下的： C:\Program Files\Python3
-#
-#
+
+if [ ! $(uname) == "Linux" ];then
+	echo "非Linux不建议使用wine";exit
+fi
+
 sudo dpkg --add-architecture i386 #32bit sup
 
 if [ ! -d /etc/apt/keyrings ];then

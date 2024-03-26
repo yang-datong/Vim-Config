@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 ubuntu(){
   sudo apt-get install ca-certificates curl gnupg lsb-release
   curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
@@ -19,10 +21,14 @@ ubuntu(){
   sudo service docker restart
 }
 
+macos(){
+  brew install --cask docker
+}
+
 #Check OS System
 check_os(){
   case "$(uname)" in
-    "Darwin") ;;
+    "Darwin") macos ;;
     "Linux") ubuntu ;;
     *)echo "Windows has not been tested for the time being";exit 1
   esac

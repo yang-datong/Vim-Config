@@ -62,7 +62,7 @@ function show_git_info
 
     set --local LIMBO /dev/null
     set --local git_status (git status --porcelain 2> $LIMBO)
-    set --local git_stash (git stash list 2> $LIMBO)
+    #set --local git_stash (git stash list 2> $LIMBO) #大项目git缓慢问题
     set --local dirty ""
 
     [ $status -eq 128 ]; and return  # Not a repository? Nothing to do

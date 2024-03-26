@@ -42,10 +42,10 @@ let g:is_Android_jni=1 "1：将添加Android-JNI头文件到path中，0：不添
 "                     1. 基本配置区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
+let g:python3_host_prog='/usr/local/bin/python3.9'
 if has("mac")
-  let g:python3_host_prog='/usr/local/bin/python3'
+  set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
-  let g:python3_host_prog='/usr/bin/python3'
   set path+=/usr/lib/gcc/x86_64-linux-gnu/11/include
   set path+=/usr/include/x86_64-linux-gnu/c++/11
   set path+=/usr/include/x86_64-linux-gnu
