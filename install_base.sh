@@ -8,22 +8,26 @@ main(){
 			echo -e "\033[31m建议使用ssh key的方式来管理[Ok]\033[0m" 
 			read ok
 			git clone git@github.com:yang-datong/Vim-Config.git $HOME/sh_foot
-		else
-			echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
 		fi
+			echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
 	fi
 
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo apt install -y file passwd
+		sudo apt install -y file passwd python3.10
 	elif [ "$(uname)" == "Darwin" ];then
 		if [ ! -x "$(command -v brew)" ];then ./install_brew.sh;fi
-		brew install coreutils
+		brew install coreutils python@3.10
 	fi
 
-	python3 $(curl https://bootstrap.pypa.io/get-pip.py)
+	
 	$cc install curl wget git axel
+ 	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+	python3.10 git-pip.py
+	if [ -f git-pip.py ];then
+		rm git-pip.py
+	fi
 	./install_aria2c.sh #下载工具
 	./install_fish.sh
 	#./install_zsh.sh

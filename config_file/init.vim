@@ -42,7 +42,7 @@ let g:is_Android_jni=1 "1：将添加Android-JNI头文件到path中，0：不添
 "                     1. 基本配置区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set include path -> use "gf" jump {
-let g:python3_host_prog='/usr/local/bin/python3.9'
+let g:python3_host_prog='/usr/local/bin/python3.10'
 if has("mac")
   set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
@@ -259,8 +259,8 @@ func AskUserInstall(cmd,packager)
         exec ':terminal sudo apt install ' . a:cmd
         startinsert "进入vim输入模式
       endif
-    elseif a:packager == 'pip'
-      exec '!pip install ' . a:cmd
+    elseif a:packager == 'pip3.10'
+      exec '!pip3.10 install ' . a:cmd
     endif
   endif
 endfunc
@@ -334,7 +334,8 @@ if g:is_latex == 1
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
   if has('mac')
     if (system('command -v texlab') =~ 'texlab') == 0
-      echo "Please use -> brew install texlab"
+      echo "Please use -> brew install --HEAD texlab"
+      "call AskUserInstall("texlab","default") #需要先安装mactex
     endif
   endif    "Must -> brew install --HEAD texlab
 endif
@@ -554,7 +555,7 @@ nnoremap gF <C-o>
 " Latex fast open Inkscape {
 inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
 if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
-  call AskUserInstall("inkscape-figures","pip")
+  call AskUserInstall("inkscape-figures","pip3.10")
 endif
 " }
 

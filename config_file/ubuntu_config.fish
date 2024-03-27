@@ -23,6 +23,9 @@ alias cat='batcat -p'
 alias vim='nvim'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
+
+alias pip='pip3.10'
+alias pip3='pip3.10'
 alias python='python3.10'
 alias python3='python3.10'
 

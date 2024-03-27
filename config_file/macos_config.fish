@@ -25,9 +25,10 @@ alias du='du -sh'
 alias cat='bat -p'
 alias vim='nvim'
 alias pping="httping -x 127.0.0.1:7890"
-alias pip='pip3.9'
-alias python='python3.9'
-alias python3='python3.9'
+alias pip='pip3.10'
+alias pip3='pip3.10'
+alias python='python3.10'
+alias python3='python3.10'
 
 alias reboot='sudo reboot'
 alias shutdown='sudo shutdown'
@@ -40,5 +41,6 @@ alias gcc='gcc -std=c11 -Wall'
 alias g++='g++ -std=c++11 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
+eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end
