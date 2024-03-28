@@ -309,7 +309,7 @@ Plug 'sheerun/vim-polyglot' "语法高亮，代码缩进
 Plug 'vim-autoformat/vim-autoformat'
 autocmd FileType c autocmd BufWritePre <buffer> Autoformat
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
-autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
+"autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
 endif
@@ -344,6 +344,9 @@ endif
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 "let g:tagbar_position = 'vertical'
 noremap <F2> :TagbarToggle <CR>
+if (system('command -v ctags') =~ 'ctags') == 0
+  call AskUserInstall("ctags","default")
+endif
 if g:is_vim_studio == 1
   autocmd VimEnter * nested :TagbarOpen
 endif
@@ -373,7 +376,13 @@ if g:is_latex == 1
     " Use Skim
     let g:vimtex_view_general_viewer = 'skim'
     let g:vimtex_view_method = 'skim'
+    let g:vimtex_view_skim_sync = 1
+    let g:vimtex_view_skim_activate = 1
     let g:vimtex_view_general_options = '-r @line @pdf @tex'
+    "在skim中-同步：
+    "预设：自定义
+    "命令：nvim
+    "参数：--headless -c "VimtexInverseSearch %line '%file'"
   elseif has('linux')
     " Use zathura
     let g:vimtex_view_general_viewer = 'zathura'

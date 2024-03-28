@@ -15,14 +15,15 @@ main(){
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo apt install -y file passwd python3.10
+		sudo apt install -y file passwd python3.10 android-platform-tools
 	elif [ "$(uname)" == "Darwin" ];then
 		if [ ! -x "$(command -v brew)" ];then ./install_brew.sh;fi
 		brew install coreutils python@3.10
+		brew install --cask android-platform-tools
 	fi
 
 	
-	$cc install curl wget git axel
+	$cc install curl wget git axel scrcpy
  	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 	python3.10 git-pip.py
 	if [ -f git-pip.py ];then

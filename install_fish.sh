@@ -25,6 +25,7 @@ write(){
 	fi
 	local date=$(date +"%Y%m%d%H%M%S")
 	cd $HOME/autojump && ./install.py && mv $HOME/autojump /tmp/autojump_${date}
+	echo -e "\033[31mExec 'set --erase fish_greeting' close prompt\033[0m"
 }
 
 check_os

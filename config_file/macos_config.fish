@@ -42,5 +42,6 @@ alias g++='g++ -std=c++11 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
 eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
+set fish_greeting #去除提示
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end

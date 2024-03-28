@@ -1,5 +1,5 @@
 # Time <24-03-08 10:40:48, Yangdatong> 
-#+====================== 目录 =========================+
+#+---------------------- 目录 -------------------------+
 #|------------------- 1. Head Env ---------------------|
 #|------------------- 2. Class Env --------------------|
 #|------------------- 3. Function Env -----------------|
@@ -7,17 +7,19 @@
 #|------------------- 5. Global Env -------------------|
 #|------------------- 6. Python function --------------|
 #|------------------- 7. Template ---------------------|
-#+====================== 目录 =========================+
+#+---------------------- 目录 -------------------------+
 
 
 #snippet test-reg "test"
 #${1} --> ${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}$2${1/(条件1)*(条件2)*/(?2:满足条件2时显示 :满足条件1时显示 )/}
 #endsnippet
-##如果都不满足,则默认为满足条件1 来显示，这个语法在 
-##https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt 下的：
-##4.7 Transformations                               *UltiSnips-transformations*
-##A transformation has the following syntax: >
-##   ${<tab_stop_no/regular_expression/replacement/options}
+
+#语法解释：
+# 如果都不满足,则默认为满足条件1 来显示，这个语法在 
+# https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt 下的：
+# 4.7 Transformations                               *UltiSnips-transformations*
+# A transformation has the following syntax: >
+#    ${<tab_stop_no/regular_expression/replacement/options}
 
 
 
@@ -34,7 +36,7 @@
 
 #-------------------- 1. Head Env ---------------
 pre_expand "write_inclde_file(snip)"
-snippet head "head" b
+snippet 'head|include' "head" b
 endsnippet
 
 snippet inc "inc"
@@ -110,7 +112,7 @@ class ${1:C`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}{
 };
 endsnippet
 
-snippet class-data "class"
+snippet classs "class"
 class `!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`{
 	public:
 		`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`();
@@ -251,21 +253,21 @@ endsnippet
 
 priority 1000
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*).if' ".if" r
+snippet '^\s{0,4}([a-z|A-Z|_].*)\.if' ".if" r
 	if(`!p snip.rv = match.group(1)`){
 		$0
 	}
 endsnippet
 
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*).while' ".while" r
+snippet '^\s{0,4}([a-z|A-Z|_].*)\.while' ".while" r
 	while(`!p snip.rv = match.group(1)`){
 		$0
 	}
 endsnippet
 
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
+snippet '^\s{0,4}([a-z|A-Z|_].*)\.null' ".null" r
 	if(!`!p snip.rv = match.group(1)`){
 		std::cerr << "\033[31mFail `!p snip.rv = match.group(1)` is nullptr\033[0m" << std::endl;
 		return ${1:-1};
@@ -273,7 +275,7 @@ snippet '^\s{0,4}([a-z|A-Z|_].*).null' ".null" r
 endsnippet
 
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*).err' ".err" r
+snippet '^\s{0,4}([a-z|A-Z|_].*)\.err' ".err" r
 	if(`!p snip.rv = match.group(1)`){
 		fprintf(stderr, "Error `!p snip.rv = match.group(1)`\n");
 		return ${1:-1};
@@ -302,8 +304,9 @@ while(1){
 }
 endsnippet
 
+priority 1001
 context "function()"
-snippet do-while "do-while"
+snippet 'do-while|dowhile' "do-while" r
 do{
 	$0
 }while(${1:1})
@@ -427,13 +430,13 @@ snippet '(\(\)|\[\]|\|\||"")' "parent" ir
 `!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
 endsnippet
 
-snippet st "struct"
+snippet 'struct|st' "struct" br
 struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
 	${0:/* data */}
 };
 endsnippet
 
-snippet 'func|fun' "function" br
+snippet 'function|func|fun' "function" br
 ${1:void} ${2:function_name}($3){
 	${VISUAL}$0
 	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;

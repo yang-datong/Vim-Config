@@ -22,13 +22,13 @@ for cmd in lists:
 	else:
 		show += "\n" + cmd + "\t"
 		tmp = cmd
-snip.rv = "List of all available snippets for the current file :\n" + "-"*40 + "\n"+ show + "\n" + "-"*40 + "\n"
+beg=f"{get_comment_format()[0]}\nList of all available snippets for the current file :\n" + "-"*40
+data=f"\n{show}\n"
+end="-"*40 + f"\n{get_comment_format()[1]}"
+snip.rv = beg + data + end
 `
 endsnippet
 
-snippet hi "hi"
-hi ${1|YJ,Yangjing|}
-endsnippet
 #按q<tab>2<c-j>2
 
 snippet box "A nice box with the current comment symbol" b

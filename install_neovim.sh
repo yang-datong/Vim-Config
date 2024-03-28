@@ -33,6 +33,7 @@ main(){
 	check_cmd node nodejs
 	check_cmd nvim neovim
 	check_py_pack pynvim
+	check_py_pack neovim-remote
 
 	#into main work
 	if [ ! -d $HOME/.config/nvim ];then
