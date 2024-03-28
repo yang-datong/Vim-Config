@@ -20,31 +20,49 @@ replace_symbols_link(){
 
 #Checkout is install
 check_cmd(){
-    local obj=$1
-    local cmd=$2
-    if [ ! -x "$(command -v $obj)" ];then
-        echo "$obj installing ....."
-        brew install $cmd
-    fi
+	local obj=$1
+	local cmd=$2
+	if [ ! -x "$(command -v $obj)" ];then
+		echo "$obj installing ....."
+		brew install $cmd
+	fi
 }
 
 cc="brew"
 #Check OS System
 check_os(){
 	case "$(uname)" in
-	"Darwin") echo "无法使用gef,用docker跑linux程序吧";exit ;;
-	"Linux") cc="sudo apt -y";;
-	*)echo "Windows has not been tested for the time being";exit 1
+		"Darwin") cc="brew";macos;;
+		"Linux") cc="sudo apt -y";ubuntu;;
+		*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
 
+
+ubuntu(){
+	check_cmd gdb gdb
+	if [ ! -d $HOME/.pwngdb ];then
+		git clone https://github.com/scwuaptx/Pwngdb.git $HOME/.pwngdb
+	fi
+
+	replace_symbols_link "$HOME/.gdbinit"        "$SH_FOOT/xx.gdbinit"
+	replace_symbols_link "$HOME/.gdbinit-gef.py" "$SH_FOOT/xx.gdbinit-gef.py"
+	replace_symbols_link "$HOME/.gef.rc"         "$SH_FOOT/xx.gef.rc"
+}
+
+macos(){
+	if [ ! -d $HOME/.voltron ];then
+		git clone https://github.com/snare/voltron $HOME/.voltron
+		pushd $HOME/.voltron 
+		./install.sh
+		popd
+	else
+		echo "Installed??? Try to call 'cd $HOME/.voltron && ./install.sh'"
+		exit
+	fi
+}
+
 check_os
-check_cmd gdb gdb
 
-if [ ! -d $HOME/.pwngdb ];then
-	git clone https://github.com/scwuaptx/Pwngdb.git $HOME/.pwngdb
-fi
 
-replace_symbols_link "$HOME/.gdbinit"        "$SH_FOOT/xx.gdbinit"
-replace_symbols_link "$HOME/.gdbinit-gef.py" "$SH_FOOT/xx.gdbinit-gef.py"
-replace_symbols_link "$HOME/.gef.rc"         "$SH_FOOT/xx.gef.rc"
+
