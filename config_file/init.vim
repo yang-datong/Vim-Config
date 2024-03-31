@@ -373,7 +373,7 @@ if g:is_latex == 1
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
   if has('mac')
-    " Use Skim
+    " Use Skim (Skim的字体展示会比较黑）
     let g:vimtex_view_general_viewer = 'skim'
     let g:vimtex_view_method = 'skim'
     let g:vimtex_view_skim_sync = 1
@@ -596,7 +596,7 @@ endif
 "}
 
 " Command {  "auto merge text to one line
-:command -range=% Line :<line1>,<line2>s/\n/ /g
+:command -range=% Line :<line1>,<line2>s/\n/ /g | noh
 "}
 
 " Command {  "Expand t-o-d-o list

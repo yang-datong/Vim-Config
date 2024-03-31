@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+file="$1"
+
+if [ ! $file ];then
+	echo -e "\033[31mNeed target AV file\033[0m";exit
+fi
+
+ab_file="$file"
+file=$(basename "$file")
+
+file_name=${file%.*}
+
+out_file=I-frames-${file_name}/Iframes%d.jpeg
+
+if [ ! -d I-frames-${file_name} ];then
+	mkdir I-frames-${file_name}
+fi
+
+echo "Exec ?:
+1. ffmpeg -i $ab_file -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 $out_file
+2. ffmpeg -i $ab_file -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 -qscale:v 2 $out_file #高清
+[1/2]
+"
+
+read opt
+
+if [ $opt == "1" ];then
+	ffmpeg -i $ab_file -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 $out_file
+elif [ $opt == "2" ];then
+	ffmpeg -i $ab_file -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 -qscale:v 2 $out_file #高清
+else
+	exit
+fi
+
+echo -e "\033[32mOut file to -> $out_file\033[0m"

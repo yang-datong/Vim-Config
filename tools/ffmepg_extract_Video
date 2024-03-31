@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+file="$1"
+
+if [ ! $file ];then
+	echo -e "\033[31mNeed target AV file\033[0m";exit
+fi
+
+codec_name=$(ffprobe -loglevel quiet -select_streams v -show_streams "$file" | grep codec_name | awk -F '=' '{print $2}')
+
+if [ ! $codec_name ];then
+	echo -e "\033[31mFind the codec name failed\033[0m";exit
+fi
+
+ffmpeg -i "$file" -c:v copy -an out.${codec_name}
+
+echo -e "\033[32mOut file to -> out.${codec_name}\033[0m"

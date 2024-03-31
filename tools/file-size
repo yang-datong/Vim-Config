@@ -6,6 +6,40 @@ fi
 
 file="$1"
 
-echo -e "\033[32mbits(比特):\033[0m" #$(expr $(du -b $file) * 8)
-echo -e "\033[32mbytes(字节):\033[0m" $(du -b $file) 
-echo -e "\033[32mbytes(兆):\033[0m" $(du -h $file)
+unset Bit
+unset Bytes
+unset Kb
+unset Kib
+unset Mb
+unset Mib
+unset GB
+unset GiB
+unset T
+
+Bytes=$(wc $file | awk '{print $3}')
+Bit=$(echo "$Bytes * 8" | bc)
+Kb=$(echo "$Bytes / 1000" | bc)
+Kib=$(echo "$Bytes / 1024" | bc)
+Mb=$(echo "$Bytes / 1000 / 1000" | bc -l)
+Mib=$(echo "$Bytes / 1024 / 1024" | bc -l)
+Gb=$(echo "$Bytes / 1000 / 1000 / 1000" | bc -l)
+Gib=$(echo "$Bytes / 1024 / 1024 / 1024" | bc -l)
+Tb=$(echo "$Bytes / 1000 / 1000 / 1000 / 1000" | bc -l)
+
+
+#早期计算机使用十进制计数,而非二进制计数（记数，不是指架构）。因此,KB被错误地定义为1000字节,而不是恰当的2^10=1024字节。这种做法虽然不太精确,但由于简单和习惯的原因,被广泛使用了很长一段时间。
+
+#随着计算机技术的发展和标准的制定,人们意识到应该使用二进制计数更加合理。于是在1998年,IEEE发布了二进制前缀的标准,将KB准确定义为1024字节,并新增了KiB(Kibibyte,基数为2)来区分传统的KB(基数为10)。
+
+#kb、KB、MB等采用十进制换算，表示为1000的幂次方关系，例如1 KB = 1000 Bytes，1 MB = 1000 KB。
+#KiB、MiB等采用二进制换算，表示为1024的幂次方关系，例如1 KiB = 1024 Bytes，1 MiB = 1024 KiB。(有i的指的是bin即二进制)
+
+echo -e "\033[32mBits(比特):\033[0m" $Bit
+echo -e "\033[32mBytes(字节):\033[0m" $Bytes
+echo -e "\033[32mkB(Kilobyte,千):\033[0m" $Kb
+echo -e "\033[32mkib(Kibibyte,千位-二进制):\033[0m" $Kib
+echo -e "\033[32mMB(Megabyte,兆):\033[0m" $Mb
+echo -e "\033[32mMiB(Mebibyte,兆位-二进制):\033[0m" $Mib
+echo -e "\033[32mGB(Gigabyte,吉):\033[0m" $Gb
+echo -e "\033[32mGiB(Gibibyte,吉位-二进制):\033[0m" $Gib
+echo -e "\033[32mTB(Terabyte,千兆):\033[0m" $Tb

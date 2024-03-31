@@ -309,27 +309,23 @@ ffplay -i $1 -pix_fmt nv21 -s $2
 #Play yuv[nv21]
 endsnippet
 
-snippet ffmepg_get_Video "ffmepg_get_Video"
-ffmpeg -i $1 -c:v copy -an out.h265 #需要根据源视频的编码文件来，如果是h264则用 out.h264 ,可以使用mediainfo、ffmpeg -i 来确定
-endsnippet
-
-snippet ffmpeg_get_Audio "ffmpeg_get_Audio"
-ffmpeg -i $1 -c:a copy -vn out.wav #需要根据源视频的编码文件来，如果是pcm_s16le 则用out.wav,可以使用mediainfo、ffmpeg -i 来确定
-endsnippet
-
+#已写入tools/*.sh 脚本
 snippet ffmpeg_cut_frames "ffmpeg_frames"
 ffmpeg -i $1.mp4 -c copy -frames:v $2 $1_cut_$2_frames.mp4 < /dev/null
 endsnippet
 
+#已写入tools/*.sh 脚本
 snippet ffmpeg_cut_times "ffmpeg_cut_times"
 ffmpeg -ss ${2:00:10:00} -to ${3:00:17:33} -i $1.mp4 -c copy $1_cut_times.mp4
 ffmpeg -ss ${2:00:10:00} -t ${3:60} -i $1.mp4 -c copy $1_cut_times.mp4
 endsnippet
 
+#已写入tools/*.sh 脚本
 snippet ffmpeg_segment_time "ffmpeg_segment_time"
 ffmpeg -i $1.mp4 -f segment -segment_time 0.01 YUV/frames%d.yuv
 endsnippet
 
+#已写入tools/*.sh 脚本
 snippet ffmpeg_get_I_frames "ffmpeg_get_I_frames"
 ffmpeg -i ${1:input.mp4} -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 image-%05d.jpeg
 ffmpeg -i ${1:input.mp4} -an -vf select='eq(pict_type\,I)' -vsync 2 -f image2 -qscale:v 2 image-%05d.jpeg #高清
@@ -351,6 +347,9 @@ snippet ffmpeg_get_one_frame "ffmpeg_get_one_frame"
 ffmpeg -i ${1} -vf "select=eq(n\,${2:99})" -vframes 1 ${1}.png
 endsnippet
 
+snippet ffmpeg_img_convert_grayimg "ffmpeg_img_convert_grayimg"
+ffmpeg -i ${1} -vf format=gray ${1}-gray
+endsnippet
 
 snippet on "on"
 on $1()

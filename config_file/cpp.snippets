@@ -426,9 +426,12 @@ if(f){
 endsnippet
 
 #-------------------- 5. Global Env ---------------
-snippet '(\(\)|\[\]|\|\||"")' "parent" ir
-`!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
-endsnippet
+# TODO YangJing 有问题，场景如下： <24-03-30 16:15:01> #
+# for (int i = 0; i < original.size()<在这按tab就一直循环在()里面 ; i++) {
+#  }
+#snippet '(\(\)|\[\]|\|\||"")' "parent" ir
+#`!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
+#endsnippet
 
 snippet 'struct|st' "struct" br
 struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
@@ -438,7 +441,7 @@ endsnippet
 
 snippet 'function|func|fun' "function" br
 ${1:void} ${2:function_name}($3){
-	${VISUAL}$0
+	${VISUAL}$4
 	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
 `!p 
 if t[1] != "void":
@@ -477,14 +480,17 @@ snip.rv = f" = new {varible_type}[{malloc_size}];"
 endsnippet
 
 #foo()
-priority 2001
-snippet "([A-Za-z]+\d?)\((.*)\)" "funciton type" br
-${1:int} ${2:varible_name} = `!p 
-func_name = match.group(1)
-func_para = match.group(2)
-snip.rv = ""f"{func_name}({func_para});"
-`$3
-endsnippet
+# TODO YangJing 有问题 <24-03-30 16:10:46> #
+#  if(original.size() == distorted.size()<在这里按Tab就乱了>){
+#  }
+#priority 2001
+#snippet "([A-Za-z]+\d?)\((.*)\)" "funciton type" br
+#${1:int} ${2:varible_name} = `!p 
+#func_name = match.group(1)
+#func_para = match.group(2)
+#snip.rv = ""f"{func_name}({func_para});"
+#`$3
+#endsnippet
 
 #-------------------- 6. Python function ---------------
 global !p

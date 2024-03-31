@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+file="$1"
+start_time="$2" # Such as -> 2:00:10:00
+end_time="$3" # Such as -> 2:00:17:33
+duration_time="$3" # Such as -> 3:60
+
+if [ ! $file ];then
+	echo -e "\033[31mNeed target AV file\033[0m";exit
+fi
+
+if [ ! $start_time ];then
+	echo -e "\033[31mNeed target start times [Such as -> 2:00:10:00]\033[0m";exit
+fi
+
+if [ ! $end_time ] && [ ! $duration_time ];then
+	echo -e "\033[31mNeed target end times or duration_time [Such as -> 2:00:17:33]\033[0m";exit
+fi
+
+file_name=${file%.*}
+file_type=${file##*.}
+
+out_file=${file_name}_cut_times.${file_type}
+
+echo "Exec ?:
+1. ffmpeg -ss $start_time -to $end_time -i "$file" -c copy $out_file
+2. ffmpeg -ss $start_time -t $duration_time -i "$file" -c copy $out_file
+[1/2]
+"
+
+read opt
+
+if [ $opt == "1" ];then
+	ffmpeg -ss $start_time -to $end_time -i "$file" -c copy $out_file
+elif [ $opt == "2" ];then
+	ffmpeg -ss $start_time -t $duration_time -i "$file" -c copy $out_file
+else
+	exit
+fi
+
+echo -e "\033[32mOut file to -> $out_file\033[0m"

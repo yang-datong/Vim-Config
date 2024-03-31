@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+file="$1"
+
+if [ ! $file ];then
+	echo -e "\033[31mNeed target AV file\033[0m";exit
+fi
+
+ab_file="$file"
+file=$(basename "$file")
+
+file_name=${file%.*}
+
+out_file=YUV-${file_name}/frames%d.yuv
+
+if [ ! -d YUV-${file_name} ];then
+	mkdir YUV-${file_name}
+fi
+
+ffmpeg -i "$ab_file" -f segment -segment_time 0.01 $out_file
+
+echo -e "\033[32mOut file to -> $out_file\033[0m"

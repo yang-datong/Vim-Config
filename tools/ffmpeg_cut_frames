@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+file="$1"
+frames_num="$2"
+
+if [ ! $file ];then
+	echo -e "\033[31mNeed target AV file\033[0m";exit
+fi
+
+if [ ! $frames_num ];then
+	echo -e "\033[31mNeed target frames number\033[0m";exit
+fi
+
+file_name=${file%.*}
+file_type=${file##*.}
+
+out_file=${file_name}_cut_${frames_num}_frames.${file_type}
+ffmpeg -i "$file" -c copy -frames:v $frames_num $out_file < /dev/null
+
+echo -e "\033[32mOut file to -> $out_file\033[0m"
