@@ -1,4 +1,4 @@
--std=c++14
+-std=c++11
 #-I/Users/user/Desktop/ff_face_detection/app/src/main/jniLibs/include
 #-I/Users/user/home/x性能对比/Android_heif_to_yuv/tmp
 #-I/usr/local/opt/opencv/include/opencv4

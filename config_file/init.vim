@@ -373,7 +373,7 @@ if g:is_latex == 1
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
   if has('mac')
-    " Use Skim (Skim的字体展示会比较黑）
+    " Use Skim (Skim的字体展示会比较黑,但是zathura配置很麻烦）
     let g:vimtex_view_general_viewer = 'skim'
     let g:vimtex_view_method = 'skim'
     let g:vimtex_view_skim_sync = 1
@@ -568,13 +568,16 @@ if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
 endif
 " }
 
-" Fast add Comment in C/C++ {
+" Fast add Comment in C/C++ { 两种快捷键都可以
 if &filetype == 'cpp' || &filetype == 'c' || &filetype == 'java'
   vnoremap <silent> <C-_> :norm 0i//<CR>
+  vnoremap <silent><Leader>/ :norm 0i//<CR>
 elseif &filetype == 'sh'
   vnoremap <silent> <C-_> :norm 0i#<CR>
+  vnoremap <silent><Leader>/ :norm 0i#<CR>
 elseif &filetype == 'tex'
   vnoremap <silent> <C-_> :norm 0i%<CR>
+  vnoremap <silent><Leader>/ :norm 0i#<CR>
 endif
 " }
 
