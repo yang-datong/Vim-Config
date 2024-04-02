@@ -23,6 +23,8 @@ ubuntu(){
 
 macos(){
   brew install --cask docker
+  echo -e "\033[31mInto Dokcer desktop -> Setting-> Advanced-> User\033[0m"
+  echo -e "\033[31mAdd $HOME/.docker/bin to PATH env\033[0m"
 }
 
 #Check OS System

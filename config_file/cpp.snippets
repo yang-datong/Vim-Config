@@ -531,9 +531,20 @@ snippet 'temp|mainn' "mainn() " br
 #include <getopt.h>
 #include <iostream>
 
-#define VERSION 1
+#define VERSION 1.0
 
-std::string file = "";
+using namespace std;
+
+static string file;
+
+inline void use(char *me) {
+  cout << "Usage: " << me << " [options] [--] argument-1 argument-2 \
+                    \n\n  Options:\
+                      \n  -h, --help           Display this message\
+                      \n  -v, --version        Display version\
+                      \n  -f, --file           Use File\
+                      \n";
+}
 
 void CheckArgument(int argc, char *argv[]) {
   const char *short_opts = "hvf:";
@@ -547,22 +558,16 @@ void CheckArgument(int argc, char *argv[]) {
          -1) {
     switch (opt) {
     case 'h':
-      std::cout << "Usage: " << argv[0]
-                << " [options] [--] argument-1 argument-2 \
-                    \n\n  Options:\
-                      \n  -h, --help           Display this message\
-                      \n  -v, --version        Display version\
-                      \n  -f, --file FILE      Test input argument\
-                      \n";
+      use(argv[0]);
       exit(0);
     case 'v':
-      std::cout << "Version: " << VERSION << "\n";
+      cout << "Version: " << VERSION << endl;
       exit(0);
     case 'f':
       file = optarg;
       break;
     default:
-      std::cout << "Unknown option: " << opt << "\n";
+      cout << "Unknown option: " << opt << endl;
       exit(1);
     }
   }
@@ -570,7 +575,11 @@ void CheckArgument(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
   CheckArgument(argc, argv);
-	${1:if(file)}
+  if (file.empty()) {
+    use(argv[0]);
+    return -1;
+  }
+	$0
 
   return 0;
 }

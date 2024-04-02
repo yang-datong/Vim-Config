@@ -41,6 +41,12 @@ let g:is_Android_jni=1 "1：将添加Android-JNI头文件到path中，0：不添
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" File encoding {
+set encoding=utf-8
+set fencs=ucs-bom,utf-8,gbk,cp936,latin1
+set formatoptions+=nM
+" }
+
 " Set include path -> use "gf" jump {
 let g:python3_host_prog='/usr/local/bin/python3.10'
 if has("mac")
@@ -216,7 +222,13 @@ noremap <Leader>h :<C-u>split<CR>
 noremap <Leader>v :<C-u>vsplit<CR>
 " }
 " Tabs {
-nnoremap <silent> <Tab> :wincmd w<CR> "切换窗口
+"切换窗口
+"Ctrl + w + t 移动到最左上角的窗口。
+nnoremap <silent> <C-1> :wincmd t<CR>
+"Ctrl + w + b 移动到最右下角的窗口。
+nnoremap <silent> <C-9> :wincmd b<CR>
+nnoremap <silent> <Tab> :wincmd w<CR> 
+nnoremap <silent> <S-Tab> :wincmd p<CR> 
 "nnoremap <Tab> gt
 "nnoremap <S-Tab> gT
 "nnoremap <silent> <S-t> :tabnew<CR>
@@ -469,11 +481,9 @@ if g:is_vim_studio == 1
 endif
 " }
 "======================================================================
-"Plug 'suan/vim-commentary'
-" Vim-commentray {
-" to support other file type
-" autocmd FileType apache setlocal commentstring=#\ %s
-" }
+Plug 'preservim/nerdcommenter'  "注释插件
+noremap <silent> <leader>/ :call nerdcommenter#Comment('x', 'invert')<CR>
+noremap <silent> <C-_> :call nerdcommenter#Comment('x', 'invert')<CR>
 "======================================================================
 if has("nvim")
   Plug 'rcarriga/nvim-notify'
@@ -568,17 +578,18 @@ if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
 endif
 " }
 
+" 已使用插件替代
 " Fast add Comment in C/C++ { 两种快捷键都可以
-if &filetype == 'cpp' || &filetype == 'c' || &filetype == 'java'
-  vnoremap <silent> <C-_> :norm 0i//<CR>
-  vnoremap <silent><Leader>/ :norm 0i//<CR>
-elseif &filetype == 'sh'
-  vnoremap <silent> <C-_> :norm 0i#<CR>
-  vnoremap <silent><Leader>/ :norm 0i#<CR>
-elseif &filetype == 'tex'
-  vnoremap <silent> <C-_> :norm 0i%<CR>
-  vnoremap <silent><Leader>/ :norm 0i#<CR>
-endif
+"if &filetype == 'cpp' || &filetype == 'c' || &filetype == 'java'
+"  vnoremap <silent> <C-_> :norm 0i//<CR>
+"  vnoremap <silent><Leader>/ :norm 0i//<CR>
+"elseif &filetype == 'sh'
+"  vnoremap <silent> <C-_> :norm 0i#<CR>
+"  vnoremap <silent><Leader>/ :norm 0i#<CR>
+"elseif &filetype == 'tex'
+"  vnoremap <silent> <C-_> :norm 0i%<CR>
+"  vnoremap <silent><Leader>/ :norm 0i#<CR>
+"endif
 " }
 
 " Check current line end char is ";" {
