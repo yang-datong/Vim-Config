@@ -49,7 +49,8 @@ end
 
 -- "" Coc-vim jump definition
 keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})  --全能包括了vim默认的gf功能
-if not vim.bo.filetype == 'tex'  then
+if vim.bo.filetype == 'tex'  then
+else
   keyset("n", "gf", "<Plug>(coc-definition)", {silent = true}) --不使用vim的gf
 end
 keyset("n", "gt", "<Plug>(coc-type-definition)", {silent = true}) --对变量使用，比如对uint8_t使用会跳到typedef处，但是gd也可以跳，目前不太清楚有什么区别

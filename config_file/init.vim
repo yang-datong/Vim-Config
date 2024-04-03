@@ -481,9 +481,23 @@ if g:is_vim_studio == 1
 endif
 " }
 "======================================================================
-Plug 'preservim/nerdcommenter'  "注释插件
-noremap <silent> <leader>/ :call nerdcommenter#Comment('x', 'invert')<CR>
-noremap <silent> <C-_> :call nerdcommenter#Comment('x', 'invert')<CR>
+Plug 'preservim/nerdcommenter'  "注释插件（'n' 为正常模式下的触发，'x'为选中默认下的触发）
+" Multiple trigger {
+noremap <silent> <leader>/ :call nerdcommenter#Comment('n', 'toggle')<CR> :execute 'normal 0 j'<CR> 
+vnoremap <silent> <leader>/ :call nerdcommenter#Comment('x', 'invert')<CR>
+"noremap <silent> <leader>c :call nerdcommenter#Comment('n', 'toggle')<CR>
+"vnoremap <silent> <leader>c :call nerdcommenter#Comment('x', 'invert')<CR>
+"使用这个快捷键会有1秒左右的延迟
+if has('mac')
+    "在iterm2 的key Bindings:
+    "1. Keyboard Shortcut: Command + /
+    "2. Action: Send Text with 'vim' Special Chars
+    "3. :call nerdcommenter#Comment('n', 'invert') | exec "normal 0 j" \n
+elseif has('linux')
+  noremap <silent> <C-_> :call nerdcommenter#Comment('n', 'toggle')<CR>
+  vnoremap <silent> <C-_> :call nerdcommenter#Comment('x', 'invert')<CR>
+endif
+" }
 "======================================================================
 if has("nvim")
   Plug 'rcarriga/nvim-notify'
@@ -637,11 +651,11 @@ endfunc
 "}
 
 " Fast into head file {
-if has('mac')
-  map <silent> <C-h> :call IntoHeadrFile()<CR>
-elseif has('linux')
-  map <silent> <S-h> :call IntoHeadrFile()<CR>
-endif
+"if has('mac')
+map <silent> <S-h> :call IntoHeadrFile()<CR>
+"elseif has('linux')
+"  map <silent> <S-h> :call IntoHeadrFile()<CR>
+"endif
 func IntoHeadrFile()
   let filename = expand('%:t:r')
   let filetype = expand('%:e')
@@ -685,7 +699,10 @@ endfunc
 
 " Fast start file execution {
 if has('mac')
-  map <M-r> :call Run()<CR>
+    "在iterm2 的key Bindings:
+    "1. Keyboard Shortcut: Command + r
+    "2. Action: Send Text with 'vim' Special Chars
+    "3. :call Run()\n
 elseif has('linux')
   map <C-r> :call Run()<CR>
 endif
