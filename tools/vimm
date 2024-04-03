@@ -2,8 +2,8 @@
 
 unset option
 
-file=$1
-if [ ! $file ];then
+file="$@"
+if [ -n "$file" ];then
 	if [ -f Session.vim ];then
 		option="-S Session.vim"
 	else
