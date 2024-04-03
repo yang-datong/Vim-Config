@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 cc="brew"
 #Check OS System
@@ -23,7 +22,7 @@ check_cmd(){
 
 check_py_pack(){
 	local cmd=$1
-	pip3 show $cmd
+	pip3 show $cmd #这条命令不能开启set -e参数给shell
 	if [ $? == 1 ];then
 		pip3 install $cmd
 	fi
@@ -31,6 +30,10 @@ check_py_pack(){
 
 main(){
 	check_cmd node nodejs
+	if [ $(uname) == "Linux" ];then
+		sudo add-apt-repository ppa:neovim-ppa/stable
+		sudo apt update
+	fi
 	check_cmd nvim neovim
 	check_py_pack pynvim
 	check_py_pack neovim-remote

@@ -15,7 +15,7 @@ main(){
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo apt install -y file passwd python3.10 android-platform-tools
+		sudo apt install -y file passwd python3.10 android-tools-adb
 	elif [ "$(uname)" == "Darwin" ];then
 		if [ ! -x "$(command -v brew)" ];then ./install_brew.sh;fi
 		brew install coreutils python@3.10

@@ -48,10 +48,11 @@ set formatoptions+=nM
 " }
 
 " Set include path -> use "gf" jump {
-let g:python3_host_prog='/usr/local/bin/python3.10'
 if has("mac")
+  let g:python3_host_prog='/usr/local/bin/python3.10'
   set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
+  let g:python3_host_prog='/usr/bin/python3.10'
   set path+=/usr/lib/gcc/x86_64-linux-gnu/11/include
   set path+=/usr/include/x86_64-linux-gnu/c++/11
   set path+=/usr/include/x86_64-linux-gnu
@@ -357,7 +358,11 @@ Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 "let g:tagbar_position = 'vertical'
 noremap <F2> :TagbarToggle <CR>
 if (system('command -v ctags') =~ 'ctags') == 0
-  call AskUserInstall("ctags","default")
+  if has('mac')
+    call AskUserInstall("ctags","default")
+  elseif has('linux')
+    call AskUserInstall("universal-ctags","default")
+  endif
 endif
 if g:is_vim_studio == 1
   autocmd VimEnter * nested :TagbarOpen
@@ -656,43 +661,85 @@ map <silent> <S-h> :call IntoHeadrFile()<CR>
 "elseif has('linux')
 "  map <silent> <S-h> :call IntoHeadrFile()<CR>
 "endif
+
+
+func TryFindHeadfile(name)
+  if filereadable(name . '.hpp')
+    return ".hpp"
+  elseif filereadable(name . '.h')
+    return ".h"
+  else
+    return ""
+endfunc
+ 
+
+func FindAndEditHeaderFile(filename,filetype)
+  " 定义要搜索的目录数组
+  let directories = ['.', 'include', 'inc', '../include', '../inc']
+
+  " 遍历目录数组
+  for directory in directories
+    " 检查目录中是否包含 .h 或 .hpp 文件
+    let c_head = directory . '/' .  a:filename  .'.h'
+    let cpp_head = directory . '/' .  a:filename  .'.hpp'
+    if filereadable(cpp_head) "优先hpp
+      execute "e " . cpp_head
+      return
+    elseif filereadable(c_head)
+      execute "e " . c_head
+      return
+    endif
+  endfor
+
+  " 如果没有找到文件，则在当前目录创建一个
+  if a:filetype == 'cpp'
+    let filetype = '.hpp'
+  elseif a:filetype == 'c'
+    let filetype = '.h'
+  endif
+
+  execute "e " . a:filename . filetype
+  echo "New create: " . a:filename . filetype
+endfunc
+
+
+func FindAndEditSourceFile(filename,filetype)
+  " 定义要搜索的目录数组
+  let directories = ['.', '..', 'src', 'source', '../src', '../source']
+
+  " 遍历目录数组
+  for directory in directories
+    " 检查目录中是否包含 .h 或 .hpp 文件
+    let c_src = directory . '/' .  a:filename  .'.c'
+    let cpp_src = directory . '/' .  a:filename  .'.cpp'
+    if filereadable(cpp_src) "优先cpp
+      execute "e " . cpp_src
+      return
+    elseif filereadable(c_src)
+      execute "e " . c_src
+      return
+    endif
+  endfor
+
+  " 如果没有找到文件，则在当前目录创建一个
+  if a:filetype == 'hpp'
+    let filetype = '.cpp'
+  elseif a:filetype == 'h'
+    let filetype = '.c'
+  endif
+
+  execute "e " . a:filename . filetype
+  echo "New create: " . a:filename . filetype
+endfunc
+
+
 func IntoHeadrFile()
   let filename = expand('%:t:r')
   let filetype = expand('%:e')
-  if filetype == 'cpp'
-    if filereadable(filename . '.hpp')
-      " 当前目录存在文件头/源文件
-      exec 'e ' . filename . '.hpp'
-    else
-      if filereadable('./include/' . filename . '.hpp')
-        " 当前目录的include目录存在文件头/源文件
-        exec 'e ./include/' . filename . '.hpp'
-        echo "Into include/" . filename . '.hpp'
-      else
-        " 都不存在直接创建
-        exec 'e ' . filename . '.hpp'
-        echo "New create: " . filename . '.hpp'
-      endif
-    endif
-  elseif filetype == 'hpp'
-    if filereadable(filename . '.cpp')
-      " 当前目录存在源文件
-      exec 'e ' . filename . '.cpp'
-    else
-      if filereadable('../' . filename . '.cpp')
-        " 上级目录的存在源文件
-        exec 'e ../' . filename . '.cpp'
-        echo "Into ../" . filename . '.cpp'
-      else
-        " 都不存在直接创建
-        exec 'e ' . filename . '.cpp'
-        echo "New create: " . filename . '.cpp'
-      endif
-    endif
-  elseif filetype == 'c'
-    exec 'e ' . filename . '.h'
-  elseif filetype == 'h'
-    exec 'e ' . filename . '.c'
+  if filetype == 'cpp' || filetype == 'c'
+    call FindAndEditHeaderFile(filename,filetype)
+  elseif filetype == 'hpp' || filetype == 'h'
+    call FindAndEditSourceFile(filename,filetype)
   endif
 endfunc
 " }
