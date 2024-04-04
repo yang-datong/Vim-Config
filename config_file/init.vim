@@ -577,11 +577,15 @@ func OpenWindowIntoGDB()
       let gdb_file = expand('%:t:r')
     elseif filereadable("a.out")
       let gdb_file = "a.out"
+    else
+      echo "Not fond the executable file"
     endif
+    let cwd = expand('%:p:h')
     if has('mac')
-      echo "todo"
+      "silent exec "!cp \"" . cwd . "/" . gdb_file . "\" /tmp/" . gdb_file
+      silent exec "!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd " . cwd .  " && gdb " . gdb_file . "\" & return & delay 0.1 & key code 36'"
     elseif has('Linux')
-      exec "!terminator -x fish -c 'pwd && gdb " .  gdb_file . "; exec fish'"
+      silent exec "!terminator -x fish -c 'pwd && gdb " .  gdb_file . "; exec fish'"
     endif
   endif
 endfunc

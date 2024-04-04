@@ -25,6 +25,7 @@ alias rm-rf='rm -rf'
 alias du='du -sh'
 alias cat='bat -p'
 alias vim='nvim'
+alias gdb='lldb'
 alias pping="httping -x 127.0.0.1:7890"
 alias pip='pip3.10'
 alias pip3='pip3.10'

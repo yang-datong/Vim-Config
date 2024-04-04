@@ -60,6 +60,7 @@ macos(){
 		echo "Installed??? Try to call 'cd $HOME/.voltron && ./install.sh'"
 		exit
 	fi
+	replace_symbols_link "$HOME/.lldbinit"        "$SH_FOOT/xx.lldbinit"
 }
 
 check_os
