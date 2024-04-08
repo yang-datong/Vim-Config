@@ -1,5 +1,7 @@
 if status is-interactive
 
+set fish_greeting #去除提示
+
 #MacOS
 set -x PATH $PATH /usr/local/Cellar
 set -x PATH $PATH $HOME/Library/Python/3.9/bin
@@ -38,12 +40,12 @@ alias shutdown='sudo shutdown'
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
 alias diff='colordiff -w' #brew install colordiff
 alias clang='clang -std=c11 -Wall'
-alias clang++='clang++ -std=c++11 -Wall'
+alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c11 -Wall'
-alias g++='g++ -std=c++11 -Wall'
+alias g++='g++ -std=c++14 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
 eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
-set fish_greeting #去除提示
+
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end

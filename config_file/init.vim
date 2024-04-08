@@ -777,9 +777,9 @@ func Run()
       if stridx(firstLine, '// g++') == 0
         let remainingChars = strpart(firstLine, strlen('// g++'))
         echo remainingChars
-        exec '!g++ % -o %< -g -w ' remainingChars '&& ./%<'
+        exec '!g++ % -o %< -g -Wall -std=c++14 ' remainingChars '&& ./%<'
       else
-        exec '!g++ % -o %< -g -w && ./%<'
+        exec '!g++ % -o %< -g -Wall -std=c++14 && ./%<'
       endif
     endif
   elseif &filetype == 'JavaScript'
