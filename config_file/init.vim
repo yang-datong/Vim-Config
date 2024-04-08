@@ -765,9 +765,9 @@ func Run()
     if stridx(firstLine, '//g++') == 0
       let remainingChars = strpart(firstLine, strlen('//g++'))
       echo remainingChars
-      exec '!gcc % -o %< -g -w ' remainingChars '&& ./%<'
+      exec '!gcc % -o %< -g -Wall -std=c17 ' remainingChars '&& ./%<'
     else
-      exec '!gcc % -o %< -g -w && ./%<'
+      exec '!gcc % -o %< -g -Wall -std=c17 && ./%<'
     endif
   elseif &filetype == 'cpp'
     if filereadable('Makefile')

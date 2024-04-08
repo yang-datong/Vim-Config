@@ -39,9 +39,9 @@ alias shutdown='sudo shutdown'
 
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
 alias diff='colordiff -w' #brew install colordiff
-alias clang='clang -std=c11 -Wall'
+alias clang='clang -std=c17 -Wall'
 alias clang++='clang++ -std=c++14 -Wall'
-alias gcc='gcc -std=c11 -Wall'
+alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
