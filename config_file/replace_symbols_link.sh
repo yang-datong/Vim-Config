@@ -11,7 +11,7 @@ main(){
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/ubuntu_xx.bashrc"
 		replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/ubuntu_compile_flags.txt"
 	fi
-	#replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/filetype.vim"
+	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
 	replace_symbols_link "$HOME/.zshrc"                            "$SH_FOOT/config_file/shell/xx.zshrc"
 	replace_symbols_link "$HOME/.config/nvim/init.vim"             "$SH_FOOT/config_file/nvim/init.vim"
