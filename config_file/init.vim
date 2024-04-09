@@ -377,7 +377,6 @@ if g:is_latex == 1
     endif
   endif    "Must -> brew install --HEAD texlab
 endif
-" }
 "======================================================================
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
 "let g:tagbar_position = 'vertical'
@@ -548,7 +547,10 @@ if (system('command -v ag') =~ 'ag') == 0
   endif
 endif
 "======================================================================
+"Plug 'nvim-tree/nvim-tree.lua' "和NERDTreeToggle差不多
+"Plug 'nvim-tree/nvim-web-devicons'
 call plug#end()
+" }
 
 "" Load lua config file {
 if g:is_lua == 1
