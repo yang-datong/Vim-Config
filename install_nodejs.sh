@@ -8,7 +8,7 @@ ubuntu(){
 }
 
 macos(){
-	echo -e "\033[31mTODO\033[0m"
+	$cc install nodejs
 }
 
 

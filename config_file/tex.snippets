@@ -492,12 +492,12 @@ snippet 'subfigure|subf' "subfigure" wr
 	\centering
 	\begin{subfigure}{0.45\textwidth}
 	\centering
-	${1:% TODO }
+	${1:% Image }
 	\caption{${3:figure1}}
 	\end{subfigure}\hfill
 	\begin{subfigure}{0.45\textwidth}
 	\centering
-	${2:% TODO}
+	${2:% Image }
 	\caption{${4:figure2}}
 	\end{subfigure}
 	\caption{${5:Figure}}
@@ -512,7 +512,7 @@ endsnippet
 snippet 'minipage|mini' "minipage" wr
 \noindent
 \begin{minipage}{0.6\textwidth}
-	${1:% TODO}
+	${1:% Image }
 \end{minipage}\hfill 
 \begin{minipage}{0.3\textwidth} 
 	\centering
@@ -1491,7 +1491,7 @@ def envs(names):
 endglobal
 
 #|------------------- 26. Template --------------------|
-snippet '^(code|english|math|template|temp)' "Template" r
+snippet '^(document|code|english|math|template|temp)' "Template" r
 %!TeX program = xelatex
 `!p 
 # 创建一个包含所有路径的列表
@@ -1502,18 +1502,21 @@ paths_to_check = [
     os.path.join(os.path.expanduser("~"), "Desktop"),  # 桌面目录
     os.path.join(os.path.expanduser("~"), "Documents"),  # 文档目录
     os.path.join(os.path.expanduser("~"), "Downloads"),  # 下载文件夹目录
-    os.path.join(os.path.expanduser("~"), "Desktop/Study/Math"),  # 常用目录
-    os.path.join(os.path.expanduser("~"), "Desktop/Study/English"),  # 常用目录
-    os.path.join(os.path.expanduser("~"), "Desktop/Study/408"),  # 常用目录
+    os.path.join(os.path.expanduser("~"), "Desktop/Study/template"),  # 常用目录
 ]
 
 # 待检测的文件名
-if match.group(1) == 'english':
-	file_to_check = "tex.cls"
-elif match.group(1) == 'code':
+snip_key=match.group(1)
+if snip_key == 'english':
+	file_to_check = "document.cls"
+elif snip_key == 'code':
 	file_to_check = "code.cls"
-else:
+elif snip_key == 'document':
+	file_to_check = "document.cls"
+elif snip_key == 'math':
 	file_to_check = "ctexmath.cls"
+else:
+	file_to_check = "document.cls"
 
 # 遍历每个路径并检测文件是否存在
 is_live = 0

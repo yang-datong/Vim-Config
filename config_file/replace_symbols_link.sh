@@ -17,6 +17,8 @@ main(){
 	replace_symbols_link "$HOME/.config/nvim/init.vim"             "$SH_FOOT/config_file/init.vim"
 	replace_symbols_link "$HOME/.config/nvim/yj.lua"               "$SH_FOOT/config_file/yj.lua"
 	replace_symbols_link "$HOME/.config/nvim/coc-settings.json"    "$SH_FOOT/config_file/coc-settings.json"
+	replace_symbols_link "$HOME/.config/nvim/function.vim"         "$SH_FOOT/config_file/function.vim"
+	replace_symbols_link "$HOME/.config/nvim/unite_extension.vim"  "$SH_FOOT/config_file/unite_extension.vim"
 
 	for file in *.snippets;do
 		replace_symbols_link "$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/$file" "$SH_FOOT/config_file/$file"

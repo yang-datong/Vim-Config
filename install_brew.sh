@@ -89,9 +89,7 @@ then
 fi
 export HOMEBREW_{BREW,CORE}_GIT_REMOTE
 
-# TODO: bump version when new macOS is released or announced
 MACOS_NEWEST_UNSUPPORTED="13.0"
-# TODO: bump version when new macOS is released
 MACOS_OLDEST_SUPPORTED="10.15"
 
 # For Homebrew on Linux
