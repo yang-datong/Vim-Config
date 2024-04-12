@@ -16,24 +16,98 @@ ScriptVersion="1.0"
 unset key
 unset file
 unset directory
+screen_info_file=$HOME/.screen_info
 
-wid=$(xwininfo -root | grep Width | awk '{print $2}')
-hei=$(xwininfo -root | grep Height | awk '{print $2}')
+init_info(){
+	wid=$(xwininfo -root | grep Width | awk '{print $2}')
+	hei=$(xwininfo -root | grep Height | awk '{print $2}')
+	#如果有多个屏幕，那么需要给每个屏幕都设置dock栏的显示，不然会有高度计算不准的情况
 
-if [ "$(xrandr 2>/dev/null | grep ' connected' | wc -l )" == "1" ];then
-	half_wid=$(expr $wid / 2)
-else
-	half_wid=$(expr $wid / 4)
-fi
-half_hei=$(expr $hei / 2)
+	screen_count=$(xrandr 2>/dev/null | grep ' connected' | wc -l )
+	if [ $screen_count == "1" ];then
+		#如果是一个屏幕则不需要进一步判断
+		half_wid=$(expr $wid / 2)
+		half_hei=$(expr $hei / 2)
+	elif [ $screen_count == "2" ];then
+		#如果是两个屏幕,先获取主屏幕的宽高
+		primary_screen_info=$(xrandr 2>/dev/null | grep ' connected' | grep 'primary')
+		primary_screen_width=$(echo $primary_screen_info | awk '{print $4}' | awk -F "x" '{print $1}')
+		primary_screen_height=$(echo $primary_screen_info | awk '{print $4}' | awk -F "x" '{print $2}' | awk -F "+" '{print $1}')
 
+		secondary_screen_info=$(xrandr 2>/dev/null | grep ' connected' | grep -v 'primary')
+		secondary_screen_width=$(echo $secondary_screen_info | awk '{print $3}' | awk -F "x" '{print $1}')
+		secondary_screen_height=$(echo $secondary_screen_info | awk '{print $3}' | awk -F "x" '{print $2}' | awk -F "+" '{print $1}')
+		if [ $primary_screen_width == $secondary_screen_width ] && [ $primary_screen_height == $secondary_screen_height ];then
+			#如果两个屏幕的分辨率是一样的
+			half_wid=$(expr $wid / 4)
+			half_hei=$(expr $hei / 2)
+			#		else
+			#			#如果两个屏幕的分辨率不一样，则只使用主屏幕
+			#			half_wid=$(expr $primary_screen_width / 2)
+			#			half_hei=$(expr $primary_screen_height / 2)
+		fi
+	else
+		echo "TODO 存在两个以上屏幕;";exit
+	fi
+
+	echo all_width:$wid > $screen_info_file
+	echo all_height:$hei >> $screen_info_file
+	echo primary_screen_width:$primary_screen_width >> $screen_info_file
+	echo primary_screen_height:$primary_screen_height >> $screen_info_file
+	echo secondary_screen_width:$secondary_screen_width >> $screen_info_file
+	echo secondary_screen_height:$secondary_screen_height >> $screen_info_file
+	echo half_wid:$half_wid >> $screen_info_file
+	echo half_hei:$half_hei >> $screen_info_file
+	cat $screen_info_file
+}
+
+read_database_info(){
+	wid=$(cat $screen_info_file | grep all_width | awk -F ":" '{print $2}')
+	hei=$(cat $screen_info_file | grep all_height | awk -F ":" '{print $2}')
+	primary_screen_width=$(cat $screen_info_file | grep primary_screen_width | awk -F ":" '{print $2}')
+	primary_screen_height=$(cat $screen_info_file | grep primary_screen_height | awk -F ":" '{print $2}')
+	secondary_screen_width=$(cat $screen_info_file | grep secondary_screen_width | awk -F ":" '{print $2}')
+	secondary_screen_height=$(cat $screen_info_file | grep secondary_screen_height | awk -F ":" '{print $2}')
+	half_wid=$(cat $screen_info_file | grep half_wid | awk -F ":" '{print $2}')
+	half_hei=$(cat $screen_info_file | grep half_hei | awk -F ":" '{print $2}')
+
+	echo all_width:$wid
+	echo all_height:$hei
+	echo primary_screen_width:$primary_screen_width
+	echo primary_screen_height:$primary_screen_height
+	echo secondary_screen_width:$secondary_screen_width
+	echo secondary_screen_height:$secondary_screen_height
+	echo half_wid:$half_wid 
+	echo half_hei:$half_hei 
+}
+
+check_current_position(){
+	current_position=$(xdotool getactivewindow getwindowgeometry | grep "Position" | awk -F ": " '{print $2}' | awk -F "," '{print $1}')
+	echo current_position:$current_position
+	offset=0
+	if [ $current_position -lt $primary_screen_width ];then
+		#  TODO YangJing 仅考虑副屏幕在主屏幕的左边的情况 <24-04-12 11:37:08> #
+		#在主屏
+		half_wid=$(expr $primary_screen_width / 2)
+		half_hei=$(expr $primary_screen_height / 2)
+	elif [ $current_position -gt $primary_screen_width ];then
+		#在副屏
+		half_wid=$(expr $secondary_screen_width / 2)
+		half_hei=$(expr $secondary_screen_height / 2)
+		offset=$(expr $primary_screen_width + 10)
+	fi
+}
 windwos_name=":ACTIVE:"
 
 main(){
-	local offset=0
-	if [ "$second_screen" == "2" ];then
-		offset=$wid
+	if [ ! -f $screen_info_file ];then
+		init_info
+	else
+		read_database_info
 	fi
+	check_current_position
+
+	echo offset:$offset
 	if [ "$key" == "left" ];then
 		#置于左半屏幕
 		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$hei
@@ -61,9 +135,9 @@ main(){
 	elif [ "$key" == "center" ];then
 		#居中屏幕
 		get_current_windows_size
-	#elif [ "$key" == "Max" ];then
-	#	#最大化屏幕（全屏）
-	#	wmctrl -r $windwos_name -e 2,0,0,$wid,$hei
+		#elif [ "$key" == "Max" ];then
+		#	#最大化屏幕（全屏）
+		#	wmctrl -r $windwos_name -e 2,0,0,$wid,$hei
 	fi
 }
 

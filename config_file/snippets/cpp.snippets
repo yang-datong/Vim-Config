@@ -533,7 +533,7 @@ endglobal
 
 #-------------------- 7. Template ---------------
 snippet main "main() (main)" b
-int main(){
+int main() {
 	${VISUAL}$0
 	return 0;
 }
@@ -585,7 +585,7 @@ void CheckArgument(int argc, char *argv[]) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main (int argc, char *argv[]) {
   CheckArgument(argc, argv);
   if (file.empty()) {
     use(argv[0]);

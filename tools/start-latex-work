@@ -49,9 +49,11 @@ main_Ubuntu(){
   if [ ! $current_window_id ];then #如果是后台启动的会有无窗口的情况
     current_window_id=$(wmctrl -lp | grep $(pgrep terminator) | awk '{print $1}')
     #这里使用SHELL名字来获取进程，不知道会不会有问题
-    if [ ! $current_window_id ];then
-      echo -e "\033[31m未找到terminal id\033[0m"
-      exit
+    find_windows_id_line_count=$(echo "$current_window_id" | wc -l)
+    if [ $find_windows_id_line_count -gt 1 ];then
+      echo -e "\033[31mterminator存在多个窗口($find_windows_id_line_count)，关闭全部窗口，再试~\033[0m";exit 
+    elif [ ! "$current_window_id" ];then
+      echo -e "\033[31m未找到terminal id\033[0m";exit
     fi
   fi
   gnome-extensions disable ubuntu-dock@ubuntu.com
