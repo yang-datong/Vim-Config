@@ -347,7 +347,7 @@ Plug 'sheerun/vim-polyglot' "语法高亮，代码缩进
 Plug 'vim-autoformat/vim-autoformat'
 autocmd FileType c autocmd BufWritePre <buffer> Autoformat
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
-"autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
+autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
 endif

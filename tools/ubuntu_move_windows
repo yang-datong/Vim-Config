@@ -71,19 +71,19 @@ read_database_info(){
 	half_wid=$(cat $screen_info_file | grep half_wid | awk -F ":" '{print $2}')
 	half_hei=$(cat $screen_info_file | grep half_hei | awk -F ":" '{print $2}')
 
-	echo all_width:$wid
-	echo all_height:$hei
-	echo primary_screen_width:$primary_screen_width
-	echo primary_screen_height:$primary_screen_height
-	echo secondary_screen_width:$secondary_screen_width
-	echo secondary_screen_height:$secondary_screen_height
-	echo half_wid:$half_wid 
-	echo half_hei:$half_hei 
+	#echo all_width:$wid
+	#echo all_height:$hei
+	#echo primary_screen_width:$primary_screen_width
+	#echo primary_screen_height:$primary_screen_height
+	#echo secondary_screen_width:$secondary_screen_width
+	#echo secondary_screen_height:$secondary_screen_height
+	#echo half_wid:$half_wid 
+	#echo half_hei:$half_hei 
 }
 
 check_current_position(){
 	current_position=$(xdotool getactivewindow getwindowgeometry | grep "Position" | awk -F ": " '{print $2}' | awk -F "," '{print $1}')
-	echo current_position:$current_position
+	#echo current_position:$current_position
 	offset=0
 	if [ $current_position -lt $primary_screen_width ];then
 		#  TODO YangJing 仅考虑副屏幕在主屏幕的左边的情况 <24-04-12 11:37:08> #
@@ -107,7 +107,7 @@ main(){
 	fi
 	check_current_position
 
-	echo offset:$offset
+	#echo offset:$offset
 	if [ "$key" == "left" ];then
 		#置于左半屏幕
 		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$hei
