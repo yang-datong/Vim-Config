@@ -1,11 +1,15 @@
 source ~/.gdbinit-gef.py
-#source ~/.pwngdb/pwngdb.py
-#source ~/.pwngdb/angelheap/gdbinit.py
+source ~/.pwngdb/pwngdb.py
+source ~/.pwngdb/angelheap/gdbinit.py
+
+#GEF
+#1. $ 命令可以直接以不同进制来查看变量值
+#2. start 代替 b main , r 命令
 
 define hook-run
 python
-#import angelheap
-#angelheap.init_angelheap()
+import angelheap
+angelheap.init_angelheap()
 end
 end
 
@@ -27,7 +31,7 @@ end
 
 define ls 
 context
-par
+#par
 #heapinfo
 end
 
@@ -35,6 +39,18 @@ define bin
 heapinfo
 end
 
+define fincycle
+until
+#在执行完循环体内的最后一条语句之后执行 until, 就会执行完循环体到后面的一个语句停下。
+end
+
+define finfor
+until
+end
+
+define finwhile
+until
+end
 
 define linked-list
 if $argc == 3 || $argc == 4 
