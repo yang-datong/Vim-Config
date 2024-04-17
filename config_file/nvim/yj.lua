@@ -50,7 +50,7 @@ end
 -- "" Coc-vim jump definition
 keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})  --全能包括了vim默认的gf功能
 --print(vim.bo.filetype)
-if vim.bo.filetype == 'plaintex'  then
+if vim.bo.filetype == 'plaintex' or vim.bo.filetype == 'sh' then
 else
   keyset("n", "gf", "<Plug>(coc-definition)", {silent = true}) --不使用vim的gf
 end

@@ -6,7 +6,8 @@
 #|------------------- 4. Function(Kit) Env ------------|
 #|------------------- 5. Global Env -------------------|
 #|------------------- 6. Python function --------------|
-#|------------------- 7. Template ---------------------|
+#|------------------- 7. Data Struct ------------------|
+#|------------------- 8. Template ---------------------|
 #+---------------------- 目录 -------------------------+
 
 
@@ -191,7 +192,7 @@ if($1){
 endsnippet
 
 context "function()"
-snippet echo "echo hi"
+snippet 'echo|hi' "echo hi" r
 std::cout << "hi~" << std::endl;
 endsnippet
 
@@ -221,6 +222,14 @@ endsnippet
 context "function()"
 snippet cout
 std::cout << ${1} << std::endl;
+endsnippet
+
+context "function()"
+snippet 'cout.(.*)' "cout << info: << info << endl" r
+std::cout << `!p 
+strs=match.group(1)
+snip.rv = f"\"{strs}:\" << {strs} "
+`<< std::endl;
 endsnippet
 
 context "function()"
@@ -331,8 +340,8 @@ for (const auto &${1:it} : ${2:container}) {
 endsnippet
 
 context "function()"
-snippet fori "for int loop (fori)"
-for (int i = 0; i < ${1}; i++) {
+snippet 'for(i|j|k)' "for int loop (fori)" r
+for (int `!p snip.rv = match.group(1)` = 0; `!p snip.rv = match.group(1)` < ${1}; `!p snip.rv = match.group(1)`++) {
 	${VISUAL}$2
 }
 endsnippet
@@ -452,7 +461,7 @@ struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
 endsnippet
 
 snippet 'function|func|fun' "function" br
-${1:void} ${2:function_name}($3){
+${1:void} ${2:function_name}(const $3){
 	${VISUAL}$4
 	std::cout << "\033[33m Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()\033[0m" << std::endl;
 `!p 
@@ -475,6 +484,20 @@ endsnippet
 snippet 'func_declaration|func_decla|func_d' "function declaration" br
 ${1:void} ${2:function_name}($3);
 endsnippet
+
+snippet 'trace|backtrace|printStack|stack' "'trace|backtrace|printStack|stack'" r
+#include <execinfo.h>
+void printStackTrace() {
+  void *callstack[128];
+  int i, frames = backtrace(callstack, 128);
+  char **strs = backtrace_symbols(callstack, frames);
+  for (i = 0; i < frames; ++i) {
+    printf("%s\n", strs[i]);
+  }
+  free(strs);
+}
+endsnippet
+
 
 #-------------------- 6. Variable type inference ---------------
 #uint8_t *nulBuffer = new uint8_t[_bufferLen];
@@ -531,7 +554,176 @@ def function():
 endglobal
 
 
-#-------------------- 7. Template ---------------
+#-------------------- 7. Data Struct ------------
+#创建一个单链表
+snippet create_linklist "create_linklist"
+typedef struct LNnode {
+  char data;  //数据域
+  //char *data;  //数据域
+  struct LNnode *next; //指针域
+} LNode, *LinkList;
+endsnippet
+
+snippet linklist_insert_head "linklist_insert_head"
+void listHeadInsert(LinkList &linkList) {
+  LNode *node, *endPoint = linkList; // 表尾指针初始化指向头指针
+  // for (int i = 0x41; i < 0x43; i++) { // A,B,C
+  for (int i = 0x41; i < 0x60; i++) { // A,B,C,D,E.....,Z
+    node = (LNnode *)malloc(sizeof(LNode));
+    // 3. point to be inserted ,创建一个新结点
+    node->data = i;
+    // 4. data to be inserted,为其赋值
+    node->next = linkList->next;
+    // 5. forward to link list ,将新结点的 next 指针指向原链表的头结点
+    linkList->next = node;
+    // 6. update single link list next point,让头结点链向新结点
+  }
+  // When it is free? TODO  <24-03-24 20:01:22, YangJing>
+}
+endsnippet
+
+snippet linklist_insert_tail "linklist_insert_tail"
+void listTailInsert(LinkList &linkList) {
+  LNode *node, *endPoint = linkList; // 表尾指针初始化指向头指针
+  // for (int i = 0x41; i < 0x43; i++) { // A,B,C
+  for (int i = 0x41; i < 0x60; i++) { // A,B,C,D,E.....,Z
+    node = (LNnode *)malloc(sizeof(LNode));
+    // 3. point to be inserted ,创建一个新结点
+    node->data = i;
+    // 4. End link list to be inserted,由于新结点插入到表尾故设为NULL指针
+    node->next = nullptr;
+    // 5. forward to link list ,表尾结点的 next 指针指向新指针
+    endPoint->next = node;
+    // 6. Update new node to endPoint 更新尾指针为新结点
+    endPoint = node;
+  }
+  // When it is free? TODO  <24-03-24 20:01:22, YangJing>
+}
+endsnippet
+
+snippet linklist_get_elem_by_index "linklist_get_elem_by_index"
+LNode *getElemByIndex(const LinkList &linkList, const int index) {
+  if (index < 1)
+    return nullptr;
+  LNnode *tmpNode = linkList->next;
+  int i = 1;
+  /* 通过判断当前node是否还有子node，即是否到达链表尾部，以及是否在目标查找范围内*/
+  while (tmpNode->next != nullptr && i < index) {
+    tmpNode = tmpNode->next;
+    i++;
+  }
+  return tmpNode;
+}
+endsnippet
+
+snippet linklist_get_elem_by_elem "linklist_get_elem_by_elem"
+LNnode *getElemByElem(const LinkList &linkList, const LNode &node) {
+  if (!node.next)
+    return nullptr;
+  LNnode *tmpNode = linkList->next;
+  /* 通过判断当前node是否还有子node，即是否到达链表尾部，以及是否匹配到对应的块*/
+  while (tmpNode->next != nullptr && tmpNode->data != node.data)
+    tmpNode = tmpNode->next;
+  /* TODO YangJing 元素相同的情况只会匹配到首次出现的那一个 <24-03-24 23:17:59>
+   */
+  return tmpNode;
+}
+endsnippet
+
+snippet linklist_insert_elem_by_index "linklist_insert_elem_by_index"
+int insertElemByIndex(const LinkList &linkList, LNnode *const node, int index) {
+  LNnode *lastOneElem = getElemByIndex(linkList, index - 1);
+  /* 先获取"待插入位置的上一结点元素" */
+  if (!lastOneElem->next) {
+    std::cout << "插入范围错误，单链表并没有这么长" << std::endl;
+    return -1;
+  }
+  // LNode *oldElem = lastOneElem->next;
+  /* 保存"原本待插入位置的原结点元素" */
+  node->next = lastOneElem->next;
+  /* （链接尾部链条）将"新插入的结点元素"的next指针指向"原本待插入位置的原结点元素" */
+  lastOneElem->next = node;
+  /* （链接头部链条）将待插入位置的上一节元素的next指针指向新插入的结点元素 */
+  return 0;
+}
+endsnippet
+
+
+#创建一个双链表
+# TODO YangJing  <24-04-14 14:56:40> #
+
+#创建一个二叉树
+snippet create_binary_tree "create_binary_tree"
+struct TreeNode {
+  int value;       // 节点存储的值
+  TreeNode *left;  // 指向左子节点的指针
+  TreeNode *right; // 指向右子节点的指针
+
+  // 构造函数
+  TreeNode(int x) : value(x), left(nullptr), right(nullptr) {}
+};
+endsnippet
+
+snippet binaryTree_build "binaryTree_build"
+/* 递归地构建二叉树 */
+TreeNode *buildTree(const vector<int> &nodes, int index) {
+  if (index >= (int)nodes.size() || nodes[index] == -1) /* 控制递归结束 */
+    return nullptr;
+  TreeNode *node = new TreeNode(nodes[index]);
+  /* 先构建整个左子树（相对根节点而言） */
+  node->left = buildTree(nodes, 2 * index + 1);
+  /* 再构建整个右子树（相对根节点而言） */
+  node->right = buildTree(nodes, 2 * index + 2);
+  return node;
+}
+
+//  vector<int> nodes = {1, 2, 3, 4, -1, -1, 7, -1, 9};
+//  TreeNode *root = buildTree(nodes, 0);
+endsnippet
+
+snippet binaryTree_free "binaryTree_free"
+/* 由内向外进行释放内存 */
+void deleteTree(TreeNode *node) {
+  if (node == nullptr)
+    return;
+  deleteTree(node->left);
+  deleteTree(node->right);
+  cout << node->value << " ";
+  delete node;
+}
+endsnippet
+
+snippet binaryTree_preorder_traversal "binaryTree_preorder_traversal"
+void preorderTraversal(TreeNode *node) {
+  if (node == nullptr)
+    return;
+  cout << node->value << " ";
+  preorderTraversal(node->left);
+  preorderTraversal(node->right);
+}
+endsnippet
+
+snippet binaryTree_inorder_traversal "binaryTree_inorder_traversal"
+void inorderTraversal(TreeNode *node) {
+  if (node == nullptr)
+    return;
+  inorderTraversal(node->left);
+  cout << node->value << " ";
+  inorderTraversal(node->right);
+}
+endsnippet
+
+snippet binaryTree_postorder_traversal "binaryTree_postorder_traversal"
+void postorderTraversal(TreeNode *node) {
+  if (node == nullptr)
+    return;
+  postorderTraversal(node->left);
+  postorderTraversal(node->right);
+  cout << node->value << " ";
+}
+endsnippet
+
+#-------------------- 8. Template ---------------
 snippet main "main() (main)" b
 int main() {
 	${VISUAL}$0
