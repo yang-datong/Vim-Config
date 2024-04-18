@@ -132,7 +132,7 @@ public:
 	$0
 endsnippet
 
-#-------------------- 2. Function Env ---------------
+#-------------------- 3. Function Env ---------------
 context "function()"
 snippet '(int|char|size_t|uint8_t)\[\]=' "varible[]" r
 `!p snip.rv = match.group(1)` ${1:name}[] = {0};
@@ -347,22 +347,34 @@ for (int `!p snip.rv = match.group(1)` = 0; `!p snip.rv = match.group(1)` < ${1}
 endsnippet
 
 context "function()"
-snippet fopen "fopen"
-FILE *f = fopen($1, "${2:rb}");
-if(!f){
-	std::cerr << "Open file failed" << std::endl;
-	return -1;
-}
-$0
+snippet new "new"
+$1 *buffer = new $1[${2:size}];
 endsnippet
 
 context "function()"
-snippet fread "fread"
-int readLen = fread(${1:buf},1,${2:size},${3:stream});
-if(readLen > 0){
-	$0
-}
+snippet 'delete|dele' "delete" r
+delete[] ${1:buffer};
+$1 = nullptr;
 endsnippet
+
+# TODO YangJing 移到C <24-04-18 08:59:09> #
+#context "function()"
+#snippet fopen "fopen"
+#FILE *f = fopen($1, "${2:rb}");
+#if(!f){
+#	std::cerr << "Open file failed" << std::endl;
+#	return -1;
+#}
+#$0
+#endsnippet
+
+#context "function()"
+#snippet fread "fread"
+#int readLen = fread(${1:buf},1,${2:size},${3:stream});
+#if(readLen > 0){
+#	$0
+#}
+#endsnippet
 
 context "function()"
 snippet fclose "fclose"
@@ -498,6 +510,96 @@ void printStackTrace() {
 }
 endsnippet
 
+
+snippet 'get_file_size' " 'getFileSize'"
+void getFileSize(std::ifstream &file, std::streamsize &size) {
+  file.seekg(0, std::ios::end);
+  size = file.tellg();
+  file.seekg(0, std::ios::beg);
+}
+endsnippet
+
+snippet fopen "fopen"
+//#include <fstream>
+int openFile(std::string fileName, bool isBinaryFile = false) {
+  std::ifstream file;
+  if (isBinaryFile)
+    file.open(fileName, std::ios_base::binary);
+  else
+    file.open(fileName);
+  if (!file.is_open()) {
+    std::cerr << "Error opening file: ";
+    if (file.fail()) {
+      // 文件无法打开（可能是路径错误或文件不存在）
+      std::cerr << " No such file or directory. ";
+    }
+    if (file.bad()) {
+      // 在文件操作过程中遇到严重错误（例如硬件错误）
+      std::cerr << "Physical I/O error. ";
+    }
+  }
+  /* TODO  file.close(); */
+  return 0;
+}
+endsnippet
+
+snippet fread "fread"
+//#include <cstring>
+int readFileBinary(std::ifstream &file, uint8_t *&buffer, int &bufferSize) {
+  if (!file.is_open())
+    return -1;
+
+  /* 适当调整，读取一个17M的文件要花近1分钟 */
+  const int readBufSize = 1024;
+  /* 适当调整，读取一个17M的文件要花近1秒 */
+  // const int readBufSize = 1024 * 1024;
+  bool isRead = false;
+
+  uint8_t *fileBuffer = new uint8_t[readBufSize];
+  while (!isRead) {
+    file.read(reinterpret_cast<char *>(fileBuffer), readBufSize);
+    if (file.gcount() != 0) {
+      uint8_t *const tmp = new uint8_t[bufferSize + file.gcount()];
+      memcpy(tmp, buffer, bufferSize);
+      memcpy(tmp + bufferSize, fileBuffer, file.gcount());
+      if (buffer) {
+        delete[] buffer;
+        buffer = nullptr;
+      }
+      buffer = tmp;
+      bufferSize += file.gcount();
+    } else
+      isRead = true;
+  }
+  delete[] fileBuffer;
+  fileBuffer = nullptr;
+
+  /* TODO delete[] buffer; */
+  /* TODO buffer = nullptr; */
+  /* TODO bufferSize = 0; */
+  /* TODO file.close(); */
+  /* ifstream对象被销毁时，它的析构函数会自动关闭文件，如果需要及时释放可以写 */
+
+  if (!file.eof() && file.fail())
+    return -2;
+  return 0;
+}
+endsnippet
+
+snippet fwrite "fwrite"
+int writeFileBinary(std::ofstream &file, uint8_t *&buffer, int &bufferSize) {
+  if (!file.is_open() || buffer == nullptr || bufferSize <= 0)
+    return -1;
+  file.write(reinterpret_cast<const char *>(buffer), bufferSize);
+
+  /* TODO delete[] buffer; */
+  /* TODO buffer = nullptr; */
+  /* TODO bufferSize = 0; */
+  /* TODO file.close(); */
+  /* ifstream对象被销毁时，它的析构函数会自动关闭文件，如果需要及时释放可以写 */
+  return 0;
+}
+endsnippet
 
 #-------------------- 6. Variable type inference ---------------
 #uint8_t *nulBuffer = new uint8_t[_bufferLen];
