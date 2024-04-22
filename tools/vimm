@@ -3,12 +3,21 @@
 unset option
 
 file="$@"
-if [ -n "$file" ];then
+#  如果只是输入了vimm则进入判断 #
+if [ -n $file ];then
 	if [ -f Session.vim ];then
-		option="-S Session.vim"
+		#  1. 使用Session.vim文件 #
+		file="-S Session.vim"
+		echo "Use Session.vim"
 	else
-		option=""
+		#  2. 使用当前目录所有头文件、源代码文件 #
+		file=$(find . -type f -name "*.cpp" -or -name "*.hpp" -or -name "*.c" -or -name "*.h")
+		echo "Use (*.cpp *.hpp)"
 	fi
+fi
+
+if [ ! -f $HOME/.config/nvim/init.vim ];then
+	echo -e "\033[31mNot found the $HOME/.config/nvim/init.vim\033[0m";exit
 fi
 sed 's/let g:is_vim_studio=0/let g:is_vim_studio=1/' $HOME/.config/nvim/init.vim > /tmp/init_studio.vim
 
