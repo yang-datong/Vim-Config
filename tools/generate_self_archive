@@ -13,8 +13,14 @@ set -e
 #将命令输出的文件发送给你朋友执行就可以完成移动文件的操作啦
 # 不支持绝对路径的打包！！！！ 只能是在同一目录下的两个对象打包！！
 
+
+#默认为zip压缩算法，Option: zip , tar
+archive_mode="zip"
+
 unset file
 unset directory
+unset archiveCMD
+unset unarchiveCMD
 
 main(){
   cat << EOF >  $output_bash_script
@@ -24,8 +30,8 @@ set -e
 #-------------------- Generate Content --------------------
 ARCHIVE_START_LINE=\$(awk '/^__ARCHIVE_BELOW__/ {print NR + 1; exit 0; }' \$0)
 date=\$(date +"%Y%m%d%H%M%S")
-tail -n+\${ARCHIVE_START_LINE} \$0 > ./temp_\$date.zip
-unzip temp_\$date.zip > /dev/null && rm temp_\$date.zip
+tail -n+\${ARCHIVE_START_LINE} \$0 > ./temp_\$date.${archive_mode}
+$unarchiveCMD temp_\$date.${archive_mode} > /dev/null && rm temp_\$date.${archive_mode}
 EOF
 
 echo "#-------------------- $1 --------------------" >> $output_bash_script
@@ -34,13 +40,31 @@ echo "#------------------------------------------" >> $output_bash_script
 echo -e "exit 0 \n__ARCHIVE_BELOW__" >> $output_bash_script
 
 date=$(date +"%Y%m%d%H%M%S")
-zip -r temp_$date.zip $archive_obj > /dev/null
-if [ ! -f "temp_$date.zip" ];then
-  echo -e "\033[31m找不到文件   temp_$date.zip\033[0m";exit
+$archiveCMD temp_$date.${archive_mode} $archive_obj > /dev/null
+if [ ! -f "temp_$date.${archive_mode}" ];then
+  echo -e "\033[31mNot fond file temp_$date.${archive_mode}\033[0m";exit
 fi
-cat temp_$date.zip >> $output_bash_script && rm temp_$date.zip
+cat temp_$date.${archive_mode} >> $output_bash_script && rm temp_$date.${archive_mode}
 chmod +x $output_bash_script
-echo -e "\033[31mOutput Bash script -> $output_bash_script\033[0m"
+echo -e "\033[32mOutput Bash script -> $output_bash_script\033[0m"
+}
+
+check_archive_mode(){
+  if [ $archive_mode == "tar" ];then
+    archive_mode="tar.gz"
+  fi
+  if [ $archive_mode == "tar.gz" ];then
+    archiveCMD="tar -czf"
+    unarchiveCMD="tar -xzf"
+    check_cmd "tar"
+  elif [ $archive_mode == "zip" ];then
+    archiveCMD="zip -r"
+    unarchiveCMD="unzip"
+    check_cmd "zip"
+    check_cmd "unzip"
+  else
+    echo "Unknown archive model"; exit;
+  fi
 }
 
 #Checkout is install
@@ -53,7 +77,7 @@ check_cmd(){
 
 
 usage (){
-  echo "Usage :  $(basename "$0") [options] [--] [*.sh] [file|directory] [Output script name](option)
+  echo "Usage :  $(basename "$0") [options] [--] [shell_script(*.sh)] [archive_object(file|directory)] [Output script name](option)
 
   Options:
   -h, --help                  Display this message
@@ -61,16 +85,18 @@ usage (){
   -p, --posix                 Posix model parse shell command
   -v, --version               Display script version
   -f, --file FILE             Target file
+  -m, --mode [zip|tar]        ARCHIVE_MODE
   -D, --directory DIRECTORY   Target directory"
 }
 
-while getopts ":hdpvf:D:-:" opt; do
+while getopts ":hdpvf:m:D:-:" opt; do
   case "${opt}" in
     h) usage && exit 0;;
     d) set -x ;;
     p) set -o posix ;;
     v) echo "$0 -- Version $ScriptVersion"; exit ;;
     f) file=${OPTARG};;
+    m) archive_mode=${OPTARG};;
     D) directory=${OPTARG};;
     -) case "${OPTARG}" in
       help) usage && exit 0;;
@@ -78,6 +104,7 @@ while getopts ":hdpvf:D:-:" opt; do
       posix)      set -o posix ;;
       version)    echo "$0 -- Version $ScriptVersion"; exit ;;
       file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      mode)       archive_mode=${!OPTIND}; OPTIND=$((OPTIND+1));;
       directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
       *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
     esac;;
@@ -106,16 +133,15 @@ archive_obj_ab="$2"
 
 if [ ! ${bash_script##*.} == "sh" ];then usage;exit 0;fi
 
+check_archive_mode
 if [ $3 ];then
-  if [ "${3##*.}" == "sh"  ];then
-    output_bash_script="$3"
-  else
+  if [ "${3##*.}" == ""  ];then
     output_bash_script="$3.sh"
+  else
+    output_bash_script="$3"
   fi
 else
-  output_bash_script="${bash_script%.*}-with-${archive_obj%.*}.sh"
+  output_bash_script="${bash_script%.*}-with-${archive_obj%.*}-${archive_mode}.sh"
 fi
 
-check_cmd "zip"
-check_cmd "unzip"
 main "$@"
