@@ -266,8 +266,10 @@ noremap <Leader>v :<C-u>vsplit<CR>
 "切换窗口
 "Ctrl + w + t 移动到最左上角的窗口。
 nnoremap <silent> <C-1> :wincmd t<CR>
+nnoremap <silent> <A-1> :wincmd t<CR>
 "Ctrl + w + b 移动到最右下角的窗口。
 nnoremap <silent> <C-9> :wincmd b<CR>
+nnoremap <silent> <A-9> :wincmd b<CR>
 nnoremap <silent> <Tab> :wincmd w<CR>
 nnoremap <silent> <S-Tab> :wincmd p<CR>
 "nnoremap <Tab> gt

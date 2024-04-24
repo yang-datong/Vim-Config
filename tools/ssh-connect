@@ -8,7 +8,7 @@ unset user
 unset passwd
 
 main(){
-  if [[ ! $ip || ! $user || ! $passwd ]];then
+  if [ ! $ip ] || [ ! $user ] || [ ! $passwd ];then
     # 没有输入连接信息
     if [ ! -f $ssh_history ];then # 尝试本地获取历史信息
       echo -e "\033[31m Don't found user configure, Input you're $(basename $0) -i [ip] -u [username] -p [passwd] \033[0m"
