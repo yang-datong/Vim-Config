@@ -4,7 +4,7 @@ unset option
 
 file="$@"
 #  如果只是输入了vimm则进入判断 #
-if [ -n $file ];then
+if [ "$file" == "" ];then
 	if [ -f Session.vim ];then
 		#  1. 使用Session.vim文件 #
 		file="-S Session.vim"
