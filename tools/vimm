@@ -1,7 +1,5 @@
 #!/bin/bash
 
-unset option
-
 file="$@"
 #  如果只是输入了vimm则进入判断 #
 if [ "$file" == "" ];then
@@ -21,4 +19,4 @@ if [ ! -f $HOME/.config/nvim/init.vim ];then
 fi
 sed 's/let g:is_vim_studio=0/let g:is_vim_studio=1/' $HOME/.config/nvim/init.vim > /tmp/init_studio.vim
 
-nvim -u /tmp/init_studio.vim ${option} -c "let \$MYVIMRC = expand('\$HOME/.config/nvim/init.vim') | execute 'lua require(\"notify\")(\"Welcome to VIM-Studio\")'" $file
+nvim -u /tmp/init_studio.vim -c "let \$MYVIMRC = expand('\$HOME/.config/nvim/init.vim') | execute 'lua require(\"notify\")(\"Welcome to VIM-Studio\")'" $file
