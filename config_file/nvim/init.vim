@@ -55,6 +55,7 @@ source $NVIM_FOLDER/function.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:minimun_use=0
 " Whether to enable plug-in(0->off | 1->on){
 let g:is_latex=1  "Latex
 let g:is_markdown=0  "Markdown
@@ -65,7 +66,25 @@ let g:is_lua=1  "Lua config
 let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传入参数
 let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式(已添加到脚本vimm中，不需要手动调整）
 let g:is_Android_jni=0 "1：将添加Android-JNI头文件到path中，0：不添加
+let g:is_inscape=1 "1：开启inkscape使用，0：不开启
 " }
+
+" Compatibility {
+let g:is_nvim_notify=1
+let g:is_coc_vim=1
+" }
+
+if g:minimun_use == 1
+  let g:is_latex=0
+  let g:is_markdown=0
+  let g:is_lua=0
+  let g:latex_full_compiled_mode=0
+  let g:is_vim_studio=0
+  let g:is_Android_jni=0
+  let g:is_nvim_notify=0
+  let g:is_coc_vim=0
+  let g:is_inscape=0
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                               "
@@ -368,6 +387,7 @@ if g:is_latex == 1
   let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
 endif
 "======================================================================
+if g:is_coc_vim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-jedi'] "自动安装Coc插件
 "---More in lua config---
@@ -379,6 +399,7 @@ if g:is_latex == 1
       "call AskUserInstall("texlab","default") #需要先安装mactex
     endif
   endif    "Must -> brew install --HEAD texlab
+endif
 endif
 "======================================================================
 Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲
@@ -531,7 +552,9 @@ endif
 " }
 "======================================================================
 if has("nvim")
+if g:is_nvim_notify == 1
   Plug 'rcarriga/nvim-notify'
+endif
 endif
 "======================================================================
 Plug 'deris/vim-shot-f' "高亮f/F,t/T命令
@@ -607,9 +630,11 @@ nnoremap gF <C-o>
 " }
 
 " Latex fast open Inkscape {
+if g:is_inscape == 1
 inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
 if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
   call AskUserInstall("inkscape-figures","pip3.10")
+endif
 endif
 " }
 

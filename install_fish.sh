@@ -5,9 +5,9 @@ cc="brew"
 #Check OS System
 check_os(){
 	case "$(uname)" in
-	"Darwin") cc="brew";;
-	"Linux") cc="sudo apt -y";;
-	*)echo "Windows has not been tested for the time being";exit 1
+		"Darwin") cc="brew";;
+		"Linux") cc="sudo apt -y";;
+		*)echo "Windows has not been tested for the time being";exit 1
 	esac
 }
 
@@ -17,6 +17,7 @@ write(){
 	fish -c "omf install aight"
 
 	$cc install trash-cli #install rm foo -> mv foot foot-bck
+	pip3 install trash-cli
 	$cc install bat
 	$cc install colordiff
 
