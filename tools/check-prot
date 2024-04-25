@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ ! $1 ];then
+	echo -e "\033[31m需要指定一个文件\033[0m" ; exit
+fi
+
+port="$1"
+
+echo "lsof:"
+sudo lsof -i :$port
+
+echo "netstat:"
+sudo netstat -tulnp | grep :$port

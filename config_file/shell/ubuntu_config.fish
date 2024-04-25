@@ -43,5 +43,13 @@ alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
 
+# ffmpeg
+alias ffmpeg-q="ffmpeg -loglevel quiet"
+alias ffplay-q="ffplay -loglevel quiet"
+alias ffprobe-q="ffprobe -loglevel quiet"
+
+# tmp
+alias ffmpeg-SmarHTC="/usr/local/SmarHTC_V6624/bin/ffmpeg-SmarHTC"
+
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end
