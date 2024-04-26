@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! $1 ];then
+	echo -e "\033[31mNeed target file\033[0m";exit
+fi
+
+inputVideo=$1
+ffprobe -i $inputVideo -show_frames -select_streams v | grep pkt_pts

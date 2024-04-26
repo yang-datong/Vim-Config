@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ ! $1 ];then
+	echo -e "\033[31mNeed target file\033[0m";exit
+fi
+
+inputVideo=$1
+ffprobe -i $inputVideo -show_entries frame=pkt_pts,pkt_dts -of default=noprint_wrappers=1
+
+#- -show_entries frame=pkt_dts,pkt_pts 指示ffprobe显示每一帧的DTS和PTS。
+#- -of default=noprint_wrappers=1 设置输出格式，避免打印边界区块，使得输出更容易阅读。

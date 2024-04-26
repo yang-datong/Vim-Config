@@ -6,7 +6,7 @@ fi
 
 file="$1"
 file_type=${file##*.}
-if [[ "$file_type" == "h264" || "$file_type" == "h265" ]];then
-	ffprobe -loglevel quiet -show_packets -print_format csv $file
-	#ffprobe -loglevel quiet -show_packets -print_format csv demo.h264
-fi
+#if [[ "$file_type" == "h264" || "$file_type" == "h265" ]];then
+#ffprobe -loglevel quiet -show_packets -print_format csv $file
+ffprobe -loglevel quiet -show_frames -select_streams v:0 -print_format csv $file
+#fi

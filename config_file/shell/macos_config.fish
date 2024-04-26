@@ -29,6 +29,8 @@ alias cat='bat -p'
 alias vim='nvim'
 alias gdb='lldb'
 alias pping="httping -x 127.0.0.1:7890"
+alias diff='colordiff -w'
+
 alias pip='pip3.10'
 alias pip3='pip3.10'
 alias python='python3.10'
@@ -44,6 +46,12 @@ alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
+
+# ffmpeg
+alias ffmpeg-q="ffmpeg -loglevel quiet"
+alias ffplay-q="ffplay -loglevel quiet"
+alias ffprobe-q="ffprobe -loglevel quiet"
+
 
 eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
 
