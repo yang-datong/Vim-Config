@@ -163,6 +163,8 @@ func Run()
   elseif &filetype == 'cpp'
     if filereadable('Makefile')
       exec '!make -j4 && ./a.out'
+    elseif filereadable('CMakeLists.txt')
+      exec '!cmake . && make -j4 && ./a.out'
     else
       let firstLine = getline(1)
       if stridx(firstLine, '// g++') == 0

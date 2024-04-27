@@ -472,6 +472,12 @@ struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
 };
 endsnippet
 
+snippet 'ty(struct|st)' "struct" br
+typedef struct ${1:`!p snip.rv = (snip.basename or "name") + "_t"`} {
+	${0:/* data */}
+}${2:aliasName};
+endsnippet
+
 snippet 'function|func|fun' "function" br
 ${1:void} ${2:function_name}(const $3){
 	${VISUAL}$4
