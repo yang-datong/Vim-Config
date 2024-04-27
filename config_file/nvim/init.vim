@@ -512,10 +512,10 @@ endif
 "======================================================================
 Plug 'scrooloose/nerdtree'
 " NERDTree {
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite 
 let g:NERDTreeChDirMode=2
 let NERDTreeShowHidden=1
-let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
+let g:NERDTreeIgnore=['.out$','.cmake$','.vim$','.git','CMakeCache.txt','CMakeFiles','__pycache__']
 "let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
@@ -688,6 +688,18 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  5. 自动执行命令区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Auto open by hex model {
+autocmd BufReadPre *.jpg setlocal binary | autocmd BufReadPost *.jpg %!xxd
+autocmd BufReadPre *.jpeg setlocal binary | autocmd BufReadPost *.jpeg %!xxd
+autocmd BufReadPre *.JPG setlocal binary | autocmd BufReadPost *.JPG %!xxd
+autocmd BufReadPre *.JPEG setlocal binary | autocmd BufReadPost *.JPEG %!xxd
+
+autocmd BufReadPre *.yuv setlocal binary | autocmd BufReadPost *.yuv %!xxd
+autocmd BufReadPre *.rgb setlocal binary | autocmd BufReadPost *.rgb %!xxd
+autocmd BufReadPre *.ppm setlocal binary | autocmd BufReadPost *.ppm %!xxd
+autocmd BufReadPre *.bmp setlocal binary | autocmd BufReadPost *.bmp %!xxd
+" }
+
 " Save mksession on vimleave {
 if &filetype == 'cpp' || isdirectory(expand("%:p"))
   autocmd VimLeave * mksession!
