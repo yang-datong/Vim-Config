@@ -38,6 +38,21 @@ endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Hex model edit{
+function! ToggleHexMode()
+  if exists('b:hexmode') && b:hexmode
+    " 如果已经在十六进制模式下，则关闭它
+    %!xxd -r
+    set filetype=
+    let b:hexmode = 0
+  else
+    %!xxd
+    set filetype=xxd
+    let b:hexmode = 1
+  endif
+endfunction
+" }
+
 " Need install iTerm2 or terminator
 func OpenWindowIntoGDB()
   if filereadable(expand('%:t:r'))
@@ -139,6 +154,9 @@ endfunc
 func IntoHeadrOrSourceFile()
   let filename = expand('%:t:r')
   let filetype = expand('%:e')
+  if filename == 'main'
+    return
+  endif
   if filetype == 'cpp' || filetype == 'c'
     call FindAndEditHeaderFile(filename,filetype)
   elseif filetype == 'hpp' || filetype == 'h'

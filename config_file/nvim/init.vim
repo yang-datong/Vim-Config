@@ -201,7 +201,7 @@ endif
 
 " Close the pop-up window {
 " 影响主要是在编写代码时会弹出函数定义框，需要手动关闭影响布局
-" set completeopt-=preview
+set completeopt-=preview
 " }
 ""}
 
@@ -216,6 +216,7 @@ cnoreabbrev Qall! qall!
 cnoreabbrev Wq wq
 cnoreabbrev Wa wa
 cnoreabbrev wQ wq
+cnoreabbrev WQ wq
 cnoreabbrev W w
 cnoreabbrev W: w
 cnoreabbrev w: w
@@ -273,7 +274,10 @@ nnoremap <C-l> mz[s1z=`]`z
 " }
 
 " Hex model edit{
-nnoremap <Leader>x :%!xxd<CR>
+" 对于非文本类型的文件&filetype会为空，则开启转换十六进制模式
+if &filetype == ""
+  nnoremap <Leader>x :call ToggleHexMode()<CR>
+endif
 " }
 
 " Split {
@@ -286,9 +290,15 @@ noremap <Leader>v :<C-u>vsplit<CR>
 "Ctrl + w + t 移动到最左上角的窗口。
 nnoremap <silent> <C-1> :wincmd t<CR>
 nnoremap <silent> <A-1> :wincmd t<CR>
+nnoremap <silent> <C-2> :wincmd t<CR> :wincmd w<CR>
+nnoremap <silent> <A-2> :wincmd t<CR> :wincmd w<CR>
+nnoremap <silent> <C-3> :wincmd t<CR> :wincmd w<CR> :wincmd w<CR>
+nnoremap <silent> <A-3> :wincmd t<CR> :wincmd w<CR> :wincmd w<CR>
+
 "Ctrl + w + b 移动到最右下角的窗口。
 nnoremap <silent> <C-9> :wincmd b<CR>
 nnoremap <silent> <A-9> :wincmd b<CR>
+
 nnoremap <silent> <Tab> :wincmd w<CR>
 nnoremap <silent> <S-Tab> :wincmd p<CR>
 "nnoremap <Tab> gt
@@ -318,7 +328,7 @@ nnoremap <silent> <leader><space> :noh<cr>
 " }
 
 " fast show view in PDF {
-if expand('%:e') == 'tex'
+if &filetype == 'tex'
   nmap \v \lv
   nmap 'v \lv
 endif
@@ -413,7 +423,7 @@ if (system('command -v ctags') =~ 'ctags') == 0
   endif
 endif
 if g:is_vim_studio == 1
-  autocmd VimEnter * nested :TagbarOpen
+  autocmd VimEnter * nested :TagbarOpen<CR>
 endif
 let g:tagbar_sort= 0
 "关闭函数等排序（默认会按照函数首字母来排序，不好定义源代码）
@@ -521,10 +531,7 @@ let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize=30
-" NERDTree KeyMapping
-" Locate current file in file systems
 "nnoremap <silent> <Leader>l :NERDTreeFind<CR>
-"noremap <C-1> :NERDTreeToggle<CR>
 noremap <F1> :NERDTreeToggle<CR>
 " Close NERDTree if no other window open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -551,10 +558,8 @@ elseif has('linux')
 endif
 " }
 "======================================================================
-if has("nvim")
-if g:is_nvim_notify == 1
+if has("nvim") && g:is_nvim_notify == 1
   Plug 'rcarriga/nvim-notify'
-endif
 endif
 "======================================================================
 Plug 'deris/vim-shot-f' "高亮f/F,t/T命令
@@ -583,7 +588,7 @@ if g:is_lua == 1
   let $MYLUARC = $NVIM_FOLDER . '/yj.lua'
   luafile $MYLUARC
 
-  if has("nvim")
+  if has("nvim") && g:is_nvim_notify == 1
     lua vim.notify = require("notify")
     "弹窗美化 :lua vim.notify("This is an error message", "error")
   endif
@@ -619,7 +624,7 @@ endif
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Open current gdb window {
-if &filetype == 'cpp' || &filetype == 'c'
+if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
   :command Gdb call OpenWindowIntoGDB()
   :command GDB call OpenWindowIntoGDB()
   nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB()<CR>
@@ -639,7 +644,7 @@ endif
 " }
 
 " Check current line end char is ";" {
-if &filetype == 'cpp' || &filetype == 'c'
+if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
   if has('mac')
     inoremap <expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-o>A<Esc>o" : "\<C-o>A;<Esc>o"
   elseif has('linux')
@@ -671,7 +676,9 @@ endif
 " }
 
 " Fast into head or source file {
-map <silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
+if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
+  map <silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
+endif
 " }
 
 " Fast start file execution {
@@ -689,19 +696,20 @@ endif
 "                  5. 自动执行命令区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Auto open by hex model {
-autocmd BufReadPre *.jpg setlocal binary | autocmd BufReadPost *.jpg %!xxd
-autocmd BufReadPre *.jpeg setlocal binary | autocmd BufReadPost *.jpeg %!xxd
-autocmd BufReadPre *.JPG setlocal binary | autocmd BufReadPost *.JPG %!xxd
-autocmd BufReadPre *.JPEG setlocal binary | autocmd BufReadPost *.JPEG %!xxd
+autocmd BufReadPre *.jpg setlocal binary | autocmd BufReadPost *.jpg :call ToggleHexMode()
+autocmd BufReadPre *.jpeg setlocal binary | autocmd BufReadPost *.jpeg :call ToggleHexMode() 
+autocmd BufReadPre *.JPG setlocal binary | autocmd BufReadPost *.JPG :call ToggleHexMode() 
+autocmd BufReadPre *.JPEG setlocal binary | autocmd BufReadPost *.JPEG :call ToggleHexMode() 
 
-autocmd BufReadPre *.yuv setlocal binary | autocmd BufReadPost *.yuv %!xxd
-autocmd BufReadPre *.rgb setlocal binary | autocmd BufReadPost *.rgb %!xxd
-autocmd BufReadPre *.ppm setlocal binary | autocmd BufReadPost *.ppm %!xxd
-autocmd BufReadPre *.bmp setlocal binary | autocmd BufReadPost *.bmp %!xxd
+autocmd BufReadPre *.yuv setlocal binary | autocmd BufReadPost *.yuv :call ToggleHexMode() 
+autocmd BufReadPre *.rgb setlocal binary | autocmd BufReadPost *.rgb :call ToggleHexMode() 
+autocmd BufReadPre *.ppm setlocal binary | autocmd BufReadPost *.ppm :call ToggleHexMode() 
+autocmd BufReadPre *.bmp setlocal binary | autocmd BufReadPost *.bmp :call ToggleHexMode() 
+autocmd BufReadPre *.out setlocal binary | autocmd BufReadPost *.out :call ToggleHexMode() 
 " }
 
 " Save mksession on vimleave {
-if &filetype == 'cpp' || isdirectory(expand("%:p"))
+if g:is_vim_studio == 1
   autocmd VimLeave * mksession!
 endif
 "}
