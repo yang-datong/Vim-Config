@@ -49,9 +49,6 @@ source $NVIM_FOLDER/function.vim
 
 
 
-
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -74,18 +71,10 @@ let g:is_nvim_notify=1
 let g:is_coc_vim=1
 " }
 
-if g:minimun_use == 1
-  let g:is_latex=0
-  let g:is_markdown=0
-  let g:is_lua=0
-  let g:latex_full_compiled_mode=0
-  let g:is_vim_studio=0
-  let g:is_Android_jni=0
-  let g:is_nvim_notify=0
-  let g:is_coc_vim=0
-  let g:is_inscape=0
-endif
+call CheckIsSetMinimunMode()
 
+  " 如果文件大于3MB（3000000字节），在配置文件的最后会再次调用一次
+call CheckISLargeFile(3000000)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -741,3 +730,7 @@ autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 "                  6. unite插件扩展区域                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 source $NVIM_FOLDER/unite_extension.vim
+
+
+" 如果文件大于3MB（3000000字节）
+call CheckISLargeFile(3000000)

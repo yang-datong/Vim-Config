@@ -11,6 +11,39 @@
 "README: 这个文件全都是从init.vim中提取出来的函数
 
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                     0. 变量控制区域                               "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+func CheckIsSetMinimunMode()
+  if g:minimun_use == 1
+    let g:is_latex=0
+    let g:is_markdown=0
+    let g:is_lua=0
+    let g:latex_full_compiled_mode=0
+    let g:is_vim_studio=0
+    let g:is_Android_jni=0
+    let g:is_nvim_notify=0
+    let g:is_coc_vim=0
+    let g:is_inscape=0
+  endif
+endfunc
+
+
+func CheckISLargeFile(maxSize)
+  if getfsize(expand("%:p")) > a:maxSize
+    " 关闭语法高亮
+    syntax off
+    " 关闭文件类型检测
+    filetype off
+    " 设置其他性能优化选项……
+    set lazyredraw
+    set nowrap
+    set noswapfile
+    set nobackup
+    set nowritebackup
+    let g:minimun_use=1
+  endif
+endfunc
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                      2. 按键映射区域                              "
