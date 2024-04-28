@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rtsp_ip="$1"
+
+if [[ ! "$rtsp_ip" =~ "rtsp://" ]];then
+	echo -e "\033[31m$0 rtsp://127.0.0.1:8888/live/test?\033[0m";exit
+fi
+
+ffplay -rtsp_transport tcp $rtsp_ip
