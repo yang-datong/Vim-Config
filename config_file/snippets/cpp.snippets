@@ -454,6 +454,14 @@ endsnippet
 #`!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
 #endsnippet
 
+snippet '(test|Test)(\d)' "'(test|Test)(\d)'" r
+static int yangjing = 0;
+std::cout << "Test:" << test << std::endl;
+if (yangjing > `!p snip.rv = match.group(2)`)
+  exit(0);
+yangjing++;
+endsnippet
+
 snippet 'static_assert|st_assert|assert' "'static_assert|st_assert|assert'" r
 // Such as -> static_assert(sizeof(void *) == 4,"64位系统不支持");
 static_assert(${1:/* conditions */},${2:/* Ouput */});

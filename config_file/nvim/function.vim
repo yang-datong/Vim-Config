@@ -73,15 +73,18 @@ endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Hex model edit{
 function! ToggleHexMode()
-  if exists('b:hexmode') && b:hexmode
-    " 如果已经在十六进制模式下，则关闭它
-    %!xxd -r
-    set filetype=
-    let b:hexmode = 0
-  else
-    %!xxd
-    set filetype=xxd
-    let b:hexmode = 1
+  " 对于非文本类型的文件&filetype会为空，则开启转换十六进制模式
+  if &filetype == "" || &filetype == "xxd"
+    if exists('b:hexmode') && b:hexmode
+      " 如果已经在十六进制模式下，则关闭它
+      %!xxd -r
+      set filetype=
+      let b:hexmode = 0
+    else
+      %!xxd
+      set filetype=xxd
+      let b:hexmode = 1
+    endif
   endif
 endfunction
 " }

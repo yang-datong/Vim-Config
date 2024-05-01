@@ -263,10 +263,7 @@ nnoremap <C-l> mz[s1z=`]`z
 " }
 
 " Hex model edit{
-" 对于非文本类型的文件&filetype会为空，则开启转换十六进制模式
-if &filetype == ""
-  nnoremap <Leader>x :call ToggleHexMode()<CR>
-endif
+nnoremap <silent> <Leader>x :call ToggleHexMode()<CR>
 " }
 
 " Split {
@@ -369,6 +366,7 @@ autocmd FileType c autocmd BufWritePre <buffer> Autoformat
 autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
 autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
 autocmd FileType sh autocmd BufWritePre <buffer> Autoformat
+au! BufNewFile,BufRead *.tpp set filetype=cpp
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
 endif
