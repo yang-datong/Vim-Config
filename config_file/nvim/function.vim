@@ -207,9 +207,8 @@ func Run()
   exec "w"
   if &filetype == 'c'
     let firstLine = getline(1)
-    if stridx(firstLine, '//g++') == 0
-      let remainingChars = strpart(firstLine, strlen('//g++'))
-      echo remainingChars
+    if stridx(firstLine, '// gcc') == 0
+      let remainingChars = strpart(firstLine, strlen('// gcc'))
       exec '!gcc % -o %< -g -Wall -std=c17 ' remainingChars '&& ./%<'
     else
       exec '!gcc % -o %< -g -Wall -std=c17 && ./%<'
@@ -223,7 +222,6 @@ func Run()
       let firstLine = getline(1)
       if stridx(firstLine, '// g++') == 0
         let remainingChars = strpart(firstLine, strlen('// g++'))
-        echo remainingChars
         exec '!g++ % -o %< -g -Wall -std=c++14 ' remainingChars '&& ./%<'
       else
         exec '!g++ % -o %< -g -Wall -std=c++14 && ./%<'
@@ -233,7 +231,6 @@ func Run()
     let firstLine = getline(1)
     if stridx(firstLine, '#manim') == 0
       let remainingChars = strpart(firstLine, strlen('#manim'))
-      echo remainingChars
       exec '!manim ' remainingChars ' % Demo'
     else
       exec '!python3 %'
