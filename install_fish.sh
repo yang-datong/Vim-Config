@@ -12,6 +12,9 @@ check_os(){
 }
 
 write(){
+	if [ ! $SH_FOOT ];then
+		echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
+	fi
 	$cc install fish
 	curl -L https://get.oh-my.fish | fish
 	fish -c "omf install aight"

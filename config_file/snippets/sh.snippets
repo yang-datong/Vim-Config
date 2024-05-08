@@ -284,6 +284,55 @@ check_py_pack(){
 }
 endsnippet
 
+snippet check_pid "check_pid" b
+pids=()
+
+for((i=0;i<100;i++));do
+	${ffmpeg} -rtsp_transport tcp -i "rtsp://127.0.0.1:8888/output/0" -c copy saved_stream_${i}.mp4 -y &
+	pids+=($!)
+	sleep 0.5
+done
+
+echo "Started PIDs : ${pids[*]}"
+echo "${pids[*]}" > .pull_stream.pids
+
+kill_all(){
+	if [ ! -f .pull_stream.pids ];then
+		echo "No found .pull_stream.pids file";exit
+	fi
+
+	for pid in $(cat .pull_stream.pids);do
+		if ps -p $pid > /dev/null;then
+			kill $pid
+		fi
+	done
+
+	if [ -f .pull_stream.pids ];then
+		rm .pull_stream.pids
+	fi
+	echo -e "\033[32mKilled all pids\033[0m"
+}
+
+endsnippet
+
+snippet check_ip "check_ip" b
+input=\$1 # 获取输入参数
+
+# 用正则表达式匹配IP:Port格式
+# ^ 开始符
+# ([0-9]{1,3}\.){3}[0-9]{1,3} 匹配IP地址，例如127.0.0.1
+# : 分号，端口的前缀
+# [0-9]+ 匹配端口号
+# $ 结束符
+regex="^([0-9]{1,3}\.){3}[0-9]{1,3}:[0-9]+"
+
+if [[ $input =~ $regex ]]; then
+	$1
+else
+	echo -e "\033[31mThe input '$input' is NOT a valid IP:Port format. \033[0m"
+fi
+endsnippet
+
 snippet adb "adb"
 cmd(){
 	adb shell "\$1" || {

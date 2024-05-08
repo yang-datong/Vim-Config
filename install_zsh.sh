@@ -12,12 +12,20 @@ check_os(){
 }
 
 write(){
+	if [ ! $SH_FOOT ];then
+		echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
+	fi
+
 	if [ ! -x "$(command -v zsh)" ];then
 		echo "zsh installing ....."
-		$cc install zsh && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+		$cc install zsh
 	fi
 
 	local ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
+	if [ ! -d $ZSH_CUSTOM ];then
+		bash ./oh-my-zsh.sh
+	fi
+
 	local plug_dir=${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting
 	if [ ! -d $plug_dir ];then
 		git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $plug_dir
@@ -34,7 +42,10 @@ write(){
 	#$cc install bat
 	#$cc install colordiff
 
-	echo "UFJPTVBUPSIlRnsjZmZmZmZmfSQgJWYiClJQUk9NUFQ9IiV7JGZnW3JlZF0lfSVuJXskcmVzZXRfY29sb3IlfUAleyRmZ1tibHVlXSV9JW0gJXskZmdbeWVsbG93XSV9JX4gJXskcmVzZXRfY29sb3IlfSUgIgo="  | base64 -d > ${ZSH_CUSTOM}/themes/example.zsh-theme
+	if [ ! -d ${ZSH_CUSTOM}/themes ];then
+		mkdir ${ZSH_CUSTOM}/themes
+	fi
+	echo "UFJPTVBUPSIlRnsjZmZmZmZmfSQgJWYiClJQUk9NUFQ9IiV7JGZnW2JsdWVdJX0kKGhvc3RuYW1lIC1JIHwgY3V0IC1kJyAnIC1mMSkleyRyZXNldF9jb2xvciV9ICV7JGZnW3llbGxvd10lfSV+ICV7JHJlc2V0X2NvbG9yJX0lICIK"  | base64 -d > ${ZSH_CUSTOM}/themes/example.zsh-theme
 	cp $SH_FOOT/config_file/shell/xx.zshrc $HOME/.zshrc
 }
 

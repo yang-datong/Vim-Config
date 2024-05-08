@@ -5,11 +5,11 @@ main(){
 	check_os
 	if [ ! $SH_FOOT ];then
 		if [ ! -d $HOME/sh_foot ];then
-			echo -e "\033[31m建议使用ssh key的方式来管理[Ok]\033[0m" 
+			echo -e "\033[31m建议使用ssh key的方式来管理[Ok]\033[0m"
 			read ok
 			git clone git@github.com:yang-datong/Vim-Config.git $HOME/sh_foot
 		fi
-			echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
+		echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
 	fi
 
 	pushd $SH_FOOT
@@ -22,9 +22,9 @@ main(){
 		brew install --cask android-platform-tools
 	fi
 
-	
+
 	$cc install curl wget git axel scrcpy
- 	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 	python3.10 git-pip.py
 	if [ -f git-pip.py ];then
 		rm git-pip.py
