@@ -42,6 +42,12 @@ func CheckISLargeFile(maxSize)
     set nobackup
     set nowritebackup
     let g:minimun_use=1
+    echo "[Leader File Model]"
+    " 大于1G
+    if getfsize(expand("%:p")) > 100000000
+      let g:minimun_use = 1
+      call CheckIsSetMinimunMode()
+    endif
   endif
 endfunc
 
