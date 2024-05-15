@@ -1,0 +1,30 @@
+#!/bin/bash
+
+on(){
+	gsettings set org.gnome.system.proxy mode 'manual'
+	gsettings set org.gnome.system.proxy.http port 7890
+	gsettings set org.gnome.system.proxy.http host '127.0.0.1'
+	gsettings set org.gnome.system.proxy.https port 7890
+	gsettings set org.gnome.system.proxy.https host '127.0.0.1'
+	gsettings set org.gnome.system.proxy.socks port 7891
+	gsettings set org.gnome.system.proxy.socks host '127.0.0.1'
+	gsettings set org.gnome.system.proxy ignore-hosts "['localhost', '127.0.0.0/8', '::1']"
+}
+
+off(){
+	gsettings set org.gnome.system.proxy mode 'none'
+}
+
+auto(){
+	gsettings set org.gnome.system.proxy mode 'auto'
+}
+
+opt="$1"
+case "${opt}" in
+	on) on;;
+	off) off ;;
+	auto) auto;;
+	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+esac
+
+
