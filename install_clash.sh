@@ -10,7 +10,9 @@ download_config(){
 }
 
 set_systemctl(){
-	sudo rm /etc/systemd/system/clash.service
+	if [ -f /etc/systemd/system/clash.service ];then
+		sudo rm /etc/systemd/system/clash.service
+	fi
 	echo "W1VuaXRdCkRlc2NyaXB0aW9uPUNsYXNoIGRhZW1vbgpBZnRlcj1uZXR3b3JrLnRhcmdldAoKW1NlcnZpY2VdClR5cGU9c2ltcGxlClJlc3RhcnQ9YWx3YXlzCkV4ZWNTdGFydD0vb3B0L2NsYXNoL2NsYXNoIC1kIC9vcHQvY2xhc2gKCltJbnN0YWxsXQpXYW50ZWRCeT1tdWx0aS11c2VyLnRhcmdldAoK" | base64 -d | sudo tee -a /etc/systemd/system/clash.service
 	#开机自启
 	sudo systemctl enable clash
