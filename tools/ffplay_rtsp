@@ -21,5 +21,6 @@ if [[ $input =~ $regex ]]; then
 	echo "ffplay -rtsp_transport tcp "rtsp://$input""
 	ffplay -rtsp_transport tcp "rtsp://$input"
 else
-	echo -e "\033[31mThe input '$input' is NOT a valid IP:Port format. \033[0m"
+	ffplay -rtsp_transport tcp "$input"
+	#echo -e "\033[31mThe input '$input' is NOT a valid IP:Port format. \033[0m"
 fi
