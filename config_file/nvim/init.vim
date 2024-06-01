@@ -379,7 +379,7 @@ endif
 if g:is_latex == 1
   "Must -> brew install latexindent
   if (system('command -v latexindent') =~ 'latexindent') == 0
-    call AskUserInstall("latexindent","default")
+    "call AskUserInstall("latexindent","default")
   endif
   let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
 endif

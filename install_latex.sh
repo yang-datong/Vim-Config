@@ -10,7 +10,7 @@ check_os(){
 }
 
 
-obj=latex
+obj=latexmk
 if [ ! -x "$(command -v $obj)" ];then
 	echo "$obj installing ....."
 	check_os
