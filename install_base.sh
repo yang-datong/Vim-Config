@@ -59,8 +59,8 @@ check_os(){
 	esac
 }
 
-if [ $(check_proxy) == 0 ];then
-	echo "没有使用代理，确保可以访问github不然环境无法搭建";exit
-fi
+#if [ $(check_proxy) == 0 ];then
+#	echo "没有使用代理，确保可以访问github不然环境无法搭建";exit
+#fi
 
 main
