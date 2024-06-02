@@ -226,6 +226,11 @@ else:
 `$0
 endsnippet
 #-------------------- 7. *_{$1} ----------------
+context "math()"
+snippet '([A-Za-z])_' "x_{}" ir
+`!p snip.rv = match.group(1) + "_{"`$1}$0
+endsnippet
+
 priority 0
 context "math()"
 snippet '(?!p|i|h)([A-Za-z])(\d{1,3}|n|k|j)' "x_{\d}" ir

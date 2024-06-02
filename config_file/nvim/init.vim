@@ -55,7 +55,7 @@ source $NVIM_FOLDER/function.vim
 let g:minimun_use=0
 " Whether to enable plug-in(0->off | 1->on){
 let g:is_latex=1  "Latex
-let g:is_markdown=0  "Markdown
+let g:is_markdown=1  "Markdown
 let g:is_lua=1  "Lua config
 " }
 
