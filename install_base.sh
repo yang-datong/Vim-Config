@@ -15,7 +15,8 @@ main(){
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo apt install -y file passwd python3.10 android-tools-adb
+		sudo add-apt-repository ppa:savoury1/python & sudo apt update
+		sudo apt install -y file passwd python3.10 android-sdk-platform-tools #android-tools-adb
 	elif [ "$(uname)" == "Darwin" ];then
 		if [ ! -x "$(command -v brew)" ];then ./install_brew.sh;fi
 		brew install coreutils python@3.10
@@ -30,8 +31,8 @@ main(){
 		rm git-pip.py
 	fi
 	./install_aria2c.sh #下载工具
-	./install_fish.sh
-	#./install_zsh.sh
+	#./install_fish.sh
+	./install_zsh.sh
 	./install_neovim.sh
 	./install_vim_anywhere.sh
 

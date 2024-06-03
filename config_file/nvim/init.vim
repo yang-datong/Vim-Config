@@ -314,7 +314,7 @@ nnoremap <silent> <leader><space> :noh<cr>
 " }
 
 " fast show view in PDF {
-if &filetype == 'tex'
+if &filetype == 'tex' || &filetype == 'plaintex'
   nmap \v \lv
   nmap 'v \lv
 endif
@@ -431,7 +431,7 @@ let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
 if g:is_latex == 1
-  Plug 'lervag/vimtex'
+  Plug 'lervag/vimtex', { 'tag': 'v2.14' }
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
   if has('mac')
