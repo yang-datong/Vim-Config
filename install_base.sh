@@ -15,7 +15,8 @@ main(){
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo add-apt-repository ppa:savoury1/python & sudo apt update
+		sudo add-apt-repository ppa:deadsnakes/ppa
+		sudo apt update
 		sudo apt install -y file passwd python3.10 android-sdk-platform-tools #android-tools-adb
 	elif [ "$(uname)" == "Darwin" ];then
 		if [ ! -x "$(command -v brew)" ];then ./install_brew.sh;fi
