@@ -64,7 +64,7 @@ func AskUserInstall(cmd,packager)
       elseif has('linux')
         echo "Please use: 'sudo apt install " . a:cmd . "', will into the vim-terminal , Are you ready?"
         "exec '!sudo apt install ' . a:cmd "不能直接输入密码
-        exec ':terminal sudo apt install ' . a:cmd
+        exec ':terminal sudo apt install -y ' . a:cmd
         startinsert "进入vim输入模式
       endif
     elseif a:packager == 'pip3.10'
