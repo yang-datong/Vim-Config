@@ -26,10 +26,12 @@ main(){
 
 
 	$cc install curl wget git axel scrcpy
-	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-	python3.10 git-pip.py
-	if [ -f git-pip.py ];then
-		rm git-pip.py
+	if [ ! -f get-pip.py ];then
+		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+	fi
+	python3.10 get-pip.py
+	if [ -f get-pip.py ];then
+		rm get-pip.py
 	fi
 	./install_aria2c.sh #下载工具
 	#./install_fish.sh
