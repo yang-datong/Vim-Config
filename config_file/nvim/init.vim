@@ -314,7 +314,7 @@ nnoremap <silent> <leader><space> :noh<cr>
 " }
 
 " fast show view in PDF {
-if &filetype == 'tex'
+if &filetype == 'tex' || &filetype == 'plaintex'
   nmap \v \lv
   nmap 'v \lv
 endif
@@ -369,6 +369,9 @@ autocmd FileType sh autocmd BufWritePre <buffer> Autoformat
 au! BufNewFile,BufRead *.tpp set filetype=cpp
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
+endif
+if (system('command -v clangd') =~ 'clangd') == 0
+  call AskUserInstall("clangd","default")
 endif
 "Python-格式化: pip install autopep8
 "C\C++: 1.brew install clang-format 2.https://astyle.sourceforge.net 需要编译
@@ -431,7 +434,7 @@ let g:UltiSnipsJumpForwardTrigger = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
 "======================================================================
 if g:is_latex == 1
-  Plug 'lervag/vimtex'
+  Plug 'lervag/vimtex', { 'tag': 'v2.14' }
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
   if has('mac')

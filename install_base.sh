@@ -15,7 +15,9 @@ main(){
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo apt install -y file passwd python3.10 android-tools-adb
+		sudo add-apt-repository ppa:deadsnakes/ppa
+		sudo apt update
+		sudo apt install -y file passwd python3.10 android-sdk-platform-tools #android-tools-adb
 	elif [ "$(uname)" == "Darwin" ];then
 		if [ ! -x "$(command -v brew)" ];then ./install_brew.sh;fi
 		brew install coreutils python@3.10
@@ -24,14 +26,16 @@ main(){
 
 
 	$cc install curl wget git axel scrcpy
-	curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-	python3.10 git-pip.py
-	if [ -f git-pip.py ];then
-		rm git-pip.py
+	if [ ! -f get-pip.py ];then
+		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+	fi
+	python3.10 get-pip.py
+	if [ -f get-pip.py ];then
+		rm get-pip.py
 	fi
 	./install_aria2c.sh #下载工具
-	./install_fish.sh
-	#./install_zsh.sh
+	#./install_fish.sh
+	./install_zsh.sh
 	./install_neovim.sh
 	./install_vim_anywhere.sh
 

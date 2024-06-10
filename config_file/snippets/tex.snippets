@@ -587,8 +587,11 @@ snippet \\ "jump to next line"
 $1 & $2 \\\
 endsnippet
 
-snippet 'lstlisting|lst' "lst" wr
-\begin{lstlisting}
+snippet '(lstlisting|lst|\`\`\`)(.*)?' "lst" wr
+\begin{lstlisting}`!p 
+if match.group(1) == "\`\`\`" and match.group(2):
+	snip.rv = f"[language={match.group(2)}]"
+`
 ${1:${VISUAL}}
 \end{lstlisting}
 endsnippet
