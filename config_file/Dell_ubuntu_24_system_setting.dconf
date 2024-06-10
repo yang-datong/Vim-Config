@@ -40,13 +40,16 @@ window-state=(979, 670, false)
 
 [org/gnome/deja-dup]
 backend='local'
+delete-after=0
 exclude-list=['$TRASH', '$DOWNLOAD', '/home/hi/Android', '/home/hi/Desktop', '/home/hi/Documents', '/home/hi/vmware', '/home/hi/YJ-3', '/home/hi/.gradle', '/home/hi/.cache']
 include-list=['$HOME']
 last-backup='2024-03-01T09:41:52.977607Z'
 last-restore='2024-02-28T06:29:06.713813Z'
-last-run='2024-03-01T09:36:46.412617Z'
+last-run='2024-06-10T17:36:02.607206Z'
 nag-check='2024-03-01T09:41:52.979863Z'
+periodic-period=7
 prompt-check='2024-02-28T05:26:05.145620Z'
+tool='duplicity'
 window-height=500
 window-width=700
 
@@ -107,13 +110,13 @@ cursor-theme='Yaru'
 font-antialiasing='grayscale'
 font-hinting='slight'
 font-name='Garuda 11'
-gtk-theme='Yaru'
+gtk-theme='Yaru-dark'
 icon-theme='Yaru'
 show-battery-percentage=true
 toolkit-accessibility=false
 
 [org/gnome/desktop/notifications]
-application-children=['org-gnome-dejadup', 'org-gnome-nautilus', 'com-alibabainc-dingtalk', 'utools', 'org-pwmt-zathura', 'org-gnome-eog', 'jetbrains-studio', 'org-gnome-fileroller', 'update-manager', 'org-gnome-baobab', 'vmware-workstation', 'typora', 'wine-programs-', 'io-snapcraft-sessionagent', 'google-chrome', 'ca-desrt-dconf-editor', 'apport-gtk', 'wechat', 'gnome-power-panel']
+application-children=['org-gnome-dejadup', 'org-gnome-nautilus', 'com-alibabainc-dingtalk', 'utools', 'org-pwmt-zathura', 'org-gnome-eog', 'jetbrains-studio', 'org-gnome-fileroller', 'update-manager', 'org-gnome-baobab', 'vmware-workstation', 'typora', 'wine-programs-', 'io-snapcraft-sessionagent', 'google-chrome', 'ca-desrt-dconf-editor', 'apport-gtk', 'wechat', 'gnome-power-panel', 'telegram-desktop-telegram-desktop', 'org-gnome-diskutility']
 
 [org/gnome/desktop/notifications/application/apport-gtk]
 application-id='apport-gtk.desktop'
@@ -143,6 +146,9 @@ application-id='org.gnome.baobab.desktop'
 [org/gnome/desktop/notifications/application/org-gnome-dejadup]
 application-id='org.gnome.DejaDup.desktop'
 
+[org/gnome/desktop/notifications/application/org-gnome-diskutility]
+application-id='org.gnome.DiskUtility.desktop'
+
 [org/gnome/desktop/notifications/application/org-gnome-eog]
 application-id='org.gnome.eog.desktop'
 
@@ -157,6 +163,9 @@ application-id='org.gnome.Nautilus.desktop'
 
 [org/gnome/desktop/notifications/application/org-pwmt-zathura]
 application-id='org.pwmt.zathura.desktop'
+
+[org/gnome/desktop/notifications/application/telegram-desktop-telegram-desktop]
+application-id='telegram-desktop_telegram-desktop.desktop'
 
 [org/gnome/desktop/notifications/application/typora]
 application-id='typora.desktop'
@@ -254,8 +263,8 @@ show-sidebar=true
 sidebar-page='thumbnails'
 sidebar-size=148
 sizing-mode='free'
-window-ratio=(1.5690095417282621, 1.1604841487605269)
-zoom=0.49632352941176472
+window-ratio=(1.6126864668727319, 1.1604841487605269)
+zoom=0.47232129066830664
 
 [org/gnome/evolution-data-server]
 migrated=true
@@ -644,7 +653,7 @@ sort-column='name'
 sort-directories-first=true
 sort-order='ascending'
 type-format='category'
-window-position=(0, 66)
+window-position=(389, 61)
 window-size=(1203, 891)
 
 [org/yorba/shotwell/preferences/ui]
