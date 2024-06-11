@@ -448,6 +448,7 @@ if g:is_latex == 1
     "预设：自定义
     "命令：nvim
     "参数：--headless -c "VimtexInverseSearch %line '%file'"
+    "高版本的Mac OS使用正向搜索会失效
   elseif has('linux')
     " Use zathura
     let g:vimtex_view_general_viewer = 'zathura'

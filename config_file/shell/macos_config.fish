@@ -53,7 +53,7 @@ alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
 
 
-eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
+#eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
 
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end
