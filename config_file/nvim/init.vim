@@ -362,11 +362,6 @@ noremap <Leader>gd :Gvdiff<CR>
 Plug 'sheerun/vim-polyglot' "语法高亮，代码缩进
 "======================================================================
 Plug 'vim-autoformat/vim-autoformat'
-autocmd FileType c autocmd BufWritePre <buffer> Autoformat
-autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
-autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
-autocmd FileType sh autocmd BufWritePre <buffer> Autoformat
-au! BufNewFile,BufRead *.tpp set filetype=cpp
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
 endif
@@ -736,3 +731,6 @@ source $NVIM_FOLDER/unite_extension.vim
 
 " 如果文件大于3MB（3000000字节）
 call CheckISLargeFile(3000000)
+
+" 打开文件时自动调用检查函数
+autocmd BufReadPost * call CheckFileLineCount(200)

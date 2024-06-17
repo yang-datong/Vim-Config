@@ -951,6 +951,12 @@ snippet mkka "display math aligned"
 \end{align}
 endsnippet
 #-------------------- 18. 特殊格式 ---------------------
+priority 2001
+context "math()"
+snippet grad "grad"
+\mathbf{grad} ~ 
+endsnippet
+
 snippet new "new" wb
 \newpage
 $0
@@ -1204,6 +1210,13 @@ context "math()"
 snippet 'Lam|La' "Lam" wr
 \Lambda$0
 endsnippet
+
+#------------------- 20-3. 复数 --------------------
+context "math()"
+snippet i "i" w
+\mathrm{i}
+endsnippet
+
 #-------------------- 21. 三角函数 ---------------------
 priority 2001
 context "math()"

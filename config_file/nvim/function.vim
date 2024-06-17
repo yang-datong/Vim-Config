@@ -51,6 +51,15 @@ func CheckISLargeFile(maxSize)
   endif
 endfunc
 
+func CheckFileLineCount(maxLine)
+  if line('$') < a:maxLine "文件小于x行才自动格式化
+    autocmd FileType c autocmd BufWritePre <buffer> Autoformat
+    autocmd FileType cpp autocmd BufWritePre <buffer> Autoformat
+    autocmd FileType tex autocmd BufWritePre <buffer> Autoformat
+    autocmd FileType sh autocmd BufWritePre <buffer> Autoformat
+    au! BufNewFile,BufRead *.tpp set filetype=cpp
+  endif
+endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                      2. 按键映射区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
