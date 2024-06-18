@@ -31,7 +31,10 @@ check_py_pack(){
 main(){
 	check_cmd node nodejs
 	if [ $(uname) == "Linux" ];then
-		sudo add-apt-repository ppa:neovim-ppa/stable
+		add-apt-repository --list | grep neovim
+		if [ $? != 0 ];then
+			sudo add-apt-repository ppa:neovim-ppa/stable
+		fi
 		sudo apt update
 	fi
 	check_cmd nvim neovim

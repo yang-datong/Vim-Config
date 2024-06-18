@@ -15,7 +15,10 @@ main(){
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ];then
-		sudo add-apt-repository ppa:deadsnakes/ppa
+		add-apt-repository --list | grep deadsnakes
+		if [ $? != 0 ];then
+			sudo add-apt-repository ppa:deadsnakes/ppa
+		fi
 		sudo apt update
 		sudo apt install -y file passwd python3.10 android-sdk-platform-tools #android-tools-adb
 	elif [ "$(uname)" == "Darwin" ];then
