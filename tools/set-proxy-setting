@@ -24,7 +24,7 @@ case "${opt}" in
 	on) on;;
 	off) off ;;
 	auto) auto;;
-	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+	*) echo "Invalid option: -${OPTARG} , Do you say '$(basename $0) on|off|auto' ?" >&2 && exit 1;;
 esac
 
 

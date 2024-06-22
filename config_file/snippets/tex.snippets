@@ -46,7 +46,7 @@ endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|X|R|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|X|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -85,10 +85,13 @@ elif s == "*" :
 	s = "cdot"
 elif s == "X":
 	s = "times"
-elif s == "R":
-	s = "mathbb{R}"
 snip.rv = "\\" + s
 ` $0
+endsnippet
+
+context "math()"
+snippet '(C|R)' "math{C|R}" rw
+\mathbb{`!p snip.rv=match.group(1)`}
 endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
