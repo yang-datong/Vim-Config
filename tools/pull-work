@@ -15,7 +15,7 @@ function from_icloud(){
 }
 
 function from_github(){
-	work_dirs=($HOME/sh_foot $HOME/Desktop/Study $HOME/Desktop/MD-Note)
+	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note)
 	for i in ${work_dirs[@]};do
 		pushd "$i"
 		git pull
