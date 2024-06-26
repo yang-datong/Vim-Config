@@ -295,6 +295,10 @@ shift $((OPTIND-1))
 
 check_parameter_legal "$@"
 
+if [ ! -f $file ];then
+  echo -e "\033[31mNot fond $file\033[0m";exit
+fi
+
 start_study_date=$(date +"%Y-%m-%d-%H:%M:%S")
 if [ "$(uname)" == "Linux" ];then
   main_Ubuntu "$@"
