@@ -38,14 +38,14 @@ set_systemctl(){
 
 		# 加载服务并启动（重新运行会报错）
 		launchctl load -w $HOME/Library/LaunchAgents/com.rl.clash.plist
-		# 查看服务状态（第一次安装后需要重启）
-		launchctl list | grep com.rl.clash #如果第二项值为0则表示服务成功运行
-
 
 		#停止服务
-		#launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.rl.clash.plist
+		launchctl bootout gui/$(id -u) $HOME/Library/LaunchAgents/com.rl.clash.plist
 		#重启服务
-		#launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.rl.clash.plist
+		launchctl bootstrap gui/$(id -u) $HOME/Library/LaunchAgents/com.rl.clash.plist
+
+		# 查看服务状态（第一次安装后需要重启）
+		launchctl list | grep com.rl.clash #如果第二项值为0则表示服务成功运行
 
 		# 查看服务日志
 		log show --predicate 'process == "clash"' --info --last 1h
@@ -77,25 +77,25 @@ ubuntu(){
 
 
 mac(){
-	#if [ ! -d $HOME/.config/clash ];then
-	#	mkdir $HOME/.config/clash
-	#fi
-	#if [ ! -f Clash.Meta-darwin-amd64-v1.14.0.gz ];then
-	#	wget "https://github.com/MetaCubeX/mihomo/releases/download/v1.14.0/Clash.Meta-darwin-amd64-v1.14.0.gz" -O Clash.Meta-darwin-amd64-v1.14.0.gz
-	#	gunzip Clash.Meta-darwin-amd64-v1.14.0.gz
-	#fi
-	#if [ -f Clash.Meta-darwin-amd64-v1.14.0 ];then
-	#	mv Clash.Meta-darwin-amd64-v1.14.0 $HOME/.config/clash/clash
-	#	chmod +x $HOME/.config/clash/clash
-	#fi
-	#if [ ! -f $HOME/.config/clash/clash ];then
-	#	echo -e "\033[31mDownload clash failed\033[0m";exit
-	#fi
-	#if [ ! -f $HOME/.config/clash/Country.mmdb ];then
-	#	wget https://github.com/Dreamacro/maxmind-geoip/releases/download/20240512/Country.mmdb -O Country.mmdb
-	#	sudo mv Country.mmdb $HOME/.config/clash/
-	#fi
-	#download_config
+	if [ ! -d $HOME/.config/clash ];then
+		mkdir $HOME/.config/clash
+	fi
+	if [ ! -f Clash.Meta-darwin-amd64-v1.14.0.gz ] && [ ! -f $HOME/.config/clash/clash ];then
+		wget "https://github.com/MetaCubeX/mihomo/releases/download/v1.14.0/Clash.Meta-darwin-amd64-v1.14.0.gz" -O Clash.Meta-darwin-amd64-v1.14.0.gz
+		gunzip Clash.Meta-darwin-amd64-v1.14.0.gz
+	fi
+	if [ -f Clash.Meta-darwin-amd64-v1.14.0 ];then
+		mv Clash.Meta-darwin-amd64-v1.14.0 $HOME/.config/clash/clash
+		chmod +x $HOME/.config/clash/clash
+	fi
+	if [ ! -f $HOME/.config/clash/clash ];then
+		echo -e "\033[31mDownload clash failed\033[0m";exit
+	fi
+	if [ ! -f $HOME/.config/clash/Country.mmdb ];then
+		wget https://github.com/Dreamacro/maxmind-geoip/releases/download/20240512/Country.mmdb -O Country.mmdb
+		sudo mv Country.mmdb $HOME/.config/clash/
+	fi
+	download_config
 	set_systemctl
 }
 
