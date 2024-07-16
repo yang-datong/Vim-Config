@@ -40,6 +40,7 @@ main(){
 	check_cmd nvim neovim
 	check_py_pack pynvim
 	check_py_pack neovim-remote
+	./install_nodejs.sh
 
 	#into main work
 	if [ ! -d $HOME/.config/nvim ];then
