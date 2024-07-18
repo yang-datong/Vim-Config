@@ -33,13 +33,14 @@ main(){
 	if [ $(uname) == "Linux" ];then
 		add-apt-repository --list | grep neovim
 		if [ $? != 0 ];then
-			sudo add-apt-repository ppa:neovim-ppa/stable
+			sudo add-apt-repository ppa:neovim-ppa/stable -y
 		fi
 		sudo apt update
 	fi
 	check_cmd nvim neovim
 	check_py_pack pynvim
 	check_py_pack neovim-remote
+	./install_nodejs.sh
 
 	#into main work
 	if [ ! -d $HOME/.config/nvim ];then

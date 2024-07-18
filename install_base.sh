@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 main(){
 	check_os
@@ -9,7 +8,7 @@ main(){
 			read ok
 			git clone git@github.com:yang-datong/Vim-Config.git $HOME/sh_foot
 		fi
-		echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
+		echo "Setting environment to \$SH_FOOT ,Used $HOME/sh_foot"; export SH_FOOT=$HOME/sh_foot
 	fi
 
 	pushd $SH_FOOT
@@ -17,7 +16,7 @@ main(){
 	if [ "$(uname)" == "Linux" ];then
 		add-apt-repository --list | grep deadsnakes
 		if [ $? != 0 ];then
-			sudo add-apt-repository ppa:deadsnakes/ppa
+			sudo add-apt-repository ppa:deadsnakes/ppa -y
 		fi
 		sudo apt update
 		sudo apt install -y file passwd python3.10 android-sdk-platform-tools #android-tools-adb
@@ -37,7 +36,7 @@ main(){
 		rm get-pip.py
 	fi
 	./install_aria2c.sh #下载工具
-	#./install_fish.sh
+	./install_fish.sh
 	./install_zsh.sh
 	./install_neovim.sh
 	./install_vim_anywhere.sh
@@ -45,15 +44,6 @@ main(){
 	./tools/replace_symbols_link.sh
 	./config_file/replace_symbols_link.sh
 	popd
-}
-
-check_proxy(){
-	local err=$(echo $https_proxy)
-	if [ -z "$err" ];then
-		echo 0
-	else
-		echo 1
-	fi
 }
 
 cc="brew"
@@ -66,8 +56,4 @@ check_os(){
 	esac
 }
 
-#if [ $(check_proxy) == 0 ];then
-#	echo "没有使用代理，确保可以访问github不然环境无法搭建";exit
-#fi
-
-main
+main "$@"
