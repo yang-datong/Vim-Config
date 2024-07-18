@@ -33,7 +33,7 @@ main(){
 	if [ $(uname) == "Linux" ];then
 		add-apt-repository --list | grep neovim
 		if [ $? != 0 ];then
-			sudo add-apt-repository ppa:neovim-ppa/stable
+			sudo add-apt-repository ppa:neovim-ppa/stable -y
 		fi
 		sudo apt update
 	fi

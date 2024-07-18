@@ -277,8 +277,12 @@ else if (${1:/* condition */}) {
 }
 endsnippet
 
-snippet echo "printf .. (printf)"
+snippet 'echo|printf|print' "printf .. (printf)" rw
 printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
+
+snippet avlog "printf .. (av_printf)"
+av_log(NULL,${3:AV_LOG_ERROR},"${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
 
 snippet st "struct"

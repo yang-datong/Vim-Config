@@ -4,7 +4,7 @@ set -e
 ubuntu(){
   sudo apt-get install ca-certificates curl gnupg lsb-release
   curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo apt-key add -
-  sudo add-apt-repository "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+  sudo add-apt-repository "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable" -y
   sudo apt-get -y install docker-ce docker-ce-cli containerd.io
   sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common
 
