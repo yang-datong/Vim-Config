@@ -51,8 +51,9 @@ download(){
 	#1. 默认情况下libc-dbg会安装到 /usr/lib/debug目录下，但是我使用Ubuntu24.04并没找到，使用find / 也没有找到，奇怪
 	#2. 源代码会在/usr/src/glibc/glibc-2.39.tar.xz （2.39是根据你的系统版本自动获取的）
 	cd /usr/src/glibc
-	sudo tar -xf /usr/src/glibc-*.tar.xz
-	echo "Use for GDB: (gdb)> directory /usr/src/glibc/glibc-*"
+	local glibc_tar=$(find /usr/src -name "glibc-*.tar.xz")
+	sudo tar -xf ${glibc_tar}
+	echo "Use for GDB: (gdb)> directory ${glibc_tar}"
 }
 
 
