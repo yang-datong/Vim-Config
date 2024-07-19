@@ -97,6 +97,7 @@ mac(){
 	fi
 	download_config
 	set_systemctl
+	echo "配置完后，在config.yaml文件内，将使用的节点中skip-cert-verify字段修改为true"
 }
 
 cc="brew"
