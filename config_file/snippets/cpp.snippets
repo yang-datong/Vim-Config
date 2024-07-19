@@ -341,7 +341,7 @@ endsnippet
 
 context "function()"
 snippet 'for(i|j|k)' "for int loop (fori)" r
-for (int `!p snip.rv = match.group(1)` = 0; `!p snip.rv = match.group(1)` < ${1}; `!p snip.rv = match.group(1)`++) {
+for (int `!p snip.rv = match.group(1)` = 0; `!p snip.rv = match.group(1)` < ${1}; ++`!p snip.rv = match.group(1)`) {
 	${VISUAL}$2
 }
 endsnippet
@@ -448,7 +448,7 @@ endsnippet
 
 #-------------------- 5. Global Env ---------------
 # TODO YangJing 有问题，场景如下： <24-03-30 16:15:01> #
-# for (int i = 0; i < original.size()<在这按tab就一直循环在()里面 ; i++) {
+# for (int i = 0; i < original.size()<在这按tab就一直循环在()里面 ; ++i) {
 #  }
 #snippet '(\(\)|\[\]|\|\||"")' "parent" ir
 #`!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
@@ -683,8 +683,8 @@ endsnippet
 snippet linklist_insert_head "linklist_insert_head"
 void listHeadInsert(LinkList &linkList) {
   LNode *node, *endPoint = linkList; // 表尾指针初始化指向头指针
-  // for (int i = 0x41; i < 0x43; i++) { // A,B,C
-  for (int i = 0x41; i < 0x60; i++) { // A,B,C,D,E.....,Z
+  // for (int i = 0x41; i < 0x43; ++i) { // A,B,C
+  for (int i = 0x41; i < 0x60; ++i) { // A,B,C,D,E.....,Z
     node = (LNnode *)malloc(sizeof(LNode));
     // 3. point to be inserted ,创建一个新结点
     node->data = i;
@@ -701,8 +701,8 @@ endsnippet
 snippet linklist_insert_tail "linklist_insert_tail"
 void listTailInsert(LinkList &linkList) {
   LNode *node, *endPoint = linkList; // 表尾指针初始化指向头指针
-  // for (int i = 0x41; i < 0x43; i++) { // A,B,C
-  for (int i = 0x41; i < 0x60; i++) { // A,B,C,D,E.....,Z
+  // for (int i = 0x41; i < 0x43; ++i) { // A,B,C
+  for (int i = 0x41; i < 0x60; ++i) { // A,B,C,D,E.....,Z
     node = (LNnode *)malloc(sizeof(LNode));
     // 3. point to be inserted ,创建一个新结点
     node->data = i;

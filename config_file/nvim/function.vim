@@ -224,9 +224,9 @@ func Run()
     let firstLine = getline(1)
     if stridx(firstLine, '// gcc') == 0
       let remainingChars = strpart(firstLine, strlen('// gcc'))
-      exec '!gcc % -o %< -g -Wall -std=c17 ' remainingChars '&& ./%<'
+      exec '!gcc % -o %< -g3 -O0 -Wall -std=c17 ' remainingChars '&& ./%<'
     else
-      exec '!gcc % -o %< -g -Wall -std=c17 && ./%<'
+      exec '!gcc % -o %< -g3 -O0 -Wall -std=c17 && ./%<'
     endif
   elseif &filetype == 'cpp'
     if filereadable('Makefile')

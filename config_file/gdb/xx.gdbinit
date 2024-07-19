@@ -39,6 +39,10 @@ define bin
 heapinfo
 end
 
+define thread-switch-off
+set scheduler-locking off
+end
+
 define fincycle
 until
 #在执行完循环体内的最后一条语句之后执行 until, 就会执行完循环体到后面的一个语句停下。
@@ -96,6 +100,7 @@ document linked-list
 end
 
 alias link=linked-list
+
 
 gef config context.layout "legend regs stack code args source -threads trace extra memory"
 

@@ -88,7 +88,7 @@ confg_static(){
 	export PKG_CONFIG_PATH=${HOME}/${x265_version}/build/linux:${HOME}/${x264_version}/build/lib/pkgconfig
 
 	./configure --prefix=$(pwd)/build \
-		--extra-cflags="-static -O0 -g -ggdb -Wno-deprecated-declarations" --extra-ldflags="-static" --pkg-config-flags="--static" \
+		--extra-cflags="-static -O0 -g3 -ggdb -Wno-deprecated-declarations" --extra-ldflags="-static" --pkg-config-flags="--static" \
 		--enable-small \
 		--enable-gpl --enable-libx264 \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
@@ -132,7 +132,7 @@ confg_static(){
 			cd $x264_version
 			if [ "$type" == "static" ];then
 				if [ ! -f "./build/lib/libx264.a" ];then
-					./configure --enable-static --disable-asm --prefix=$(pwd)/build --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g -O0" --extra-ldflags="-static"
+					./configure --enable-static --disable-asm --prefix=$(pwd)/build --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g3 -O0" --extra-ldflags="-static"
 					#--enable-static: 启用静态库的构建。
 					#--disable-asm: 禁用汇编代码优化。
 					#--disable-cli: 禁用 x264 命令行工具的构建。
@@ -147,7 +147,7 @@ confg_static(){
 					make -j16 && make install
 				fi
 			elif [ "$type" == "shared" ];then
-				./configure --enable-shared --disable-asm --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g -O0"
+				./configure --enable-shared --disable-asm --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g3 -O0"
 				make -j16 && sudo make install
 			else
 				echo -e "\033[31mfetch_x264_lib failed\033[0m";exit
@@ -171,13 +171,13 @@ confg_static(){
 			cd $x265_version/build/linux
 			if [ "$type" == "static" ];then
 				if [ ! -f  libx265.a ];then
-					cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${HOME}/${x265_version}/build/linux/lib -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g -O0" -DEXTRA_LDFLAGS="-static" ../../source
+					cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${HOME}/${x265_version}/build/linux/lib -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DEXTRA_LDFLAGS="-static" ../../source
 					#-DENABLE_CLI=OFF: 禁用 x265 命令行工具的构建。
 					#-DHIGHBITDEPTH=OFF: 禁用高比特深度支持 (可选)。
 					make -j16 && make install
 				fi
 			elif [ "$type" == "shared" ];then
-				cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g -O0" ../../source
+				cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" ../../source
 				make -j16 && sudo make install
 			else
 				echo -e "\033[31mfetch_x265_lib failed\033[0m";exit
