@@ -14,7 +14,7 @@ function to_icloud(){
 }
 
 function to_github(){
-	work_dirs=($HOME/sh_foot $HOME/Desktop/Study $HOME/Desktop/MD-Note)
+	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note)
 	for i in ${work_dirs[@]};do
 		pushd "$i"
 		git add . && git commit -m "Auto commit from[$0]" && git push
