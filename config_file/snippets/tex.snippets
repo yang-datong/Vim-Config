@@ -40,7 +40,7 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(cap|cdot|cup|exists|equiv|eta|forall|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|phi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(arg|sup|cap|cdot|cup|exists|equiv|eta|forall|log|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|phi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
@@ -256,7 +256,7 @@ snippet limss "limss" i
 endsnippet
 #-------------------- 9. *_{$1}^{$2} ----------------
 context "math()"
-snippet log "log" i
+snippet logs "logs" i
 \log_{${1:a}}^\{${2:b}\}$0
 endsnippet
 
@@ -1238,7 +1238,7 @@ snippet '(omega|ome|omg)(\d)?' "omega|ome|omg" wr
 \omega`!p 
 if not match.group(2) is None:
 	snip.rv = "_{" + match.group(2) + "}"
-`
+` 
 endsnippet
 
 context "math()"
@@ -1273,7 +1273,12 @@ f_{m}(x_{0})
 endsnippet
 
 context "math()"
-snippet 'varepsilon|vareps|varep|vare|vepsion' "varepsilon" wr
+snippet 'epsilon|esion|eps' "epsilon" wr
+\epsilon 
+endsnippet
+
+context "math()"
+snippet 'varepsilon|vepsion|vareps|varep|vare|veps' "varepsilon" wr
 \varepsilon 
 endsnippet
 
