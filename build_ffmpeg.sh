@@ -10,8 +10,8 @@ unset directory
 ff_version="ffmpeg-4.2.2"
 ff="${ff_version}.tar.bz2"
 
-static=1
-shared=0
+static=0
+shared=1
 
 main(){
 	confirmation_info
@@ -20,15 +20,9 @@ main(){
 		fetch_x264_lib static
 		fetch_x265_lib static
 	elif [ "$shared" == "1" ];then
-		echo -e "\033[31m还有点问题，可以编译，但是不能运行\033[0m"
 		fetch_x264_lib shared
 		fetch_x265_lib shared
-		#Install x264 x265 depend(shared library)
-		#dpkg -L libx264-dev || sudo apt install libx264-dev 这种方式没有调试符号
-		#dpkg -L libx265-dev || sudo apt install libx265-dev
-		#read -p "Are you already installed libx264-dev/libx265-dev?[Y/n]" ok
-		#if [ "$ok" == "n" ];then exit;fi
-		echo "IyEvYmluL2Jhc2gKCmV4cG9ydCBMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXg6Li4veDI2NC1tYXN0ZXIvCgpleHBvcnQgRFlMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXg6Li4veDI2NC1tYXN0ZXIvCgpnZGIgZmZtcGVnX2cgXAoJLWV4ICJkaXJlY3RvcnkgbGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGUiIFwKCS1leCAic2V0IGFyZ3MgLWkgZGVtby5tcDQgZGVtby5oMjY0IC15IiBcCgktZXggImIgbWFpbiIgXAoJLWV4ICJyIgo=" | base64 -d > $work_dir/$ff_version/gdb.sh | chmod +x $work_dir/$ff_version/gdb.sh
+		echo "IyEvYmluL2Jhc2gKCmV4cG9ydCBMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXhfYW1kNjQvbGliLzouLi94MjY0LW1hc3Rlci9idWlsZC9saWIvCgpleHBvcnQgRFlMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXhfYW1kNjQvbGliLzouLi94MjY0LW1hc3Rlci9idWlsZC9saWIvCgpnZGIgZmZtcGVnX2cgXAoJLWV4ICJkaXJlY3RvcnkgbGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGUiIFwKCS1leCAic2V0IGFyZ3MgLWkgZGVtby5tcDQgZGVtby5oMjY0IC15IiBcCgktZXggImIgbWFpbiIgXAoJLWV4ICJyIgo=" | base64 -d > $work_dir/$ff_version/gdb.sh | chmod +x $work_dir/$ff_version/gdb.sh
 	else
 		exit
 	fi
@@ -85,28 +79,33 @@ build_ff(){
 }
 
 confg_static(){
-	# 如果开启了 --enable-libx265 会一直报错：ERROR: x265 not found using pkg-config，因为默认是引用动态库，只需要自己在flags中指定那么也可以链接到x265，x265 使用了 dlopen 函数，而 dlopen 是用来打开动态链接库的。 在静态链接的应用程序中使用 dlopen 通常会导致问题， 因为静态链接的目的是将所有代码都包含在可执行文件中，而不需要额外的库，所以不能静态链接到x265
 	# -Wdeprecated-declarations 不打印函数过时的警告
-	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux:${HOME}/${x264_version}/build/lib/pkgconfig
+	# 如果开启了 --enable-libx265 会一直报错：ERROR: x265 not found using pkg-config，已经解决： 报错原因：/usr/bin/ld: cannot find -lgcc_s: No such file or directory，
+	# 解决：
+	sed -i 's/Libs.private: -lstdc++ -lm -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl/Libs.private: -lstdc++ -lm/' ${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig/x265.pc
+
+	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	#pkg-config --with-path=${work_dir}/${x264_version}/build/lib/pkgconfig/ --libs --cflags x264
+	#pkg-config --with-path=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig/ --libs --cflags x265
 
 	#不要用-ggdb，-g3就是最高调试级别，-ggdb反而没有这么多调试信息
 	./configure --prefix=$(pwd)/build \
 		--extra-cflags="-static -O0 -g3 -Wno-deprecated-declarations" --extra-ldflags="-static" --pkg-config-flags="--static" \
 		--enable-small \
-		--enable-gpl --enable-libx264 \
+		--enable-gpl --enable-libx264 --enable-libx265 \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
 		--disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages \
 		--disable-ffplay --disable-ffprobe \
 		--disable-avdevice --disable-swresample --disable-postproc \
 		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
-		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
+		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS  --enable-libxcb
 }
 
 confg_shared(){
 	#使用动态库：
 	#1.删除 --extra-cflags="-static" --extra-ldflags="-static" \
 	#2.添加 --enable-shared \
-	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux:${HOME}/${x264_version}/build/lib/pkgconfig
+	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
 	./configure \
 		--prefix=$(pwd)/build \
 		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations" \
@@ -119,8 +118,8 @@ confg_shared(){
 		--disable-avdevice --disable-swresample --disable-postproc \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
 		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
-		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
-	}
+		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS --enable-libxcb
+}
 
 fetch_x264_lib(){
 	local type="$1"
@@ -175,13 +174,13 @@ fetch_x265_lib(){
 	cd $x265_version/build/linux
 	if [ "$type" == "static" ];then
 		if [ ! -f  libx265.a ];then
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux/lib -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DEXTRA_LDFLAGS="-static" ../../source
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DEXTRA_LDFLAGS="-static" -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
 			#-DENABLE_CLI=OFF: 禁用 x265 命令行工具的构建。
 			#-DHIGHBITDEPTH=OFF: 禁用高比特深度支持 (可选)。
 			make -j16 && make install
 		fi
 	elif [ "$type" == "shared" ];then
-		cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux/lib -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" ../../source
+		cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
 		make -j16 && make install
 	else
 		echo -e "\033[31mfetch_x265_lib failed\033[0m";exit
@@ -232,3 +231,18 @@ done
 shift $((OPTIND-1))
 
 main "$@"
+
+
+
+#动态编译时间：
+#________________________________________________________
+#Executed in   66.57 secs    fish           external
+#   usr time  531.84 secs    0.00 micros  531.84 secs
+#   sys time   65.06 secs  974.00 micros   65.06 secs
+
+
+#静态编译时间：
+#________________________________________________________
+#Executed in   73.16 secs    fish           external
+#   usr time  536.23 secs    0.00 micros  536.23 secs
+#   sys time   73.83 secs  941.00 micros   73.82 secs
