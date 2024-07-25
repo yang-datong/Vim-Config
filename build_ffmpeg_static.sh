@@ -28,7 +28,7 @@ main(){
 		#dpkg -L libx265-dev || sudo apt install libx265-dev
 		#read -p "Are you already installed libx264-dev/libx265-dev?[Y/n]" ok
 		#if [ "$ok" == "n" ];then exit;fi
-		echo "IyEvYmluL2Jhc2gKCmV4cG9ydCBMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXg6Li4veDI2NC1tYXN0ZXIvCgpnZGIgZmZtcGVnX2cgXAoJLWV4ICJkaXJlY3RvcnkgbGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGUiIFwKCS1leCAic2V0IGFyZ3MgLWkgZGVtby5tcDQgZGVtby5oMjY0IC15IiBcCgktZXggImIgbWFpbiIgXAoJLWV4ICJyIgo=" | base64 -d > $work_dir/$ff_version/gdb.sh | chmod +x $work_dir/$ff_version/gdb.sh
+		echo "IyEvYmluL2Jhc2gKCmV4cG9ydCBMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXg6Li4veDI2NC1tYXN0ZXIvCgpleHBvcnQgRFlMRF9MSUJSQVJZX1BBVEg9bGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGU6Li4veDI2NV8zLjYvYnVpbGQvbGludXg6Li4veDI2NC1tYXN0ZXIvCgpnZGIgZmZtcGVnX2cgXAoJLWV4ICJkaXJlY3RvcnkgbGliYXZjb2RlYzpsaWJhdmRldmljZTpsaWJhdmZpbHRlcjpsaWJhdmZvcm1hdDpsaWJhdnJlc2FtcGxlOmxpYmF2dXRpbDpsaWJwb3N0cHJvYzpsaWJzd3Jlc2FtcGxlOmxpYnN3c2NhbGUiIFwKCS1leCAic2V0IGFyZ3MgLWkgZGVtby5tcDQgZGVtby5oMjY0IC15IiBcCgktZXggImIgbWFpbiIgXAoJLWV4ICJyIgo=" | base64 -d > $work_dir/$ff_version/gdb.sh | chmod +x $work_dir/$ff_version/gdb.sh
 	else
 		exit
 	fi
@@ -151,8 +151,8 @@ fetch_x264_lib(){
 			make -j16 && make install
 		fi
 	elif [ "$type" == "shared" ];then
-		./configure --enable-shared --disable-asm --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g3 -O0"
-		make -j16 && sudo make install
+		./configure --enable-shared --disable-asm --prefix=$(pwd)/build --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g3 -O0"
+		make -j16 && make install
 	else
 		echo -e "\033[31mfetch_x264_lib failed\033[0m";exit
 	fi
@@ -181,8 +181,8 @@ fetch_x265_lib(){
 			make -j16 && make install
 		fi
 	elif [ "$type" == "shared" ];then
-		cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" ../../source
-		make -j16 && sudo make install
+		cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux/lib -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" ../../source
+		make -j16 && make install
 	else
 		echo -e "\033[31mfetch_x265_lib failed\033[0m";exit
 	fi
