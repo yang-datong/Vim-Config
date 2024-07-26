@@ -1,14 +1,19 @@
 #!/bin/bash
 set -e
 
-ScriptVersion="1.0"
+ScriptVersion="2.0"
 work_dir=$(pwd)
 
 unset file
 unset directory
 
-ff_version="ffmpeg-4.2.2"
+ff_version="ffmpeg-4.4.2"
 ff="${ff_version}.tar.bz2"
+
+x264_version="x264-master"
+x264="${x264_version}.tar.bz2"
+x265_version="x265_3.6"
+x265="${x265_version}.tar.gz"
 
 static=0
 shared=1
@@ -98,7 +103,8 @@ confg_static(){
 		--disable-ffplay --disable-ffprobe \
 		--disable-avdevice --disable-swresample --disable-postproc \
 		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
-		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS  --enable-libxcb
+		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
+		#--enable-libxcb 使用xcb需要去掉--disable-avdevice
 }
 
 confg_shared(){
@@ -118,13 +124,12 @@ confg_shared(){
 		--disable-avdevice --disable-swresample --disable-postproc \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
 		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
-		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS --enable-libxcb
+		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
+		#--enable-libxcb 使用xcb需要去掉--disable-avdevice
 }
 
 fetch_x264_lib(){
 	local type="$1"
-	x264_version="x264-master"
-	x264="x264-master.tar.bz2"
 	pushd $work_dir
 
 	if [ ! -d "$x264_version" ];then
@@ -160,8 +165,6 @@ fetch_x264_lib(){
 
 fetch_x265_lib(){
 	local type="$1"
-	x265_version="x265_3.6"
-	x265="x265_3.6.tar.gz"
 	pushd $work_dir
 
 	if [ ! -d "$x265_version" ];then
