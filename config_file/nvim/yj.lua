@@ -47,6 +47,10 @@ function _G.CheckBackspace()
   return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
 end
 
+-- Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+keyset("n", "[g", "<Plug>(coc-diagnostic-prev)", {silent = true})
+keyset("n", "]g", "<Plug>(coc-diagnostic-next)", {silent = true})
+
 -- "" Coc-vim jump definition
 keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})  --全能包括了vim默认的gf功能
 if vim.bo.filetype == 'cpp' or vim.bo.filetype == 'c' or vim.bo.filetype == 'hpp' or vim.bo.filetype == 'h' or vim.api.nvim_get_var('is_vim_studio') == 1 then
@@ -56,8 +60,21 @@ keyset("n", "gt", "<Plug>(coc-type-definition)", {silent = true}) --对变量使
 keyset("n", "gi", "<Plug>(coc-implementation)", {silent = true}) --貌似没什么用
 keyset("n", "gr", "<Plug>(coc-references)", {silent = true}) --通过小窗口的方式，查看交叉引用
 
+-- Remap keys for apply code actions at the cursor position.
+local opts = {silent = true, nowait = true}
+keyset("x", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
+keyset("n", "<leader>a", "<Plug>(coc-codeaction-selected)", opts)
+
+keyset("n", "<leader>ac", "<Plug>(coc-codeaction-cursor)", opts)
+-- Remap keys for apply source code actions for current file.
+keyset("n", "<leader>as", "<Plug>(coc-codeaction-source)", opts)
 keyset("n", "<leader>qf", "<Plug>(coc-fix-current)", opts) --快速修复操作代码建议
 keyset("n", "<leader>rn", "<Plug>(coc-rename)", {silent = true}) --当前文件内字符共同重新命令
+
+-- Remap keys for apply refactor code actions.
+keyset("n", "<leader>re", "<Plug>(coc-codeaction-refactor)", { silent = true })
+keyset("x", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
+keyset("n", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = true })
 
 keyset("n", "<C-c>", "<Plug>(coc-cursors-position)", {silent = true})
 keyset("n", "<C-x>", "<Plug>(coc-cursors-word)", {silent = true})

@@ -224,6 +224,13 @@ snippet cout
 std::cout << ${1} << std::endl;
 endsnippet
 
+priority 1001
+context "function()"
+snippet cout_line
+std::cout << "\033[33m Into -> " << __LINE__ << "()\033[0m" << std::endl;
+endsnippet
+
+priority 1000
 context "function()"
 snippet 'cout.(.*)' "cout << info: << info << endl" r
 std::cout << `!p 

@@ -13,7 +13,7 @@ unset flag
 
 is_cmake=1
 make="make -j 16"
-cmake_version=3.0
+cmake_version=3.10
 cmake_cxx_standard=14
 
 
@@ -55,7 +55,7 @@ set(CMAKE_CXX_STANDARD ${cmake_cxx_standard})
 $(if [ $flag ]; then 
   echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall $(echo $flag | sed 's/[\,\-\.\_]/ /g')\")"
 else
-  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g -O0 -ggdb\")"
+  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g3 -O0\")"
 fi)
 
 $(if [ $include_path ]; then 
@@ -248,7 +248,7 @@ check_build_type(){
 c_kind(){
   cc="gcc" #gcc 在Mac下同样指向clang
   file_suffix="c"
-  level="-std=c14"
+  level="-std=c17"
   flag="CFLAGS"
 }
 

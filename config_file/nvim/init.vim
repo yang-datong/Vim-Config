@@ -539,8 +539,8 @@ if has('mac')
   "2. Action: Send Text with 'vim' Special Chars
   "3. :call nerdcommenter#Comment('n', 'invert') | exec "normal 0 j" \n
 elseif has('linux')
-  noremap <silent> <C-_> :call nerdcommenter#Comment('n', 'toggle')<CR>
-  vnoremap <silent> <C-_> :call nerdcommenter#Comment('x', 'invert')<CR>
+  noremap <silent> <C-_> :call nerdcommenter#Comment('n', 'toggle')<CR>:execute 'normal 0 j'<CR>
+  vnoremap <silent> <C-_> :call nerdcommenter#Comment('x', 'invert')<CR>:execute 'normal 0 j'<CR>
 endif
 " }
 "======================================================================
