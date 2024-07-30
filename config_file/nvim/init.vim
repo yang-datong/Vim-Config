@@ -202,10 +202,17 @@ set completeopt-=preview
 cnoreabbrev W! w!
 cnoreabbrev Q! q!
 cnoreabbrev Qall! qall!
-cnoreabbrev Wq wq
+if g:is_vim_studio == 1
+  cnoreabbrev wq wqall
+  cnoreabbrev Wq wqall
+  cnoreabbrev wQ wqall
+  cnoreabbrev WQ wqall
+else
+  cnoreabbrev Wq wq
+  cnoreabbrev wQ wq
+  cnoreabbrev WQ wq
+endif
 cnoreabbrev Wa wa
-cnoreabbrev wQ wq
-cnoreabbrev WQ wq
 cnoreabbrev W w
 cnoreabbrev W: w
 cnoreabbrev w: w
