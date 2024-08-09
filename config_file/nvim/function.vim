@@ -104,6 +104,20 @@ function! ToggleHexMode()
 endfunction
 " }
 
+" For mutable GDB points
+func GetAllMarks()
+    let marks = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    let mark_lines = []
+
+    for mark in marks
+        let lnum = line("'" . mark)
+        if lnum > 0
+            call add(mark_lines, {'mark': mark, 'line': lnum})
+        endif
+    endfor
+    return mark_lines
+endfunction
+
 " Need install iTerm2 or terminator
 func OpenWindowIntoGDB()
   if filereadable(expand('%:t:r'))
@@ -117,8 +131,9 @@ func OpenWindowIntoGDB()
   if has('mac')
     silent exec "!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd " . cwd .  " && gdb " . gdb_file . " -o \\\"b " . expand('%:t') . ":" . line('.') . "\\\" \" & return & delay 0.1 & key code 36'"
   elseif has('Linux')
-    silent exec "!terminator -x fish -c 'pwd && gdb " .  gdb_file . " -ex \"b " . expand('%:t') . ":" . line('.') . "\"; exec fish'"
+    let gdb_cmd = printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'",gdb_file,expand('%:t'),line('.'))
   endif
+    silent exec gdb_cmd
 endfunc
 " }
 

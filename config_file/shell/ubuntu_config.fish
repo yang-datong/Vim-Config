@@ -15,7 +15,7 @@ set -x ANDROID_NDK_ROOT $HOME/Android/Sdk/ndk/25.1.8937393
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
 alias huya="echo '15886670991, qweasdzxc123'"
-alias ip='curl -s -m 5 https://ipleak.net/json/'
+#alias ip='curl -s -m 5 https://ipleak.net/json/'
 
 alias cl='clear'
 alias rm='trash'
