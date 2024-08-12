@@ -122,10 +122,15 @@ endfunction
 func OpenWindowIntoGDB()
   if filereadable(expand('%:t:r'))
     let gdb_file = expand('%:t:r')
+  elseif filereadable("./build/" . expand('%:t:r'))
+    let gdb_file = "./build/" . expand('%:t:r')
   elseif filereadable("a.out")
     let gdb_file = "a.out"
+  elseif filereadable("./build/a.out")
+    let gdb_file = "./build/a.out"
   else
     echo "Not fond the executable file"
+    return -1
   endif
   let cwd = expand('%:p:h')
   if has('mac')
@@ -245,8 +250,11 @@ func Run()
   elseif &filetype == 'cpp'
     if filereadable('Makefile')
       exec '!make -j4 && ./a.out'
+    elseif filereadable('./build/Makefile')
+      exec '!make -C ./build -j4 && ./build/a.out'
     elseif filereadable('CMakeLists.txt')
-      exec '!cmake . && make -j4 && ./a.out'
+      "exec '!cmake . && make -j4 && ./a.out'
+      exec '!cmake -B build . && cmake --build build -j4 && ./build/a.out'
     else
       let firstLine = getline(1)
       if stridx(firstLine, '// g++') == 0

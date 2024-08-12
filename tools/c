@@ -1,5 +1,5 @@
 #!/bin/bash
-ScriptVersion="2.0"
+ScriptVersion="3.0"
 
 unset src
 unset cc
@@ -12,7 +12,10 @@ unset libs
 unset flag
 
 is_cmake=1
-make="make -j 16"
+#cmake="cmake"
+#make="make -j $(nproc)"
+cmake="cmake -B build"
+make="cmake --build build -j $(nproc)"
 cmake_version=3.10
 cmake_cxx_standard=14
 
@@ -31,7 +34,7 @@ cmake_main(){
     #cat $f
     read -p "继续执行将覆盖${f}是否继续？[y/N]" OK
     if [ "$OK" != "y" ];then
-      cmake . && ${make}
+      ${cmake} . && ${make}
     else
       generate_cmakelists
     fi
@@ -112,7 +115,7 @@ EOF
   #    echo "target_link_libraries(\${BIN} \${LIBS})" >> $f
   #  fi
   #fi
-  cmake . && ${make}
+  ${cmake} . && ${make}
 }
 
 clean_cmake(){

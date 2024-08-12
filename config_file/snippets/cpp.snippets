@@ -241,7 +241,7 @@ endsnippet
 
 context "function()"
 snippet cerr
-std::cerr << "\033[31m${1:Fail}\033[0m" << std::endl;
+std::cerr << "An error occurred on " << __FUNCTION__ << "():" << __LINE__ << std::endl;
 endsnippet
 
 context "function()"
