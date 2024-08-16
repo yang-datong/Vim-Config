@@ -32,7 +32,7 @@ cmake_main(){
   local f="CMakeLists.txt"
   if [ -f $f ];then
     #cat $f
-    read -p "继续执行将覆盖${f}是否继续？[y/N]" OK
+    read -p "是否重新生成${f}？[y/N]" OK
     if [ "$OK" != "y" ];then
       ${cmake} . && ${make}
     else

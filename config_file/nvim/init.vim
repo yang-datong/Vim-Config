@@ -658,7 +658,8 @@ endif
 " }
 
 " Command {  "Expand t-o-d-o list
-:command TODO :vimgrep /TODO/gj **/* | botright copen
+":command TODO :vimgrep /TODO/gj **/* | botright copen
+:command TODO :Ag TODO
   "vimgrep 是 Vim 的内置命令，用于在文件中搜索指定的模式。
   "/t-o-d-o/ 是要搜索的模式，即 “t-o-d-o” 字符串。
   ""g 表示全局搜索，即搜索整个文件。
