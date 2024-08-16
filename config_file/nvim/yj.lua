@@ -79,6 +79,23 @@ keyset("n", "<leader>r", "<Plug>(coc-codeaction-refactor-selected)", { silent = 
 keyset("n", "<C-c>", "<Plug>(coc-cursors-position)", {silent = true})
 keyset("n", "<C-x>", "<Plug>(coc-cursors-word)", {silent = true})
 keyset("x", "<C-x>", "<Plug>(coc-cursors-range)", {silent = true})
+
+vim.api.nvim_create_augroup('CocGroup', {})
+
+-- 高亮显示符号及其引用（鼠标处于空闲状态） 
+--vim.api.nvim_create_autocmd('CursorHold', {
+--  group = 'CocGroup',
+--  command = "silent call CocActionAsync('highlight')",
+--  desc = 'Highlight symbol under cursor on CursorHold'
+--})
+
+-- Update signature help on jump placeholder
+vim.api.nvim_create_autocmd('User', {
+  group = 'CocGroup',
+  pattern = 'CocJumpPlaceholder',
+  command = "call CocActionAsync('showSignatureHelp')",
+  desc = 'Update signature help on jump placeholder'
+})
 --======================================================================
 --" Option {
 --  "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json

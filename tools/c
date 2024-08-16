@@ -43,6 +43,15 @@ cmake_main(){
   fi
   #现在默认不清理生成文件，提高二次编译速度
   #clean_cmake
+  #生成compile_commands.json文件到项目根目录
+  if [ -d build ];then
+    pushd build
+    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+    popd
+    mv build/compile_commands.json ./
+  else
+    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+  fi
 }
 
 generate_cmakelists(){
