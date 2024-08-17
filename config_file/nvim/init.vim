@@ -731,6 +731,9 @@ au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent exe
 autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 " }
 
+" Auto Lines to log{
+autocmd BufReadPost *.log exec ":set nu"
+" }
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  6. unite插件扩展区域                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
