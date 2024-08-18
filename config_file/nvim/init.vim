@@ -695,6 +695,11 @@ autocmd BufReadPre *.jpeg setlocal binary | autocmd BufReadPost *.jpeg :call Tog
 autocmd BufReadPre *.JPG setlocal binary | autocmd BufReadPost *.JPG :call ToggleHexMode() 
 autocmd BufReadPre *.JPEG setlocal binary | autocmd BufReadPost *.JPEG :call ToggleHexMode() 
 
+autocmd BufReadPre *.h264 setlocal binary | autocmd BufReadPost *.h264 :call ToggleHexMode()
+autocmd BufReadPre *.h265 setlocal binary | autocmd BufReadPost *.h265 :call ToggleHexMode()
+autocmd BufReadPre *.avc setlocal binary | autocmd BufReadPost *.avc :call ToggleHexMode()
+autocmd BufReadPre *.hevc setlocal binary | autocmd BufReadPost *.hevc :call ToggleHexMode()
+
 autocmd BufReadPre *.yuv setlocal binary | autocmd BufReadPost *.yuv :call ToggleHexMode() 
 autocmd BufReadPre *.rgb setlocal binary | autocmd BufReadPost *.rgb :call ToggleHexMode() 
 autocmd BufReadPre *.ppm setlocal binary | autocmd BufReadPost *.ppm :call ToggleHexMode() 

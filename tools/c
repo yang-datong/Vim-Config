@@ -44,20 +44,15 @@ cmake_main(){
   #现在默认不清理生成文件，提高二次编译速度
   #clean_cmake
   #生成compile_commands.json文件到项目根目录
-  if [ -d build ];then
-    pushd build
-    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
-    popd
-    mv build/compile_commands.json ./
-  else
-    cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
-  fi
+  generate_compile_commands_file
 }
 
 generate_cmakelists(){
 cat << EOF > CMakeLists.txt
 # Minimum version used by CMake
 cmake_minimum_required(VERSION ${cmake_version})
+# Generate compile_commands.json file
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Project name
 project(project_name)
@@ -179,6 +174,7 @@ makefile_main(){
       generate_makefile
     fi
   fi
+  generate_compile_commands_file
 }
 
 generate_makefile(){
@@ -279,8 +275,22 @@ whether_has_source_file(){
   fi
 }
 
-
-
+generate_compile_commands_file(){
+  if [ $is_cmake == 1 ];then
+    #For Cmake
+    if [ -d build ];then
+      pushd build
+      cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+      popd
+      mv build/compile_commands.json ./
+    else
+      cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+    fi
+    #For Makefile
+  else
+    echo "For Makefile build : exec 'apt install bear' -> exec 'make clean && bear -- make'"
+  fi
+}
 
 #---------------------------------------- Command Handle ----------------------------------------
 
