@@ -1,6 +1,9 @@
 BasedOnStyle: LLVM #这个可以  指针靠变量 但是public不缩进
 #IndentAccessModifiers: true  #Linux报错
 AccessModifierOffset: -1 #class->public等关键字缩进
+AllowShortIfStatementsOnASingleLine: true #单个if体内语句，则与if并行
+AlignTrailingComments: true #对齐尾随注释
+ReflowComments: false #不格式化注释
 #BasedOnStyle: Google #不行int main 会换行\n{
 #BasedOnStyle: Chromium #还想指针靠类型
 #BasedOnStyle: Mozilla #int \n main \n () 一个类型、名字换行

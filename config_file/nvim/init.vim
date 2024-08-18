@@ -570,6 +570,8 @@ if (system('command -v ag') =~ 'ag') == 0
     call AskUserInstall("silversearcher-ag","default")
   endif
 endif
+
+"Plug 'rking/ag.vim' "界面不好看
 "======================================================================
 "Plug 'nvim-tree/nvim-tree.lua' "和NERDTreeToggle差不多
 "Plug 'nvim-tree/nvim-web-devicons'
