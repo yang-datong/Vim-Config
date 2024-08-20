@@ -128,6 +128,8 @@ func OpenWindowIntoGDB()
     let gdb_file = "a.out"
   elseif filereadable("./build/a.out")
     let gdb_file = "./build/a.out"
+  elseif filereadable("./ffmpeg_g")
+    let gdb_file = "./ffmpeg_g"
   else
     echo "Not fond the executable file"
     return -1
@@ -136,8 +138,13 @@ func OpenWindowIntoGDB()
   if has('mac')
     silent exec "!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd " . cwd .  " && gdb " . gdb_file . " -o \\\"b " . expand('%:t') . ":" . line('.') . "\\\" \" & return & delay 0.1 & key code 36'"
   elseif has('Linux')
-    let gdb_cmd = printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'",gdb_file,expand('%:t'),line('.'))
+    if filereadable("./gdb.sh")
+      let gdb_cmd = printf("!terminator -x fish -c 'pwd && ./gdb.sh \"b %s:%d\"; exec fish'",expand('%'),line('.'))
+    else
+      let gdb_cmd = printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'",gdb_file,expand('%'),line('.'))
+    endif
   endif
+    echo gdb_cmd
     silent exec gdb_cmd
 endfunc
 " }
@@ -240,28 +247,35 @@ endfunc
 func Run()
   exec "w"
   if &filetype == 'c'
-    let firstLine = getline(1)
-    if stridx(firstLine, '// gcc') == 0
-      let remainingChars = strpart(firstLine, strlen('// gcc'))
-      exec '!gcc % -o %< -g3 -O0 -Wall -std=c17 ' remainingChars '&& ./%<'
+    if filereadable('Makefile')
+      exec "!bash -c 'make -j4 && if [ -f a.out ];then ./a.out;fi'"
+    elseif filereadable('./build/Makefile')
+      exec "!bash -c 'make -C ./build -j4 && if [ -f ./build/a.out ];then ./build/a.out;fi'"
+    elseif filereadable('CMakeLists.txt')
+      exec "!bash -c 'cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ];then ./build/a.out;fi'"
     else
-      exec '!gcc % -o %< -g3 -O0 -Wall -std=c17 && ./%<'
+      let firstLine = getline(1)
+      if stridx(firstLine, '// gcc') == 0
+        let remainingChars = strpart(firstLine, strlen('// gcc'))
+        exec "!gcc % -o %< -g3 -O0 -Wall -std=c17 ' remainingChars '&& ./%<"
+      else
+        exec "!gcc % -o %< -g3 -O0 -Wall -std=c17 && ./%<"
+      endif
     endif
   elseif &filetype == 'cpp'
     if filereadable('Makefile')
-      exec '!make -j4 && ./a.out'
+      exec "!bash -c 'make -j4 && if [ -f a.out ];then ./a.out;fi'"
     elseif filereadable('./build/Makefile')
-      exec '!make -C ./build -j4 && ./build/a.out'
+      exec "!bash -c 'make -C ./build -j4 && if [ -f ./build/a.out ];then ./build/a.out;fi'"
     elseif filereadable('CMakeLists.txt')
-      "exec '!cmake . && make -j4 && ./a.out'
-      exec '!cmake -B build . && cmake --build build -j4 && ./build/a.out'
+      exec "!bash -c 'cmake -B build . && cmake --build build -j4 &&if [ -f ./build/a.out ];then ./build/a.out;fi\'"
     else
       let firstLine = getline(1)
       if stridx(firstLine, '// g++') == 0
         let remainingChars = strpart(firstLine, strlen('// g++'))
-        exec '!g++ % -o %< -g -Wall -std=c++14 ' remainingChars '&& ./%<'
+        exec "!g++ % -o %< -g -Wall -std=c++14 ' remainingChars '&& ./%<"
       else
-        exec '!g++ % -o %< -g -Wall -std=c++14 && ./%<'
+        exec "!g++ % -o %< -g -Wall -std=c++14 && ./%<"
       endif
     endif
   elseif &filetype == 'python'
