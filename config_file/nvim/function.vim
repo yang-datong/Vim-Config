@@ -120,32 +120,28 @@ endfunction
 
 " Need install iTerm2 or terminator
 func OpenWindowIntoGDB()
-  if filereadable(expand('%:t:r'))
-    let gdb_file = expand('%:t:r')
-  elseif filereadable("./build/" . expand('%:t:r'))
-    let gdb_file = "./build/" . expand('%:t:r')
-  elseif filereadable("a.out")
-    let gdb_file = "a.out"
-  elseif filereadable("./build/a.out")
-    let gdb_file = "./build/a.out"
-  elseif filereadable("./ffmpeg_g")
-    let gdb_file = "./ffmpeg_g"
-  else
-    echo "Not fond the executable file"
+  let gdb_file = ''
+  for file in [expand('%:t:r'), "./build/" . expand('%:t:r'), "a.out", "./build/a.out", "./ffmpeg_g"]
+    if filereadable(file)
+      let gdb_file = file
+      break
+    endif
+  endfor
+
+  if gdb_file == ''
+    echo "Not found the executable file"
     return -1
   endif
+
   let cwd = expand('%:p:h')
   if has('mac')
-    silent exec "!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd " . cwd .  " && gdb " . gdb_file . " -o \\\"b " . expand('%:t') . ":" . line('.') . "\\\" \" & return & delay 0.1 & key code 36'"
+    "silent exec "!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd " . cwd .  " && gdb " . gdb_file . " -o \\\"b " . expand('%:t') . ":" . line('.') . "\\\" \" & return & delay 0.1 & key code 36'"
+    let gdb_cmd= printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && gdb %s -o \\\"b %s:%d\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
   elseif has('Linux')
-    if filereadable("./gdb.sh")
-      let gdb_cmd = printf("!terminator -x fish -c 'pwd && ./gdb.sh \"b %s:%d\"; exec fish'",expand('%'),line('.'))
-    else
-      let gdb_cmd = printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'",gdb_file,expand('%'),line('.'))
-    endif
+    let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'", gdb_file, expand('%'), line('.'))
   endif
-    echo gdb_cmd
-    silent exec gdb_cmd
+  "echo gdb_cmd
+  silent exec gdb_cmd
 endfunc
 " }
 
@@ -246,52 +242,43 @@ endfunc
 " Fast start file execution {
 func Run()
   exec "w"
-  if &filetype == 'c'
+  let filetype = &filetype
+  let exec_cmd = ''
+
+  if filetype == 'c' || filetype == 'cpp'
+    let compiler = filetype == 'c' ? 'gcc' : 'g++'
+    let make_cmd = "make -j4 && if [ -f a.out ]; then ./a.out; fi"
+    let make2_cmd = "make -C build -j4 && if [ -f build/a.out ]; then ./build/a.out; fi"
+    let build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out; fi"
+
     if filereadable('Makefile')
-      exec "!bash -c 'make -j4 && if [ -f a.out ];then ./a.out;fi'"
+      let exec_cmd = "!bash -c '" . make_cmd . "'"
     elseif filereadable('./build/Makefile')
-      exec "!bash -c 'make -C ./build -j4 && if [ -f ./build/a.out ];then ./build/a.out;fi'"
+      let exec_cmd = "!bash -c '" . make2_cmd . "'"
     elseif filereadable('CMakeLists.txt')
-      exec "!bash -c 'cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ];then ./build/a.out;fi'"
+      let exec_cmd = "!bash -c '" . build_cmd . "'"
     else
       let firstLine = getline(1)
-      if stridx(firstLine, '// gcc') == 0
-        let remainingChars = strpart(firstLine, strlen('// gcc'))
-        exec "!gcc % -o %< -g3 -O0 -Wall -std=c17 ' remainingChars '&& ./%<"
-      else
-        exec "!gcc % -o %< -g3 -O0 -Wall -std=c17 && ./%<"
-      endif
+      let remainingChars = stridx(firstLine, filetype == 'c' ? '// gcc' : '// g++') == 0 ? strpart(firstLine, strlen(filetype == 'c' ? '// gcc' : '// g++')) : ''
+      let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c17' : 'c++14', remainingChars)
+      exec exec_cmd . ' && ./%<'
+      return 0
     endif
-  elseif &filetype == 'cpp'
-    if filereadable('Makefile')
-      exec "!bash -c 'make -j4 && if [ -f a.out ];then ./a.out;fi'"
-    elseif filereadable('./build/Makefile')
-      exec "!bash -c 'make -C ./build -j4 && if [ -f ./build/a.out ];then ./build/a.out;fi'"
-    elseif filereadable('CMakeLists.txt')
-      exec "!bash -c 'cmake -B build . && cmake --build build -j4 &&if [ -f ./build/a.out ];then ./build/a.out;fi\'"
-    else
-      let firstLine = getline(1)
-      if stridx(firstLine, '// g++') == 0
-        let remainingChars = strpart(firstLine, strlen('// g++'))
-        exec "!g++ % -o %< -g -Wall -std=c++14 ' remainingChars '&& ./%<"
-      else
-        exec "!g++ % -o %< -g -Wall -std=c++14 && ./%<"
-      endif
-    endif
-  elseif &filetype == 'python'
+  elseif filetype == 'python'
     let firstLine = getline(1)
-    if stridx(firstLine, '#manim') == 0
-      let remainingChars = strpart(firstLine, strlen('#manim'))
-      exec '!manim ' remainingChars ' % Demo'
-    else
-      exec '!python3 %'
-    endif
+    let remainingChars = stridx(firstLine, '#manim') == 0 ? strpart(firstLine, strlen('#manim')) : ''
+    let exec_cmd = remainingChars != '' ? '!manim ' . remainingChars . ' % Demo' : '!python3 %'
   elseif &filetype == 'sh'
     :! bash %
   elseif &filetype == 'tex'
-    normal \ll
+    "Vimtex
+    normal \ll 
   elseif &filetype == 'markdown'
     :MarkdownPreview
+  endif
+
+  if exec_cmd != ''
+    exec exec_cmd
   endif
 endfunc
 " }

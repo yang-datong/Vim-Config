@@ -20,6 +20,7 @@ let $VIM_FOLDER=expand('$HOME/.vim')
 " }
 
 " Load funciton.vim {
+" $HOME/.config/nvim/function.vim
 source $NVIM_FOLDER/function.vim
 " }
 

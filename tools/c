@@ -13,9 +13,9 @@ unset flag
 
 is_cmake=1
 #cmake="cmake"
-#make="make -j $(nproc)"
 cmake="cmake -B build"
 make="cmake --build build -j $(nproc)"
+make2="make -j $(nproc)"
 cmake_version=3.10
 cmake_cxx_standard=14
 
@@ -31,7 +31,6 @@ cmake_main(){
 
   local f="CMakeLists.txt"
   if [ -f $f ];then
-    #cat $f
     read -p "是否重新生成${f}？[y/N]" OK
     if [ "$OK" != "y" ];then
       ${cmake} . && ${make}
@@ -140,6 +139,9 @@ clean_cmake(){
   if [ -d CMakeFiles ];then
     mv CMakeFiles /tmp/CMakeFiles_$date
   fi
+  if [ -d build ];then
+    mv build /tmp/build_$date
+  fi
 }
 
 
@@ -166,13 +168,14 @@ makefile_main(){
 
   local f="Makefile"
   if [ -f $f ];then
-    #cat $f
-    read -p "继续执行将覆盖${f}是否继续？[y/N]" OK
+    read -p "是否重新生成${f}？[y/N]" OK
     if [ "$OK" != "y" ];then
-      ${make}
+      ${make2}
     else
       generate_makefile
     fi
+  else
+    generate_makefile
   fi
   generate_compile_commands_file
 }
@@ -282,7 +285,9 @@ generate_compile_commands_file(){
       pushd build
       cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
       popd
-      mv build/compile_commands.json ./
+      if [ -f build/compile_commands.json ];then
+        mv build/compile_commands.json ./
+      fi
     else
       cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
     fi
@@ -309,8 +314,9 @@ usage (){
   -L, --library    Used dynamic library(default all dylib)
   -t, --type       Build type
   -D, --dir        Cmake auto find directory
-  --cmake           Use Cmake build project(default)
-  --no-cmake        Use Makefile build project"
+  --cmake          Use Cmake build project(default)
+  --no-cmake       Use Makefile build project
+  --makefile       Use Makefile build project"
 }
 
 while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
@@ -340,6 +346,7 @@ while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
       dir)      dir=${OPTARG} ;;
       cmake)    is_cmake=1;;
       no-cmake) is_cmake=0;;
+      makefile) is_cmake=0;;
       *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
     esac;;
   :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
