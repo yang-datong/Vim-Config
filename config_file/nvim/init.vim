@@ -703,6 +703,8 @@ autocmd BufReadPre *.h265 setlocal binary | autocmd BufReadPost *.h265 :call Tog
 autocmd BufReadPre *.avc setlocal binary | autocmd BufReadPost *.avc :call ToggleHexMode()
 autocmd BufReadPre *.hevc setlocal binary | autocmd BufReadPost *.hevc :call ToggleHexMode()
 
+autocmd BufReadPre *.bin setlocal binary | autocmd BufReadPost *.bin :call ToggleHexMode()
+
 autocmd BufReadPre *.yuv setlocal binary | autocmd BufReadPost *.yuv :call ToggleHexMode() 
 autocmd BufReadPre *.rgb setlocal binary | autocmd BufReadPost *.rgb :call ToggleHexMode() 
 autocmd BufReadPre *.ppm setlocal binary | autocmd BufReadPost *.ppm :call ToggleHexMode() 
