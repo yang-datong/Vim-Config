@@ -135,8 +135,7 @@ func OpenWindowIntoGDB()
 
   let cwd = expand('%:p:h')
   if has('mac')
-    "silent exec "!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd " . cwd .  " && gdb " . gdb_file . " -o \\\"b " . expand('%:t') . ":" . line('.') . "\\\" \" & return & delay 0.1 & key code 36'"
-    let gdb_cmd= printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && gdb %s -o \\\"b %s:%d\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
+    let gdb_cmd= printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && gdb %s -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
   elseif has('Linux')
     let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'", gdb_file, expand('%'), line('.'))
   endif

@@ -1,2 +1,7 @@
+command script import "/Users/hi/llef/llef.py"
+
+settings set stop-disassembly-display never
+settings set target.x86-disassembly-flavor intel
+
 settings set stop-line-count-before 10
 settings set stop-line-count-after 10
