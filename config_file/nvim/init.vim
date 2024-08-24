@@ -191,7 +191,7 @@ endif
 
 " Close the pop-up window {
 " 影响主要是在编写代码时会弹出函数定义框，需要手动关闭影响布局
-set completeopt-=preview
+"set completeopt-=preview
 " }
 ""}
 
@@ -392,7 +392,7 @@ endif
 "======================================================================
 if g:is_coc_vim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-jedi'] "自动安装Coc插件
+let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright'] "自动安装Coc插件
 "---More in lua config---
 if g:is_latex == 1
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
@@ -651,6 +651,7 @@ endif
 
 " Fast open configure file {
 :command Config :e $MYVIMRC
+:command Configfun :e $NVIM_FOLDER/function.vim
 if g:is_lua == 1
   :command ConfigLua :e $MYLUARC
 endif
@@ -689,27 +690,16 @@ elseif has('linux')
 endif
 " }
 
+" 在h264 h265文件中查找Nalu startCode
+command! FindNaluStartCode /0000 01\|00 0001\|0000 0001\|0000 01
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  5. 自动执行命令区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Auto open by hex model {
-autocmd BufReadPre *.jpg setlocal binary | autocmd BufReadPost *.jpg :call ToggleHexMode()
-autocmd BufReadPre *.jpeg setlocal binary | autocmd BufReadPost *.jpeg :call ToggleHexMode() 
-autocmd BufReadPre *.JPG setlocal binary | autocmd BufReadPost *.JPG :call ToggleHexMode() 
-autocmd BufReadPre *.JPEG setlocal binary | autocmd BufReadPost *.JPEG :call ToggleHexMode() 
-
-autocmd BufReadPre *.h264 setlocal binary | autocmd BufReadPost *.h264 :call ToggleHexMode()
-autocmd BufReadPre *.h265 setlocal binary | autocmd BufReadPost *.h265 :call ToggleHexMode()
-autocmd BufReadPre *.avc setlocal binary | autocmd BufReadPost *.avc :call ToggleHexMode()
-autocmd BufReadPre *.hevc setlocal binary | autocmd BufReadPost *.hevc :call ToggleHexMode()
-
-autocmd BufReadPre *.bin setlocal binary | autocmd BufReadPost *.bin :call ToggleHexMode()
-
-autocmd BufReadPre *.yuv setlocal binary | autocmd BufReadPost *.yuv :call ToggleHexMode() 
-autocmd BufReadPre *.rgb setlocal binary | autocmd BufReadPost *.rgb :call ToggleHexMode() 
-autocmd BufReadPre *.ppm setlocal binary | autocmd BufReadPost *.ppm :call ToggleHexMode() 
-autocmd BufReadPre *.bmp setlocal binary | autocmd BufReadPost *.bmp :call ToggleHexMode() 
-autocmd BufReadPre *.out setlocal binary | autocmd BufReadPost *.out :call ToggleHexMode() 
+autocmd BufReadPre *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,out} setlocal binary
+autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,out} call ToggleHexMode()
 " }
 
 " Save mksession on vimleave {
@@ -744,11 +734,19 @@ autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 " Auto Lines to log{
 autocmd BufReadPost *.log exec ":set nu"
 " }
+
+" 在保存文件时根据hexmode状态是否切回二进制形态进行写入文件
+autocmd BufWritePre * if &filetype == "xxd" | call ToggleHexMode() | endif
+
+
+" 在保存文件时根据使用notify通知当前警告和错误
+if has("nvim") && g:is_nvim_notify == 1
+  autocmd BufWritePre * call DiagnosticNotify()
+endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  6. unite插件扩展区域                             "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 source $NVIM_FOLDER/unite_extension.vim
-
 
 " 如果文件大于3MB（3000000字节）
 call CheckISLargeFile(3000000)

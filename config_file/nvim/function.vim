@@ -5,10 +5,7 @@
 "3. 插件配置区域
 "4. 自定义命令、按键区域
 "5. 自动执行命令区域
-"6. unite插件扩展区域
-
-
-"README: 这个文件全都是从init.vim中提取出来的函数
+"6. Coc-nvim 区域
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -298,10 +295,45 @@ func SetTitle()
     call setline(1, "#include <stdio.h>")
   endif
   if &filetype == 'python'
-    call setline(1, "#!/usr/local/bin/python3")
+    if has("mac")
+      call setline(1, "#!/usr/local/bin/python3.10")
+    elseif has('linux')
+      call setline(1, "#!/usr/bin/python3.10")
+    endif
   endif
   call setline(2,"")
   normal G
 endfunc
 " }
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                  6. Coc-nvim 区域                                 "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+func DiagnosticNotify() abort
+  let l:info = get(b:, 'coc_diagnostic_info', {})
+  if empty(l:info) | return '' | endif
+  let l:msgs = []
+  let l:level = 'info'
+   if get(l:info, 'warning', 0)
+    let l:level = 'warn'
+  endif
+  if get(l:info, 'error', 0)
+    let l:level = 'error'
+  endif
+ 
+  if get(l:info, 'error', 0)
+    call add(l:msgs, 'Errors: ' . l:info['error'])
+  endif
+  if get(l:info, 'warning', 0)
+    call add(l:msgs, 'Warnings: ' . l:info['warning'])
+  endif
+  if get(l:info, 'information', 0)
+    call add(l:msgs, 'Infos: ' . l:info['information'])
+  endif
+  if get(l:info, 'hint', 0)
+    call add(l:msgs, 'Hints: ' . l:info['hint'])
+  endif
+  let l:msg = join(l:msgs, "\n")
+  if empty(l:msg) | let l:msg = ' All OK' | endif
+  call v:lua.coc_diag_notify(l:msg, l:level)
+endfunc
