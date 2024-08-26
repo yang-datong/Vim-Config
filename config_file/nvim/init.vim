@@ -179,7 +179,8 @@ set laststatus=0 "设置状态行的显示方式，0表示不显示状态行。
 if g:is_vim_studio == 1
   set number
   set laststatus=2
-  set statusline=file:[%<%f],\ funciton:[%{coc#status()}%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
+  "set statusline=file:[%<%f],\ funciton:[%{coc#status()}%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
+  set statusline=file:[%<%f],\ funciton:[%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
     "set statusline=%<%f\ %h%m%r%=\ %P
     "%<%f：显示文件的完整路径。
     "%h%m%r：显示文件的状态，h 代表帮助文件，m 代表修改过的文件，r 代表只读文件。

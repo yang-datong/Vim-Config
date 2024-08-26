@@ -5,11 +5,9 @@ main(){
 	if [ "$(uname)" == "Darwin" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/macos_config.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/macos_xx.bashrc"
-		replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/macos_compile_flags.txt"
 	elif [ "$(uname)" == "Linux" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/ubuntu_config.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/ubuntu_xx.bashrc"
-		replace_symbols_link "$HOME/compile_flags.txt"         "$SH_FOOT/config_file/ubuntu_compile_flags.txt"
 	fi
 	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"

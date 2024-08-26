@@ -334,6 +334,7 @@ func DiagnosticNotify() abort
     call add(l:msgs, 'Hints: ' . l:info['hint'])
   endif
   let l:msg = join(l:msgs, "\n")
-  if empty(l:msg) | let l:msg = ' All OK' | endif
+  "if empty(l:msg) | let l:msg = ' All OK' | endif
+  if empty(l:msg) | return 0 | endif
   call v:lua.coc_diag_notify(l:msg, l:level)
 endfunc
