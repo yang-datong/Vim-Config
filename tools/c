@@ -1,6 +1,8 @@
 #!/bin/bash
 ScriptVersion="3.0"
 
+set -e
+
 unset src
 unset cc
 unset file_suffix
@@ -29,6 +31,8 @@ cmake_main(){
     ${make} && clean_cmake && exit
   fi
 
+  check_is_lib_path
+
   local f="CMakeLists.txt"
   if [ -f $f ];then
     read -p "是否重新生成${f}？[y/N]" OK
@@ -38,7 +42,7 @@ cmake_main(){
       generate_cmakelists
     fi
   else
-      generate_cmakelists
+    generate_cmakelists
   fi
   #现在默认不清理生成文件，提高二次编译速度
   #clean_cmake
@@ -47,7 +51,7 @@ cmake_main(){
 }
 
 generate_cmakelists(){
-cat << EOF > CMakeLists.txt
+  cat << EOF > CMakeLists.txt
 # Minimum version used by CMake
 cmake_minimum_required(VERSION ${cmake_version})
 # Generate compile_commands.json file
@@ -58,17 +62,20 @@ project(project_name)
 
 # C++ version used, added compilation parameters
 set(CMAKE_CXX_STANDARD ${cmake_cxx_standard})
-$(if [ $flag ]; then 
+$(if [ $flag ]; then
   echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall $(echo $flag | sed 's/[\,\-\.\_]/ /g')\")"
 else
   echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g3 -O0\")"
 fi)
 
-$(if [ $include_path ]; then 
-  echo " "
+$(if [ $include_path ]; then
   echo "# Specify header file directory"
   echo "include_directories($include_path)"
-  echo " "
+fi)
+
+$(if [ -n "$lib_path" ];then
+  echo "# Specify library file directory"
+  echo "link_directories(${lib_path})"
 fi)
 
 $(if [ $src ];then
@@ -82,42 +89,15 @@ else
   echo "add_executable(a.out \${SOURCES})"
 fi)
 
-$(if [ $libs ];then
-    echo " "
+$(if [ -n "$lib_path" ];then
   if [ $src ];then
-    echo "target_link_libraries(${src%.*} $(echo $libs | sed 's/[\,\-\.\_]/ /g') )"
+    echo "target_link_libraries(${src%.*} ${libs})"
   else
-    echo "target_link_libraries(a.out $(echo $libs | sed 's/[\,\-\.\_]/ /g') )"
+    echo "target_link_libraries(a.out ${libs})"
   fi
 fi)
 EOF
 
-
-  #if [ $lib_path ];then
-  #  echo "file(GLOB LIBS \"$lib_path/*.so\" \"$lib_path/*.dylib\")" >> $f
-  #fi
-
-  #if [ $dir ];then
-  #  echo "set(OpenCV_DIR $dir)" >> $f
-  #  echo "find_package(OpenCV REQUIRED )" >> $f
-  #  echo "include_directories(\${OpenCV_INCLUDE_DIRS})" >> $f
-  #fi
-
-  #if [ $dir ];then
-  #  if [ $src ];then
-  #    echo "target_link_libraries(${src%.*} \${OpenCV_LIBS} )" >> $f
-  #  else
-  #    echo "target_link_libraries(\${BIN} \${OpenCV_LIBS})" >> $f
-  #  fi
-  #fi
-
-  #if [ $lib_path ];then
-  #  if [ $src ];then
-  #    echo "target_link_libraries(${src%.*} \${LIBS} )" >> $f
-  #  else
-  #    echo "target_link_libraries(\${BIN} \${LIBS})" >> $f
-  #  fi
-  #fi
   ${cmake} . && ${make}
 }
 
@@ -205,10 +185,10 @@ generate_makefile(){
   echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> ${f}
   echo "" >> ${f}
   echo "\$(BIN):\$(OBJS)" >> ${f}
-  echo "	\$(CC) \$^ -o \$@ ${lib_path}" >> ${f}
+  echo "  \$(CC) \$^ -o \$@ ${lib_path}" >> ${f}
   echo "" >> ${f}
   echo "clean:" >> ${f}
-  echo "	rm \$(OBJS) \$(BIN)" >> ${f}
+  echo "  rm \$(OBJS) \$(BIN)" >> ${f}
   ${make}
 }
 
@@ -217,24 +197,24 @@ generate_makefile(){
 #Check OS System
 check_os(){
   case "$(uname)" in
-  "Darwin") echo ".dylib" ;;
-  "Linux") echo ".so" ;;
-  *)echo "Windows has not been tested for the time being";exit 1
+    "Darwin") echo ".dylib" ;;
+    "Linux") echo ".so" ;;
+    *)echo "Windows has not been tested for the time being";exit 1
   esac
 }
 
 check_is_lib_path(){
-  if [ $lib_path ];then
+  if [ -n "$lib_path" ];then
     grep_modl=".$(check_os)$"
-    libs=$(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib/-l/' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )
+    libs+=" $(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib//' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )"
 
     #Find static library -> ".a"
     if [ -z "$libs" ];then
       grep_modl=".a$"
-      libs=$(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib/-l/' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )
+      libs+=" $(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib//' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )"
     fi
 
-    lib_path="-L $lib_path $libs"
+    #lib_path="-L $lib_path $libs"
   fi
 }
 
@@ -309,14 +289,18 @@ usage (){
   -v, --version    Display script version
   -f, --flag       Compiler parameters
   -c, --source     Used source file
-  -I, --include    Used include file
-  -l, --lib        Used library(as -> -l avformat,avfilter,avcodec)
+  -I, --include    Used include file(as -> -I 'x264/include x265/include')
+  -l, --lib        Used library(as -> -l 'avformat avfilter avcodec')
   -L, --library    Used dynamic library(default all dylib)
   -t, --type       Build type
   -D, --dir        Cmake auto find directory
   --cmake          Use Cmake build project(default)
   --no-cmake       Use Makefile build project
-  --makefile       Use Makefile build project"
+  --makefile       Use Makefile build project
+
+
+  As -> c -I ../ffmpeg-4.4.2/build/include -L '../ffmpeg-4.4.2/build/lib ../x264-master/build/lib ../x265_3.6/build/linux' -l m
+  "
 }
 
 while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
