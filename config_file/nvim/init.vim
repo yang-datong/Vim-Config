@@ -742,7 +742,9 @@ autocmd BufWritePre * if &filetype == "xxd" | call ToggleHexMode() | endif
 
 " 在保存文件时根据使用notify通知当前警告和错误
 if has("nvim") && g:is_nvim_notify == 1
-  autocmd BufWritePre * call DiagnosticNotify()
+  if &filetype != 'plaintex'
+    autocmd BufWritePre * call DiagnosticNotify()
+  endif
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  6. unite插件扩展区域                             "
