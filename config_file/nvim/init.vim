@@ -282,17 +282,20 @@ noremap <Leader>v :<C-u>vsplit<CR>
 
 " Tabs {
 "切换窗口
-"Ctrl + w + t 移动到最左上角的窗口。
-nnoremap <silent> <C-1> :wincmd t<CR>
-nnoremap <silent> <A-1> :wincmd t<CR>
-nnoremap <silent> <C-2> :wincmd t<CR> :wincmd w<CR>
-nnoremap <silent> <A-2> :wincmd t<CR> :wincmd w<CR>
-nnoremap <silent> <C-3> :wincmd t<CR> :wincmd w<CR> :wincmd w<CR>
-nnoremap <silent> <A-3> :wincmd t<CR> :wincmd w<CR> :wincmd w<CR>
-
-"Ctrl + w + b 移动到最右下角的窗口。
+"Ctrl + w + t 移动到第一个的窗口（模拟Chrome定位首个标签）
+nnoremap <silent> <C-0> :wincmd t<CR>
+nnoremap <silent> <A-0> :wincmd t<CR>
+"Ctrl + w + b 移动到最后一个的窗口（模拟Chrome定位最后一个标签）
 nnoremap <silent> <C-9> :wincmd b<CR>
 nnoremap <silent> <A-9> :wincmd b<CR>
+
+"第N个窗口（从左至右）
+nnoremap <silent> <C-1> :1wincmd w<CR>
+nnoremap <silent> <A-1> :1wincmd w<CR>
+nnoremap <silent> <C-2> :2wincmd w<CR>
+nnoremap <silent> <A-2> :2wincmd w<CR>
+nnoremap <silent> <C-3> :3wincmd w<CR>
+nnoremap <silent> <A-3> :3wincmd w<CR>
 
 nnoremap <silent> <Tab> :wincmd w<CR>
 nnoremap <silent> <S-Tab> :wincmd p<CR>
@@ -751,8 +754,16 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 source $NVIM_FOLDER/unite_extension.vim
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"                 待Vim全部初始化后执行的二级命令                   "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 如果文件大于3MB（3000000字节）
 call CheckISLargeFile(3000000)
 
 " 打开文件时自动调用检查函数
 autocmd BufReadPost * call CheckFileLineCount(200)
+
+if g:is_vim_studio == 1
+  "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  
+  autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
+endif
