@@ -461,12 +461,18 @@ endsnippet
 #`!p	snip.rv = match.group(1)[:1]`$1`!p snip.rv = match.group(1)[1:]`$0
 #endsnippet
 
+snippet exit "test" w
+std::cout << "Into -> " << __FUNCTION__ << "():" << __LINE__ << std::endl;
+exit(0);
+endsnippet
+
 snippet '(test|Test)(\d)' "'(test|Test)(\d)'" r
 static int yangjing = 0;
-std::cout << "Test:" << test << std::endl;
-if (yangjing > `!p snip.rv = match.group(2)`)
-  exit(0);
 yangjing++;
+if (yangjing > `!p snip.rv = match.group(2)`){
+	std::cout << "Into -> " << __FUNCTION__ << "():" << __LINE__ << std::endl;
+	std::cout << "yangjing = " << yangjing << std::endl;
+}
 endsnippet
 
 snippet 'static_assert|st_assert|assert' "'static_assert|st_assert|assert'" r
