@@ -103,7 +103,8 @@ endfunction
 
 " For mutable GDB points
 func GetAllMarksToGDBDbgPoints()
-    let marks = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' , '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    "只支持字母标记，其他标记会造成混乱
+    let marks = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
     let mark_lines = []
 
     for mark in marks
