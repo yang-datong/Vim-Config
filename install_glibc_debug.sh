@@ -1,10 +1,28 @@
 #!/bin/bash
-
-set -ex
+set -e
 #如果是编译本机的，那么使用ldd --version | grep ldd，看版本
 
+#注意，某些版本下载是无法下载到对应的版本的，需要看你使用的镜像源是否具有这个包，而有的镜像是直接返回了一个相近版本的glibc，比如下载glibc-2.28但实际上apt下载的是glibc-2.27
 version=2.39
 
+build(){
+	get_package
+	run
+}
+
+download(){
+	sudo apt install libc-dbg  #安装有调试符号的glibc
+	sudo apt install glibc-source #下载glibc源代码
+	#注意，上面两个都需要安装， 少了一个都会导致如何正确调试源代码
+
+	#1. 默认情况下libc-dbg会安装到 /usr/lib/debug/.build-id 目录下（具体可以通过dpkg -L libc6-dbg查看），
+	#2. 源代码会在/usr/src/glibc/glibc-2.39.tar.xz （2.39是根据你的系统版本自动获取的）
+	cd /usr/src/glibc
+	local glibc_tar=$(find /usr/src -type f -name "glibc-*.tar.xz")
+	local glibc_dir=$(find /usr/src -type d -name "glibc-*")
+	sudo tar -xf ${glibc_tar}
+	echo "Use for GDB: (gdb)> directory ${glibc_dir}"
+}
 
 get_package(){
 	#大约30Mb大小
@@ -16,47 +34,50 @@ get_package(){
 		tar -xvf glibc-${version}.tar.gz
 	fi
 
-
 	if [ ! -x "$(command -v bison)" ];then
 		sudo apt install bison -y
 	fi
 }
 
 
-
 run(){
 	cd glibc-${version}
-
 	if [ -d build ];then
+		#重新编译
 		rm -rf build
 	fi
-
 	mkdir build && cd build
 
-	# 配置构建，指定安装目录
-	../configure --prefix=$HOME/glibc-${version} --enable-debug --disable-werror
-
+	# 配置构建，指定安装目录（无法关闭静态库的编译，只能关闭动态库）
+	../configure --prefix=$HOME/glibc-${version} --enable-debug --disable-werror --host=x86_64-linux-gnu
 	make clean -j$(nproc)
+	make -j$(nproc) CFLAGS="-U_FORTIFY_SOURCE -O2 -g3 -fno-stack-protector" && make install
 
-	make -j$(nproc) CFLAGS="-U_FORTIFY_SOURCE -O2 -fno-stack-protector" && make install
+	echo -e "\033[33m注意！使用方式如下：
+	1. 编译时手动替换系统路径下的libc.so: g++ -Wl,--rpath=PATH/glibc-2.39/lib/ demo.cpp
+	2. apt install patchelf && patchelf --set-rpath $HOME/glibc-2.39/lib a.out
+
+	最后通过ldd查看二进制文件链接是否为自己编译路径的libc.so.6\033[0m"
+
+#在高版本Ubuntu中，不需要设置ld的链接路径，如：
+#patchelf --set-interpreter $HOME/glibc-2.39/lib/ld-linux-x86-64.so.2 --set-rpath $HOME/glibc-2.39/lib a.out
+#只需要指定libc.so即可（手动编译的时候同理，如果强行加上ld.so反而会报错其他链接库问题）:
+#patchelf --set-rpath $HOME/glibc-2.39/lib a.out
+
+#编译时间大概为4-5分钟
+#	________________________________________________________
+# Executed in  229.82 secs    fish           external
+#   usr time  581.83 secs    0.00 micros  581.83 secs
+#   sys time  280.24 secs  487.00 micros  280.24 secs
+
+	#$ g++ demo.cpp -Wl,--rpath=/home/hi/glibc-2.39/lib -Wl,--dynamic-linker=/home/hi/glibc-2.39/lib/ld-linux-x86-64.so.2 -g
+
+	#$ du -sh libc.a
+	#  5.9M	libc.a
+	#$ du -sh libc.so.6   （具有调试符号的libc.so才2.3M，一个静态库就是两倍）
+	#  2.3M	libc.so.6
 }
 
-build(){
-	get_package
-	run
-}
 
-download(){
-	sudo apt-get install libc-dbg glibc-source 
-	#1. 默认情况下libc-dbg会安装到 /usr/lib/debug目录下，但是我使用Ubuntu24.04并没找到，使用find / 也没有找到，奇怪
-	#2. 源代码会在/usr/src/glibc/glibc-2.39.tar.xz （2.39是根据你的系统版本自动获取的）
-	cd /usr/src/glibc
-	local glibc_tar=$(find /usr/src -name "glibc-*.tar.xz")
-	sudo tar -xf ${glibc_tar}
-	echo "Use for GDB: (gdb)> directory ${glibc_tar}"
-}
-
-
-#build #手动编译的方式，但是编译后，使用gdb的时候会报错
-download #直接下载现有的包
-
+#build #FFmpeg使用上面替换libc.so的方式不行，运行就报错，使用download直接下载是可以调试libc的
+download #直接下载现有的包（不一定有对应的版本能下载到）

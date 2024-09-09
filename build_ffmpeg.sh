@@ -114,7 +114,7 @@ confg_shared(){
 	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
 	./configure \
 		--prefix=$(pwd)/build \
-		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations" \
+		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations -Wl,--rpath=/home/hi/glibc-2.39/lib" \
 		--enable-shared --disable-static \
 		--enable-small \
 		--enable-gpl --enable-libx264 --enable-libx265 \
