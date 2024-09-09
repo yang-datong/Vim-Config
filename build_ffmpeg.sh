@@ -114,7 +114,7 @@ confg_shared(){
 	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
 	./configure \
 		--prefix=$(pwd)/build \
-		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations -Wl,--rpath=/home/hi/glibc-2.39/lib" \
+		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations" \
 		--enable-shared --disable-static \
 		--enable-small \
 		--enable-gpl --enable-libx264 --enable-libx265 \
@@ -183,7 +183,11 @@ fetch_x265_lib(){
 			make -j16 && make install
 		fi
 	elif [ "$type" == "shared" ];then
-		cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
+		if [ "$(uname)" == "Darwin" ];then
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
+		else
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
+		fi
 		make -j16 && make install
 	else
 		echo -e "\033[31mfetch_x265_lib failed\033[0m";exit
