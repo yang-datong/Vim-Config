@@ -63,7 +63,7 @@ endfunc
 " Call shell to install command tools {
 func AskUserInstall(cmd,packager)
   let answer = confirm("Whether to install " . a:cmd . "?")
-  if answer ==# '1' "Exc键为0,Enter键为1（期间不管你输入了什么键）
+  if answer ==# '1' "Exc键为0,Enter或O键为1（其他键无用）
     if a:packager == 'default' "传入default则表示系统默认包管理器
       if has('mac')
         exec '!brew install ' . a:cmd
@@ -102,8 +102,8 @@ endfunction
 " }
 
 " For mutable GDB points
-func GetAllMarks()
-    let marks = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+func GetAllMarksToGDBDbgPoints()
+    let marks = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' , '1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
     let mark_lines = []
 
     for mark in marks
@@ -112,13 +112,20 @@ func GetAllMarks()
             call add(mark_lines, {'mark': mark, 'line': lnum})
         endif
     endfor
-    return mark_lines
+
+    "echo mark_lines
+    let DBGPoints = ""
+    for it in mark_lines
+      let ex = printf("-ex \"b %s:%d\" ",expand('%'),it['line'])
+      let DBGPoints .= ex
+    endfor
+    return DBGPoints
 endfunction
 
 " Need install iTerm2 or terminator
-func OpenWindowIntoGDB()
+func OpenWindowIntoGDB(isMultiPoints)
   let gdb_file = ''
-  for file in [expand('%:t:r'), "./build/" . expand('%:t:r'), "a.out", "./build/a.out", "./ffmpeg_g"]
+  for file in ["./ffmpeg_g", expand('%:t:r'), "./build/" . expand('%:t:r'), "a.out", "./build/a.out"]
     if filereadable(file)
       let gdb_file = file
       break
@@ -136,6 +143,13 @@ func OpenWindowIntoGDB()
   elseif has('Linux')
     let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'", gdb_file, expand('%'), line('.'))
   endif
+
+  "如果存在多断点，优先级： 多断点 > gdb.sh > 单断点
+  if a:isMultiPoints == 1
+    let points = GetAllMarksToGDBDbgPoints()
+    let gdb_cmd = printf("!terminator -x fish -c 'pwd && gdb %s %s; exec fish'", gdb_file,points)
+  endif
+
   "echo gdb_cmd
   silent exec gdb_cmd
 endfunc
@@ -165,9 +179,9 @@ func TryFindHeadfile(name)
     return ""
 endfunc
 
-func FindAndEditHeaderFile(filename,filetype)
+func FindAndEditHeaderFile(filename,filetype,dir)
   " 定义要搜索的目录数组
-  let directories = ['.', 'include', 'inc', '../include', '../inc']
+  let directories = ['.', 'include', 'inc', '../include', '../inc', a:dir]
 
   " 遍历目录数组
   for directory in directories
@@ -189,13 +203,15 @@ func FindAndEditHeaderFile(filename,filetype)
     let filetype = '.h'
   endif
 
-  execute "e " . a:filename . filetype
-  echo "New create: " . a:filename . filetype
+  let answer = confirm("New create: " . a:filename . filetype . "?")
+  if answer ==# '1' "Exc键为0,Enter或O键为1（其他键无用）
+    execute "e " . a:filename . filetype
+  endif
 endfunc
 
-func FindAndEditSourceFile(filename,filetype)
+func FindAndEditSourceFile(filename,filetype,dir)
   " 定义要搜索的目录数组
-  let directories = ['.', '..', 'src', 'source', '../src', '../source']
+  let directories = ['.', '..', 'src', 'source', '../src', '../source', a:dir]
   " 遍历目录数组
   for directory in directories
     " 检查目录中是否包含 .h 或 .hpp 文件
@@ -216,20 +232,23 @@ func FindAndEditSourceFile(filename,filetype)
     let filetype = '.c'
   endif
 
-  execute "e " . a:filename . filetype
-  echo "New create: " . a:filename . filetype
+  let answer = confirm("New create: " . a:filename . filetype . "?")
+  if answer ==# '1' "Exc键为0,Enter或O键为1（其他键无用）
+    execute "e " . a:filename . filetype
+  endif
 endfunc
 
 func IntoHeadrOrSourceFile()
   let filename = expand('%:t:r')
   let filetype = expand('%:e')
+  let dir = expand('%:p:h')
   if filename == 'main'
     return
   endif
   if filetype == 'cpp' || filetype == 'c'
-    call FindAndEditHeaderFile(filename,filetype)
+    call FindAndEditHeaderFile(filename,filetype,dir)
   elseif filetype == 'hpp' || filetype == 'h'
-    call FindAndEditSourceFile(filename,filetype)
+    call FindAndEditSourceFile(filename,filetype,dir)
   endif
 endfunc
 " }

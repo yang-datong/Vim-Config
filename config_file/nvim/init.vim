@@ -363,7 +363,8 @@ Plug 'Shougo/unite.vim' "跟Coc有点类似，但基本被Coc取代了，它的�
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "代码提示 .可以提示snippet的代码
 "Plug 'Shougo/ddc.vim' "代码提示
 "======================================================================
-Plug 'airblade/vim-gitgutter'  "配合git 左边显示更改、删除行标记
+Plug 'airblade/vim-gitgutter'  "配合git 左边栏显示更改、删除行标记
+Plug 'chentoast/marks.nvim' "左边栏显示当前mark标记
 "======================================================================
 Plug 'tpope/vim-fugitive'
 noremap <Leader>gs :Git<CR>
@@ -625,9 +626,10 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Open current gdb window {
 if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
-  :command Gdb call OpenWindowIntoGDB()
-  :command GDB call OpenWindowIntoGDB()
-  nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB()<CR>
+  :command Gdb call OpenWindowIntoGDB(0)
+  :command GDB call OpenWindowIntoGDB(0)
+  :command GDBS call OpenWindowIntoGDB(1)
+  nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB(0)<CR>
 endif
 
 " Back to <gf> window buffers {

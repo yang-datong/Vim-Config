@@ -97,6 +97,26 @@ vim.api.nvim_create_autocmd('User', {
   desc = 'Update signature help on jump placeholder'
 })
 
+--======================================================================
+--" Option {
+--  "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
+--    "- CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
+--  "语法检查：
+--    "- python : CocInstall coc-pyright
+--    "- js : coc-eslint
+--    "- shell: brew install shellcheck
+--  "显示snipt片段的提示:
+--    "- CocInstall coc-snippets
+--  "clangd 配置语法识别参数:
+--    "- 文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
+--  "Coc 自动导入包 CocAction 类似于java import 包
+--
+--  "卸载：
+--    "- :CocList extensions
+--    "- 选中按<Tab> 再按u
+
+
+
 --============================== Notify ====================================
 local coc_status_record = {}
 
@@ -128,20 +148,20 @@ function reset_coc_diag_record(window)
   coc_diag_record = {}
 end
 
---======================================================================
---" Option {
---  "CocInstall coc-clangd coc-jedi coc-sh  coc-java coc-html coc-rome  coc-texlab coc-vimlsp coc-highlight coc-git coc-tsserver coc-cmake coc-json
---    "- CocInstall -> https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
---  "语法检查：
---    "- python : CocInstall coc-pyright
---    "- js : coc-eslint
---    "- shell: brew install shellcheck
---  "显示snipt片段的提示:
---    "- CocInstall coc-snippets
---  "clangd 配置语法识别参数:
---    "- 文件在 用户目录下的 compile_flags.txt文件，比如配置头文件路径
---  "Coc 自动导入包 CocAction 类似于java import 包
---
---  "卸载：
---    "- :CocList extensions
---    "- 选中按<Tab> 再按u
+--============================== Vim-Marks ====================================
+require'marks'.setup {
+  default_mappings = true,
+  builtin_marks = { ".", "<", ">", "^" },
+  cyclic = true,
+  force_write_shada = false,
+  refresh_interval = 250,
+  sign_priority = { lower=10, upper=15, builtin=8, bookmark=20 },
+  excluded_filetypes = {},
+  excluded_buftypes = {},
+  bookmark_0 = {
+    sign = "⚑",
+    virt_text = "hello world",
+    annotate = false,
+  },
+  mappings = {}
+}
