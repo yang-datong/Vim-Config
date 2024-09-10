@@ -326,6 +326,7 @@ usage (){
   --no-cmake            Use Makefile build project
   --makefile            Use Makefile build project
   --gen_compile_file    Generate a compile_commands.json file for Clangd
+  --gen_gdb_file        Generate a gdb.sh file for GDB
 
 
   As -> c -I ../ffmpeg-4.4.2/build/include -L '../ffmpeg-4.4.2/build/lib ../x264-master/build/lib ../x265_3.6/build/linux' -l m
