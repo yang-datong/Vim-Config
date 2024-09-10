@@ -277,26 +277,55 @@ generate_compile_commands_file(){
   fi
 }
 
+generate_gdb_file(){
+  if [ -f gdb.sh ];then
+     read -p "是否重新生成${f}？[y/N]" OK  
+     if [ "$OK" != "y" ];then return; fi 
+  fi
+
+  cat << EOF > gdb.sh
+#!/bin/bash
+
+#设置动态库执行路径，在动态库存在于用户目录时
+export LD_LIBRARY_PATH=libavcodec:libavdevice:libavfilter:libavformat:libavresample:libavutil:libpostproc:libswresample:libswscale
+
+#程序执行需要的参数
+args="-i input.mp4 output.h265"
+
+#源代码路径(Glibc路径,Option)
+ldd_version=\$(ldd --version | grep ldd | awk '{print \$5}')
+
+source_dir="libavcodec:libavdevice:libavfilter:libavformat:libavresample:libavutil:libpostproc:libswresample:libswscale"
+
+#最后传入脚步参数，配合这Vim-GDB使用
+gdb ./ffmpeg_g -ex "set args \${args}" -ex "directory \${source_dir}" -ex "b main" -ex "r" "\$@"
+EOF
+
+echo -e "\033[32mOutput -> gdb.sh\033[0m"
+cat gdb.sh
+}
+
 #---------------------------------------- Command Handle ----------------------------------------
 
 usage (){
   echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
   Options:
-  -h, --help       Display this message
-  -d, --debug      Debug model run
-  -p, --posix      Posix model parse shell command
-  -v, --version    Display script version
-  -f, --flag       Compiler parameters
-  -c, --source     Used source file
-  -I, --include    Used include file(as -> -I 'x264/include x265/include')
-  -l, --lib        Used library(as -> -l 'avformat avfilter avcodec')
-  -L, --library    Used dynamic library(default all dylib)
-  -t, --type       Build type
-  -D, --dir        Cmake auto find directory
-  --cmake          Use Cmake build project(default)
-  --no-cmake       Use Makefile build project
-  --makefile       Use Makefile build project
+  -h, --help            Display this message
+  -d, --debug           Debug model run
+  -p, --posix           Posix model parse shell command
+  -v, --version         Display script version
+  -f, --flag            Compiler parameters
+  -c, --source          Used source file
+  -I, --include         Used include file(as -> -I 'x264/include x265/include')
+  -l, --lib             Used library(as -> -l 'avformat avfilter avcodec')
+  -L, --library         Used dynamic library(default all dylib)
+  -t, --type            Build type
+  -D, --dir             Cmake auto find directory
+  --cmake               Use Cmake build project(default)
+  --no-cmake            Use Makefile build project
+  --makefile            Use Makefile build project
+  --gen_compile_file    Generate a compile_commands.json file for Clangd
 
 
   As -> c -I ../ffmpeg-4.4.2/build/include -L '../ffmpeg-4.4.2/build/lib ../x264-master/build/lib ../x265_3.6/build/linux' -l m
@@ -331,6 +360,8 @@ while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
       cmake)    is_cmake=1;;
       no-cmake) is_cmake=0;;
       makefile) is_cmake=0;;
+      gen_compile_file) generate_compile_commands_file;exit;;
+      gen_gdb_file) generate_gdb_file;exit;;
       *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
     esac;;
   :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
@@ -339,7 +370,6 @@ esac
 done
 
 shift $((OPTIND-1))
-
 
 if [ $is_cmake == 1 ];then
   cmake_main "$@"

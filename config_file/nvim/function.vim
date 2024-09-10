@@ -142,13 +142,16 @@ func OpenWindowIntoGDB(isMultiPoints)
   if has('mac')
     let gdb_cmd= printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && gdb %s -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
   elseif has('Linux')
-    let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'", gdb_file, expand('%'), line('.'))
+    let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh -ex \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'", gdb_file, expand('%'), line('.'))
   endif
 
-  "如果存在多断点，优先级： 多断点 > gdb.sh > 单断点
   if a:isMultiPoints == 1
     let points = GetAllMarksToGDBDbgPoints()
-    let gdb_cmd = printf("!terminator -x fish -c 'pwd && gdb %s %s; exec fish'", gdb_file,points)
+    if has('mac')
+      echo "TODO"
+    elseif has('Linux')
+      let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh %s; exec fish'", points) : printf("!terminator -x fish -c 'pwd && gdb %s %s; exec fish'", gdb_file, points)
+    endif
   endif
 
   "echo gdb_cmd
