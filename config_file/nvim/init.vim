@@ -386,7 +386,7 @@ endif
 "Java: apt install astyle
 "Cmake : pip install cmake-format
 "Markdown : npm install -g remark-cli
-"Shell : go install mvdan.cc/sh/v3/cmd/shfmt@latest (需要安装go)
+"Shell : apt install shfmt
 if g:is_latex == 1
   "Must -> brew install latexindent
   if (system('command -v latexindent') =~ 'latexindent') == 0
