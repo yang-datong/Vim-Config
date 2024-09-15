@@ -6,5 +6,5 @@
     "--header-insertion=iwyu"
   ],
   "inlayHint.enable": false,
-  "semanticTokens.enable":true,
+  "semanticTokens.enable":false,
 }
