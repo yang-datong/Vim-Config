@@ -67,7 +67,7 @@ ubuntu(){
 	if [ ! -f $HOME/.config/clash/clash ];then
 		echo -e "\033[31mDownload clash failed\033[0m";exit
 	fi
-	if [ ! -f $HOME/.config/clash/clash/Country.mmdb ];then
+	if [ ! -f $HOME/.config/clash/Country.mmdb ];then
 		wget https://github.com/Dreamacro/maxmind-geoip/releases/download/20240512/Country.mmdb -O Country.mmdb
 		sudo mv Country.mmdb $HOME/.config/clash/
 	fi
