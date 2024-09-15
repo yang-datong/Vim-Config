@@ -681,7 +681,12 @@ endif
 
 " Fast into head or source file {
 if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
-  map <silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
+  "(手动实现）
+  "map <silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
+  "(coc-clangd实现)
+  map <silent> <S-h> :CocCommand clangd.switchSourceHeader <CR> 
+  "分割缓冲区中打开 
+  map <silent> <S-l> :CocCommand clangd.switchSourceHeader vsplit <CR> 
 endif
 " }
 

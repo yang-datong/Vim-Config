@@ -1,4 +1,10 @@
 {
   "snippets.ultisnips.pythonPrompt": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+  "clangd.arguments": [
+    "--completion-style=detailed",
+    "--header-insertion=iwyu"
+  ],
+  "inlayHint.enable": false,
+  "semanticTokens.enable":true,
 }
