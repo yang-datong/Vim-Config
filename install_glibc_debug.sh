@@ -79,5 +79,5 @@ run(){
 }
 
 
-#build #FFmpeg使用上面替换libc.so的方式不行，运行就报错，使用download直接下载是可以调试libc的
+#build
 download #直接下载现有的包（不一定有对应的版本能下载到）

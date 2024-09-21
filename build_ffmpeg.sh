@@ -18,6 +18,8 @@ x265="${x265_version}.tar.gz"
 static=0
 shared=1
 
+hwaccel="--enable-vaapi "  #sudo apt install ffmpeg vainfo libva-dev libdrm-dev
+
 main(){
 	confirmation_info
 	download_ffmpeg
@@ -97,7 +99,7 @@ confg_static(){
 	./configure --prefix=$(pwd)/build \
 		--extra-cflags="-static -O0 -g3 -Wno-deprecated-declarations" --extra-ldflags="-static" --pkg-config-flags="--static" \
 		--enable-small \
-		--enable-gpl --enable-libx264 --enable-libx265 \
+		--enable-gpl --enable-libx264 --enable-libx265 ${hwaccel} \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
 		--disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages \
 		--disable-ffplay --disable-ffprobe \
