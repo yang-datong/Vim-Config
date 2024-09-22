@@ -302,6 +302,17 @@ func Run()
 endfunc
 " }
 
+" Switch Theme {
+func ToggleTheme()
+  if g:current_theme == 'dark'
+    colorscheme seoul256
+    let g:current_theme = 'light'
+  else
+    colorscheme darcula
+    let g:current_theme = 'dark'
+  endif
+endfunc
+" }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  5. 自动执行命令区域                              "

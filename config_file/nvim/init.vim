@@ -333,6 +333,11 @@ endif
 " }
 
 
+" Switch Theme {
+let g:current_theme = 'light' 
+nnoremap <silent> <F5> :call ToggleTheme()<CR>
+" }
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                      3. 插件配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -430,6 +435,8 @@ let g:tagbar_sort= 0
 " Color thems
 Plug 'junegunn/seoul256.vim'
 Plug 'shaunsingh/nord.nvim' "Math style
+Plug 'doums/darcula'
+Plug 'Mofiqul/vscode.nvim'
 "Plug 'dylanaraps/wal'
 "Plug 'morhetz/gruvbox'
 "======================================================================
@@ -565,6 +572,7 @@ Plug 'deris/vim-shot-f' "高亮f/F,t/T命令
 "======================================================================
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim' "主要是使用 Files查找文件，以及Ag查找字符
+"nvim-telescope/telescope.nvim 也具有类似功能
 "Ag功能需要额外安装：
 if (system('command -v fzf') =~ 'fzf') == 0
   call AskUserInstall("fzf","default")
@@ -581,6 +589,16 @@ endif
 "======================================================================
 "Plug 'nvim-tree/nvim-tree.lua' "和NERDTreeToggle差不多
 "Plug 'nvim-tree/nvim-web-devicons'
+"======================================================================
+"重新排序选项卡
+"Plug 'nvim-tree/nvim-web-devicons' " OPTIONAL: for file icons
+"Plug 'lewis6991/gitsigns.nvim' " OPTIONAL: for git status
+"Plug 'romgrk/barbar.nvim'
+"======================================================================
+"重新排序选项卡
+"Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
+ "Plug 'ryanoasis/vim-devicons' Icons without colours
+"Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 call plug#end()
 " }
 
@@ -599,6 +617,8 @@ endif
 " Themes Configure {
 set termguicolors
 colorscheme seoul256
+"colorscheme darcula
+"colorscheme vscode
 "colorscheme gruvbox
 "colorscheme nord
 " }

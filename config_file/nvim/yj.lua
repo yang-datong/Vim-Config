@@ -1,5 +1,3 @@
--- vim.notify("This is an error message", "error")
--- require("notify")("My super important message")
 vim.opt.termguicolors = true
 
 --============================== UltiSnips ========================================
@@ -84,9 +82,9 @@ vim.api.nvim_create_augroup('CocGroup', {})
 
 -- 高亮显示符号及其引用（鼠标处于空闲状态） 
 --vim.api.nvim_create_autocmd('CursorHold', {
---  group = 'CocGroup',
---  command = "silent call CocActionAsync('highlight')",
---  desc = 'Highlight symbol under cursor on CursorHold'
+  --group = 'CocGroup',
+  --command = "silent call CocActionAsync('highlight')",
+  --desc = 'Highlight symbol under cursor on CursorHold'
 --})
 
 -- Update signature help on jump placeholder
