@@ -193,11 +193,16 @@ endsnippet
 
 context "function()"
 snippet 'echo|hi' "echo hi" r
-std::cout << "hi~" << std::endl;
+`!p
+if (snip.ft == "cpp"):
+	snip.rv = "std::cout << \"hi~\" << std::endl;"
+else:
+	snip.rv = "printf(\"%s\\n\",\"hi~\");"
+`
 endsnippet
 
 context "function()"
-snippet 'printf|print' "printf .. (printf)" r
+snippet 'printf|print|prin|pr' "printf .. (printf)" r
 printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
 
@@ -226,8 +231,13 @@ endsnippet
 
 priority 1001
 context "function()"
-snippet cout_line
-std::cout << "\033[33m Into -> " << __LINE__ << "()\033[0m" << std::endl;
+snippet 'cout_line|coutLine|line|Line' "output current line" rw
+`!p
+if (snip.ft == "cpp"):
+	snip.rv = "std::cout << \"Into -> \" << __FUNCTION__ << \"():\" << __LINE__ << std::endl;"
+else:
+	snip.rv = "printf(\"Into -> %s():%d\",__FUNCTION__,__LINE__);"
+`
 endsnippet
 
 priority 1000
@@ -285,7 +295,7 @@ endsnippet
 context "function()"
 snippet '^\s{0,4}([a-z|A-Z|_].*)\.null' ".null" r
 	if(!`!p snip.rv = match.group(1)`){
-		std::cerr << "\033[31mFail `!p snip.rv = match.group(1)` is nullptr\033[0m" << std::endl;
+		std::cerr << "Fail `!p snip.rv = match.group(1)` is nullptr" << std::endl;
 		return ${1:-1};
 	}
 endsnippet
@@ -665,6 +675,10 @@ endsnippet
 #`$3
 #endsnippet
 
+#av_log(NULL, ${3|AV_LOG_INFO,AV_LOG_ERROR|}, "${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+snippet 'avlog|av_log|log|av_l|av_|av' "avlog" rw
+av_log(NULL, AV_LOG_${3:INFO}, "${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
+endsnippet
 #-------------------- 6. Python function ---------------
 global !p
 def write_inclde_file(snip):
