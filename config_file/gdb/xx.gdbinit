@@ -104,3 +104,5 @@ alias link=linked-list
 gef config context.layout "-legend -regs -stack code args source -threads trace extra memory"
 
 set disable-randomization on
+
+set max-value-size unlimited

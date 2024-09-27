@@ -435,7 +435,7 @@ let g:tagbar_sort= 0
 " Color thems
 Plug 'junegunn/seoul256.vim'
 Plug 'shaunsingh/nord.nvim' "Math style
-Plug 'doums/darcula'
+"Plug 'doums/darcula'
 Plug 'Mofiqul/vscode.nvim'
 "Plug 'dylanaraps/wal'
 "Plug 'morhetz/gruvbox'
@@ -788,7 +788,7 @@ source $NVIM_FOLDER/unite_extension.vim
 call CheckISLargeFile(3000000)
 
 " 打开文件时自动调用检查函数
-autocmd BufReadPost * call CheckFileLineCount(200)
+autocmd BufReadPost * call CheckFileLineCount(50)
 
 if g:is_vim_studio == 1
   "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  

@@ -270,7 +270,9 @@ func Run()
     let make2_cmd = "make -C build -j4 && if [ -f build/a.out ]; then ./build/a.out; fi"
     let build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out; fi"
 
-    if filereadable('Makefile')
+    if filereadable('build.sh')
+      let exec_cmd = "!bash -c ./build.sh"
+    elseif filereadable('Makefile')
       let exec_cmd = "!bash -c '" . make_cmd . "'"
     elseif filereadable('./build/Makefile')
       let exec_cmd = "!bash -c '" . make2_cmd . "'"
@@ -308,7 +310,7 @@ func ToggleTheme()
     colorscheme seoul256
     let g:current_theme = 'light'
   else
-    colorscheme darcula
+    colorscheme vscode
     let g:current_theme = 'dark'
   endif
 endfunc
