@@ -142,7 +142,7 @@ func OpenWindowIntoGDB(isMultiPoints)
   if has('mac')
     let gdb_cmd= printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && gdb %s -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
   elseif has('Linux')
-    let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh -ex \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\"; exec fish'", gdb_file, expand('%'), line('.'))
+    let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh -ex \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\" -ex \"r\"; exec fish'", gdb_file, expand('%'), line('.'))
   endif
 
   if a:isMultiPoints == 1
@@ -288,7 +288,7 @@ func Run()
   elseif filetype == 'python'
     let firstLine = getline(1)
     let remainingChars = stridx(firstLine, '#manim') == 0 ? strpart(firstLine, strlen('#manim')) : ''
-    let exec_cmd = remainingChars != '' ? '!manim ' . remainingChars . ' % Demo' : '!python3 %'
+    let exec_cmd = remainingChars != '' ? '!manim ' . remainingChars . ' % Demo' : '!python3.10 %'
   elseif &filetype == 'sh'
     :! bash %
   elseif &filetype == 'tex'

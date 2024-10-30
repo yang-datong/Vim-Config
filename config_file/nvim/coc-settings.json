@@ -7,4 +7,5 @@
   ],
   "inlayHint.enable": false,
   "semanticTokens.enable":false,
+  "python.pythonPath":"/usr/bin/python3.10"
 }

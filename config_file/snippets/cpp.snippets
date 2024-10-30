@@ -679,6 +679,17 @@ endsnippet
 snippet 'avlog|av_log|log|av_l|av_|av' "avlog" rw
 av_log(NULL, AV_LOG_${3:INFO}, "${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
+
+priority 1000
+context "function()"
+snippet 'avlog.(.*)' "avlog(info:,info)" r
+av_log(NULL, AV_LOG_INFO, `!p 
+strs=match.group(1)
+snip.rv = f"\"{strs}:%d\\n\", {strs}"
+`);
+endsnippet
+
+
 #-------------------- 6. Python function ---------------
 global !p
 def write_inclde_file(snip):
