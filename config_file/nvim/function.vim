@@ -331,11 +331,7 @@ func SetTitle()
     call setline(1, "#include <stdio.h>")
   endif
   if &filetype == 'python'
-    if has("mac")
-      call setline(1, "#!/usr/local/bin/python3.10")
-    elseif has('linux')
-      call setline(1, "#!/usr/bin/python3.10")
-    endif
+    call setline(1, "#!/usr/local/bin/python3.10")
   endif
   call setline(2,"")
   normal G

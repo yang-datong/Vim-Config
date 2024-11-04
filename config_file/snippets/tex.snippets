@@ -272,7 +272,7 @@ endsnippet
 #-------------------- 10. 积分|累乘|累加 ---------------
 priority 2001
 context "display_math()"
-snippet '(i)?int(D|d)?' "int" wr
+snippet '(i|ii)?int(D|d)?' "int" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\\int"
@@ -281,6 +281,17 @@ else:
 		snip.rv = "\\iint"
 	else:
 		snip.rv = "\\iint_{D}"
+` $0
+endsnippet
+
+priority 2002
+context "internel_math()"
+snippet 'iiint(D|d)?' "int" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\iiint"
+else:
+	snip.rv = "\\iiint_{D}"
 ` $0
 endsnippet
 
@@ -472,6 +483,12 @@ priority 1001
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
 \\frac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
+
+snippet comment "comment" w
+\begin{comment}
+	${VISUAL}$0 
+\end{comment}
 endsnippet
 
 #-------------------- 12. 文档控件 ---------------------

@@ -86,11 +86,10 @@ set formatoptions+=nM
 " }
 
 " Set include path -> use "gf" jump {
+let g:python3_host_prog='/usr/local/bin/python3.10'
 if has("mac")
-  let g:python3_host_prog='/usr/local/bin/python3.10'
   set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
-  let g:python3_host_prog='/usr/bin/python3.10'
   set path+=/usr/lib/gcc/x86_64-linux-gnu/11/include
   set path+=/usr/include/x86_64-linux-gnu/c++/11
   set path+=/usr/include/x86_64-linux-gnu
@@ -518,9 +517,9 @@ if g:is_markdown == 1
   autocmd FileType math set filetype=tex
   let g:mkdp_theme ='dark'
   if has('mac')
-    "let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
-    let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
+    "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
   else
     let g:mkdp_browser = '/usr/bin/google-chrome-stable'
   endif
