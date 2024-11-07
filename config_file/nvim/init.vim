@@ -743,7 +743,7 @@ endif
 "}
 
 " Mathematics file {
-set background=dark
+"set background=dark
 autocmd FileType tex colorscheme nord
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
