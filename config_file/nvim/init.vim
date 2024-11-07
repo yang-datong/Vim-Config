@@ -328,6 +328,7 @@ nnoremap <silent> <leader><space> :noh<cr>
 if &filetype == 'tex' || &filetype == 'plaintex'
   nmap \v \lv
   nmap 'v \lv
+  let b:auto_save = 1 "对于Latex时，自动执行保存文件
 endif
 " }
 
@@ -598,6 +599,9 @@ endif
 "Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
  "Plug 'ryanoasis/vim-devicons' Icons without colours
 "Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
+"======================================================================
+"自动保存写入
+Plug '907th/vim-auto-save'
 call plug#end()
 " }
 

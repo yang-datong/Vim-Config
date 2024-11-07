@@ -46,7 +46,7 @@ endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|X|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -63,6 +63,8 @@ elif s == "be":
 	s = "beta"
 elif s == "bec":
 	s = "because"
+elif s == "emps":
+	s = "emptyset"
 elif s == "emp":
 	s = "empty"
 elif s == "inf":
@@ -83,8 +85,8 @@ elif s == "sub":
 	s = "subset"
 elif s == "*" :
 	s = "cdot"
-elif s == "X":
-	s = "times"
+#elif s == "X":
+	#s = "times"
 snip.rv = "\\" + s
 ` $0
 endsnippet
@@ -1253,10 +1255,12 @@ endsnippet
 
 priority 2002
 context "math()"
-snippet '(omega|ome|omg)(\d)?' "omega|ome|omg" wr
-\omega`!p 
-if not match.group(2) is None:
-	snip.rv = "_{" + match.group(2) + "}"
+snippet '(O|o)(mega|me|mg)(\d)?' "omega|ome|omg" wr
+\\`!p 
+snip.rv = match.group(1)
+`mega`!p 
+if not match.group(3) is None:
+	snip.rv = "_{" + match.group(3) + "}"
 ` 
 endsnippet
 
