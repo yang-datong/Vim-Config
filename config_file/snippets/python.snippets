@@ -716,5 +716,14 @@ snippet pmdoc "pocoo style module doc string" b
 $0
 endsnippet
 
+priority 1000
+snippet 'p.(.*)' "print(info:,info)" r
+print(`!p 
+strs=match.group(1)
+snip.rv = f"\"{strs}:\", {strs}"
+`)
+endsnippet
+
+
 # vim:ft=snippets:
 priority -50
