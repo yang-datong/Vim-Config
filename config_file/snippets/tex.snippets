@@ -91,14 +91,29 @@ snip.rv = "\\" + s
 ` $0
 endsnippet
 
+#TODO: 需要重新分配区域
+priority 2002
 context "math()"
-snippet '(C|R)' "math{C|R}" rw
+snippet 'sig(\d+)' "sig\d+" rw
+`!p snip.rv = f"\sigma_{{{match.group(1)}}}" `
+endsnippet
+
+priority 2002
+context "math()"
+snippet 'mu(\d+)' "mu\d+" rw
+`!p snip.rv = f"\mu_{{{match.group(1)}}}" `
+endsnippet
+#TODO : end
+
+
+context "math()"
+snippet '(R)' "math{R}" rw
 \mathbb{`!p snip.rv=match.group(1)`}
 endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
 context "math()"
-snippet '(hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
+snippet '(overline|ovl|ol|hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -107,6 +122,10 @@ elif s == "sq":
 	s = "sqrt"
 elif s == "vphi":
 	s = "varphi"
+elif s == "olv":
+	s = "overline"
+elif s == "ol":
+	s = "overline"
 snip.rv = "\\" + s
 `{$1}$0
 endsnippet

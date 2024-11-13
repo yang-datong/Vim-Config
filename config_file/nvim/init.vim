@@ -791,7 +791,7 @@ source $NVIM_FOLDER/unite_extension.vim
 call CheckISLargeFile(3000000)
 
 " 打开文件时自动调用检查函数
-autocmd BufReadPost * call CheckFileLineCount(50)
+"autocmd BufReadPost * call CheckFileLineCount(50)
 
 if g:is_vim_studio == 1
   "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  
