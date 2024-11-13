@@ -86,11 +86,10 @@ set formatoptions+=nM
 " }
 
 " Set include path -> use "gf" jump {
+let g:python3_host_prog='/usr/local/bin/python3.10'
 if has("mac")
-  let g:python3_host_prog='/usr/local/bin/python3.10'
   set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
-  let g:python3_host_prog='/usr/bin/python3.10'
   set path+=/usr/lib/gcc/x86_64-linux-gnu/11/include
   set path+=/usr/include/x86_64-linux-gnu/c++/11
   set path+=/usr/include/x86_64-linux-gnu
@@ -329,6 +328,7 @@ nnoremap <silent> <leader><space> :noh<cr>
 if &filetype == 'tex' || &filetype == 'plaintex'
   nmap \v \lv
   nmap 'v \lv
+  let b:auto_save = 1 "对于Latex时，自动执行保存文件
 endif
 " }
 
@@ -518,9 +518,9 @@ if g:is_markdown == 1
   autocmd FileType math set filetype=tex
   let g:mkdp_theme ='dark'
   if has('mac')
-    "let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
-    let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
+    "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
   else
     let g:mkdp_browser = '/usr/bin/google-chrome-stable'
   endif
@@ -599,6 +599,9 @@ endif
 "Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
  "Plug 'ryanoasis/vim-devicons' Icons without colours
 "Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
+"======================================================================
+"自动保存写入
+Plug '907th/vim-auto-save'
 call plug#end()
 " }
 
@@ -740,7 +743,7 @@ endif
 "}
 
 " Mathematics file {
-set background=dark
+"set background=dark
 autocmd FileType tex colorscheme nord
 autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
@@ -788,7 +791,7 @@ source $NVIM_FOLDER/unite_extension.vim
 call CheckISLargeFile(3000000)
 
 " 打开文件时自动调用检查函数
-autocmd BufReadPost * call CheckFileLineCount(50)
+"autocmd BufReadPost * call CheckFileLineCount(50)
 
 if g:is_vim_studio == 1
   "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  

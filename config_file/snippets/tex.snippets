@@ -46,7 +46,7 @@ endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|X|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -63,6 +63,8 @@ elif s == "be":
 	s = "beta"
 elif s == "bec":
 	s = "because"
+elif s == "emps":
+	s = "emptyset"
 elif s == "emp":
 	s = "empty"
 elif s == "inf":
@@ -83,20 +85,35 @@ elif s == "sub":
 	s = "subset"
 elif s == "*" :
 	s = "cdot"
-elif s == "X":
-	s = "times"
+#elif s == "X":
+	#s = "times"
 snip.rv = "\\" + s
 ` $0
 endsnippet
 
+#TODO: 需要重新分配区域
+priority 2002
 context "math()"
-snippet '(C|R)' "math{C|R}" rw
+snippet 'sig(\d+)' "sig\d+" rw
+`!p snip.rv = f"\sigma_{{{match.group(1)}}}" `
+endsnippet
+
+priority 2002
+context "math()"
+snippet 'mu(\d+)' "mu\d+" rw
+`!p snip.rv = f"\mu_{{{match.group(1)}}}" `
+endsnippet
+#TODO : end
+
+
+context "math()"
+snippet '(R)' "math{R}" rw
 \mathbb{`!p snip.rv=match.group(1)`}
 endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
 context "math()"
-snippet '(hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
+snippet '(overline|ovl|ol|hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -105,6 +122,10 @@ elif s == "sq":
 	s = "sqrt"
 elif s == "vphi":
 	s = "varphi"
+elif s == "olv":
+	s = "overline"
+elif s == "ol":
+	s = "overline"
 snip.rv = "\\" + s
 `{$1}$0
 endsnippet
@@ -272,7 +293,7 @@ endsnippet
 #-------------------- 10. 积分|累乘|累加 ---------------
 priority 2001
 context "display_math()"
-snippet '(i)?int(D|d)?' "int" wr
+snippet '(i|ii)?int(D|d)?' "int" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\\int"
@@ -281,6 +302,17 @@ else:
 		snip.rv = "\\iint"
 	else:
 		snip.rv = "\\iint_{D}"
+` $0
+endsnippet
+
+priority 2002
+context "internel_math()"
+snippet 'iiint(D|d)?' "int" wr
+`!p 
+if match.group(1) is None:
+	snip.rv = "\\iiint"
+else:
+	snip.rv = "\\iiint_{D}"
 ` $0
 endsnippet
 
@@ -472,6 +504,12 @@ priority 1001
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "Fraction" wrA
 \\frac{`!p snip.rv = match.group(1)`}{$1}$0
+endsnippet
+
+snippet comment "comment" w
+\begin{comment}
+	${VISUAL}$0 
+\end{comment}
 endsnippet
 
 #-------------------- 12. 文档控件 ---------------------
@@ -1236,10 +1274,12 @@ endsnippet
 
 priority 2002
 context "math()"
-snippet '(omega|ome|omg)(\d)?' "omega|ome|omg" wr
-\omega`!p 
-if not match.group(2) is None:
-	snip.rv = "_{" + match.group(2) + "}"
+snippet '(O|o)(mega|me|mg)(\d)?' "omega|ome|omg" wr
+\\`!p 
+snip.rv = match.group(1)
+`mega`!p 
+if not match.group(3) is None:
+	snip.rv = "_{" + match.group(3) + "}"
 ` 
 endsnippet
 
