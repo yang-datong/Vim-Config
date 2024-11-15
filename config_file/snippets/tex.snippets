@@ -40,7 +40,7 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(arg|sup|cap|cdot|cup|exists|equiv|eta|forall|log|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|phi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(arg|sup|cap|cdot|cup|exists|equiv|eta|forall|log|times|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|phi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
@@ -85,26 +85,9 @@ elif s == "sub":
 	s = "subset"
 elif s == "*" :
 	s = "cdot"
-#elif s == "X":
-	#s = "times"
 snip.rv = "\\" + s
 ` $0
 endsnippet
-
-#TODO: 需要重新分配区域
-priority 2002
-context "math()"
-snippet 'sig(\d+)' "sig\d+" rw
-`!p snip.rv = f"\sigma_{{{match.group(1)}}}" `
-endsnippet
-
-priority 2002
-context "math()"
-snippet 'mu(\d+)' "mu\d+" rw
-`!p snip.rv = f"\mu_{{{match.group(1)}}}" `
-endsnippet
-#TODO : end
-
 
 context "math()"
 snippet '(R)' "math{R}" rw
@@ -182,13 +165,13 @@ endsnippet
 
 context "internel_math()"
 snippet cases "cases" i
-\begin{cases} ${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\ ${4:f(x) = x}  ${5:,& ${6:x < 0}} \end{cases}
+\begin{cases} ${1:${VISUAL}}  ${2:,& ${3:x > 0}} \\\ ${4:f(x) = x}  ${5:,& ${6:x < 0}} \end{cases}
 endsnippet
 
 context "display_math()"
 snippet cases "cases" i
 \begin{cases} 
-	${1:f(x) = x}  ${2:,& ${3:x > 0}} \\\
+	${1:${VISUAL}}  ${2:,& ${3:x > 0}} \\\
 	${4:f(x) = x}  ${5:,& ${6:x < 0}}
 \end{cases}
 endsnippet
@@ -264,6 +247,19 @@ endsnippet
 context "math()"
 snippet 'x(n|k|i|j|\d)(\+|-)(n|k|i|j|\d)' "x_{n+\d}" r
 x_{`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`}$0
+endsnippet
+
+priority 2002
+context "math()"
+snippet '(sig|lam|mu)(\d{1,2})' "sig\d+" rw
+`!p 
+if match.group(1) == "sig":
+	snip.rv = f"\sigma_{{{match.group(2)}}}"
+elif match.group(1) == "lam":
+	snip.rv = f"\lambda_{{{match.group(2)}}}"
+else:
+	snip.rv = f"\{match.group(1)}_{{{match.group(2)}}}"
+`
 endsnippet
 #-------------------- 8. lims_{x -> 0} ----------------
 context "math()"
@@ -590,11 +586,20 @@ snippet '(longtable|long)(\d)' "longtable" rb
 %\newcolumntype{L}{>{\arraybackslash}p{5cm}}
 \begin{longtable}{`!p snip.rv = "c"*int(match.group(2))`}
 	%------------ Name ---------------
-	\caption{${3:Sample}表}
-	\label{tab:${4:${3/\W+/-/g}}} \\\
+	\caption{${1:Sample}表}
+	\label{tab:${2:${1/\W+/-/g}}} \\\
 	%------------ Head ----------------
 	\toprule
-	\textbf{${1:Column1}} & \textbf{${2:Column2}} \\\
+	`!p 
+st = ""
+for i in range(int(match.group(2))):
+	st += "\\textbf{Column" + str(i+1) + "} "
+	if i != int(match.group(2)) - 1:
+		st += "& "
+	else:
+		st += "\\\\"
+snip.rv = st
+`
 	\midrule
 	\endfirsthead
 	%---------- Breakable --------------
@@ -605,7 +610,7 @@ snippet '(longtable|long)(\d)' "longtable" rb
 	\bottomrule()
 	\endlastfoot
 	%------------- Main ----------------
-	${5}            & ${6}         \\\ $0
+	${4}            & ${5}         \\\ $0
 \end{longtable}
 endsnippet
 
@@ -1249,11 +1254,6 @@ snip.rv = f"\\begin{{{flag}}} " + output_str + f"\\end{{{flag}}}"
 endsnippet
 
 context "math()"
-snippet 'lam(\d)' "'lam(\d)'" wr
-`!p snip.rv = f"\lambda_{{{match.group(1)}}}" `
-endsnippet
-
-context "math()"
 snippet 'Lam|La' "Lam" wr
 \Lambda$0
 endsnippet
@@ -1344,7 +1344,7 @@ endsnippet
 
 priority 3001
 context "math()"
-snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(\d|n)?(x|z|t)' "sin{x}" ir
+snippet '(a|ar|arc)?(sin|cos|tan|csc|sec|cot)(\d|n)?(x|y|z|t)' "sin{x}" ir
 \\`!p 
 one = match.group(1)
 two = match.group(2)
@@ -1393,6 +1393,15 @@ if two == "i":
 	snip.rv = tag + "(\\xi)"
 else:
 	snip.rv = tag + "(x_{" + two + "})"
+`$0
+endsnippet
+
+context "math()"
+snippet '(F|f|g|G)(\d)x' "f_0(x)" ir
+`!p 
+tag = match.group(1)
+one = match.group(2)
+snip.rv = tag + "_{" + one + "}" + "(x)"
 `$0
 endsnippet
 
