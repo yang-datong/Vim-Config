@@ -328,7 +328,6 @@ nnoremap <silent> <leader><space> :noh<cr>
 if &filetype == 'tex' || &filetype == 'plaintex'
   nmap \v \lv
   nmap 'v \lv
-  let b:auto_save = 1 "对于Latex时，自动执行保存文件
 endif
 " }
 
@@ -602,6 +601,13 @@ endif
 "======================================================================
 "自动保存写入
 Plug '907th/vim-auto-save'
+let b:auto_save = 0
+if &filetype == 'tex' || &filetype == 'plaintex'
+  augroup ft_tex
+    au!
+    au FileType tex let b:auto_save = 1 "对于Latex时，自动执行保存文件
+  augroup END
+endif
 call plug#end()
 " }
 

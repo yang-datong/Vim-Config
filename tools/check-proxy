@@ -1,17 +1,26 @@
 #!/bin/bash
-check_proxy(){
-	local err=$(echo $https_proxy)
-	if [ -z "$err" ];then
-		echo 0
-	else
-		echo 1
-	fi
-}
 
-if [ $(check_proxy) == 1 ];then
-	echo "使用了代理:"
-	echo $http_proxy
-	echo $https_proxy
-else
-	echo "没使用代理"
-fi
+#Seconds
+time=3
+
+#curl www.google.com --connect-timeout $time -max-time $time 2&> /dev/null && echo "Ok" && exit
+curl www.google.com --connect-timeout $time 2&> /dev/null && echo "Ok" && exit
+
+echo "Proxy is unavailable"
+
+#check_proxy(){
+#	local err=$(echo $https_proxy)
+#	if [ -z "$err" ];then
+#		echo 0
+#	else
+#		echo 1
+#	fi
+#}
+#
+#if [ $(check_proxy) == 1 ];then
+#	echo "使用了代理:"
+#	echo $http_proxy
+#	echo $https_proxy
+#else
+#	echo "没使用代理"
+#fi

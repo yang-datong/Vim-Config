@@ -1,58 +1,67 @@
 #!/bin/bash
 
-set -e
+http_proxy=7890
+socks_proxy=7891
 
-on(){
-	if [ "$(uname)" == "Linux" ];then
+on() {
+	if [ "$(uname)" == "Linux" ]; then
 		gsettings set org.gnome.system.proxy mode 'manual'
-		gsettings set org.gnome.system.proxy.http port 7890
+		gsettings set org.gnome.system.proxy.http port $http_proxy
 		gsettings set org.gnome.system.proxy.http host '127.0.0.1'
-		gsettings set org.gnome.system.proxy.https port 7890
+		gsettings set org.gnome.system.proxy.https port $http_proxy
 		gsettings set org.gnome.system.proxy.https host '127.0.0.1'
-		gsettings set org.gnome.system.proxy.socks port 7891
+		gsettings set org.gnome.system.proxy.socks port $socks_proxy
 		gsettings set org.gnome.system.proxy.socks host '127.0.0.1'
 		gsettings set org.gnome.system.proxy ignore-hosts "['localhost', '127.0.0.0/8', '::1']"
-	else
 
+	else
 		#获取所有的网络服务
-		network_services=$(networksetup -listallnetworkservices | tail -n +2 | sed 's/ /_TODO_/g')
-		for name in ${network_services};do
+		network_services=$(networksetup -listallnetworkservices | tail -n +2 | grep -v '^*' | sed 's/ /_TODO_/g')
+		for name in ${network_services}; do
 			name=$(echo $name | sed 's/_TODO_/ /g')
-			# 设置代理
-			networksetup -setwebproxy "$name" 127.0.0.1 7890 && networksetup -setsecurewebproxy "$name" 127.0.0.1 7890
-			# 启用代理
-			networksetup -setwebproxystate "$name" on && networksetup -setsecurewebproxystate "$name" on
-			# 查看
-			networksetup -getwebproxy "$name" && networksetup -getsecurewebproxy "$name"
+			# 当前当前使用的网络服务，比如WiFi,USB iPhone
+			if networksetup -getinfo "$name" | grep "^IP address: " >/dev/null; then
+				# 设置代理
+				networksetup -setwebproxy "$name" 127.0.0.1 $http_proxy && networksetup -setsecurewebproxy "$name" 127.0.0.1 $http_proxy
+				# 启用代理
+				networksetup -setwebproxystate "$name" on && networksetup -setsecurewebproxystate "$name" on
+				# 查看
+				networksetup -getwebproxy "$name" && networksetup -getsecurewebproxy "$name"
+				break
+			fi
 		done
 	fi
 }
 
-off(){
-	if [ "$(uname)" == "Linux" ];then
+off() {
+	if [ "$(uname)" == "Linux" ]; then
 		gsettings set org.gnome.system.proxy mode 'none'
 	else
 		#关闭所有的网络服务
 		network_services=$(networksetup -listallnetworkservices | tail -n +2 | sed 's/ /_TODO_/g')
-		for name in ${network_services[@]};do
+		for name in ${network_services[@]}; do
 			name=$(echo $name | sed 's/_TODO_/ /g')
-			networksetup -setwebproxystate "$name" off && networksetup -setsecurewebproxystate "$name" off
+			# 当前当前使用的网络服务，比如WiFi,USB iPhone
+			if networksetup -getinfo "$name" | grep "^IP address: " >/dev/null; then
+				networksetup -setwebproxystate "$name" off && networksetup -setsecurewebproxystate "$name" off
+			fi
 		done
 	fi
 }
 
-auto(){
-	if [ "$(uname)" == "Linux" ];then
+auto() {
+	if [ "$(uname)" == "Linux" ]; then
 		gsettings set org.gnome.system.proxy mode 'auto'
 	else
-		echo "Mac OS ???";exit
+		echo "Mac OS ???"
+		exit
 	fi
 }
 
 opt="$1"
 case "${opt}" in
-	on) on;;
-	off) off ;;
-	auto) auto;;
-	*) echo "Invalid option: -${OPTARG} , Do you say '$(basename $0) on|off|auto' ?" >&2 && exit 1;;
+on) on ;;
+off) off ;;
+auto) auto ;;
+*) echo "Invalid option: -${OPTARG} , Do you say '$(basename $0) on|off|auto' ?" >&2 && exit 1 ;;
 esac

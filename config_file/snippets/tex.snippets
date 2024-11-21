@@ -8,6 +8,7 @@
 #|------------------- 2. \CMD (alise) -----------------|
 #|------------------- 3. \CMD{$1} (alise) -------------|
 #|------------------- 4. \CMD{x} (alise) --------------|
+#|------------------- 4-1. \text{$1} ------------------|
 #|------------------- 5. \begin $0 \end ---------------|
 #|------------------- 6. *^{$1} -----------------------|
 #|------------------- 7. *_{$1} -----------------------|
@@ -40,13 +41,13 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(arg|sup|cap|cdot|cup|exists|equiv|eta|forall|log|times|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|phi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|Phi|phi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|cauchy|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -63,6 +64,8 @@ elif s == "be":
 	s = "beta"
 elif s == "bec":
 	s = "because"
+elif s == "cauchy":
+	s = "xi"
 elif s == "emps":
 	s = "emptyset"
 elif s == "emp":
@@ -96,7 +99,7 @@ endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
 context "math()"
-snippet '(overline|ovl|ol|hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
+snippet '(text|overline|ovl|ol|hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
 `!p 
 s = match.group(1)
 if s == "del":
@@ -127,6 +130,11 @@ elif s == "sq":
 	s = "sqrt"
 snip.rv = "\\" + s
 `{`!p snip.rv = match.group(2)`}$0
+endsnippet
+#-------------------- 4-1. \text{$1} -------------------
+context "math()"
+snippet '(for|Var|Cov)' "'(Var|Cov)' " rw
+\text{`!p snip.rv = match.group(1)`}
 endsnippet
 #-------------------- 5. \begin $0 \end ----------------
 snippet beg "begin{} / end{}" i
@@ -1315,13 +1323,13 @@ f_{m}(x_{0})
 endsnippet
 
 context "math()"
-snippet 'epsilon|esion|eps' "epsilon" wr
-\epsilon 
-endsnippet
-
-context "math()"
-snippet 'varepsilon|vepsion|vareps|varep|vare|veps' "varepsilon" wr
-\varepsilon 
+snippet '(var|v)?(epsilon|esion|eps)' "epsilon" wr
+`!p
+if not match.group(1) is None:
+	snip.rv = "\\var"
+else:
+	snip.rv = "\\"
+`epsilon 
 endsnippet
 
 #-------------------- 21. 三角函数 ---------------------
@@ -1411,13 +1419,13 @@ f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
 context "math()"
-snippet '(var|va|v)?phi((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
+snippet '(var|va|v)?(phi|Phi)((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
 `!p 
 if match.group(1) is None:
-	snip.rv = '\\phi'
+	snip.rv = '\\' + match.group(2)
 else:
-	snip.rv = '\\varphi'
-`(`!p snip.rv = match.group(2)`)$0
+	snip.rv = '\\var' + match.group(2)
+`(`!p snip.rv = match.group(3)`)$0
 endsnippet
 #-------------------- 23. 调用函数 ---------------------
 context "math()"
