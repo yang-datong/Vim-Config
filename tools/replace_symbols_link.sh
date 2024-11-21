@@ -16,7 +16,7 @@ main(){
 	#  这里去掉后缀后再重新遍历一次 # 
 	for file in $(ls $SH_FOOT/tools | grep -v $self);do
 		local local_file="$SH_FOOT/tools/$file"
-		if [ "$local_file" == "systemctl" ] && [ "$(uname)" == "Linux" ];then
+		if [ "$local_file" == "$SH_FOOT/tools/$file/systemctl" ] && [ "$(uname)" == "Linux" ];then
 			continue
 		fi
 		replace_symbols_link "${target_path}/${file}" "$SH_FOOT/tools/$file"
