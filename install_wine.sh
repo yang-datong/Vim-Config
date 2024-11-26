@@ -21,7 +21,7 @@ fi
 
 version=$( lsb_release -a 2>/dev/null | grep Description: | awk '{print $3}')
 
-if [ ! "$version" == "22.04.4" ];then
+if [ ! "$version" == "22.04" ];then
 	echo -e "\033[31m不支持的版本\033[0m"
 	exit
 fi

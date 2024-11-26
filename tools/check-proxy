@@ -1,10 +1,9 @@
 #!/bin/bash
-
 #Seconds
-time=3
+time=2
 
 #curl www.google.com --connect-timeout $time -max-time $time 2&> /dev/null && echo "Ok" && exit
-curl www.google.com --connect-timeout $time 2&> /dev/null && echo "Ok" && exit
+curl www.google.com -m $time 2&> /dev/null && echo "Ok" && exit
 
 echo "Proxy is unavailable"
 
