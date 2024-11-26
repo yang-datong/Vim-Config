@@ -455,19 +455,20 @@ if g:is_latex == 1
     " Use Skim (Skim的字体展示会比较黑,但是zathura配置很麻烦）
     let g:vimtex_view_general_viewer = 'skim'
     let g:vimtex_view_method = 'skim'
-    let g:vimtex_view_skim_sync = 1
-    let g:vimtex_view_skim_activate = 1
-    let g:vimtex_view_general_options = '-r @line @pdf @tex'
     "在skim中-同步：
     "预设：自定义
     "命令：nvim
     "参数：--headless -c "VimtexInverseSearch %line '%file'"
-    "高版本的Mac OS使用正向搜索会失效
+    "某些路径(或中文)会有问题导致使用正向定位会失效（绝对路径）
   elseif has('linux')
     " Use zathura
     let g:vimtex_view_general_viewer = 'zathura'
     let g:vimtex_view_method='zathura'
   endif
+  " 是否转移焦点到PDF预览器中
+  "let g:vimtex_view_skim_sync = 1
+  "let g:vimtex_view_skim_activate = 1
+  "let g:vimtex_view_general_options = '-r @line @pdf @tex'
 
   let g:vimtex_compiler_progname = 'nvr'
   " 设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
