@@ -7,11 +7,11 @@ unset src
 unset cc
 unset file_suffix
 unset level
-unset flag
 unset include_path
 unset lib_path
 unset libs
 unset flag
+unset pkg_config
 
 is_cmake=1
 #cmake="cmake"
@@ -62,18 +62,29 @@ project(project_name)
 
 # C++ version used, added compilation parameters
 set(CMAKE_CXX_STANDARD ${cmake_cxx_standard})
-$(if [ $flag ]; then
+$(if [ "$flag" ]; then
   echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall $(echo $flag | sed 's/[\,\-\.\_]/ /g')\")"
 else
   echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g3 -O0\")"
 fi)
 
-$(if [ $include_path ]; then
+$(if [ "${pkg_config}" ]; then
+  echo "# Config pkg-config"
+  echo "find_package(PkgConfig REQUIRED)"
+  echo ""
+  echo "# Specify PkgConfig"
+  echo "pkg_check_modules(PKG REQUIRED ${pkg_config})"
+  echo ""
+  echo "# Specify header file directory"
+  echo "include_directories(\${PKG_INCLUDE_DIRS})"
+fi)
+
+$(if [ "$include_path" ]; then
   echo "# Specify header file directory"
   echo "include_directories($include_path)"
 fi)
 
-$(if [ -n "$lib_path" ];then
+$(if [ "$lib_path" ];then
   echo "# Specify library file directory"
   echo "link_directories(${lib_path})"
 fi)
@@ -89,12 +100,27 @@ else
   echo "add_executable(a.out \${SOURCES})"
 fi)
 
-$(if [ -n "$lib_path" ];then
-  if [ $src ];then
+$(if [ "$lib_path" ];then
+  if [ "$src" ];then
     echo "target_link_libraries(${src%.*} ${libs})"
   else
     echo "target_link_libraries(a.out ${libs})"
   fi
+fi)
+
+$(if [ "${pkg_config}" ];then
+  if [ "$src" ];then
+    echo "target_link_libraries(${src%.*} \${PKG_LIBRARIES})"
+    echo ""
+    echo "# Compile flags"
+    echo "target_compile_options(${src%.*} PRIVATE \${PKG_CFLAGS})"
+  else
+    echo "target_link_libraries(a.out \${PKG_LIBRARIES})"
+    echo ""
+    echo "# Compile flags"
+    echo "target_compile_options(a.out PRIVATE \${PKG_CFLAGS})"
+  fi
+
 fi)
 EOF
 
@@ -168,15 +194,15 @@ generate_makefile(){
   else
     echo "BIN:=a.out" >> ${f}
   fi
-  if [ $include_path ];then
+  if [ "$include_path" ];then
     include_path="-I $include_path"
   fi
   echo "${flag}:=-g -O0 -ggdb -Wall ${level} ${include_path}" >> ${f}
-  if [ -n "$lib_path" ];then
+  if [ "$lib_path" ];then
     echo "LIBS=${lib_path}" >> ${f}
     lib_path="\$(LIBS)"
   fi
-  if [ $src ];then
+  if [ "$src" ];then
     src="SRC:=$src"
   else
     src="SRC:=\$(wildcard *.${file_suffix})"
@@ -325,11 +351,12 @@ usage (){
   --cmake               Use Cmake build project(default)
   --no-cmake            Use Makefile build project
   --makefile            Use Makefile build project
+  --pkg                 For Cmake in use pkg_config
   --gen_compile_file    Generate a compile_commands.json file for Clangd
   --gen_gdb_file        Generate a gdb.sh file for GDB
 
 
-  As -> c -I ../ffmpeg-4.4.2/build/include -L '../ffmpeg-4.4.2/build/lib ../x264-master/build/lib ../x265_3.6/build/linux' -l m
+  As -> c -I ../ffmpeg-4.4.2/build/include -L '../ffmpeg-4.4.2/build/lib ../x264-master/build/lib ../x265_3.6/build/linux' -l m --pkg opencv
   "
 }
 
@@ -351,16 +378,18 @@ while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
       debug)    set -x ;;
       posix)    set -o posix ;;
       version)  echo "$0 -- Version $ScriptVersion"; exit ;;
-      flag)     flag=${OPTARG} ;;
-      source)   src=${OPTARG} ;;
-      include)  include_path="${OPTARG}" ;;
-      lib)      libs="${OPTARG}" ;;
-      library)  lib_path=${OPTARG} ;;
-      type)     cc=${OPTARG} ;;
-      dir)      dir=${OPTARG} ;;
+      flag)     flag=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      source)   src=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      include)  include_path=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      lib)      libs=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      library)  lib_path=${!OPTIND}; OPTIND=$((OPTIND+1));;
+      type)     cc=${!OPTIND}; OPTIND=$((OPTIND+1)) ;;
+      dir)      dir=${!OPTIND}; OPTIND=$((OPTIND+1)) ;;
       cmake)    is_cmake=1;;
       no-cmake) is_cmake=0;;
       makefile) is_cmake=0;;
+      #对于pkg-config 必须使用Cmake
+      pkg)      is_cmake=1;pkg_config=${!OPTIND}; OPTIND=$((OPTIND+1));; 
       gen_compile_file) generate_compile_commands_file;exit;;
       gen_gdb_file) generate_gdb_file;exit;;
       *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
