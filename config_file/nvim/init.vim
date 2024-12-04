@@ -654,6 +654,13 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ZH translate to en {
+inoremap <C-y> <Esc>:let l=line('.')<CR>:silent exec "!trans " . getline('.') . " -b > /tmp/vim_trans_out"<CR>:delete<CR>:r /tmp/vim_trans_out<CR>:let @+=join(readfile('/tmp/vim_trans_out'), '')<CR>gi
+if (system('command -v trans') =~ 'trans') == 0
+  call AskUserInstall("translate-shell","default")
+endif
+" }
+
 " Open current gdb window {
 if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
   :command Gdb call OpenWindowIntoGDB(0)

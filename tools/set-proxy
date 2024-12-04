@@ -6,4 +6,3 @@ echo "export https_proxy=http://$ip:$prot http_proxy=http://$ip:$prot all_proxy=
 
 source /tmp/proxy.sh
 
-check-proxy
