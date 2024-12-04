@@ -655,8 +655,8 @@ endif
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ZH translate to en {
-"inoremap <C-y> <Esc>:let l=line('.')<CR>:silent exec "!trans :en " . getline('.') . " -b -e bing > /tmp/vim_trans_out"<CR>:delete<CR>:r /tmp/vim_trans_out<CR>:let @+=join(readfile('/tmp/vim_trans_out'), '')<CR>gi
-inoremap <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR><CR>:w<CR>
+inoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
+nnoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
 if (system('command -v trans') =~ 'trans') == 0
   call AskUserInstall("translate-shell","default")
 endif
@@ -676,7 +676,7 @@ nnoremap gF <C-o>
 
 " Latex fast open Inkscape {
 if g:is_inscape == 1
-inoremap <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
+inoremap <silent> <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
 if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
   call AskUserInstall("inkscape-figures","pip3.10")
 endif

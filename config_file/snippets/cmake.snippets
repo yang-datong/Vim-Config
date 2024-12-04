@@ -105,8 +105,17 @@ snippet install
 install(TARGETS ${1:target_name} DESTINATION ${2:/usr/local/bin})
 endsnippet
 
-
 snippet echo "echo"
 message("message -> $1")
 $0
+endsnippet
+
+snippet if "if"
+IF ($1)
+	$0
+ENDIF ()
+endsnippet
+
+snippet elif "if"
+ELSEIF ($1)
 endsnippet
