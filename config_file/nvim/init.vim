@@ -655,7 +655,8 @@ endif
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ZH translate to en {
-inoremap <C-y> <Esc>:let l=line('.')<CR>:silent exec "!trans " . getline('.') . " -b > /tmp/vim_trans_out"<CR>:delete<CR>:r /tmp/vim_trans_out<CR>:let @+=join(readfile('/tmp/vim_trans_out'), '')<CR>gi
+"inoremap <C-y> <Esc>:let l=line('.')<CR>:silent exec "!trans :en " . getline('.') . " -b -e bing > /tmp/vim_trans_out"<CR>:delete<CR>:r /tmp/vim_trans_out<CR>:let @+=join(readfile('/tmp/vim_trans_out'), '')<CR>gi
+inoremap <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR><CR>:w<CR>
 if (system('command -v trans') =~ 'trans') == 0
   call AskUserInstall("translate-shell","default")
 endif
