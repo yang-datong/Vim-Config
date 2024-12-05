@@ -172,6 +172,13 @@ snippet "([^\s]\w+)\.l" "Lowercase prev word(postfix)" r
 `!p snip.rv = match.group(1).lower()`$0
 endsnippet
 
-
+priority 10000
+snippet "-(.*)-(en|zh)" "To English|Chinese" wr
+`!p
+import subprocess as sp
+code = match.group(1)
+snip.rv = str(sp.check_output(['trans', ':' + match.group(2), code , "-b" , "-e","bing"]),encoding = "utf-8").strip()
+`
+endsnippet
 
 # vim:ft=snippets:

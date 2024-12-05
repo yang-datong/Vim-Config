@@ -655,8 +655,8 @@ endif
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ZH translate to en {
-inoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
-nnoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
+"inoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
+"nnoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
 if (system('command -v trans') =~ 'trans') == 0
   call AskUserInstall("translate-shell","default")
 endif
