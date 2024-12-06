@@ -7,9 +7,10 @@ ubuntu(){
 		git clone https://github.com/scwuaptx/Pwngdb.git $HOME/.pwngdb
 	fi
 
-	replace_symbols_link "$HOME/.gdbinit"        "$SH_FOOT/config_file/gdb/xx.gdbinit"
-	replace_symbols_link "$HOME/.gdbinit-gef.py" "$SH_FOOT/config_file/gdb/xx.gdbinit-gef.py"
-	replace_symbols_link "$HOME/.gef.rc"         "$SH_FOOT/config_file/gdb/xx.gef.rc"
+	replace_symbols_link "$HOME/.gdbinit"         "$SH_FOOT/config_file/gdb/xx.gdbinit"
+	replace_symbols_link "$HOME/.gdbinit-gef.py"  "$SH_FOOT/config_file/gdb/xx.gdbinit-gef.py"
+	replace_symbols_link "$HOME/.gef.rc"          "$SH_FOOT/config_file/gdb/xx.gef.rc"
+	replace_symbols_link "$HOME/.hide_command.py" "$SH_FOOT/config_file/gdb/xx.hide_command.py"
 }
 
 macos(){

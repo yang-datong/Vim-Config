@@ -1,6 +1,7 @@
 source ~/.gdbinit-gef.py
 source ~/.pwngdb/pwngdb.py
 source ~/.pwngdb/angelheap/gdbinit.py
+source ~/.hide_command.py
 
 #GEF
 #1. $ 命令可以直接以不同进制来查看变量值
@@ -101,7 +102,12 @@ end
 
 alias link=linked-list
 
-gef config context.layout "-legend -regs -stack code args source threads trace extra memory"
+#trace在大程序的情况下会导致视图卡顿
+gef config context.layout "-legend regs -stack code args source threads trace extra memory"
+
+define trace
+contex trace
+end
 
 set disable-randomization on
 

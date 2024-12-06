@@ -133,7 +133,7 @@ func OpenWindowIntoGDB(isMultiPoints)
     endif
   endfor
 
-  if gdb_file == ''
+  if gdb_file == '' && !filereadable("./gdb.sh")
     echo "Not found the executable file"
     return -1
   endif
@@ -266,9 +266,14 @@ func Run()
 
   if filetype == 'c' || filetype == 'cpp'
     let compiler = filetype == 'c' ? 'gcc' : 'g++'
-    let make_cmd = "make -j4 && if [ -f a.out ]; then ./a.out; fi"
-    let make2_cmd = "make -C build -j4 && if [ -f build/a.out ]; then ./build/a.out; fi"
-    let build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out; fi"
+    " 需要传递的命令行参数可以在第一,二行
+    let args = stridx(getline(1), '// arg') == 0 ? strpart(getline(1), strlen('// arg')) : ''
+    if args == ''
+      let args = stridx(getline(2), '// arg') == 0 ? strpart(getline(2), strlen('// arg')) : ''
+    endif
+    let make_cmd = "make -j4 && if [ -f a.out ]; then ./a.out ". args ."; fi"
+    let make2_cmd = "make -C build -j4 && if [ -f build/a.out ]; then ./build/a.out ". args ."; fi"
+    let build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out ". args ."; fi"
 
     if filereadable('build.sh')
       let exec_cmd = "!bash -c ./build.sh"
@@ -279,10 +284,11 @@ func Run()
     elseif filereadable('CMakeLists.txt')
       let exec_cmd = "!bash -c '" . build_cmd . "'"
     else
+      " 需要传递的编译参数只能在第一行
       let firstLine = getline(1)
       let remainingChars = stridx(firstLine, filetype == 'c' ? '// gcc' : '// g++') == 0 ? strpart(firstLine, strlen(filetype == 'c' ? '// gcc' : '// g++')) : ''
       let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c17' : 'c++14', remainingChars)
-      exec exec_cmd . ' && ./%<'
+      exec exec_cmd . ' && ./%<' . args
       return 0
     endif
   elseif filetype == 'python'
