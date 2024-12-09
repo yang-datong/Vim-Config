@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "确定要拉取吗？会覆盖原来的文件! [y/N]"
+echo "确定要拉取吗？会覆盖原来的文件! [Y/n]"
 
 read is_ok
 
-function from_icloud(){
+function from_icloud() {
 	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
 	cp -rv ./sh_foot/init.vim ~/.config/nvim/init.vim
 	cp -rv ./sh_foot/markdown.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/markdown.snippets
@@ -14,9 +14,9 @@ function from_icloud(){
 	echo -e "\033[31m[🍺##########Done#############]"
 }
 
-function from_github(){
+function from_github() {
 	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note)
-	for i in ${work_dirs[@]};do
+	for i in ${work_dirs[@]}; do
 		pushd "$i"
 		git pull
 		popd
@@ -24,9 +24,6 @@ function from_github(){
 	echo "Done!"
 }
 
-if [ $is_ok = 'y' ];then
-	#from_icloud
-	from_github
-fi
-
-
+if [ "$is_ok" == "n" ]; then exit; fi
+#from_icloud
+from_github

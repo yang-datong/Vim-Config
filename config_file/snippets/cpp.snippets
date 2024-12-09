@@ -65,8 +65,20 @@ snippet #ifndef "#ifndef ... #define ... #endif"
 #endif /* ifndef $1 */
 endsnippet
 
+snippet ifundef "#ifndef ... #define ... #endif"
+#ifndef ${1/([A-Za-z0-9_]+).*/$1/}
+#define ${1:SYMBOL} ${2:value}
+#endif /* ifndef $1 */
+endsnippet
+
 snippet #if "#if #endif" b
 #if ${1:0}
+${VISUAL}$0
+#endif
+endsnippet
+
+snippet ifdef "#if #endif" b
+#if defined ${1:0}
 ${VISUAL}$0
 #endif
 endsnippet
