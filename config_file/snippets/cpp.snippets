@@ -701,6 +701,15 @@ snip.rv = f"\"{strs}:%d\\n\", {strs}"
 `);
 endsnippet
 
+priority 1000
+context "function()"
+snippet 'printf.(.*)' "cout << info: << info << endl" r
+printf(`!p 
+strs=match.group(1)
+snip.rv = f"\"{strs}:%d\\n\", {strs} "
+`);
+endsnippet
+
 
 #-------------------- 6. Python function ---------------
 global !p
