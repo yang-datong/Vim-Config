@@ -103,7 +103,7 @@ end
 alias link=linked-list
 
 #trace在大程序的情况下会导致视图卡顿
-gef config context.layout "-legend regs -stack code args source threads trace extra memory"
+gef config context.layout "-legend regs -stack code args source threads -trace extra memory"
 
 define trace
 contex trace

@@ -1,3 +1,4 @@
+#Me
 BasedOnStyle: LLVM #这个可以  指针靠变量 但是public不缩进
 #IndentAccessModifiers: true  #Linux报错
 AccessModifierOffset: -1 #class->public等关键字缩进
@@ -12,3 +13,12 @@ ReflowComments: false #不格式化注释
 #BasedOnStyle: Microsoft #指针靠名字，但是int main()\n{
 #BasedOnStyle: GNU #和BasedOnStyle差不多
 #BasedOnStyle: InheritParentConfig #和LLVM差不多
+
+#x264
+#BasedOnStyle: LLVM
+#IndentWidth: 4
+#UseTab: Never
+##BreakBeforeBraces: Linux
+#AllowShortIfStatementsOnASingleLine: false
+#AllowShortFunctionsOnASingleLine: None
+#PointerAlignment: Right
