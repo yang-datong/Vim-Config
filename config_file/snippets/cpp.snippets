@@ -254,7 +254,7 @@ endsnippet
 
 priority 1000
 context "function()"
-snippet 'cout.(.*)' "cout << info: << info << endl" r
+snippet 'cout\.(.*)' "cout << info: << info << endl" r
 std::cout << `!p 
 strs=match.group(1)
 snip.rv = f"\"{strs}:\" << {strs} "
@@ -703,7 +703,7 @@ endsnippet
 
 priority 1000
 context "function()"
-snippet 'printf.(.*)' "cout << info: << info << endl" r
+snippet 'printf\.(.*)' "cout << info: << info << endl" r
 printf(`!p 
 strs=match.group(1)
 snip.rv = f"\"{strs}:%d\\n\", {strs} "
