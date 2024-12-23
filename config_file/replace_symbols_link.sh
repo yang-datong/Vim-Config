@@ -11,6 +11,7 @@ main(){
 	fi
 	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
+	replace_symbols_link "$HOME/.clangd"                           "$SH_FOOT/config_file/xx.clangd"
 	replace_symbols_link "$HOME/.zshrc"                            "$SH_FOOT/config_file/shell/xx.zshrc"
 	replace_symbols_link "$HOME/.config/nvim/init.vim"             "$SH_FOOT/config_file/nvim/init.vim"
 	replace_symbols_link "$HOME/.config/nvim/yj.lua"               "$SH_FOOT/config_file/nvim/yj.lua"
