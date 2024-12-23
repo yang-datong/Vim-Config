@@ -42,6 +42,8 @@ alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
 alias set-proxy='source /usr/local/bin/set-proxy'
+alias dock-hide='gnome-extensions disable ubuntu-dock@ubuntu.com'
+alias dock-show='gnome-extensions enable ubuntu-dock@ubuntu.com'
 
 # ffmpeg
 alias ffmpeg-q="ffmpeg -loglevel quiet"
