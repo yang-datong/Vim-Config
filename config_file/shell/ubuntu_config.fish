@@ -2,7 +2,7 @@ if status is-interactive
 
 set fish_greeting #去除提示
 
-#Ubuntu 20.04
+#Ubuntu
 set -x PATH $PATH $HOME/.local/bin/
 set -x PATH $PATH $HOME/Android/Sdk/ndk/21.4.7075529
 set -x PATH $PATH $HOME/MySoftWare/jadx/bin
@@ -41,7 +41,8 @@ alias clang='clang -std=c17 -Wall'
 alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
-alias set-proxy='source /usr/local/bin/set-proxy'
+alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890'
+alias dis-proxy='export https_proxy= http_proxy= all_proxy='
 alias dock-hide='gnome-extensions disable ubuntu-dock@ubuntu.com'
 alias dock-show='gnome-extensions enable ubuntu-dock@ubuntu.com'
 
@@ -50,8 +51,8 @@ alias ffmpeg-q="ffmpeg -loglevel quiet"
 alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
 
-# tmp
-alias ffmpeg-SmarHTC="/usr/local/SmarHTC_V6624/bin/ffmpeg-SmarHTC"
+# TODO?
+set-proxy
 
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end

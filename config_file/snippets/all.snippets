@@ -177,8 +177,41 @@ snippet "-(.*)-(en|zh)" "To English|Chinese" wr
 `!p
 import subprocess as sp
 code = match.group(1)
-snip.rv = str(sp.check_output(['trans', ':' + match.group(2), code , "-b" , "-e","bing"]),encoding = "utf-8").strip()
+text = match.group(2)
+try:
+    process = sp.Popen(['trans', ':' + text, code, '-b'], stdout=sp.PIPE, stderr=sp.PIPE)
+    stdout, stderr = process.communicate(timeout=5)
+    if process.returncode != 0:
+        snip.rv = f"Error: {stderr.decode()}"
+    else:
+        snip.rv = stdout.decode().strip()
+except sp.TimeoutExpired:
+    print("Command timed out.")
 `
 endsnippet
+
+#import requests
+#import time
+#
+#def translate_google(text, target_language="zh"):
+#    url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={}&dt=t&q={}".format(target_language, text)
+#    start_time = time.time()
+#    response = requests.get(url)
+#    end_time = time.time()
+#    if response.status_code == 200:
+#        try:
+#            translation = response.json()[0][0][0]
+#            print(f"Translation: {translation}")
+#            print(f"Time cost: {end_time - start_time}")
+#            return translation
+#        except (IndexError, TypeError):
+#            print("Error parsing translation response.")
+#            return None
+#    else:
+#        print(f"Error: {response.status_code}")
+#        return None
+#
+#text = "Hello, world!"
+#translate_google(text)
 
 # vim:ft=snippets:

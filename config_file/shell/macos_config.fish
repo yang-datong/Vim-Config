@@ -44,13 +44,16 @@ alias clang='clang -std=c17 -Wall'
 alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
-alias set-proxy='source /usr/local/bin/set-proxy'
+alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890'
+alias dis-proxy='export https_proxy= http_proxy= all_proxy='
 
 # ffmpeg
 alias ffmpeg-q="ffmpeg -loglevel quiet"
 alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
 
+# TODO?
+set-proxy
 
 #eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
 

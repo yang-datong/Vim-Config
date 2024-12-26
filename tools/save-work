@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "确定要保存吗？会覆盖原来的文件! [y/n]"
+echo "Are you sure you want to save? The original file will be overwritten![y/N]"
 read is_ok
 
 function to_icloud(){
@@ -25,7 +25,7 @@ function to_github(){
 	echo "Done!"
 }
 
-if [ $is_ok = 'y' ];then
+if [ "$is_ok" = 'y' ];then
 	#to_icloud
 	to_github
 fi

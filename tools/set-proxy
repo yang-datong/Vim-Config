@@ -1,8 +1,0 @@
-#!/bin/bash
-export ip="127.0.0.1"
-export prot="7890"
-
-echo "export https_proxy=http://$ip:$prot http_proxy=http://$ip:$prot all_proxy=socks5://$ip:$prot " > /tmp/proxy.sh
-
-source /tmp/proxy.sh
-
