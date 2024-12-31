@@ -324,7 +324,7 @@ ldd_version=\$(ldd --version | grep ldd | awk '{print \$5}')
 source_dir="libavcodec:libavdevice:libavfilter:libavformat:libavresample:libavutil:libpostproc:libswresample:libswscale"
 
 #最后传入脚步参数，配合这Vim-GDB使用
-gdb ./ffmpeg_g -ex "set args \${args}" -ex "directory \${source_dir}" -ex "b main" -ex "r" "\$@"
+gdb ./ffmpeg_g -ex "set args \${args}" -ex "directory \${source_dir}" -ex "b main" -ex "r" "\$@" -ex "c"
 EOF
 
 echo -e "\033[32mOutput -> gdb.sh\033[0m"
