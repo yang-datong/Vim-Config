@@ -574,6 +574,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim' "主要是使用 Files查找文件，以及Ag查找字符
 "nvim-telescope/telescope.nvim 也具有类似功能
 "Ag功能需要额外安装：
+"Plug 'BurntSushi/ripgrep' "Rg 官网描述是比Ag更快
 if (system('command -v fzf') =~ 'fzf') == 0
   call AskUserInstall("fzf","default")
 endif
@@ -654,6 +655,11 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 选中单词 ag 搜索 {
+nnoremap <C-F> :Ag <C-R><C-W><CR>
+vnoremap <C-F> "xy :<C-u>Ag <C-r>x<CR>
+" }
+
 " ZH translate to en {
 "inoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
 "nnoremap <silent> <C-e> <Esc>: silent exec "r !trans :en " . getline('.') . " -b -e bing "<CR>
@@ -806,7 +812,7 @@ source $NVIM_FOLDER/unite_extension.vim
 call CheckISLargeFile(3000000)
 
 " 打开文件时自动调用检查函数
-"autocmd BufReadPost * call CheckFileLineCount(50)
+autocmd BufReadPost * call CheckFileLineCount(50)
 
 if g:is_vim_studio == 1
   "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  

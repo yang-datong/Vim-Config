@@ -3,9 +3,11 @@
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "clangd.arguments": [
     "--completion-style=detailed",
-    "--header-insertion=iwyu"
+    "--header-insertion=iwyu",
+    "--background-index",
+    "--clang-tidy"
   ],
   "inlayHint.enable": false,
-  "semanticTokens.enable":false,
+  "semanticTokens.enable": false,
   "python.pythonPath":"/usr/local/bin/python3.10"
 }

@@ -266,7 +266,7 @@ func Run()
 
   if filetype == 'c' || filetype == 'cpp'
     let compiler = filetype == 'c' ? 'gcc' : 'g++'
-    " 需要传递的命令行参数可以在第一,二行
+    " NOTE: 1. 直接在源代码中声明 -> 执行程序要传入的参数(只能在第一、二行)
     let args = stridx(getline(1), '// arg') == 0 ? strpart(getline(1), strlen('// arg')) : ''
     if args == ''
       let args = stridx(getline(2), '// arg') == 0 ? strpart(getline(2), strlen('// arg')) : ''
@@ -275,16 +275,28 @@ func Run()
     let make2_cmd = "make -C build -j4 && if [ -f build/a.out ]; then ./build/a.out ". args ."; fi"
     let build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out ". args ."; fi"
 
+    " NOTE: 2. 直接在源代码中声明 -> 编译程序后执行的命令，比如执行程序，或执行测试脚本(只能在第一、二、三行)
+    let run = stridx(getline(1), '// run') == 0 ? strpart(getline(1), strlen('// run')) : ''
+    if run == ''
+      let run = stridx(getline(2), '// run') == 0 ? strpart(getline(2), strlen('// run')) : ''
+    endif
+    if run == ''
+      let run = stridx(getline(3), '// run') == 0 ? strpart(getline(3), strlen('// run')) : ''
+    endif
+    if run != ''
+      let run = " && " . run
+    endif
+
     if filereadable('build.sh')
-      let exec_cmd = "!bash -c ./build.sh"
+      let exec_cmd = "!bash -c ./build.sh" . run
     elseif filereadable('Makefile')
-      let exec_cmd = "!bash -c '" . make_cmd . "'"
+      let exec_cmd = "!bash -c '" . make_cmd . run . "'"
     elseif filereadable('./build/Makefile')
-      let exec_cmd = "!bash -c '" . make2_cmd . "'"
+      let exec_cmd = "!bash -c '" . make2_cmd . run . "'"
     elseif filereadable('CMakeLists.txt')
-      let exec_cmd = "!bash -c '" . build_cmd . "'"
+      let exec_cmd = "!bash -c '" . build_cmd . run . "'"
     else
-      " 需要传递的编译参数只能在第一行
+      " NOTE: 3. 直接在源代码中声明 -> 编译参数(只能在第一行)
       let firstLine = getline(1)
       let remainingChars = stridx(firstLine, filetype == 'c' ? '// gcc' : '// g++') == 0 ? strpart(firstLine, strlen(filetype == 'c' ? '// gcc' : '// g++')) : ''
       let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c17' : 'c++14', remainingChars)
