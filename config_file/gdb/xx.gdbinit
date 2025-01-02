@@ -2,6 +2,7 @@ source ~/.gdbinit-gef.py
 source ~/.pwngdb/pwngdb.py
 source ~/.pwngdb/angelheap/gdbinit.py
 source ~/.hide_command.py
+#source ~/.../linux-4.4.72/scripts/gdb/vmlinux-gdb.py
 
 #GEF
 #1. $ 命令可以直接以不同进制来查看变量值
@@ -111,4 +112,6 @@ end
 
 set disable-randomization on
 
+#限制字符串输出内容最大为300字符，防止在输出uint8_t* data时，输出内容直接沾满了屏幕
+set print elements 300
 #set max-value-size unlimited
