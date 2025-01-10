@@ -919,7 +919,14 @@ int main() {
 }
 endsnippet
 
-snippet main-kernel "main() (main)" b
+snippet mainn "main() (main)" b
+int main(int argc, char *argv[]) {
+	${VISUAL}$0
+	return 0;
+}
+endsnippet
+
+snippet main_kernel "main() (main)" b
 #include <linux/kernel.h>
 #include <linux/module.h>
 
@@ -938,7 +945,7 @@ module_init(my_init);
 module_exit(my_exit);
 endsnippet
 
-snippet 'temp|mainn' "mainn() " br
+snippet 'main_args' "mainn() " br
 #include <getopt.h>
 #include <iostream>
 
@@ -948,16 +955,17 @@ using namespace std;
 
 static string file;
 
-inline void use(char *me) {
-  cout << "Usage: " << me << " [options] [--] argument-1 argument-2 \
-                    \n\n  Options:\
-                      \n  -h, --help           Display this message\
-                      \n  -v, --version        Display version\
-                      \n  -f, --file           Use File\
-                      \n";
+static void use(char *me) {
+  cout << R"(Usage:  [options] [--] argument-1 argument-2
+
+  Options:
+  -h, --help           Display this message
+  -v, --version        Display version
+  -f, --file           Use File
+)" << endl;
 }
 
-void CheckArgument(int argc, char *argv[]) {
+static void check_argument(int argc, char *argv[]) {
   const char *short_opts = "hvf:";
   const option long_opts[] = {{"help", no_argument, nullptr, 'h'},
                               {"version", no_argument, nullptr, 'v'},
@@ -984,13 +992,201 @@ void CheckArgument(int argc, char *argv[]) {
   }
 }
 
-int main (int argc, char *argv[]) {
-  CheckArgument(argc, argv);
+int main(int argc, char *argv[]) {
+  check_argument(argc, argv);
   if (file.empty()) {
     use(argv[0]);
     return -1;
   }
-	$0
+
+  return 0;
+}
+endsnippet
+
+
+snippet 'main_thread' "main_thread() " br
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 10
+
+volatile sig_atomic_t g_exit = 0;
+
+typedef struct {
+  int data_type;
+  void *data;
+  int data_size;
+} ThreadData;
+
+typedef struct {
+  ThreadData buffer[BUFFER_SIZE];
+  int head;
+  int tail;
+  int count;
+  pthread_mutex_t mutex;
+  pthread_cond_t cond_full;
+  pthread_cond_t cond_empty;
+} CircularBuffer;
+
+CircularBuffer g_capture_queue;
+CircularBuffer g_encode_queue;
+
+static void init_circular_buffer(CircularBuffer *cb) {
+  cb->head = 0;
+  cb->tail = 0;
+  cb->count = 0;
+  pthread_mutex_init(&cb->mutex, NULL);
+  pthread_cond_init(&cb->cond_full, NULL);
+  pthread_cond_init(&cb->cond_empty, NULL);
+}
+
+static void enqueue(CircularBuffer *cb, ThreadData *data) {
+  pthread_mutex_lock(&cb->mutex);
+
+  while (cb->count == BUFFER_SIZE && !g_exit)
+    pthread_cond_wait(&cb->cond_full, &cb->mutex);
+
+  if (g_exit) {
+    pthread_mutex_unlock(&cb->mutex);
+    return;
+  }
+
+  cb->buffer[cb->tail] = *data;
+  cb->tail = (cb->tail + 1) % BUFFER_SIZE;
+  cb->count++;
+
+  pthread_cond_signal(&cb->cond_empty);
+  pthread_mutex_unlock(&cb->mutex);
+}
+
+static ThreadData dequeue(CircularBuffer *cb) {
+  pthread_mutex_lock(&cb->mutex);
+
+  while (cb->count == 0 && !g_exit)
+    pthread_cond_wait(&cb->cond_empty, &cb->mutex);
+
+  if (g_exit) {
+    pthread_mutex_unlock(&cb->mutex);
+    ThreadData empty_data = {0, NULL, 0};
+    return empty_data;
+  }
+
+  ThreadData data = cb->buffer[cb->head];
+  cb->head = (cb->head + 1) % BUFFER_SIZE;
+  cb->count--;
+
+  pthread_cond_signal(&cb->cond_full);
+  pthread_mutex_unlock(&cb->mutex);
+
+  return data;
+}
+
+void *thread_1(void *arg) {
+  while (!g_exit) {
+    if (g_exit) break;
+    printf("Thread 1: Capturing video frame...\n");
+    ThreadData *data = (ThreadData *)malloc(sizeof(ThreadData));
+    data->data_type = 1;
+    data->data = malloc(1024);
+    data->data_size = 1024;
+    sprintf((char *)data->data, "Raw Video Frame Data");
+
+    enqueue(&g_capture_queue, data);
+    free(data);
+
+    usleep(1000000);
+  }
+  printf("Capture Thread: Exiting...\n");
+  return NULL;
+}
+
+void *thread_2(void *arg) {
+  while (!g_exit) {
+    if (g_exit) break;
+    ThreadData data = dequeue(&g_capture_queue);
+    if (g_exit) break;
+    printf("Thread 2: Encoding video frame...\n");
+    ThreadData *encoded_data = (ThreadData *)malloc(sizeof(ThreadData));
+    encoded_data->data_type = 2;
+    encoded_data->data = malloc(512);
+    encoded_data->data_size = 512;
+
+    // 清理原始数据
+    free(data.data);
+
+    // 将编码后的数据放入编码队列
+    enqueue(&g_encode_queue, encoded_data);
+    free(encoded_data);
+  }
+  printf("Encode Thread: Exiting...\n");
+  return NULL;
+}
+
+// 模拟视频解码函数
+void *thread_3(void *arg) {
+  while (!g_exit) {
+    if (g_exit) break;
+    ThreadData data = dequeue(&g_encode_queue);
+    if (g_exit) break;
+    printf("Thread 3: Decoded video frame...\n");
+    ThreadData *decoded_data = (ThreadData *)malloc(sizeof(ThreadData));
+    decoded_data->data_type = 3;
+    decoded_data->data = malloc(1024);
+    decoded_data->data_size = 1024;
+    sprintf((char *)decoded_data->data, "Decoded Data from: %s",
+            (char *)data.data);
+
+    // 清理编码后数据
+    free(data.data);
+
+    // 处理解码后的数据（例如显示）
+    // ....
+
+    // 清理解码后的数据
+    free(decoded_data->data);
+  }
+  printf("Decode Thread: Exiting...\n");
+  return NULL;
+}
+
+void signalHandler(int sig) {
+  if (sig == SIGINT) {
+    g_exit = 1;
+    pthread_cond_broadcast(&g_capture_queue.cond_empty);
+    pthread_cond_broadcast(&g_capture_queue.cond_full);
+    pthread_cond_broadcast(&g_encode_queue.cond_empty);
+    pthread_cond_broadcast(&g_encode_queue.cond_full);
+  }
+}
+
+int main() {
+  signal(SIGINT, signalHandler);
+
+  pthread_t capture_thread, encode_thread, decode_thread;
+
+  init_circular_buffer(&g_capture_queue);
+  init_circular_buffer(&g_encode_queue);
+
+  pthread_create(&capture_thread, NULL, thread_1, NULL);
+  pthread_create(&encode_thread, NULL, thread_2, NULL);
+  pthread_create(&decode_thread, NULL, thread_3, NULL);
+
+  pthread_join(capture_thread, NULL);
+  pthread_join(encode_thread, NULL);
+  pthread_join(decode_thread, NULL);
+
+  //All threads exited. Cleaning up
+  pthread_mutex_destroy(&g_capture_queue.mutex);
+  pthread_cond_destroy(&g_capture_queue.cond_full);
+  pthread_cond_destroy(&g_capture_queue.cond_empty);
+
+  pthread_mutex_destroy(&g_encode_queue.mutex);
+  pthread_cond_destroy(&g_encode_queue.cond_full);
+  pthread_cond_destroy(&g_encode_queue.cond_empty);
 
   return 0;
 }
