@@ -300,7 +300,7 @@ func Run()
       let firstLine = getline(1)
       let remainingChars = stridx(firstLine, filetype == 'c' ? '// gcc' : '// g++') == 0 ? strpart(firstLine, strlen(filetype == 'c' ? '// gcc' : '// g++')) : ''
       let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c17' : 'c++14', remainingChars)
-      exec exec_cmd . ' && ./%<' . args
+      exec exec_cmd . ' && ./%<' . args . run
       return 0
     endif
   elseif filetype == 'python'
