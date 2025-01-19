@@ -3,13 +3,12 @@ if status is-interactive
 set fish_greeting #去除提示
 
 #MacOS
-set -x PATH $PATH /usr/local/Cellar
-set -x PATH $PATH $HOME/Library/Python/3.9/bin
-set -x PATH $PATH /usr/local/opt/binutils/bin
-set -x PATH $PATH /usr/local/texlive/2022/bin/universal-darwin/
-set -x PATH $PATH $HOME/Library/Android/sdk/ndk/21.1.6352462
-set -x PATH $PATH /Applications/Inkscape.app/Contents/MacOS/
-set -x PATH $PATH $HOME/.docker/bin
+#set -x PATH $PATH /usr/local/Cellar
+#set -x PATH $PATH /usr/local/opt/binutils/bin
+#set -x PATH $PATH /usr/local/texlive/2022/bin/universal-darwin/
+#set -x PATH $PATH $HOME/Library/Android/sdk/ndk/21.1.6352462
+#set -x PATH $PATH $HOME/.docker/bin
+set -x PATH $PATH /Applications/Inkscape.app/Contents/MacOS
 
 set -x SH_FOOT $HOME/sh_foot
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
