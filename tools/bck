@@ -1,17 +1,22 @@
 #!/bin/bash
-if [ ! $1 ];then
+if [ ! $1 ]; then
 	echo -e "\033[31mNeed augment\033[0m"
 	exit
 fi
 
-files=$(basename $1)
+#files=$(basename $1)
+files=$1
 
-if [[ -f $files && ! -f $files.bck ]];then
+if [[ -f $files ]] && [[ ! -f $files.bck ]]; then
 	cp $files $files.bck
 	echo "Complete the file copy：$files.bck"
-elif [[ -d $files && ! -d $files.bck ]];then
+elif [[ -d $files ]] && [[ ! -d $files.bck ]]; then
 	cp -r "$files" "$files.bck"
 	echo "Complete the directory copy：$files.bck"
+elif [ -f $files.bck ]; then
+	echo "ok -> $files.bck"
+elif [ -d $files.bck ]; then
+	echo "ok -> $files.bck"
 else
 	echo -e "\033[31mDuplicate copy ignored\033[0m"
 fi
