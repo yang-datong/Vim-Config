@@ -571,71 +571,92 @@ void getFileSize(std::ifstream &file, std::streamsize &size) {
 endsnippet
 
 snippet fopen "fopen"
-//#include <fstream>
-int openFile(std::string fileName, bool isBinaryFile = false) {
-  std::ifstream file;
-  if (isBinaryFile)
-    file.open(fileName, std::ios_base::binary);
-  else
-    file.open(fileName);
-  if (!file.is_open()) {
-    std::cerr << "Error opening file: ";
-    if (file.fail()) {
-      // 文件无法打开（可能是路径错误或文件不存在）
-      std::cerr << " No such file or directory. ";
-    }
-    if (file.bad()) {
-      // 在文件操作过程中遇到严重错误（例如硬件错误）
-      std::cerr << "Physical I/O error. ";
-    }
-  }
-  /* TODO  file.close(); */
-  return 0;
-}
+  FILE *fp = fopen("binary_file.bin", "rb"); // 二进制读取模式
+  if (fp == NULL) return -1;
 endsnippet
+
+#snippet fopen "fopen"
+#//#include <fstream>
+#int openFile(std::string fileName, bool isBinaryFile = false) {
+#  std::ifstream file;
+#  if (isBinaryFile)
+#    file.open(fileName, std::ios_base::binary);
+#  else
+#    file.open(fileName);
+#  if (!file.is_open()) {
+#    std::cerr << "Error opening file: ";
+#    if (file.fail()) {
+#      // 文件无法打开（可能是路径错误或文件不存在）
+#      std::cerr << " No such file or directory. ";
+#    }
+#    if (file.bad()) {
+#      // 在文件操作过程中遇到严重错误（例如硬件错误）
+#      std::cerr << "Physical I/O error. ";
+#    }
+#  }
+#  /* TODO  file.close(); */
+#  return 0;
+#}
+#endsnippet
+
 
 snippet fread "fread"
-//#include <cstring>
-int readFileBinary(std::ifstream &file, uint8_t *&buffer, int &bufferSize) {
-  if (!file.is_open())
-    return -1;
+  FILE *fp = fopen("binary_file.bin", "rb"); // 二进制读取模式
+  if (fp == NULL) return -1;
 
-  /* 适当调整，读取一个17M的文件要花近1分钟 */
-  const int readBufSize = 1024;
-  /* 适当调整，读取一个17M的文件要花近1秒 */
-  // const int readBufSize = 1024 * 1024;
-  bool isRead = false;
+  fseek(fp, 0, SEEK_END);
+  long file_size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
 
-  uint8_t *fileBuffer = new uint8_t[readBufSize];
-  while (!isRead) {
-    file.read(reinterpret_cast<char *>(fileBuffer), readBufSize);
-    if (file.gcount() != 0) {
-      uint8_t *const tmp = new uint8_t[bufferSize + file.gcount()];
-      memcpy(tmp, buffer, bufferSize);
-      memcpy(tmp + bufferSize, fileBuffer, file.gcount());
-      if (buffer) {
-        delete[] buffer;
-        buffer = nullptr;
-      }
-      buffer = tmp;
-      bufferSize += file.gcount();
-    } else
-      isRead = true;
-  }
-  delete[] fileBuffer;
-  fileBuffer = nullptr;
+  uint8_t *buffer = (uint8_t *)malloc(file_size);
+  fread(buffer, sizeof(uint8_t), file_size, fp);
 
-  /* TODO delete[] buffer; */
-  /* TODO buffer = nullptr; */
-  /* TODO bufferSize = 0; */
-  /* TODO file.close(); */
-  /* ifstream对象被销毁时，它的析构函数会自动关闭文件，如果需要及时释放可以写 */
-
-  if (!file.eof() && file.fail())
-    return -2;
-  return 0;
-}
+  fclose(fp);
+  free(buffer);
 endsnippet
+
+#snippet fread "fread"
+#//#include <cstring>
+#int readFileBinary(std::ifstream &file, uint8_t *&buffer, int &bufferSize) {
+#  if (!file.is_open())
+#    return -1;
+#
+#  /* 适当调整，读取一个17M的文件要花近1分钟 */
+#  const int readBufSize = 1024;
+#  /* 适当调整，读取一个17M的文件要花近1秒 */
+#  // const int readBufSize = 1024 * 1024;
+#  bool isRead = false;
+#
+#  uint8_t *fileBuffer = new uint8_t[readBufSize];
+#  while (!isRead) {
+#    file.read(reinterpret_cast<char *>(fileBuffer), readBufSize);
+#    if (file.gcount() != 0) {
+#      uint8_t *const tmp = new uint8_t[bufferSize + file.gcount()];
+#      memcpy(tmp, buffer, bufferSize);
+#      memcpy(tmp + bufferSize, fileBuffer, file.gcount());
+#      if (buffer) {
+#        delete[] buffer;
+#        buffer = nullptr;
+#      }
+#      buffer = tmp;
+#      bufferSize += file.gcount();
+#    } else
+#      isRead = true;
+#  }
+#  delete[] fileBuffer;
+#  fileBuffer = nullptr;
+#
+#  /* TODO delete[] buffer; */
+#  /* TODO buffer = nullptr; */
+#  /* TODO bufferSize = 0; */
+#  /* TODO file.close(); */
+#  /* ifstream对象被销毁时，它的析构函数会自动关闭文件，如果需要及时释放可以写 */
+#
+#  if (!file.eof() && file.fail())
+#    return -2;
+#  return 0;
+#}
+#endsnippet
 
 snippet fwrite "fwrite"
 int writeFileBinary(std::ofstream &file, uint8_t *&buffer, int &bufferSize) {

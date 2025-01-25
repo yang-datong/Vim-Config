@@ -11,9 +11,9 @@ build(){
 }
 
 download(){
-	sudo apt install libc-dbg  #安装有调试符号的glibc
+	sudo apt install libc-dbg  #下载glibc的调试符号（调试符号是剥离的）
 	sudo apt install glibc-source #下载glibc源代码
-	#注意，上面两个都需要安装， 少了一个都会导致如何正确调试源代码
+	#注意，上面两个都需要安装， 少了一个都会导致无法正确调试源代码
 
 	#1. 默认情况下libc-dbg会安装到 /usr/lib/debug/.build-id 目录下（具体可以通过dpkg -L libc6-dbg查看），
 	#2. 源代码会在/usr/src/glibc/glibc-2.39.tar.xz （2.39是根据你的系统版本自动获取的）
@@ -79,5 +79,5 @@ run(){
 }
 
 
-#build
-download #直接下载现有的包（不一定有对应的版本能下载到）
+build
+#download #直接下载现有的包（不一定有对应的版本能下载到）
