@@ -243,12 +243,15 @@ endsnippet
 
 priority 1001
 context "function()"
-snippet 'cout_line|coutLine|line|Line' "output current line" rw
+snippet '(cout_line|coutLine|line|Line|pk_line|pf_line)' "output current line" rw
 `!p
 if (snip.ft == "cpp"):
 	snip.rv = "std::cout << \"Into -> \" << __FUNCTION__ << \"():\" << __LINE__ << std::endl;"
 else:
-	snip.rv = "printf(\"Into -> %s():%d\",__FUNCTION__,__LINE__);"
+	if match.group(1) == "pk_line":
+		snip.rv = "printk(\"Into -> %s():%d\",__FUNCTION__,__LINE__);"
+	else:
+		snip.rv = "printf(\"Into -> %s():%d\",__FUNCTION__,__LINE__);"
 `
 endsnippet
 
