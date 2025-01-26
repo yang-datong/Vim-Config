@@ -255,15 +255,6 @@ else:
 `
 endsnippet
 
-priority 1000
-context "function()"
-snippet 'cout\.(.*)' "cout << info: << info << endl" r
-std::cout << `!p 
-strs=match.group(1)
-snip.rv = f"\"{strs}:\" << {strs} "
-`<< std::endl;
-endsnippet
-
 context "function()"
 snippet cerr
 std::cerr << "An error occurred on " << __FUNCTION__ << "():" << __LINE__ << std::endl;
@@ -720,23 +711,70 @@ snippet 'avlog|av_log|log|av_l|av_|av' "avlog" rw
 av_log(NULL, AV_LOG_${3:INFO}, "${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
 
-priority 1000
-context "function()"
-snippet 'avlog.(.*)' "avlog(info:,info)" r
-av_log(NULL, AV_LOG_INFO, `!p 
-strs=match.group(1)
-snip.rv = f"\"{strs}:%d\\n\", {strs}"
-`);
-endsnippet
+#priority 1000
+#context "function()"
+#snippet 'avlog.(.*)' "avlog(info:,info)" r
+#av_log(NULL, AV_LOG_INFO, `!p 
+#strs=match.group(1)
+#snip.rv = f"\"{strs}:%d\\n\", {strs}"
+#`);
+#endsnippet
+#
+#priority 1000
+#context "function()"
+#snippet 'cout\.(.*)' "cout << info: << info << endl" r
+#std::cout << `!p 
+#strs=match.group(1)
+#snip.rv = f"\"{strs}:\" << {strs} "
+#`<< std::endl;
+#endsnippet
+#
+#priority 1000
+#context "function()"
+#snippet 'printf\.(.*)' "cout << info: << info << endl" r
+#printf(`!p 
+#strs=match.group(1)
+#snip.rv = f"\"{strs}:%d\\n\", {strs} "
+#`);
+#endsnippet
 
 priority 1000
 context "function()"
-snippet 'printf\.(.*)' "cout << info: << info << endl" r
-printf(`!p 
-strs=match.group(1)
-snip.rv = f"\"{strs}:%d\\n\", {strs} "
-`);
+snippet '(cout|printf|printk|avlog|av_log|pf|pk)\.(\w+)' "cout << info: << info << endl" r
+`!p 
+t = match.group(1)
+s = match.group(2)
+if t == "cout":
+	s = f"std::cout << \"{s}:\" << {s} << std::endl;"
+elif t == "pf" or t == "printf":
+	s = f"printf(\"{s}:%d\\n\", {s});"
+elif t == "pk" or t == "printk":
+	s = f"printk(DEBUG \"{s}:%d\\n\", {s});"
+elif t == "avlog" or t == "av_log":
+	s = f"av_log(NULL, AV_LOG_INFO, \"{s}:%d\\n\", {s});"
+snip.rv = s
+`
 endsnippet
+
+priority 1001
+context "function()"
+snippet '(\w+)\.(cout|printf|printk|avlog|av_log|pf|pk)' "cout << info: << info << endl" r
+`!p 
+t = match.group(2)
+s = match.group(1)
+if t == "cout":
+	s = f"std::cout << \"{s}:\" << {s} << std::endl;"
+elif t == "pf" or t == "printf":
+	s = f"printf(\"{s}:%d\\n\", {s});"
+elif t == "pk" or t == "printk":
+	s = f"printk(DEBUG \"{s}:%d\\n\", {s});"
+elif t == "avlog" or t == "av_log":
+	s = f"av_log(NULL, AV_LOG_INFO, \"{s}:%d\\n\", {s});"
+snip.rv = s
+`
+endsnippet
+
+
 
 
 #-------------------- 6. Python function ---------------

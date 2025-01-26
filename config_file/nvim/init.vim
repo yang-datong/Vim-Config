@@ -677,6 +677,8 @@ if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype =
   :command GDBS call OpenWindowIntoGDB(1)
   nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB(0)<CR>
 endif
+nnoremap <C-G> :GDB<CR>
+"}
 
 " Back to <gf> window buffers {
 nnoremap gF <C-o>

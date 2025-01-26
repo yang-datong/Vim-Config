@@ -18,6 +18,12 @@ x265="${x265_version}.tar.gz"
 static=0
 shared=1
 
+is_bear=1
+make="make -j16"
+if [ $is_bear == 1 ];then
+	make="bear -- make -j16"
+fi
+
 hwaccel="--enable-vaapi "  #sudo apt install ffmpeg vainfo libva-dev libdrm-dev
 
 main(){
@@ -72,7 +78,7 @@ build_ff(){
 	local ret=$(find . -name "*.o")
 	if [ -n "$ret" ];then
 		echo "make clean..."
-		make -j16 clean
+		${make} clean
 	fi
 
 	if [ "$static" == "1" ];then
@@ -81,7 +87,7 @@ build_ff(){
 		confg_shared
 	fi
 
-	make -j16 && make install
+	${make} && make install
 	popd
 }
 
@@ -98,7 +104,6 @@ confg_static(){
 	#不要用-ggdb，-g3就是最高调试级别，-ggdb反而没有这么多调试信息
 	./configure --prefix=$(pwd)/build \
 		--extra-cflags="-static -O0 -g3 -Wno-deprecated-declarations" --extra-ldflags="-static" --pkg-config-flags="--static" \
-		--enable-small \
 		--enable-gpl --enable-libx264 --enable-libx265 ${hwaccel} \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
 		--disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages \
@@ -107,6 +112,7 @@ confg_static(){
 		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
 		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
 		#--enable-libxcb 使用xcb需要去掉--disable-avdevice
+		#--enable-small \ #会强制添加-Os编译选项
 }
 
 confg_shared(){
@@ -118,7 +124,6 @@ confg_shared(){
 		--prefix=$(pwd)/build \
 		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations" \
 		--enable-shared --disable-static \
-		--enable-small \
 		--enable-gpl --enable-libx264 --enable-libx265 \
 		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
 		--disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages \
@@ -128,6 +133,7 @@ confg_shared(){
 		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
 		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
 		#--enable-libxcb 使用xcb需要去掉--disable-avdevice
+		#--enable-small \ #会强制添加-Os编译选项
 }
 
 fetch_x264_lib(){
@@ -154,11 +160,11 @@ fetch_x264_lib(){
 			#-O0: 禁用所有代码优化。
 			#--extra-ldflags="-static": 添加链接器选项:
 			#-static: 使用静态链接。
-			make -j16 && make install
+			${make} && make install
 		fi
 	elif [ "$type" == "shared" ];then
 		./configure --enable-shared --disable-asm --prefix=$(pwd)/build --disable-opencl --disable-cli  --enable-debug --extra-cflags="-g3 -O0"
-		make -j16 && make install
+		${make} && make install
 	else
 		echo -e "\033[31mfetch_x264_lib failed\033[0m";exit
 	fi
@@ -179,18 +185,19 @@ fetch_x265_lib(){
 	cd $x265_version/build/linux
 	if [ "$type" == "static" ];then
 		if [ ! -f  libx265.a ];then
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DEXTRA_LDFLAGS="-static" -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DEXTRA_LDFLAGS="-static" -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
 			#-DENABLE_CLI=OFF: 禁用 x265 命令行工具的构建。
 			#-DHIGHBITDEPTH=OFF: 禁用高比特深度支持 (可选)。
-			make -j16 && make install
+			${make} && make install
 		fi
 	elif [ "$type" == "shared" ];then
 		if [ "$(uname)" == "Darwin" ];then
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
 		else
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 ../../source
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
 		fi
-		make -j16 && make install
+		#NOTE: Cmake可以生成compile_commands_file
+		make && make install
 	else
 		echo -e "\033[31mfetch_x265_lib failed\033[0m";exit
 	fi
