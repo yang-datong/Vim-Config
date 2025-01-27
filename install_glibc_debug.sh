@@ -6,6 +6,11 @@ set -e
 version=2.39
 save_dir=$HOME/.local/src
 output_dir=$HOME/.local/glibc-${version}
+is_bear=1
+make="make"
+if [ $is_bear == 1 ];then
+	make="bear -- make"
+fi
 
 build() {
 	get_package
@@ -58,10 +63,12 @@ run() {
 	# 配置构建，指定安装目录（无法关闭静态库的编译，只能关闭动态库）
 	../configure --prefix=${output_dir} --enable-debug --disable-werror --host=x86_64-linux-gnu
 	make clean -j$(nproc)
-	make -j$(nproc) CFLAGS="-U_FORTIFY_SOURCE -Og -g3 -fno-stack-protector" && make install
+	${make} -j$(nproc) CFLAGS="-U_FORTIFY_SOURCE -Og -g3 -fno-stack-protector" && make install
 	#NOTE: Glibc不允许编译时，完全关闭优化，比如-O0，这会报错：./../include/libc-symbols.h:75:3: error: #error "glibc cannot be compiled without optimization" 75 | # error "glibc cannot be compiled without optimization"
 	#NOTE: 不需要进行-fno-inline-functions刻意的关闭掉内联，-Og已经提供了很好的调试环境
 
+	echo "IyEvYmluL2Jhc2gKCiMgWWFuZ0ppbmcgIDwyNS0wMS0yNyAwOTozNDo1MT4gIwoKaXNfYmVhcj0xCm1ha2U9Im1ha2UiCmlmIFsgJGlzX2JlYXIgPT0gMSBdOyB0aGVuCgltYWtlPSJiZWFyIC0tIG1ha2UiCmZpCgpwdXNoZCBidWlsZAoke21ha2V9IC1qJChucHJvYykgQ0ZMQUdTPSItVV9GT1JUSUZZX1NPVVJDRSAtT2cgLWczIC1mbm8tc3RhY2stcHJvdGVjdG9yIiAmJiBtYWtlIGluc3RhbGwKcG9wZAo=" | base64 -d ${save_dir}/glibc-${version}/build.sh
+	chmod +x build.sh
 	echo -e "\033[33m
 	编译文件已输出在${output_dir}，注意！使用方式如下（下面两种方式都可以）：
 	1. 编译时手动替换系统路径下的libc.so: g++ -Wl,--rpath=${output_dir}/lib/ demo.cpp
