@@ -14,6 +14,8 @@ fi
 
 build() {
 	get_package
+#NOTE: 在Ubuntu 24.04中，默认的c编译器为gcc-13 (Ubuntu 13.2.0-23ubuntu4) 13.2.0，这个编译器编译Glibc2.39是会报错的，错误见https://github.com/cloudius-systems/osv/issues/1299
+#需要使用gcc (Ubuntu 9.5.0-6ubuntu2) 9.5.0去编译，可以直接通过apt install gcc-9 g++-9安装
 	run
 }
 
@@ -67,7 +69,7 @@ run() {
 	#NOTE: Glibc不允许编译时，完全关闭优化，比如-O0，这会报错：./../include/libc-symbols.h:75:3: error: #error "glibc cannot be compiled without optimization" 75 | # error "glibc cannot be compiled without optimization"
 	#NOTE: 不需要进行-fno-inline-functions刻意的关闭掉内联，-Og已经提供了很好的调试环境
 
-	echo "IyEvYmluL2Jhc2gKCiMgWWFuZ0ppbmcgIDwyNS0wMS0yNyAwOTozNDo1MT4gIwoKaXNfYmVhcj0xCm1ha2U9Im1ha2UiCmlmIFsgJGlzX2JlYXIgPT0gMSBdOyB0aGVuCgltYWtlPSJiZWFyIC0tIG1ha2UiCmZpCgpwdXNoZCBidWlsZAoke21ha2V9IC1qJChucHJvYykgQ0ZMQUdTPSItVV9GT1JUSUZZX1NPVVJDRSAtT2cgLWczIC1mbm8tc3RhY2stcHJvdGVjdG9yIiAmJiBtYWtlIGluc3RhbGwKcG9wZAo=" | base64 -d ${save_dir}/glibc-${version}/build.sh
+	echo "IyEvYmluL2Jhc2gKCiMgWWFuZ0ppbmcgIDwyNS0wMS0yNyAwOTozNDo1MT4gIwoKaXNfYmVhcj0xCm1ha2U9Im1ha2UiCmlmIFsgJGlzX2JlYXIgPT0gMSBdOyB0aGVuCgltYWtlPSJiZWFyIC0tIG1ha2UiCmZpCgpwdXNoZCBidWlsZAoke21ha2V9IC1qJChucHJvYykgQ0ZMQUdTPSItVV9GT1JUSUZZX1NPVVJDRSAtT2cgLWczIC1mbm8tc3RhY2stcHJvdGVjdG9yIiAmJiBtYWtlIGluc3RhbGwKcG9wZAo=" | base64 -d > ${save_dir}/glibc-${version}/build.sh
 	chmod +x build.sh
 	echo -e "\033[33m
 	编译文件已输出在${output_dir}，注意！使用方式如下（下面两种方式都可以）：
