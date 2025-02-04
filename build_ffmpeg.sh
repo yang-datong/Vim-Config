@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+#NOTE: 最终生成的ffmpeg_g基本是-O0，但是一些系统函数还是编译为-Os，如果需要完全的-O0，则需要手动修改config.mk文件，再次重新编译
 
 ScriptVersion="2.0"
 work_dir=$(pwd)
