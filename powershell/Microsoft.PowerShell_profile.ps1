@@ -13,6 +13,17 @@ Set-Alias ll Get-ChildItem
 
 Set-Alias l Get-ChildItem
 
+function open {
+	    param (
+	            [string]$path
+		        )
+	        Start-Process $path
+}
+
+Set-Alias apt choco
+Set-Alias vim nvim
+
+
 function Format-Status {
     param (
         $Message,
