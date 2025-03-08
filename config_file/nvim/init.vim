@@ -372,7 +372,7 @@ Plug 'Shougo/unite.vim' "跟Coc有点类似，但基本被Coc取代了，它的�
 Plug 'airblade/vim-gitgutter'  "配合git 左边栏显示更改、删除行标记
 Plug 'chentoast/marks.nvim' "左边栏显示当前mark标记
 "======================================================================
-Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive' "大名鼎鼎tpope开发的，在vim插件世界中，一直有着“TPope 出品，必属精品”的说法
 noremap <Leader>gs :Git<CR>
 "noremap <Leader>gb :Gblame<CR> "不知道怎么用
 noremap <Leader>gd :Gvdiff<CR>
@@ -612,6 +612,9 @@ if &filetype == 'tex' || &filetype == 'plaintex'
     au FileType tex let b:auto_save = 1 "对于Latex时，自动执行保存文件
   augroup END
 endif
+"======================================================================
+Plug 'github/copilot.vim'
+"======================================================================
 call plug#end()
 " }
 
