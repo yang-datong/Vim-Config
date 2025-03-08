@@ -54,14 +54,16 @@ set_systemctl() {
 }
 
 ubuntu() {
-	local countrt_mmdb_version=20250212
 	if [ ! -d $HOME/.config/clash ]; then
 		sudo mkdir $HOME/.config/clash
 	fi
-	local clash_file="clash-linux-amd64-latest.gz"
+
+	local countrt_mmdb_version=20250212
+	local clash_version="v1.19.3"
+	local clash_file="mihomo-linux-amd64-${clash_version}.gz"
 	local clash_bin=${clash_file%.*}
 	if [ ! -f ${clash_file} ] && [ ! -f ${clash_bin} ]; then
-		wget "https://down.clash.la/Clash/Core/Premium/${clash_file}" -O ${clash_file}
+		wget https://github.com/MetaCubeX/mihomo/releases/download/${clash_version}/mihomo-linux-amd64-${clash_version}.gz -O ${clash_file}
 		#这一步会覆盖原有的压缩文件，即压缩后的文件会替换为压缩文件，所以这里删除了原压缩文件
 		gunzip ${clash_file}
 	fi
