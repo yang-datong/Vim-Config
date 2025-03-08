@@ -214,7 +214,7 @@ else:
 endsnippet
 
 context "function()"
-snippet 'printf|print|prin|pr' "printf .. (printf)" r
+snippet 'printf|print|prin|pr|pf' "printf .. (printf)" r
 printf("${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
 
