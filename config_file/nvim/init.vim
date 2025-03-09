@@ -775,6 +775,12 @@ autocmd BufReadPre *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,o
 autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,out} call ToggleHexMode()
 " }
 
+
+" 打开文件时自动调用检查函数（检查文件行数如果小于5000行，则在写入指定格式文件时自动格式化）{
+au! BufNewFile,BufRead *.tpp set filetype=cpp
+autocmd FileType c,cpp,tex,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000)
+" }
+
 " Save mksession on vimleave {
 if g:is_vim_studio == 1
   autocmd VimLeave * mksession!
@@ -829,8 +835,6 @@ source $NVIM_FOLDER/unite_extension.vim
 " 如果文件大于3MB（3000000字节）
 call CheckISLargeFile(3000000)
 
-" 打开文件时自动调用检查函数（检查文件行数如果小于5000行，则在写入指定格式文件时自动格式化）
-call CheckFileLineCount(5000)
 
 if g:is_vim_studio == 1
   "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  
