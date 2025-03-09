@@ -98,7 +98,11 @@ confg_static() {
 	# 解决：
 	sed -i 's/Libs.private: -lstdc++ -lm -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl/Libs.private: -lstdc++ -lm/' ${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig/x265.pc
 
-	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	if [ $(uname) == "Linux" ]; then
+		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	elif [ $(uname) == "Darwin" ]; then
+		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/darwin_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	fi
 	#pkg-config --with-path=${work_dir}/${x264_version}/build/lib/pkgconfig/ --libs --cflags x264
 	#pkg-config --with-path=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig/ --libs --cflags x265
 
@@ -120,7 +124,11 @@ confg_shared() {
 	#使用动态库：
 	#1.删除 --extra-cflags="-static" --extra-ldflags="-static" \
 	#2.添加 --enable-shared \
-	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	if [ $(uname) == "Linux" ]; then
+		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	elif [ $(uname) == "Darwin" ]; then
+		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/darwin_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	fi
 	./configure \
 		--prefix=$(pwd)/build \
 		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations" \
@@ -194,7 +202,7 @@ fetch_x265_lib() {
 		fi
 	elif [ "$type" == "shared" ]; then
 		if [ "$(uname)" == "Darwin" ]; then
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=OFF -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
+			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/darwin_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=ON -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
 		else
 			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=ON -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
 		fi
