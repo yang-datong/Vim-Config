@@ -325,10 +325,12 @@ endfunc
 " Switch Theme {
 func ToggleTheme()
   if g:current_theme == 'dark'
+    set background=dark
     colorscheme seoul256
     let g:current_theme = 'light'
   else
-    colorscheme vscode
+    set background=light
+    colorscheme oxocarbon
     let g:current_theme = 'dark'
   endif
 endfunc

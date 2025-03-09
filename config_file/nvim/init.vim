@@ -437,12 +437,17 @@ let g:tagbar_sort= 0
 "Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 "======================================================================
 " Color thems
+" Dark {
 Plug 'junegunn/seoul256.vim'
 Plug 'shaunsingh/nord.nvim' "Math style
 "Plug 'doums/darcula'
 Plug 'Mofiqul/vscode.nvim'
 "Plug 'dylanaraps/wal'
 "Plug 'morhetz/gruvbox'
+" }
+" Light {
+Plug 'nyoom-engineering/oxocarbon.nvim'
+" }
 "======================================================================
 "Ultisnips
 Plug 'SirVer/ultisnips'
@@ -635,11 +640,14 @@ endif
 
 " Themes Configure {
 set termguicolors
+" Dark
 colorscheme seoul256
 "colorscheme darcula
 "colorscheme vscode
 "colorscheme gruvbox
 "colorscheme nord
+" Light
+"colorscheme oxocarbon
 " }
 
 " Unite Configure {
