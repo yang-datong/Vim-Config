@@ -6,6 +6,9 @@
 "4. 自定义命令、按键区域
 "5. 自动执行命令区域
 "6. unite插件扩展区域
+"7. 后置命令与会话恢复区域
+
+
 
 "Env -> {
   " 1. python3.10
@@ -772,8 +775,8 @@ endif
 
 " Mathematics file {
 "set background=dark
-autocmd FileType tex colorscheme nord
-autocmd FileType math colorscheme nord
+"autocmd FileType tex colorscheme nord
+"autocmd FileType math colorscheme nord
 autocmd FileType math UltiSnipsAddFiletypes markdown.snippets
 autocmd FileType math set filetype=tex
 
@@ -813,13 +816,13 @@ endif
 source $NVIM_FOLDER/unite_extension.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"                 待Vim全部初始化后执行的二级命令                   "
+"                  7. 后置命令与会话恢复区域                        "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 如果文件大于3MB（3000000字节）
 call CheckISLargeFile(3000000)
 
-" 打开文件时自动调用检查函数
-call CheckFileLineCount(10000)
+" 打开文件时自动调用检查函数（检查文件行数如果小于5000行，则在写入指定格式文件时自动格式化）
+call CheckFileLineCount(5000)
 
 if g:is_vim_studio == 1
   "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  

@@ -2,8 +2,8 @@
 
 file="$@"
 #  如果只是输入了vimm则进入判断 #
-if [ "$file" == "" ];then
-	if [ -f Session.vim ];then
+if [ "$file" == "" ]; then
+	if [ -f Session.vim ]; then
 		#  1. 使用Session.vim文件 #
 		file="-S Session.vim"
 		echo "Use Session.vim"
@@ -14,9 +14,11 @@ if [ "$file" == "" ];then
 	fi
 fi
 
-if [ ! -f $HOME/.config/nvim/init.vim ];then
-	echo -e "\033[31mNot found the $HOME/.config/nvim/init.vim\033[0m";exit
+if [ ! -f $HOME/.config/nvim/init.vim ]; then
+	echo -e "\033[31mNot found the $HOME/.config/nvim/init.vim\033[0m"
+	exit
 fi
-sed 's/let g:is_vim_studio=0/let g:is_vim_studio=1/' $HOME/.config/nvim/init.vim > /tmp/init_studio.vim
+sed 's/let g:is_vim_studio=0/let g:is_vim_studio=1/' $HOME/.config/nvim/init.vim >/tmp/init_studio.vim
 
-nvim -u /tmp/init_studio.vim -c "let \$MYVIMRC = expand('\$HOME/.config/nvim/init.vim') | execute 'lua require(\"notify\")(\"Welcome to VIM-Studio\")'" $file
+#nvim -u /tmp/init_studio.vim -c "let \$MYVIMRC = expand('\$HOME/.config/nvim/init.vim') | execute 'lua require(\"notify\")(\"Welcome to VIM-Studio\")'" $file
+nvim -u /tmp/init_studio.vim -c "let \$MYVIMRC = expand('\$HOME/.config/nvim/init.vim')" $file
