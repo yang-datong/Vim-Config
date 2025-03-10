@@ -8,7 +8,7 @@ download_config() {
 	#wget "${url}" -O config.yaml
 	touch config.yaml
 	if [ $(uname) == "Linux" ]; then
-		sudo mv config.yaml $HOME/.config/clash/
+		mv config.yaml $HOME/.config/clash/
 	else
 		mv config.yaml $HOME/.config/clash/
 	fi
@@ -55,7 +55,7 @@ set_systemctl() {
 
 ubuntu() {
 	if [ ! -d $HOME/.config/clash ]; then
-		sudo mkdir $HOME/.config/clash
+		mkdir $HOME/.config/clash
 	fi
 
 	local countrt_mmdb_version=20250212
@@ -77,7 +77,11 @@ ubuntu() {
 	fi
 	if [ ! -f $HOME/.config/clash/Country.mmdb ]; then
 		wget https://github.com/Dreamacro/maxmind-geoip/releases/download/${countrt_mmdb_version}/Country.mmdb -O Country.mmdb
-		sudo mv Country.mmdb $HOME/.config/clash/
+		mv Country.mmdb $HOME/.config/clash/
+	fi
+	if [ ! -f $HOME/.config/clash/geosite.dat ]; then
+		wget https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat -O geosite.dat
+		mv geosite.dat $HOME/.config/clash/
 	fi
 	download_config
 	set_systemctl
@@ -102,7 +106,11 @@ mac() {
 	fi
 	if [ ! -f $HOME/.config/clash/Country.mmdb ]; then
 		wget https://github.com/Dreamacro/maxmind-geoip/releases/download/20240512/Country.mmdb -O Country.mmdb
-		sudo mv Country.mmdb $HOME/.config/clash/
+		mv Country.mmdb $HOME/.config/clash/
+	fi
+	if [ ! -f $HOME/.config/clash/geosite.dat ]; then
+		wget https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat -O geosite.dat
+		mv geosite.dat $HOME/.config/clash/
 	fi
 	download_config
 	set_systemctl
