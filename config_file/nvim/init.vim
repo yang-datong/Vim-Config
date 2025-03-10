@@ -199,8 +199,9 @@ endif
 ""}
 
 if has("mac")
-  " 开启鼠标支持
-  set mouse=a
+  " 开启鼠标支持,NOTE:
+  " 复制时，需要开启insert模式，或者visual模式，这里只是添加了正常模式下的鼠标上下滚动支持
+  set mouse=n
   " 但禁用鼠标左键点击切换光标位置
   noremap <LeftMouse> <Nop>
   noremap <2-LeftMouse> <Nop>
@@ -208,7 +209,7 @@ if has("mac")
   noremap <4-LeftMouse> <Nop>
 
   " 但禁用鼠标拖动选择
-  noremap <LeftDrag> <Nop>
+  "noremap <LeftDrag> <Nop>
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -513,9 +514,11 @@ if g:is_latex == 1
     "        \ .'\def\ReleaseModel{true}'
   endif
 
+        "\   '-outdir=build',
   let g:vimtex_compiler_latexmk = {
         \ 'executable' : 'latexmk',
         \ 'options' : [
+        \   '-auxdir=build',
         \   '-file-line-error',
         \   '-synctex=1',
         \   '-interaction=batchmode',
@@ -529,10 +532,12 @@ if g:is_latex == 1
   "-interaction=nonstopmode : 禁止交互式操作。当 LaTeX 编译器遇到错误或需要用户输入时，默认情况下会暂停编译并等待用户响应。
 
   Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+  let g:tex_conceal_frac=1
+  let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
+  let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
   set conceallevel=2
   let g:tex_conceal='abdmg'
   hi Conceal ctermbg=none
-  let g:tex_conceal_frac=1
 endif
 "======================================================================
 if g:is_markdown == 1
