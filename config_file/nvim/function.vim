@@ -48,8 +48,8 @@ func CheckISLargeFile(maxSize)
   endif
 endfunc
 
-func! AutoformatIfSmall(maxLine)
-  if line('$') < a:maxLine
+func! AutoformatIfSmall(maxLine,exceptionLine)
+  if (line('$') < a:maxLine) && (line('$') != a:exceptionLine)
     Autoformat
   endif
 endfunc

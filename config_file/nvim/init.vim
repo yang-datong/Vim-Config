@@ -639,7 +639,9 @@ if &filetype == 'tex' || &filetype == 'plaintex'
   augroup END
 endif
 "======================================================================
-Plug 'github/copilot.vim'
+if &filetype != 'tex' && &filetype != 'plaintex'
+  Plug 'github/copilot.vim'
+endif
 "======================================================================
 call plug#end()
 " }
@@ -794,9 +796,9 @@ autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,
 " }
 
 
-" 打开文件时自动调用检查函数（检查文件行数如果小于5000行，则在写入指定格式文件时自动格式化）{
+" 打开文件时自动调用检查函数（检查文件行数如果小于1000行，则在写入指定格式文件时自动格式化，以及在某些特定格式模版下，不需要进行格式化，比如小窗口的vim-tex，固定为3行，且不需要格式化）{
 au! BufNewFile,BufRead *.tpp set filetype=cpp
-autocmd FileType c,cpp,tex,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000)
+autocmd FileType c,cpp,tex,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
 " }
 
 " Save mksession on vimleave {
