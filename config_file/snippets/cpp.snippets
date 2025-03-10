@@ -515,10 +515,9 @@ typedef struct ${2:`!p snip.rv = (snip.basename or "name") + "_t"`} {
 }${3:aliasName};
 endsnippet
 
-snippet 'function|func|fun' "function" br
+snippet 'function|func|fun|f' "function" br
 ${1:void} ${2:function_name}($3){
 	${VISUAL}$4
-	//std::cout << "Into -> ${2/^(?!.*::).*$/" << __FUNCTION__ << "/g}()" << std::endl;
 `!p 
 if t[1] != "void":
 	if t[1] == "int":
