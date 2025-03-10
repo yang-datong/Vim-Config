@@ -515,10 +515,10 @@ if g:is_latex == 1
   endif
 
         "\   '-outdir=build',
+        "\   '-auxdir=build',
   let g:vimtex_compiler_latexmk = {
         \ 'executable' : 'latexmk',
         \ 'options' : [
-        \   '-auxdir=build',
         \   '-file-line-error',
         \   '-synctex=1',
         \   '-interaction=batchmode',
