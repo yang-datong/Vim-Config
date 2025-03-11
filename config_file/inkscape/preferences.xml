@@ -119,8 +119,8 @@
          id="rect"
          style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.0015748;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:11.44584567;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
          usecurrent="0"
-         width="75.4243433193896"
-         height="53.2998717300526"
+         width="22.0712862990976"
+         height="175.271971695067"
          convertguides="1" />
       <eventcontext
          id="3dbox"
@@ -157,8 +157,8 @@
          end="0"
          start="0"
          usecurrent="0"
-         rx="14.930576238282"
-         ry="17.5271989004198" />
+         rx="2.92119949821412"
+         ry="2.92119949821412" />
       <eventcontext
          id="star"
          magnitude="5"
@@ -180,14 +180,16 @@
          style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.0015748;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
          usecurrent="0"
          average_all_sketches="1"
-         pressure="0" />
+         pressure="0"
+         freehand-mode="0" />
       <eventcontext
          id="pen"
          mode="drag"
          selcue="1"
          style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.0015748;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
          usecurrent="0"
-         dot-size="3" />
+         dot-size="3"
+         freehand-mode="0" />
     </group>
     <eventcontext
        id="calligraphic"
@@ -318,8 +320,12 @@
        font_sample="AaBbCcIiPpQq12369$€¢?.;/()"
        show_sample_in_list="1"
        use_svg2="1"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:39.99987402px;line-height:1.25;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;opacity:1;vector-effect:none;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999874;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
-       selcue="1" />
+       style="font-size:21.3332px;line-height:1.25;font-family:sans-serif;text-decoration-color:#000000;fill:#000000;stroke-width:0.99999874;-inkscape-stroke:none;stop-color:#000000;-inkscape-font-specification:'sans-serif, Normal';text-orientation:auto"
+       selcue="1"
+       align_mode="0"
+       writing_mode="0"
+       orientation_mode="0"
+       direction_mode="0" />
     <eventcontext
        id="nodes"
        selcue="1"
@@ -335,10 +341,10 @@
        live_outline="1"
        live_objects="1"
        show_helperpath="0"
-       x="367.998162519685"
-       y="169.243634645669"
        edit_clipping_paths="0"
-       edit_masks="0" />
+       edit_masks="0"
+       x="388.721230065586"
+       y="281.715045960648" />
     <eventcontext
        id="marker"
        selcue="1"
@@ -357,7 +363,8 @@
        doh="1"
        dos="1"
        dol="1"
-       doo="1" />
+       doo="1"
+       mode="0" />
     <eventcontext
        id="spray"
        selcue="1"
@@ -372,7 +379,9 @@
        mean="0" />
     <eventcontext
        id="gradient"
-       selcue="1" />
+       selcue="1"
+       newgradient="1"
+       newfillorstroke="1" />
     <eventcontext
        id="mesh"
        selcue="1" />
@@ -389,7 +398,9 @@
     <eventcontext
        id="select"
        selcue="1"
-       gradientdrag="0" />
+       gradientdrag="0"
+       changelayer="1"
+       changepage="1" />
     <eventcontext
        id="connector"
        style="fill:none;fill-rule:evenodd;stroke:black;stroke-opacity:1;stroke-linejoin:miter;stroke-width:1px;stroke-linecap:butt;"
@@ -410,8 +421,8 @@
          y="254.431462070878" />
       <group
          id="measure-end"
-         x="294.657780184851"
-         y="246.386198448084" />
+         x="301.527880583359"
+         y="252.798292153359" />
     </group>
   </group>
   <group
@@ -533,7 +544,7 @@
   </group>
   <group
      id="colorselector"
-     page="RGB"
+     page="HSL"
      switcher="1">
     <group
        id="RGB"
@@ -586,7 +597,7 @@
        id="toolbox" />
     <group
        id="fillstroke"
-       page="1" />
+       page="2" />
     <group
        id="filtereffects" />
     <group
@@ -628,17 +639,22 @@
        append_extension="1"
        path="">
       <group
-         id="exportarea" />
+         id="exportarea"
+         value="page" />
       <group
          id="defaultxdpi" />
+      <group
+         id="batchexportarea"
+         value="layer" />
     </group>
     <group
        id="save_as"
        default="org.inkscape.output.svg.inkscape"
        append_extension="0"
        enable_preview="1"
-       path="/Users/hi/Study/Math/g概率论/s随机事件与概率/figures"
-       use_current_dir="1" />
+       path="/private/tmp/figures"
+       use_current_dir="1"
+       enable_svgexport="0" />
     <group
        id="save_copy"
        default=""
@@ -726,8 +742,9 @@
      onimport="0"
      cursorscaling="1"
      cursor-drop-shadow="1"
-     dpifixbackup="1"
-     dpiupdatemethod="1">
+     dpifixbackup="0"
+     dpiupdatemethod="0"
+     displaymode="0">
     <group
        id="renderingcache"
        size="512" />
@@ -760,7 +777,7 @@
        value="12" />
     <group
        id="cursortolerance"
-       value="8.0" />
+       value="8" />
     <group
        id="dragtolerance"
        value="4.0" />
@@ -783,7 +800,7 @@
        uri="" />
     <group
        id="savewindowgeometry"
-       value="1" />
+       value="2" />
     <group
        id="defaultoffsetwidth"
        value="2px" />
@@ -811,7 +828,7 @@
        value="1" />
     <group
        id="transientpolicy"
-       value="1" />
+       value="0" />
     <group
        id="scrollingacceleration"
        value="0.4" />
@@ -853,7 +870,7 @@
        value="1" />
     <group
        id="defaultwindowsize"
-       value="0" />
+       value="1" />
     <group
        id="arenatilescachesize"
        value="8192" />
@@ -931,11 +948,11 @@
        indent="2"
        pathstring_format="2"
        forcerepeatcommands="0"
-       incorrect_attributes_warn="1"
+       incorrect_attributes_warn="0"
        incorrect_attributes_remove="0"
-       incorrect_style_properties_warn="1"
+       incorrect_style_properties_warn="0"
        incorrect_style_properties_remove="0"
-       style_defaults_warn="1"
+       style_defaults_warn="0"
        style_defaults_remove="0"
        check_on_reading="0"
        check_on_editing="0"
@@ -952,7 +969,7 @@
        value="1" />
     <group
        id="autosave"
-       enable="0"
+       enable="1"
        interval="1"
        path=""
        max="50" />
@@ -976,11 +993,22 @@
          angle_x="30.0"
          angle_z="30.0"
          empspacing="5" />
+      <group
+         id="modular"
+         units="mm"
+         origin_x="0.0"
+         origin_y="0.0"
+         spacing_x="40.0"
+         spacing_y="40.0"
+         gapx="10"
+         gapy="10"
+         marginx="0"
+         marginy="0" />
     </group>
     <group
        id="workarounds"
-       colorsontop="0"
-       partialdynamic="0" />
+       partialdynamic="0"
+       colorsontop="0" />
     <group
        id="font"
        unitType="2"
@@ -1007,13 +1035,25 @@
        id="ruler" />
     <group
        id="kbshortcuts"
-       value="latex" />
+       value="pdf" />
     <group
        id="commandpalette">
       <group
          id="showfullactionname"
-         value="1" />
+         value="0" />
+      <group
+         id="showuntranslatedname"
+         value="0" />
     </group>
+    <group
+       id="savedocviewport"
+       value="1" />
+    <group
+       id="notebooklabels"
+       value="0" />
+    <group
+       id="savedialogposition"
+       value="0" />
   </group>
   <group
      id="extensions"
@@ -1025,13 +1065,13 @@
      org.inkscape.effect.func_plot.tab="sampling"
      org.inkscape.effect.func_plot.fponum="0"
      org.inkscape.effect.func_plot.drawaxis="1"
-     org.inkscape.effect.func_plot.endpts="1"
-     org.inkscape.effect.func_plot.times2pi="1"
+     org.inkscape.effect.func_plot.endpts="0"
+     org.inkscape.effect.func_plot.times2pi="0"
      org.inkscape.effect.func_plot.xstart="-0.5"
      org.inkscape.effect.func_plot.ybottom="-0.6"
-     org.inkscape.effect.func_plot.samples="13"
+     org.inkscape.effect.func_plot.samples="130"
      org.inkscape.effect.func_plot.polar="0"
-     org.inkscape.render.poly_3d.obj="cube"
+     org.inkscape.render.poly_3d.obj="small_triam_icos"
      org.inkscape.render.poly_3d.type="face"
      org.inkscape.render.poly_3d.r1_ax="x"
      org.inkscape.render.poly_3d.r2_ax="x"
@@ -1056,21 +1096,48 @@
      org.inkscape.input.svg.scale="auto"
      org.inkscape.template.from-file.filename="/Applications/Inkscape.app/Contents/Resources/share/inkscape/templates/LaTeX_Beamer.svg"
      org.inkscape.generate.pdf_latex.font_size="16"
-     org.inkscape.generate.pdf_latex.formule="$1$"
      org.inkscape.input.svg.do_not_ask="1"
      burghoff.autoexporter.rasterizermode="1"
      burghoff.autoexporter.tab="scaling"
-     org.inkscape.render.wireframe_sphere.num_lat="1"
+     org.inkscape.render.wireframe_sphere.num_lat="20"
      org.inkscape.render.wireframe_sphere.num_long="2"
-     org.inkscape.render.wireframe_sphere.hide_back="1" />
+     org.inkscape.render.wireframe_sphere.hide_back="1"
+     org.inkscape.effect.func_plot.remove="1"
+     org.inkscape.effect.func_plot.__live_effect__="0"
+     org.inkscape.effect.func_plot.fofx="1-exp(-x)"
+     org.inkscape.template.paper.max="42.0"
+     org.inkscape.template.paper.min="30.0"
+     org.inkscape.template.paper.unit="in"
+     org.inkscape.template.paper.orientation="land"
+     org.inkscape.template.video.height="4320.0"
+     org.inkscape.template.video.unit="px"
+     org.inkscape.template.video.width="7680.0"
+     org.inkscape.template.social.height="720.0"
+     org.inkscape.template.social.unit="px"
+     org.inkscape.template.social.width="720.0"
+     org.inkscape.template.digital.height="768.0"
+     org.inkscape.template.digital.unit="px"
+     org.inkscape.template.digital.width="1024.0"
+     org.inkscape.template.other.size="512.0"
+     org.inkscape.template.other.unit="px"
+     org.inkscape.generate.pdf_latex.formule="$x_0$"
+     org.inkscape.render.grid_cartesian.border_th_unit="px"
+     org.inkscape.render.grid_cartesian.dx_unit="mm"
+     org.inkscape.render.grid_cartesian.x_div_unit="px"
+     org.inkscape.render.grid_cartesian.dy_unit="mm"
+     org.inkscape.render.grid_cartesian.y_div_unit="px"
+     org.inkscape.render.grid_cartesian.tab="x_tab"
+     org.inkscape.render.wireframe_sphere.__live_effect__="0"
+     org.inkscape.render.wireframe_sphere.rotation="4.1"
+     org.inkscape.render.wireframe_sphere.tilt="35" />
   <group
      id="desktop"
-     style="fill:#000000;paint-order:stroke fill markers;fill-rule:evenodd;stroke-width:0;-inkscape-font-specification:'sans-serif, Normal';font-family:sans-serif;font-size:13.99993333px;stroke:#000000">
+     style="fill:#ff0000;paint-order:stroke fill markers;fill-rule:evenodd;stroke-width:2.002;-inkscape-font-specification:'sans-serif, Normal';font-family:sans-serif;font-size:21.3332px;stroke:#ff0000;text-orientation:auto">
     <group
-       width="1072"
-       height="322"
-       x="575"
-       y="134"
+       width="1440"
+       height="810"
+       x="3"
+       y="32"
        maximized="0"
        fullscreen="0"
        id="geometry" />
