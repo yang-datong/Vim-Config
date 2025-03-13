@@ -58,6 +58,8 @@ endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Call shell to install command tools {
 func AskUserInstall(cmd,packager)
+  if !has('mac') && !has('linux')
+    return
   let answer = confirm("Whether to install " . a:cmd . "?")
   if answer ==# '1' "Exc键为0,Enter或O键为1（其他键无用）
     if a:packager == 'default' "传入default则表示系统默认包管理器
@@ -68,6 +70,8 @@ func AskUserInstall(cmd,packager)
         "exec '!sudo apt install ' . a:cmd "不能直接输入密码
         exec ':terminal sudo apt install -y ' . a:cmd
         startinsert "进入vim输入模式
+      elseif has('win32')
+        exec '!choco install ' . a:cmd
       endif
     elseif a:packager == 'pip3.10'
       exec '!pip3.10 install ' . a:cmd

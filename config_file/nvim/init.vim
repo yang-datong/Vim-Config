@@ -89,7 +89,9 @@ set formatoptions+=nM
 " }
 
 " Set include path -> use "gf" jump {
-let g:python3_host_prog='/usr/local/bin/python3.10'
+if has("mac") || has('linux')
+  let g:python3_host_prog='/usr/local/bin/python3.10'
+endif
 if has("mac")
   set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
@@ -112,9 +114,12 @@ endif
 " }
 
 " Attribute {
+"共享剪贴板
 if has("mac")
-  set clipboard=unnamed  "共享剪贴板
+  set clipboard=unnamed  
 elseif has('linux')
+  set clipboard=unnamedplus
+elseif has('win32')
   set clipboard=unnamedplus
 endif
 set autoindent "自动缩进
@@ -420,7 +425,7 @@ endif
 "======================================================================
 if g:is_coc_vim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright'] "自动安装Coc插件
+let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell'] "自动安装Coc插件
 "---More in lua config---
 if g:is_latex == 1
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
