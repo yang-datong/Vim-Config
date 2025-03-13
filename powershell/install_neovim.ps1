@@ -35,3 +35,4 @@ cp ../config_file/snippets/java.snippets ~/.config/nvim/plugged/vim-snippets/Ult
 cp ../config_file/snippets/markdown.snippets   ~/.config/nvim/plugged/vim-snippets/UltiSnips/
 cp ../config_file/snippets/sh.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
 cp ../config_file/snippets/tex.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
+cp ../config_file/snippets/ps1.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/

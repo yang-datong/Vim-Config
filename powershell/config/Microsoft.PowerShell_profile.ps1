@@ -9,6 +9,7 @@ function getFileName {
   Get-ChildItem -Path $Path | Format-Wide -Column 5 -Property Name
 }
 
+
 Remove-Item alias:\ls -ErrorAction SilentlyContinue # 静默删除，防止出错
 Set-Alias ls getFileName
 
@@ -25,6 +26,7 @@ function open {
 
 Set-Alias apt choco
 Set-Alias vim nvim
+Set-Alias sudo gsudo
 
 
 function Format-Status {
@@ -75,3 +77,13 @@ Remove-Item alias:\cd -ErrorAction SilentlyContinue # 静默删除，防止出�
 Set-Alias cd mycd
 
 
+#设置代理
+$env:HTTP_PROXY="http://127.0.0.1:7890"; $env:HTTPS_PROXY="http://127.0.0.1:7890"
+
+function prompt {
+  Write-Host -NoNewLine -ForegroundColor White "$"
+  return " "
+}
+
+
+#oh-my-posh init pwsh | Invoke-Expression
