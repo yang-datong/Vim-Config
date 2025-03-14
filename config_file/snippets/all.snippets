@@ -190,6 +190,10 @@ except sp.TimeoutExpired:
 `
 endsnippet
 
+snippet "-(.*)-(expr|calc|calculate|sum|all)" "all" wr
+`!p snip.rv = f"{match.group(1)} = {eval(match.group(1))}"`
+endsnippet
+
 #import requests
 #import time
 #
