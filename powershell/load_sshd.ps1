@@ -1,2 +1,0 @@
-Start-Service sshd
-ipconfig

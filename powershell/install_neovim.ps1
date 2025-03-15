@@ -3,8 +3,15 @@ choco install neovim nodejs -y
 
 pip3.10 install pynvim neovim-remote
 
-mkdir ~\.config\nvim
-mkdir ~\.config\nvim\autoload
+$dir = "~\.config\nvim"
+if (-not Test-Path -Path $dir) {
+    mkdir $dir
+}
+
+$dir = "~\.config\nvim\autoload"
+if (-not Test-Path -Path $dir) {
+    mkdir $dir
+}
 
 #配置使用Windows专门的(有一些插件Windows中没有）
 cp .\config\plug.vim ~\.config\nvim\autoload\
@@ -21,18 +28,21 @@ cp ..\config_file\nvim\yj.lua ~\.config\nvim\
 nvim -c "PlugInstall"
 
 #nvim插件配置文件修改
-cp ./config/seoul256.vim ~/.config/nvim/plugged/seoul256.vim/colors/seoul256.vim
+$dir = "~\.config\nvim\plugged\"
+cp ./config/seoul256.vim $dir/seoul256.vim/colors/seoul256.vim
 
-cp ../config_file/snippets/all.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/cpp.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/javascript.snippets   ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/make.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/python.snippets   ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/snippets.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/cmake.snippets   ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/c.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/java.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/markdown.snippets   ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/sh.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/tex.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
-cp ../config_file/snippets/ps1.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/
+$dir = "~\.config\nvim\plugged\vim-snippets\UltiSnips\"
+cp ../config_file/snippets/all.snippets $dir
+cp ../config_file/snippets/cpp.snippets $dir
+cp ../config_file/snippets/javascript.snippets   $dir
+cp ../config_file/snippets/make.snippets $dir
+cp ../config_file/snippets/python.snippets   $dir
+cp ../config_file/snippets/snippets.snippets $dir
+cp ../config_file/snippets/cmake.snippets   $dir
+cp ../config_file/snippets/c.snippets $dir
+cp ../config_file/snippets/java.snippets $dir
+cp ../config_file/snippets/markdown.snippets   $dir
+cp ../config_file/snippets/sh.snippets $dir
+cp ../config_file/snippets/tex.snippets $dir
+cp ../config_file/snippets/ps1.snippets $dir
+

@@ -1,9 +1,11 @@
 New-Item -Type file -Force $PROFILE
-cp ./config/Microsoft.PowerShell_profile.ps1 $PROFILE
 
+cp ./config/Microsoft.PowerShell_profile.ps1 $PROFILE
+. $PROFILE
 
 #Install Choco
 ./install_choco.ps1
+. $PROFILE
 
 choco install gsudo curl wget git python310
 
@@ -13,10 +15,17 @@ python3.10 get-pip.py
 
 
 #mkdir $HOME/.config -> $HOME/AppData/Local
-gsudo New-Item -ItemType SymbolicLink -Path $HOME/.config -Target $HOME/AppData/Local -Force
+$link = "$HOME/.config"
+if (-not Test-Path -Path $link) {
+    gsudo New-Item -ItemType SymbolicLink -Path $link -Target $HOME/AppData/Local -Force
+        . $PROFILE
+}
 
 
 ./install_neovim.ps1
+. $PROFILE
 
 #替换WindowsTerminal配置文件
-cp ./windows-terminal-settings.json $HOME\.config\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
+cp ./config/windows-terminal-settings.json $HOME\.config\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json
+#cp ./config/windows-terminal-settings.json "$HOME\.config\Microsoft\Windows Terminal\settings.json"
+. $PROFILE
