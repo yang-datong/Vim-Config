@@ -253,7 +253,7 @@ endsnippet
 
 priority 0
 context "math()"
-snippet '(?!p|i|h)([A-Za-z])(\d{1,3}|n|k|j)' "x_{\d}" ir
+snippet '(?!p|i|h)([A-Za-z])(\d{1,3}|n|m|k|j)' "x_{\d}" ir
 `!p snip.rv = match.group(1) + "_{" +  match.group(2) + "}"`$0
 endsnippet
 
@@ -1339,6 +1339,11 @@ if not match.group(1) is None:
 else:
 	snip.rv = "\\"
 `epsilon 
+endsnippet
+
+context "math()"
+snippet '(P|R|Q|G|H)('{0,3})z' "(P|R|Q)z" wr
+`!p snip.rv = f"{match.group(1)}{match.group(2)}(z)" `
 endsnippet
 
 #-------------------- 21. 三角函数 ---------------------

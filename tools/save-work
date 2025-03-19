@@ -1,31 +1,31 @@
 #!/bin/bash
 set -e
 
-echo "Are you sure you want to save? The original file will be overwritten![y/N]"
+echo "Are you sure you want to save? The original file will be overwritten![Y/n]"
 read is_ok
 
-function to_icloud(){
+to_icloud() {
 	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
-	cp -vr ~/Desktop/demo1 ./  #save demo1
-	cp -vr ~/.config/nvim/init.vim  ./sh_foot/  #save nvim config
-	cp -vr ~/.config/nvim/plugged/vim-snippets/UltiSnips/markdown.snippets  ./sh_foot/  #save markdown.snippets
+	cp -vr ~/Desktop/demo1 ./                                                         #save demo1
+	cp -vr ~/.config/nvim/init.vim ./sh_foot/                                         #save nvim config
+	cp -vr ~/.config/nvim/plugged/vim-snippets/UltiSnips/markdown.snippets ./sh_foot/ #save markdown.snippets
 	popd
 	echo -e "\033[31m[🍺!!!!!!!!!!!Done!!!!!!!!!!!]"
 }
 
-function to_github(){
+to_github() {
 	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note)
-	for i in ${work_dirs[@]};do
+	for i in ${work_dirs[@]}; do
 		pushd "$i"
-			#git add . && git commit -m "Auto commit from[$0]" && git push
-			#不执行add，为了防止提交了不完整的更改
-			git commit -m "Auto commit from[$0]" && git push
+		#git add . && git commit -m "Auto commit from[$0]" && git push
+		#不执行add，为了防止提交了不完整的更改
+		git commit -m "Auto commit from[$0]" && git push
 		popd
 	done
 	echo "Done!"
 }
 
-if [ "$is_ok" = 'y' ];then
+if [ "$is_ok" != 'n' ]; then
 	#to_icloud
 	to_github
 fi
