@@ -157,8 +157,11 @@ set numberwidth=3     " minimun width to use for the number column.
 " Syntax {
 syntax on
 syntax enable
+"按照缩进折叠
+set foldmethod=indent
+"按照语法折叠
 "set foldmethod=syntax
-"set foldlevel=2
+set foldlevel=2
 " }
 
 " Cursor {

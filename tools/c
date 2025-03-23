@@ -21,22 +21,21 @@ make2="make -j $(nproc)"
 cmake_version=3.10
 cmake_cxx_standard=14
 
-
 #---------------------------------------- CMakeLists Generate ----------------------------------------
-cmake_main(){
+cmake_main() {
   whether_has_source_file
-  if [ "$1" == "clean" ];then
+  if [ "$1" == "clean" ]; then
     clean_cmake "all" && exit
-  elif [ "$1" == "make" ];then
+  elif [ "$1" == "make" ]; then
     ${make} && clean_cmake && exit
   fi
 
   check_is_lib_path
 
   local f="CMakeLists.txt"
-  if [ -f $f ];then
+  if [ -f $f ]; then
     read -p "是否重新生成${f}？[y/N]" OK
-    if [ "$OK" != "y" ];then
+    if [ "$OK" != "y" ]; then
       ${cmake} . && ${make}
     else
       generate_cmakelists
@@ -50,8 +49,8 @@ cmake_main(){
   generate_compile_commands_file
 }
 
-generate_cmakelists(){
-  cat << EOF > CMakeLists.txt
+generate_cmakelists() {
+  cat <<EOF >CMakeLists.txt
 # Minimum version used by CMake
 cmake_minimum_required(VERSION ${cmake_version})
 # Generate compile_commands.json file
@@ -63,109 +62,106 @@ project(project_name)
 # C++ version used, added compilation parameters
 set(CMAKE_CXX_STANDARD ${cmake_cxx_standard})
 $(if [ "$flag" ]; then
-  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall $(echo $flag | sed 's/[\,\-\.\_]/ /g')\")"
-else
-  echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g3 -O0\")"
-fi)
+    echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall $(echo $flag | sed 's/[\,\-\.\_]/ /g')\")"
+  else
+    echo "set(CMAKE_CXX_FLAGS \"\${CMAKE_CXX_FLAGS} -Wall -g3 -O0\")"
+  fi)
 
 $(if [ "${pkg_config}" ]; then
-  echo "# Config pkg-config"
-  echo "find_package(PkgConfig REQUIRED)"
-  echo ""
-  echo "# Specify PkgConfig"
-  echo "pkg_check_modules(PKG REQUIRED ${pkg_config})"
-  echo ""
-  echo "# Specify header file directory"
-  echo "include_directories(\${PKG_INCLUDE_DIRS})"
-fi)
+    echo "# Config pkg-config"
+    echo "find_package(PkgConfig REQUIRED)"
+    echo ""
+    echo "# Specify PkgConfig"
+    echo "pkg_check_modules(PKG REQUIRED ${pkg_config})"
+    echo ""
+    echo "# Specify header file directory"
+    echo "include_directories(\${PKG_INCLUDE_DIRS})"
+  fi)
 
 $(if [ "$include_path" ]; then
-  echo "# Specify header file directory"
-  echo "include_directories($include_path)"
-fi)
+    echo "# Specify header file directory"
+    echo "include_directories($include_path)"
+  fi)
 
-$(if [ "$lib_path" ];then
-  echo "# Specify library file directory"
-  echo "link_directories(${lib_path})"
-fi)
+$(if [ "$lib_path" ]; then
+    echo "# Specify library file directory"
+    echo "link_directories(${lib_path})"
+  fi)
 
-$(if [ $src ];then
-  echo "# Specify source files"
-  echo "add_executable( ${src%.*} $src )"
-else
-  echo "# Find all source files in the current directory"
-  echo "aux_source_directory(. SOURCES)"
-  echo " "
-  echo "# Compile all source code together and link it to an executable file 'a.out'"
-  echo "add_executable(a.out \${SOURCES})"
-fi)
-
-$(if [ "$lib_path" ];then
-  if [ "$src" ];then
-    echo "target_link_libraries(${src%.*} ${libs})"
+$(if [ $src ]; then
+    echo "# Specify source files"
+    echo "add_executable( ${src%.*} $src )"
   else
-    echo "target_link_libraries(a.out ${libs})"
-  fi
-fi)
+    echo "# Find all source files in the current directory"
+    echo "aux_source_directory(. SOURCES)"
+    echo " "
+    echo "# Compile all source code together and link it to an executable file 'a.out'"
+    echo "add_executable(a.out \${SOURCES})"
+  fi)
 
-$(if [ "${pkg_config}" ];then
-  if [ "$src" ];then
-    echo "target_link_libraries(${src%.*} \${PKG_LIBRARIES})"
-    echo ""
-    echo "# Compile flags"
-    echo "target_compile_options(${src%.*} PRIVATE \${PKG_CFLAGS})"
-  else
-    echo "target_link_libraries(a.out \${PKG_LIBRARIES})"
-    echo ""
-    echo "# Compile flags"
-    echo "target_compile_options(a.out PRIVATE \${PKG_CFLAGS})"
-  fi
+$(if [ "$lib_path" ]; then
+    if [ "$src" ]; then
+      echo "target_link_libraries(${src%.*} ${libs})"
+    else
+      echo "target_link_libraries(a.out ${libs})"
+    fi
+  fi)
 
-fi)
+$(if [ "${pkg_config}" ]; then
+    if [ "$src" ]; then
+      echo "target_link_libraries(${src%.*} \${PKG_LIBRARIES})"
+      echo ""
+      echo "# Compile flags"
+      echo "target_compile_options(${src%.*} PRIVATE \${PKG_CFLAGS})"
+    else
+      echo "target_link_libraries(a.out \${PKG_LIBRARIES})"
+      echo ""
+      echo "# Compile flags"
+      echo "target_compile_options(a.out PRIVATE \${PKG_CFLAGS})"
+    fi
+
+  fi)
 EOF
 
   ${cmake} . && ${make}
 }
 
-clean_cmake(){
+clean_cmake() {
   local date=$(date +"%Y%m%d%H%M%S")
-  if [[ -f "Makefile" && "$1" == "all" ]];then
+  if [[ -f "Makefile" && "$1" == "all" ]]; then
     ${make} clean
     mv Makefile /tmp/Makefile_$date
   fi
-  if [ -f CMakeCache.txt ];then
+  if [ -f CMakeCache.txt ]; then
     mv CMakeCache.txt /tmp/CMakeCache.txt_$date
   fi
-  if [ -f cmake_install.cmake ];then
+  if [ -f cmake_install.cmake ]; then
     mv cmake_install.cmake /tmp/cmake_install.cmake_$date
   fi
-  if [ -f CTestTestfile.cmake ];then
+  if [ -f CTestTestfile.cmake ]; then
     mv CTestTestfile.cmake /tmp/CTestTestfile.cmake_$date
   fi
-  if [ -d CMakeFiles ];then
+  if [ -d CMakeFiles ]; then
     mv CMakeFiles /tmp/CMakeFiles_$date
   fi
-  if [ -d build ];then
+  if [ -d build ]; then
     mv build /tmp/build_$date
   fi
 }
 
-
-
-
 #---------------------------------------- Makefile Generate ----------------------------------------
-makefile_main(){
-  if [ "$1" == "clean" ];then
+makefile_main() {
+  if [ "$1" == "clean" ]; then
     ${make} clean
   fi
-  if [ "${src##*.}" == "c" ];then
+  if [ "${src##*.}" == "c" ]; then
     cc="c"
-  elif [ "${src##*.}" == "cpp" ];then
+  elif [ "${src##*.}" == "cpp" ]; then
     cc="cpp"
   fi
-  if [ "$cc" == "c" ];then
+  if [ "$cc" == "c" ]; then
     c_kind
-  elif [ "$cc" == "cpp" ];then
+  elif [ "$cc" == "cpp" ]; then
     cpp_kind
   else
     check_build_type
@@ -173,9 +169,9 @@ makefile_main(){
   check_is_lib_path
 
   local f="Makefile"
-  if [ -f $f ];then
+  if [ -f $f ]; then
     read -p "是否重新生成${f}？[y/N]" OK
-    if [ "$OK" != "y" ];then
+    if [ "$OK" != "y" ]; then
       ${make2}
     else
       generate_makefile
@@ -186,112 +182,116 @@ makefile_main(){
   generate_compile_commands_file
 }
 
-generate_makefile(){
+generate_makefile() {
   local f="Makefile"
-  echo "CC:=$cc" > ${f}
-  if [ $src ];then
-    echo "BIN:=${src%.*}" >> ${f}
+  echo "CC:=$cc" >${f}
+  if [ $src ]; then
+    echo "BIN:=${src%.*}" >>${f}
   else
-    echo "BIN:=a.out" >> ${f}
+    echo "BIN:=a.out" >>${f}
   fi
-  if [ "$include_path" ];then
+  if [ "$include_path" ]; then
     include_path="-I $include_path"
   fi
-  echo "${flag}:=-g -O0 -ggdb -Wall ${level} ${include_path}" >> ${f}
-  if [ "$lib_path" ];then
-    echo "LIBS=${lib_path}" >> ${f}
+  echo "${flag}:=-g -O0 -ggdb -Wall ${level} ${include_path}" >>${f}
+  if [ "$lib_path" ]; then
+    echo "LIBS=${lib_path}" >>${f}
     lib_path="\$(LIBS)"
   fi
-  if [ "$src" ];then
+  if [ "$src" ]; then
     src="SRC:=$src"
   else
     src="SRC:=\$(wildcard *.${file_suffix})"
   fi
-  echo "$src" >> ${f}
-  echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >> ${f}
-  echo "" >> ${f}
-  echo "\$(BIN):\$(OBJS)" >> ${f}
-  echo "  \$(CC) \$^ -o \$@ ${lib_path}" >> ${f}
-  echo "" >> ${f}
-  echo "clean:" >> ${f}
-  echo "  rm \$(OBJS) \$(BIN)" >> ${f}
+  echo "$src" >>${f}
+  echo "OBJS:=\$(patsubst %.${file_suffix},%.o,\$(SRC))" >>${f}
+  echo "" >>${f}
+  echo "\$(BIN):\$(OBJS)" >>${f}
+  echo "  \$(CC) \$^ -o \$@ ${lib_path}" >>${f}
+  echo "" >>${f}
+  echo "clean:" >>${f}
+  echo "  rm \$(OBJS) \$(BIN)" >>${f}
   ${make}
 }
 
-
 #---------------------------------------- Utility Tool Functions ----------------------------------------
 #Check OS System
-check_os(){
+check_os() {
   case "$(uname)" in
-    "Darwin") echo ".dylib" ;;
-    "Linux") echo ".so" ;;
-    *)echo "Windows has not been tested for the time being";exit 1
+  "Darwin") echo ".dylib" ;;
+  "Linux") echo ".so" ;;
+  *)
+    echo "Windows has not been tested for the time being"
+    exit 1
+    ;;
   esac
 }
 
-check_is_lib_path(){
-  if [ -n "$lib_path" ];then
+check_is_lib_path() {
+  if [ -n "$lib_path" ]; then
     grep_modl=".$(check_os)$"
-    libs+=" $(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib//' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )"
+    libs+=" $(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib//' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ')"
 
     #Find static library -> ".a"
-    if [ -z "$libs" ];then
+    if [ -z "$libs" ]; then
       grep_modl=".a$"
-      libs+=" $(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib//' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ' )"
+      libs+=" $(ls ${lib_path} | grep "${grep_modl}" | sed -e 's/lib//' -e "s/\.${grep_modl}//" -e 's/\..*//' | uniq | tr '\n' ' ')"
     fi
 
     #lib_path="-L $lib_path $libs"
   fi
 }
 
-check_build_type(){
+check_build_type() {
   local c_total=$(ls | grep "\.c$" | wc -l)
   local cpp_total=$(ls | grep "\.cpp$" | wc -l)
 
-  if [  $c_total -gt 0 -a $cpp_total -gt 0 ];then
+  if [ $c_total -gt 0 -a $cpp_total -gt 0 ]; then
     echo -e "\033[31m Detection c file and c++ file ,use -c [filename] argument\033[0m"
-    exit;
+    exit
   fi
 
-  if [ $c_total == 0 -a $cpp_total == 0 ];then
-    echo "No target/complist(C\\Cpp) passed" ; exit;
-  elif [ $c_total -gt 0 -a $cpp_total == 0 ];then
+  if [ $c_total == 0 -a $cpp_total == 0 ]; then
+    echo "No target/complist(C\\Cpp) passed"
+    exit
+  elif [ $c_total -gt 0 -a $cpp_total == 0 ]; then
     c_kind
-  elif [ $c_total == 0 -a $cpp_total -gt 0 ];then
+  elif [ $c_total == 0 -a $cpp_total -gt 0 ]; then
     cpp_kind
   fi
 }
 
-c_kind(){
+c_kind() {
   cc="gcc" #gcc 在Mac下同样指向clang
   file_suffix="c"
   level="-std=c17"
   flag="CFLAGS"
 }
 
-cpp_kind(){
+cpp_kind() {
   cc="g++" #g++ 在Mac下同样指向clang++
   file_suffix="cpp"
   level="-std=c++14"
   flag="CPPFLAGS"
 }
 
-whether_has_source_file(){
+whether_has_source_file() {
   local c_total=$(ls | grep "\.c$" | wc -l)
   local cpp_total=$(ls | grep "\.cpp$" | wc -l)
-  if [ $c_total == 0 -a $cpp_total == 0 ];then
-    echo "no found c\\cpp file" ; exit;
+  if [ $c_total == 0 -a $cpp_total == 0 ]; then
+    echo "no found c\\cpp file"
+    exit
   fi
 }
 
-generate_compile_commands_file(){
-  if [ $is_cmake == 1 ];then
+generate_compile_commands_file() {
+  if [ $is_cmake == 1 ]; then
     #For Cmake
-    if [ -d build ];then
+    if [ -d build ]; then
       pushd build
       cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
       popd
-      if [ -f build/compile_commands.json ];then
+      if [ -f build/compile_commands.json ]; then
         mv build/compile_commands.json ./
       fi
     else
@@ -303,13 +303,13 @@ generate_compile_commands_file(){
   fi
 }
 
-generate_gdb_file(){
-  if [ -f gdb.sh ];then
-     read -p "是否重新生成${f}？[y/N]" OK  
-     if [ "$OK" != "y" ];then return; fi 
+generate_gdb_file() {
+  if [ -f gdb.sh ]; then
+    read -p "是否重新生成${f}？[y/N]" OK
+    if [ "$OK" != "y" ]; then return; fi
   fi
 
-  cat << EOF > gdb.sh
+  cat <<EOF >gdb.sh
 #!/bin/bash
 
 #设置动态库执行路径，在动态库存在于用户目录时
@@ -329,16 +329,20 @@ program="a.out"
 #source_dir="/usr/src/glibc/glibc-\${ldd_version}"
 
 #最后传入脚步参数，配合这Vim-GDB使用
-gdb \${program} -ex "set args \${args}" -ex "directory \${source_dir}" -ex "b main" -ex "r" "\$@" -ex "c"
+if [ "\$(uname)" == "Linux" ]; then
+  gdb \${program} -ex "set args \${args}" -ex "directory \${source_dir}" -ex "b main" -ex "r" "\$@" -ex "c"
+else
+  lldb \${program} -o "run \${args}" -o "b main" -o "r" "\$@" -o "c"
+fi
 EOF
 
-echo -e "\033[32mOutput -> gdb.sh\033[0m"
-cat gdb.sh
+  echo -e "\033[32mOutput -> gdb.sh\033[0m"
+  cat gdb.sh
 }
 
 #---------------------------------------- Command Handle ----------------------------------------
 
-usage (){
+usage() {
   echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
   Options:
@@ -367,46 +371,83 @@ usage (){
 
 while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
   case "${opt}" in
-    h) usage && exit 0;;
-    d) set -x ;;
-    p) set -o posix ;;
-    v) echo "$0 -- Version $ScriptVersion"; exit ;;
-    f) flag="${OPTARG}";;
-    c) src=${OPTARG} ;;
-    I) include_path="${OPTARG}" ;;
-    l) libs="${OPTARG}" ;;
-    L) lib_path=${OPTARG} ;;
-    t) cc=${OPTARG} ;;
-    D) dir=${OPTARG} ;;
-    -) case "${OPTARG}" in
-      help) usage && exit 0;;
-      debug)    set -x ;;
-      posix)    set -o posix ;;
-      version)  echo "$0 -- Version $ScriptVersion"; exit ;;
-      flag)     flag=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      source)   src=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      include)  include_path=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      lib)      libs=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      library)  lib_path=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      type)     cc=${!OPTIND}; OPTIND=$((OPTIND+1)) ;;
-      dir)      dir=${!OPTIND}; OPTIND=$((OPTIND+1)) ;;
-      cmake)    is_cmake=1;;
-      no-cmake) is_cmake=0;;
-      makefile) is_cmake=0;;
-      #对于pkg-config 必须使用Cmake
-      pkg)      is_cmake=1;pkg_config=${!OPTIND}; OPTIND=$((OPTIND+1));; 
-      gen_compile_file) generate_compile_commands_file;exit;;
-      gen_gdb_file) generate_gdb_file;exit;;
-      *) echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
-    esac;;
-  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
-  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
-esac
+  h) usage && exit 0 ;;
+  d) set -x ;;
+  p) set -o posix ;;
+  v)
+    echo "$0 -- Version $ScriptVersion"
+    exit
+    ;;
+  f) flag="${OPTARG}" ;;
+  c) src=${OPTARG} ;;
+  I) include_path="${OPTARG}" ;;
+  l) libs="${OPTARG}" ;;
+  L) lib_path=${OPTARG} ;;
+  t) cc=${OPTARG} ;;
+  D) dir=${OPTARG} ;;
+  -) case "${OPTARG}" in
+    help) usage && exit 0 ;;
+    debug) set -x ;;
+    posix) set -o posix ;;
+    version)
+      echo "$0 -- Version $ScriptVersion"
+      exit
+      ;;
+    flag)
+      flag=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    source)
+      src=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    include)
+      include_path=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    lib)
+      libs=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    library)
+      lib_path=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    type)
+      cc=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    dir)
+      dir=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    cmake) is_cmake=1 ;;
+    no-cmake) is_cmake=0 ;;
+    makefile) is_cmake=0 ;;
+    #对于pkg-config 必须使用Cmake
+    pkg)
+      is_cmake=1
+      pkg_config=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    gen_compile_file)
+      generate_compile_commands_file
+      exit
+      ;;
+    gen_gdb_file)
+      generate_gdb_file
+      exit
+      ;;
+    *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+    esac ;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+  esac
 done
 
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
-if [ $is_cmake == 1 ];then
+if [ $is_cmake == 1 ]; then
   cmake_main "$@"
 else
   makefile_main "$@"
