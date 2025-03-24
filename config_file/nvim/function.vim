@@ -60,6 +60,7 @@ endfunc
 func AskUserInstall(cmd,packager)
   if !has('mac') && !has('linux')
     return
+  endif
   let answer = confirm("Whether to install " . a:cmd . "?")
   if answer ==# '1' "Exc键为0,Enter或O键为1（其他键无用）
     if a:packager == 'default' "传入default则表示系统默认包管理器
