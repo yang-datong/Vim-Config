@@ -41,13 +41,13 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|theta|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|Phi|phi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|Phi|phi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 0
 context "math()"
-snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|cauchy|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -66,6 +66,8 @@ elif s == "bec":
 	s = "because"
 elif s == "cauchy":
 	s = "xi"
+elif s == "del":
+	s = "delta"
 elif s == "emps":
 	s = "emptyset"
 elif s == "emp":
@@ -104,10 +106,10 @@ endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
 context "math()"
-snippet '(text|overline|ovl|ol|hat|zeta|dddx|ddx|del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
+snippet '(text|overline|ovl|ol|hat|zeta|dddx|ddx|Del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
 `!p 
 s = match.group(1)
-if s == "del":
+if s == "Del":
 	s = "Delta"
 elif s == "sq":
 	s = "sqrt"
@@ -1247,8 +1249,23 @@ snippet '(eta|xi)(\d)' "'eta(\d)'" wr
 endsnippet
 
 context "math()"
-snippet 'gamma|gama|gam' "'gamma|gama|gam'" wr
-\gamma $0
+snippet '(gamma|gama|gam)(\d)?' "'gamma|gama|gam'" wr
+`!p 
+if match.group(2) is None:
+	snip.rv = "\\gamma "
+else:
+	snip.rv = "\\gamma_{" + match.group(2) + "}"
+`$0
+endsnippet
+
+context "math()"
+snippet '(theta|thet|the)(\d)?' "'theta'" wr
+`!p 
+if match.group(2) is None:
+	snip.rv = "\\theta "
+else:
+	snip.rv = "\\theta_{" + match.group(2) + "}"
+`$0
 endsnippet
 
 context "math()"
@@ -1346,6 +1363,11 @@ snippet '(P|R|Q|G|H)('{0,3})z' "(P|R|Q)z" wr
 `!p snip.rv = f"{match.group(1)}{match.group(2)}(z)" `
 endsnippet
 
+context "math()"
+snippet '([xyz])('{0,3})([t])' "f(x)" ir
+`!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
+endsnippet
+
 #-------------------- 21. 三角函数 ---------------------
 priority 2001
 context "math()"
@@ -1399,7 +1421,7 @@ endsnippet
 
 priority 2001
 context "math()"
-snippet '([Ffgv])('{0,3})((?!r|f|F|p)([a-zX]|\d+))' "f(x)" ir
+snippet '([FfGg])('{0,3})((?!r|f|F|p)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
 endsnippet
 
