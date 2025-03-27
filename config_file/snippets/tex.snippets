@@ -47,7 +47,7 @@ endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 1
 context "math()"
-snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|ang|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -58,6 +58,8 @@ elif s == "v...":
 	s = "vdots"
 elif s == "~":
 	s = "neg"
+elif s == "ang":
+	s = "angle"
 elif s == "al":
 	s = "alpha"
 elif s == "be":
