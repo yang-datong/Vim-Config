@@ -45,7 +45,7 @@ snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|tau|in|iff|
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
-priority 0
+priority 1
 context "math()"
 snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
 `!p 
@@ -990,7 +990,8 @@ snippet mk "Math" i
 $${1}$$0
 endsnippet
 
-snippet 'mk(X|Y|x|y|z|n)' "Math" ir
+#snippet 'mk(X|Y|x|y|z|n)' "Math" ir
+snippet 'mk(E|X|Y|[a-z])' "Math" ir
 $`!p snip.rv = match.group(1)`$$0
 endsnippet
 
@@ -1000,6 +1001,7 @@ $1
 \] $0
 endsnippet
 
+priority 2002
 snippet 'equ|mkk' "equation" wr
 \begin{equation}
 	${1:${VISUAL}}
@@ -1292,7 +1294,7 @@ snippet 'Lam|La' "Lam" wr
 \Lambda$0
 endsnippet
 
-#------------------- 20-3. 复数 --------------------
+#------------------- 20-3. 复分析 --------------------
 context "math()"
 snippet i "i" w
 \mathrm{i}
@@ -1366,6 +1368,12 @@ endsnippet
 context "math()"
 snippet '([xyz])('{0,3})([t])' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
+endsnippet
+
+#线性分式
+context "math()" 
+snippet Sz "Sz" i
+S(z)
 endsnippet
 
 #-------------------- 21. 三角函数 ---------------------
