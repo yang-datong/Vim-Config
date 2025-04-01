@@ -2,7 +2,7 @@
 
 > https://zhuanlan.zhihu.com/p/496803742
 
-1. 修改PowerToys的键盘配置文件，如下：
+1. 修改PowerToys的键盘配置文件（PowerToyes一定要以管理员身份运行，不然在某些应用中会扰乱键盘映射），如下：
 
 ```json
 PS C:\Users\hi> cat 'C:\Users\hi\AppData\Local\Microsoft\PowerToys\Keyboard Manager\default.json'
