@@ -12,23 +12,33 @@
 #`wmctrl -r :ACTIVE: -e 0,0,0,500,500`这个命令会将当前活动的窗口移动到屏幕的左上角，并将窗口的大小设置为500x500。
 #
 ScriptVersion="1.0"
+#set -x
 
 unset key
 unset file
 unset directory
 screen_info_file=$HOME/.screen_info
 
-init_info(){
+convert_to_int() {
+	local n=$1
+	if [ -z $n ]; then
+		echo 0
+	else
+		echo $n
+	fi
+}
+
+init_info() {
 	wid=$(xwininfo -root | grep Width | awk '{print $2}')
 	hei=$(xwininfo -root | grep Height | awk '{print $2}')
 	#如果有多个屏幕，那么需要给每个屏幕都设置dock栏的显示，不然会有高度计算不准的情况
 
-	screen_count=$(xrandr 2>/dev/null | grep ' connected' | wc -l )
-	if [ $screen_count == "1" ];then
+	screen_count=$(xrandr 2>/dev/null | grep ' connected' | wc -l)
+	if [ $screen_count == "1" ]; then
 		#如果是一个屏幕则不需要进一步判断
 		half_wid=$(expr $wid / 2)
 		half_hei=$(expr $hei / 2)
-	elif [ $screen_count == "2" ];then
+	elif [ $screen_count == "2" ]; then
 		#如果是两个屏幕,先获取主屏幕的宽高
 		primary_screen_info=$(xrandr 2>/dev/null | grep ' connected' | grep 'primary')
 		primary_screen_width=$(echo $primary_screen_info | awk '{print $4}' | awk -F "x" '{print $1}')
@@ -37,7 +47,7 @@ init_info(){
 		secondary_screen_info=$(xrandr 2>/dev/null | grep ' connected' | grep -v 'primary')
 		secondary_screen_width=$(echo $secondary_screen_info | awk '{print $3}' | awk -F "x" '{print $1}')
 		secondary_screen_height=$(echo $secondary_screen_info | awk '{print $3}' | awk -F "x" '{print $2}' | awk -F "+" '{print $1}')
-		if [ $primary_screen_width == $secondary_screen_width ] && [ $primary_screen_height == $secondary_screen_height ];then
+		if [ $primary_screen_width == $secondary_screen_width ] && [ $primary_screen_height == $secondary_screen_height ]; then
 			#如果两个屏幕的分辨率是一样的
 			half_wid=$(expr $wid / 4)
 			half_hei=$(expr $hei / 2)
@@ -47,21 +57,22 @@ init_info(){
 			#			half_hei=$(expr $primary_screen_height / 2)
 		fi
 	else
-		echo "TODO 存在两个以上屏幕;";exit
+		echo "TODO 存在两个以上屏幕;"
+		exit
 	fi
 
-	echo all_width:$wid > $screen_info_file
-	echo all_height:$hei >> $screen_info_file
-	echo primary_screen_width:$primary_screen_width >> $screen_info_file
-	echo primary_screen_height:$primary_screen_height >> $screen_info_file
-	echo secondary_screen_width:$secondary_screen_width >> $screen_info_file
-	echo secondary_screen_height:$secondary_screen_height >> $screen_info_file
-	echo half_wid:$half_wid >> $screen_info_file
-	echo half_hei:$half_hei >> $screen_info_file
+	echo all_width:$(convert_to_int $wid) >$screen_info_file
+	echo all_height:$(convert_to_int $hei) >>$screen_info_file
+	echo primary_screen_width:$(convert_to_int $primary_screen_width) >>$screen_info_file
+	echo primary_screen_height:$(convert_to_int $primary_screen_height) >>$screen_info_file
+	echo secondary_screen_width:$(convert_to_int $secondary_screen_width) >>$screen_info_file
+	echo secondary_screen_height:$(convert_to_int $secondary_screen_height) >>$screen_info_file
+	echo half_wid:$(convert_to_int $half_wid) >>$screen_info_file
+	echo half_hei:$(convert_to_int $half_hei) >>$screen_info_file
 	cat $screen_info_file
 }
 
-read_database_info(){
+read_database_info() {
 	wid=$(cat $screen_info_file | grep all_width | awk -F ":" '{print $2}')
 	hei=$(cat $screen_info_file | grep all_height | awk -F ":" '{print $2}')
 	primary_screen_width=$(cat $screen_info_file | grep primary_screen_width | awk -F ":" '{print $2}')
@@ -77,62 +88,64 @@ read_database_info(){
 	#echo primary_screen_height:$primary_screen_height
 	#echo secondary_screen_width:$secondary_screen_width
 	#echo secondary_screen_height:$secondary_screen_height
-	#echo half_wid:$half_wid 
-	#echo half_hei:$half_hei 
+	#echo half_wid:$half_wid
+	#echo half_hei:$half_hei
 }
 
-check_current_position(){
+check_current_position() {
 	current_position=$(xdotool getactivewindow getwindowgeometry | grep "Position" | awk -F ": " '{print $2}' | awk -F "," '{print $1}')
 	#echo current_position:$current_position
 	offset=0
-	if [ $current_position -lt $primary_screen_width ];then
-		#  TODO YangJing 仅考虑副屏幕在主屏幕的左边的情况 <24-04-12 11:37:08> #
-		#在主屏
-		half_wid=$(expr $primary_screen_width / 2)
-		half_hei=$(expr $primary_screen_height / 2)
-	elif [ $current_position -gt $primary_screen_width ];then
-		#在副屏
-		half_wid=$(expr $secondary_screen_width / 2)
-		half_hei=$(expr $secondary_screen_height / 2)
-		offset=$(expr $primary_screen_width + 10)
+	if [ $primary_screen_width != 0 ]; then
+		if [ $current_position -le $primary_screen_width ]; then
+			#  TODO YangJing 仅考虑副屏幕在主屏幕的左边的情况 <24-04-12 11:37:08> #
+			#在主屏
+			half_wid=$(expr $primary_screen_width / 2)
+			half_hei=$(expr $primary_screen_height / 2)
+		elif [ $current_position -ge $primary_screen_width ]; then
+			#在副屏
+			half_wid=$(expr $secondary_screen_width / 2)
+			half_hei=$(expr $secondary_screen_height / 2)
+			offset=$(expr $primary_screen_width + 10)
+		fi
 	fi
 }
 windwos_name=":ACTIVE:"
 
-main(){
-	if [ ! -f $screen_info_file ];then
-		init_info
-	else
+main() {
+	if [ -f $screen_info_file ]; then
 		read_database_info
+	else
+		init_info
 	fi
 	check_current_position
 
 	#echo offset:$offset
-	if [ "$key" == "left" ];then
+	if [ "$key" == "left" ]; then
 		#置于左半屏幕
 		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$hei
-	elif [ "$key" == "right" ];then
+	elif [ "$key" == "right" ]; then
 		#置于右半屏幕
 		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$hei
-	elif [ "$key" == "u" ];then
+	elif [ "$key" == "u" ]; then
 		#置于左上屏幕
 		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$half_hei
-	elif [ "$key" == "i" ];then
+	elif [ "$key" == "i" ]; then
 		#置于右上屏幕
 		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$half_hei
-	elif [ "$key" == "j" ];then
+	elif [ "$key" == "j" ]; then
 		#置于左下屏幕
 		wmctrl -r $windwos_name -e 2,$offset,$half_hei,$half_wid,$half_hei
-	elif [ "$key" == "k" ];then
+	elif [ "$key" == "k" ]; then
 		#置于右下屏幕
 		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$half_hei,$half_wid,$half_hei
-	elif [ "$key" == "top" ];then
+	elif [ "$key" == "top" ]; then
 		#置于上半屏幕
 		wmctrl -r $windwos_name -e 2,0,0,$wid,$half_hei
-	elif [ "$key" == "down" ];then
+	elif [ "$key" == "down" ]; then
 		#置于下半屏幕
 		wmctrl -r $windwos_name -e 2,0,$half_hei,$wid,$half_hei
-	elif [ "$key" == "center" ];then
+	elif [ "$key" == "center" ]; then
 		#居中屏幕
 		get_current_windows_size
 		#elif [ "$key" == "Max" ];then
@@ -141,14 +154,13 @@ main(){
 	fi
 }
 
-get_current_windows_size(){
+get_current_windows_size() {
 	windows_wid=$(xwininfo -id $(xdotool getactivewindow) | awk '/Width/ {print $2}')
 	windows_hei=$(xwininfo -id $(xdotool getactivewindow) | awk '/Height/ {print $2}')
-	wmctrl -r $windwos_name -e 2,$(expr $(expr $wid - $windows_wid ) / 2),$(expr $(expr $hei - $windows_hei ) / 2),$windows_wid,$windows_hei
+	wmctrl -r $windwos_name -e 2,$(expr $(expr $wid - $windows_wid) / 2),$(expr $(expr $hei - $windows_hei) / 2),$windows_wid,$windows_hei
 }
 
-
-usage (){
+usage() {
 	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
 	Options:
@@ -167,32 +179,44 @@ usage (){
 
 while getopts ":hp:vlruijktdcMw:D:-:" opt; do
 	case "${opt}" in
-		h) usage && exit 0;;
-		p) second_screen="${OPTARG}";;
-		v) echo "$0 -- Version $ScriptVersion"; exit ;;
-		l) key="left";;
-		r) key="right";;
-		u) key="u";;
-		i) key="i";;
-		j) key="j";;
-		k) key="k";;
-		t) key="top";;
-		d) key="down";;
-		c) key="center";;
-		M) key="Max";;
-		w) windwos_name="${OPTARG}";;
-		D) directory=${OPTARG};;
-		-) case "${OPTARG}" in
-			help) usage && exit 0;;
-			version)    echo "$0 -- Version $ScriptVersion"; exit ;;
-			file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
-			directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
-			*)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
-		esac;;
-	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
-	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
-esac
+	h) usage && exit 0 ;;
+	p) second_screen="${OPTARG}" ;;
+	v)
+		echo "$0 -- Version $ScriptVersion"
+		exit
+		;;
+	l) key="left" ;;
+	r) key="right" ;;
+	u) key="u" ;;
+	i) key="i" ;;
+	j) key="j" ;;
+	k) key="k" ;;
+	t) key="top" ;;
+	d) key="down" ;;
+	c) key="center" ;;
+	M) key="Max" ;;
+	w) windwos_name="${OPTARG}" ;;
+	D) directory=${OPTARG} ;;
+	-) case "${OPTARG}" in
+		help) usage && exit 0 ;;
+		version)
+			echo "$0 -- Version $ScriptVersion"
+			exit
+			;;
+		file)
+			file=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		directory)
+			directory=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+		esac ;;
+	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+	esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 main "$@"
