@@ -152,7 +152,7 @@ ${2:${VISUAL}}
 \end{$1}
 endsnippet
 
-snippet '(box|solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
+snippet '(solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
 `!p 
 s = match.group(1)
 if s == "sym":
@@ -173,11 +173,16 @@ elif s == "solu":
 	s = "solution"
 elif s == "rema":
 	s = "remark"
-elif s == "box":
-	s = "tcolorbox"
 snip.rv = "\\begin{" + s + "}"`
 	${1:${VISUAL}}$0
 `!p snip.rv = "\\end{" + s + "}"` 
+endsnippet
+
+snippet box "box" b
+\begin{tcolorbox}
+	\small
+	$0
+\end{tcolorbox}
 endsnippet
 
 context "internel_math()"
@@ -1431,7 +1436,7 @@ endsnippet
 
 priority 2001
 context "math()"
-snippet '([FfGg])('{0,3})((?!r|f|F|p)([a-zX]|\d+))' "f(x)" ir
+snippet '([FfGguv])('{0,3})((?!r|f|F|p)([a-zX]|\d+))' "f(x)" ir
 `!p snip.rv = match.group(1) + match.group(2) + "(" + match.group(3) + ")"`$0
 endsnippet
 
