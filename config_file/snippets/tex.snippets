@@ -97,7 +97,7 @@ snip.rv = "\\" + s
 endsnippet
 
 context "math()"
-snippet '(R|C)(-)?' "math{R}" rw
+snippet '(R|C|Z)(-)?' "math{R}" rw
 `!p 
 if match.group(2) is None:
 	snip.rv = "\\mathbb{" + match.group(1) + "}"
