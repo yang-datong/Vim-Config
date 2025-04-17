@@ -358,6 +358,16 @@ snippet ints "ints" i
 \dint_{${1:a}}^\{${2:b}\}$0
 endsnippet
 
+context "display_math()"
+snippet int_ "int_" i
+\int_{${1:C}}$0
+endsnippet
+
+context "internel_math()"
+snippet int_ "int_" i
+\dint_{${1:C}}$0
+endsnippet
+
 priority 3001
 context "display_math()"
 snippet '(sum|prod)' "sum|prod" ir
@@ -1122,7 +1132,7 @@ endsnippet
 # 我正在复习行列式，需要经常使用字母d，所以这里先注视掉
 priority 2000
 context "math()"
-snippet 'd(sig|x|y|t|u|z|r|p)?' "dx" wr
+snippet 'd(sig|x|y|t|u|z|r|p|s)?' "dx" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\mathrm{d}"
