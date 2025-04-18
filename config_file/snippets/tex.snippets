@@ -311,15 +311,21 @@ endsnippet
 #-------------------- 10. 积分|累乘|累加 ---------------
 priority 2001
 context "display_math()"
-snippet '(i|ii)?int(D|d)?' "int" wr
+snippet '(o|i|ii)?int(C|D|d)?' "int" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\\int"
 else:
 	if match.group(2) is None:
-		snip.rv = "\\iint"
+		if match.group(1) == 'o':
+			snip.rv = "\\oint"
+		else:
+			snip.rv = "\\iint"
 	else:
-		snip.rv = "\\iint_{D}"
+		if match.group(1) == 'o':
+			snip.rv = "\\oint_{D}"
+		else:
+			snip.rv = "\\iint_{D}"
 ` $0
 endsnippet
 
@@ -336,15 +342,21 @@ endsnippet
 
 priority 2001
 context "internel_math()"
-snippet '(i)?int(D|d)?' "int" wr
+snippet '(i|o)?int(D|d)?' "int" wr
 `!p 
 if match.group(1) is None:
 	snip.rv = "\\dint"
 else:
 	if match.group(2) is None:
-		snip.rv = "\\diint"
+		if match.group(1) == 'i':
+			snip.rv = "\\diint"
+		else:
+			snip.rv = "\\doint"
 	else:
-		snip.rv = "\\diint_{D}"
+		if match.group(1) == 'i':
+			snip.rv = "\\diint_{D}"
+		else:
+			snip.rv = "\\doint_{D}"
 ` $0
 endsnippet
 
@@ -1165,7 +1177,7 @@ snippet '(parl|par|pal)sr' "'(parl|par|pal)sr'" r
 endsnippet
 
 context "math()"
-snippet '(parl|par|pal)(xi|eta|mu|x|y|z|u|v|f)?' "parl" r
+snippet '(parl|par|pal)(F|U|xi|eta|mu|x|y|z|u|v|f)?' "parl" r
 `!p 
 two = match.group(2)
 if not two is None:
