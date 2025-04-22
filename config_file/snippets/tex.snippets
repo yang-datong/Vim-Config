@@ -371,13 +371,23 @@ snippet ints "ints" i
 endsnippet
 
 context "display_math()"
-snippet int_ "int_" i
-\int_{${1:C}}$0
+snippet '(o)?int_' "int_" ir
+`!p 
+if match.group(1):
+	snip.rv = "\oint"
+else:
+	snip.rv = "\int"
+`_{${1:C}}$0
 endsnippet
 
 context "internel_math()"
-snippet int_ "int_" i
-\dint_{${1:C}}$0
+snippet '(o)?int_' "int_" ir
+`!p 
+if match.group(1):
+	snip.rv = "\doint"
+else:
+	snip.rv = "\dint"
+`_{${1:C}}$0
 endsnippet
 
 priority 3001
