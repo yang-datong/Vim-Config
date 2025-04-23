@@ -2,13 +2,15 @@
 #python 字符串参数：{{表示字符串‘{’ 
 #`!p snip.rv = f"\\alpha_{{{match.group(1)}}}"`
 
-# Time <23-10-03 23:28:20, YangJing> #
+# Time <25-04-23 11:30:55, YangJing> #
 #+====================== 目录 =========================+
 #|------------------- 1. \CMD -------------------------|
 #|------------------- 2. \CMD (alise) -----------------|
 #|------------------- 3. \CMD{$1} (alise) -------------|
 #|------------------- 4. \CMD{x} (alise) --------------|
 #|------------------- 4-1. \text{$1} ------------------|
+#|------------------- 4-2. \var? ----------------------|
+#|------------------- 4-3. \Aa? -----------------------|
 #|------------------- 5. \begin $0 \end ---------------|
 #|------------------- 6. *^{$1} -----------------------|
 #|------------------- 7. *_{$1} -----------------------|
@@ -41,13 +43,13 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|Phi|phi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|pm|subset|simeq|sim|xi)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 1
 context "math()"
-snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|ang|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|varphi)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|ang|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|Del|zeta)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -70,6 +72,8 @@ elif s == "cauchy":
 	s = "xi"
 elif s == "del":
 	s = "delta"
+elif s == "Del":
+	s = "Delta"
 elif s == "emps":
 	s = "emptyset"
 elif s == "emp":
@@ -97,7 +101,7 @@ snip.rv = "\\" + s
 endsnippet
 
 context "math()"
-snippet '(R|C|Z)(-)?' "math{R}" rw
+snippet '(R|C|Z){2}(-)?' "math{R}" rw
 `!p 
 if match.group(2) is None:
 	snip.rv = "\\mathbb{" + match.group(1) + "}"
@@ -108,15 +112,11 @@ endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
 priority 1001
 context "math()"
-snippet '(text|overline|ovl|ol|hat|zeta|dddx|ddx|Del|lim|ln|sq|vec|vphi|bar)' "argment_all" ir
+snippet '(text|overline|ovl|ol|hat|dddx|ddx|lim|ln|sq|vec|bar)' "argment_all" ir
 `!p 
 s = match.group(1)
-if s == "Del":
-	s = "Delta"
-elif s == "sq":
+if s == "sq":
 	s = "sqrt"
-elif s == "vphi":
-	s = "varphi"
 elif s == "olv":
 	s = "overline"
 elif s == "ol":
@@ -145,6 +145,30 @@ context "math()"
 snippet '(for|Var|Cov)' "'(Var|Cov)' " rw
 \text{`!p snip.rv = match.group(1)`}
 endsnippet
+#|------------------- 4-2. \var? ----------------------|
+context "math()"
+snippet '(var|va|v)?(epsilon|esion|eps|phi|Phi)((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\var*" ir
+`!p 
+if match.group(1) is None:
+	snip.rv = '\\' + match.group(2)
+else:
+	snip.rv = '\\var' + match.group(2)
+`(`!p snip.rv = match.group(3)`)$0
+endsnippet
+#|------------------- 4-3. \Aa? -----------------------|
+priority 2002
+context "math()"
+snippet '([Oo]mg|[Dd]el)(\d)?' "Aa?" wr
+`!p 
+if match.group(1)[-2:] == "mg":
+	s = "\\" + match.group(1)[:1] + "mega"
+elif match.group(1)[-2:] == "el":
+	s = "\\" + match.group(1)[:1] + "elta"
+if not match.group(2) is None:
+	s += "_{" + match.group(2) + "}"
+snip.rv = s
+` 
+endsnippet
 #-------------------- 5. \begin $0 \end ----------------
 snippet beg "begin{} / end{}" i
 \begin{$1}
@@ -152,7 +176,7 @@ ${2:${VISUAL}}
 \end{$1}
 endsnippet
 
-snippet '(solution|solu|sym|the|def|lem|example|exam|cor|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
+snippet '(solution|solu|sym|the|def|lem|example|exam|coro|remark|rema|property|proposition|prop|proof|warning)' "beg_entensions" irb
 `!p 
 s = match.group(1)
 if s == "sym":
@@ -167,7 +191,7 @@ elif s == "lem":
 	s = "lemma"
 elif s == "exam":
 	s = "example"
-elif s == "cor":
+elif s == "coro":
 	s = "corollary"
 elif s == "solu":
 	s = "solution"
@@ -1347,17 +1371,6 @@ snip.rv = v
 `\mathrm{i}
 endsnippet
 
-priority 2002
-context "math()"
-snippet '(O|o)(mega|me|mg)(\d)?' "omega|ome|omg" wr
-\\`!p 
-snip.rv = match.group(1)
-`mega`!p 
-if not match.group(3) is None:
-	snip.rv = "_{" + match.group(3) + "}"
-` 
-endsnippet
-
 context "math()"
 snippet barz "bar{z}" w
 \bar{z}
@@ -1387,16 +1400,6 @@ endsnippet
 context "math()"
 snippet fmx0 "fmx0" w
 f_{m}(x_{0})
-endsnippet
-
-context "math()"
-snippet '(var|v)?(epsilon|esion|eps)' "epsilon" wr
-`!p
-if not match.group(1) is None:
-	snip.rv = "\\var"
-else:
-	snip.rv = "\\"
-`epsilon 
 endsnippet
 
 context "math()"
@@ -1501,15 +1504,6 @@ snippet 'f(x|k|i|j)(\+|-)(\d{1,3})' "f(x+\d)" r
 f(`!p snip.rv = match.group(1) + match.group(2) + match.group(3)`)$0
 endsnippet
 
-context "math()"
-snippet '(var|va|v)?(phi|Phi)((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\varphi(x)" ir
-`!p 
-if match.group(1) is None:
-	snip.rv = '\\' + match.group(2)
-else:
-	snip.rv = '\\var' + match.group(2)
-`(`!p snip.rv = match.group(3)`)$0
-endsnippet
 #-------------------- 23. 调用函数 ---------------------
 context "math()"
 snippet .mmbox ".mmbox" b
