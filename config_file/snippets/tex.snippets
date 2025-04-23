@@ -43,13 +43,13 @@
 #-------------------- 1. \CMD --------------------------
 priority -200
 context "math()"
-snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|pm|subset|simeq|sim|xi)' "all" r
+snippet '(arg|sup|chi|cap|cdot|cup|exists|equiv|eta|forall|log|times|tau|in|iff|perp|pi|mu|mp|neq|rho|psi|pm|subset|simeq|sim|xi|zeta)' "all" r
 `!p snip.rv = "\\" + match.group(1)` $0
 endsnippet
 #-------------------- 2. \CMD (alise) ------------------
 priority 1
 context "math()"
-snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|ang|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|Del|zeta)' "all_entensions" irw
+snippet '(\*|v\.\.\.|l\.\.\.|\.\.\.|~|ang|al|bec|be|cauchy|del|emps|emp|inf|lam|kap|qqu|qu|sig|so|sub|Del|ze)' "all_entensions" irw
 `!p 
 s = match.group(1)
 if s == "...":
@@ -70,10 +70,6 @@ elif s == "bec":
 	s = "because"
 elif s == "cauchy":
 	s = "xi"
-elif s == "del":
-	s = "delta"
-elif s == "Del":
-	s = "Delta"
 elif s == "emps":
 	s = "emptyset"
 elif s == "emp":
@@ -94,6 +90,8 @@ elif s == "so":
 	s = "therefore"
 elif s == "sub":
 	s = "subset"
+elif s == "ze":
+	s = "zeta"
 elif s == "*" :
 	s = "cdot"
 snip.rv = "\\" + s
@@ -147,13 +145,20 @@ snippet '(for|Var|Cov)' "'(Var|Cov)' " rw
 endsnippet
 #|------------------- 4-2. \var? ----------------------|
 context "math()"
-snippet '(var|va|v)?(epsilon|esion|eps|phi|Phi)((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)' "\var*" ir
+snippet '(var|va|v)?(epsilon|esion|eps|phi|Phi)((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)?' "\var*" ir
 `!p 
-if match.group(1) is None:
-	snip.rv = '\\' + match.group(2)
+s = "\\"
+if match.group(1):
+	s += "var"
+
+s += match.group(2)
+
+if match.group(3):
+	s += f"({match.group(3)})"
 else:
-	snip.rv = '\\var' + match.group(2)
-`(`!p snip.rv = match.group(3)`)$0
+	s += " "
+snip.rv = s
+`
 endsnippet
 #|------------------- 4-3. \Aa? -----------------------|
 priority 2002
