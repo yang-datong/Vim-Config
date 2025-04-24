@@ -151,7 +151,10 @@ s = "\\"
 if match.group(1):
 	s += "var"
 
-s += match.group(2)
+if match.group(2) == "eps" or match.group(2) == "esion":
+	s += "epsilon"
+else:
+	s += match.group(2)
 
 if match.group(3):
 	s += f"({match.group(3)})"
