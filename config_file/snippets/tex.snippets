@@ -1388,13 +1388,13 @@ endsnippet
 
 
 context "math()"
-snippet fnx "fnx" w
-f_{n}(x)
+snippet 'fn(x|z)' "fnx" wr
+f_{n}(`!p	snip.rv = match.group(1)`)
 endsnippet
 
 context "math()"
-snippet fnx0 "fnx0" w
-f_{n}(x_{0})
+snippet 'fn(x|z)0' "fnx0" wr
+f_{n}(`!p	snip.rv = match.group(1)`_{0})
 endsnippet
 
 context "math()"
