@@ -166,12 +166,14 @@ endsnippet
 #|------------------- 4-3. \Aa? -----------------------|
 priority 2002
 context "math()"
-snippet '([Oo]mg|[Dd]el)(\d)?' "Aa?" wr
+snippet '([Oo]mg|[Dd]el|[Gg]ama)(\d)?' "Aa?omg|del|gama" wr
 `!p 
 if match.group(1)[-2:] == "mg":
 	s = "\\" + match.group(1)[:1] + "mega"
 elif match.group(1)[-2:] == "el":
 	s = "\\" + match.group(1)[:1] + "elta"
+elif match.group(1)[-3:] == "ama":
+	s = "\\" + match.group(1)[:1] + "amma"
 if not match.group(2) is None:
 	s += "_{" + match.group(2) + "}"
 snip.rv = s
@@ -1319,16 +1321,6 @@ endsnippet
 context "math()"
 snippet '(eta|xi)(\d)' "'eta(\d)'" wr
 `!p snip.rv = f"\{match.group(1)}_{{{match.group(2)}}}" `
-endsnippet
-
-context "math()"
-snippet '(gamma|gama|gam)(\d)?' "'gamma|gama|gam'" wr
-`!p 
-if match.group(2) is None:
-	snip.rv = "\\gamma "
-else:
-	snip.rv = "\\gamma_{" + match.group(2) + "}"
-`$0
 endsnippet
 
 context "math()"
