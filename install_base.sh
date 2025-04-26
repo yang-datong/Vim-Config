@@ -2,6 +2,12 @@
 
 main() {
 	check_os
+	if [ "$(arch)" == "arm64" ]; then
+		if [ ! -d /usr/local/bin ]; then
+			sudo mkdir /usr/local/bin
+		fi
+	fi
+
 	if [ ! $SH_FOOT ]; then
 		if [ ! -d $HOME/sh_foot ]; then
 			echo -e "\033[31m建议使用ssh key的方式来管理[Ok]\033[0m"

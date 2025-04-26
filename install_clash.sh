@@ -34,6 +34,9 @@ set_systemctl() {
 			rm $HOME/Library/LaunchAgents/com.example.clash.plist
 		fi
 
+		if [ ! -d $HOME/Library/LaunchAgents ]; then
+			mkdir $HOME/Library/LaunchAgents
+		fi
 		#这里写入一个文件后就会将服务添加到登录项的允许在后台中运行中
 		echo "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHBsaXN0IFBVQkxJQyAiLS8vQXBwbGUvL0RURCBQTElTVCAxLjAvL0VOIiAiaHR0cDovL3d3dy5hcHBsZS5jb20vRFREcy9Qcm9wZXJ0eUxpc3QtMS4wLmR0ZCI+CjxwbGlzdCB2ZXJzaW9uPSIxLjAiPgo8ZGljdD4KICAgIDxrZXk+TGFiZWw8L2tleT4KICAgIDxzdHJpbmc+Y29tLnJsLmNsYXNoPC9zdHJpbmc+CiAgICA8a2V5PlByb2dyYW1Bcmd1bWVudHM8L2tleT4KICAgIDxhcnJheT4KICAgICAgICA8c3RyaW5nPi9Vc2Vycy9oaS8uY29uZmlnL2NsYXNoL2NsYXNoPC9zdHJpbmc+CiAgICAgICAgPHN0cmluZz4tZDwvc3RyaW5nPgogICAgICAgIDxzdHJpbmc+L1VzZXJzL2hpLy5jb25maWcvY2xhc2g8L3N0cmluZz4KICAgIDwvYXJyYXk+CiAgICA8a2V5PlJ1bkF0TG9hZDwva2V5PgogICAgPHRydWUvPgogICAgPGtleT5LZWVwQWxpdmU8L2tleT4KICAgIDx0cnVlLz4KPC9kaWN0Pgo8L3BsaXN0Pgo=" | base64 -d >$HOME/Library/LaunchAgents/com.rl.clash.plist
 
