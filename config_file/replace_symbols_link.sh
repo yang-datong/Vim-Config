@@ -4,6 +4,7 @@ set -e
 main(){
 	if [ "$(uname)" == "Darwin" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/macos_config.fish"
+		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/macos_xx.bashrc"
 	elif [ "$(uname)" == "Linux" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/ubuntu_config.fish"
@@ -38,7 +39,7 @@ replace_symbols_link(){
 	else
 		echo -e "\033[33m Add $file done~\033[0m"
 	fi
-		ln -s $really_file $file
+	ln -s $really_file $file
 }
 
 if [ ! $SH_FOOT ];then
