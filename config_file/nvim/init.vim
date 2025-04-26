@@ -424,6 +424,8 @@ if g:is_latex == 1
     "call AskUserInstall("latexindent","default")
   endif
   let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
+  "NOTE: 在Apple silicon中安装的/Library/TeX/texbin/latexindent有问题，需要手动通过brew install latexindent安装，同时还需要去掉高优先路径的执行权限：
+  "$ chmod -x /Library/TeX/texbin/latexindent
 endif
 "======================================================================
 if g:is_coc_vim
@@ -498,8 +500,8 @@ if g:is_latex == 1
     let g:vimtex_view_method='zathura'
   endif
   " 是否转移焦点到PDF预览器中
-  "let g:vimtex_view_skim_sync = 1
-  "let g:vimtex_view_skim_activate = 1
+  let g:vimtex_view_skim_sync = 0
+  let g:vimtex_view_skim_activate = 0
   "let g:vimtex_view_general_options = '-r @line @pdf @tex'
 
   let g:vimtex_compiler_progname = 'nvr'
