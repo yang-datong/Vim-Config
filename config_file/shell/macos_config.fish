@@ -9,6 +9,7 @@ set fish_greeting #去除提示
 #set -x PATH $PATH $HOME/Library/Android/sdk/ndk/21.1.6352462
 #set -x PATH $PATH $HOME/.docker/bin
 set -x PATH $PATH /Applications/Inkscape.app/Contents/MacOS
+set -x PATH $PATH /opt/homebrew/bin  #Apple silicon M1芯片安装的brew会在/opt目录下
 
 set -x SH_FOOT $HOME/sh_foot
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
@@ -53,8 +54,6 @@ alias ffprobe-q="ffprobe -loglevel quiet"
 
 # TODO?
 set-proxy
-
-#eval "$(/opt/homebrew/bin/brew shellenv)" #可选高版本的MacOS安装的brew会在/opt目录下
 
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end

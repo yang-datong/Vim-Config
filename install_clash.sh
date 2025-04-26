@@ -89,15 +89,20 @@ ubuntu() {
 
 mac() {
 	local version="1.14.0"
+	if [ $(arch) == "arm64" ]; then
+		local arch="arm64"
+	else #i386
+		local arch="amd64"
+	fi
 	if [ ! -d $HOME/.config/clash ]; then
 		mkdir $HOME/.config/clash
 	fi
-	if [ ! -f Clash.Meta-darwin-amd64-v${version}.gz ] && [ ! -f $HOME/.config/clash/clash ]; then
-		wget "https://github.com/MetaCubeX/mihomo/releases/download/v${version}/Clash.Meta-darwin-amd64-v${version}.gz" -O Clash.Meta-darwin-amd64-v${version}.gz
-		gunzip Clash.Meta-darwin-amd64-v${version}.gz
+	if [ ! -f Clash.Meta-darwin-${arch}-v${version}.gz ] && [ ! -f $HOME/.config/clash/clash ]; then
+		wget "https://github.com/MetaCubeX/mihomo/releases/download/v${version}/Clash.Meta-darwin-${arch}-v${version}.gz" -O Clash.Meta-darwin-${arch}-v${version}.gz
+		gunzip Clash.Meta-darwin-${arch}-v${version}.gz
 	fi
-	if [ -f Clash.Meta-darwin-amd64-v${version} ]; then
-		mv Clash.Meta-darwin-amd64-v${version} $HOME/.config/clash/clash
+	if [ -f Clash.Meta-darwin-${arch}-v${version} ]; then
+		mv Clash.Meta-darwin-${arch}-v${version} $HOME/.config/clash/clash
 		chmod +x $HOME/.config/clash/clash
 	fi
 	if [ ! -f $HOME/.config/clash/clash ]; then

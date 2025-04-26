@@ -14,6 +14,8 @@ export PATH=$PATH:$HOME/.local/bin/
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
 
+eval "$(/opt/homebrew/bin/brew shellenv)" #Apple silicon M1芯片安装的brew会在/opt目录下
+
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
 alias huya="echo '15886670991, qweasdzxc123'"
