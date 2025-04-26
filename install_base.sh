@@ -30,7 +30,11 @@ main() {
 
 	$cc install curl wget git axel scrcpy
 	if [ ! -f /usr/local/bin/python3.10 ]; then
-		sudo ln -s /usr/bin/python3.10 /usr/local/bin/python3.10
+		if [ "$(arch)" == "arm64" ]; then
+			sudo ln -s /opt/homebrew/bin/python3.10 /usr/local/bin/python3.10
+		else
+			sudo ln -s /usr/bin/python3.10 /usr/local/bin/python3.10
+		fi
 	fi
 	if [ ! -f get-pip.py ]; then
 		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
