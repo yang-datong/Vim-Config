@@ -166,13 +166,13 @@ endsnippet
 #|------------------- 4-3. \Aa? -----------------------|
 priority 2002
 context "math()"
-snippet '([Oo]mg|[Dd]el|[Gg]ama)(\d)?' "Aa?omg|del|gama" wr
+snippet '([Oo]mg|[Dd]el|[Gg]am)(\d)?' "Aa?omg|del|gama" wr
 `!p 
 if match.group(1)[-2:] == "mg":
 	s = "\\" + match.group(1)[:1] + "mega"
 elif match.group(1)[-2:] == "el":
 	s = "\\" + match.group(1)[:1] + "elta"
-elif match.group(1)[-3:] == "ama":
+elif match.group(1)[-2:] == "am":
 	s = "\\" + match.group(1)[:1] + "amma"
 if not match.group(2) is None:
 	s += "_{" + match.group(2) + "}"
@@ -462,7 +462,7 @@ endsnippet
 
 context "math()"
 snippet '(g|l)eq' "\geq" ir
-\\`!p snip.rv = match.group(1)`eqslant $0
+\\`!p snip.rv = match.group(1)`eq $0
 endsnippet
 
 context "math()"
@@ -1134,7 +1134,7 @@ endsnippet
 priority 2001
 context "math()"
 snippet Domain "Domain" w
-D = \{ ${1:x},${2:y} ~|~ ${3:0} \leqslant $1 \leqslant ${4:1}, ${5:0} \leqslant $2 \leqslant ${6:1} \}
+D = \{ ${1:x},${2:y} ~|~ ${3:0} \leq $1 \leq ${4:1}, ${5:0} \leq $2 \leq ${6:1} \}
 endsnippet
 
 #snippet sympy "sympyblock " w
