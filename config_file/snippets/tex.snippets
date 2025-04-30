@@ -1221,18 +1221,18 @@ snippet '(parl|par|pal)sr' "'(parl|par|pal)sr'" r
 endsnippet
 
 context "math()"
-snippet '(parl|par|pal)(F|U|xi|eta|mu|x|y|z|u|v|f)?' "parl" r
+snippet '(parl|par|pal)(F|U|xi|eta|mu|x|y|z|u|v|f|q|p)?' "parl" r
 `!p 
 two = match.group(2)
 if not two is None:
 	if two == 'xi':
-		two = "\\xi"
+		two = "\\xi "
 	if two == 'eta':
-		two = "\\eta"
+		two = "\\eta "
 	else:
 		snip.rv = f"\partial{{{two}}}"
 else:
-	snip.rv = "\partial"
+	snip.rv = "\partial "
 `
 endsnippet
 
