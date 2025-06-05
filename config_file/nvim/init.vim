@@ -421,12 +421,15 @@ endif
 "Shell : apt install shfmt
 if g:is_latex == 1
   "Must -> brew install latexindent
-  if (system('command -v latexindent') =~ 'latexindent') == 0
-    call AskUserInstall("latexindent","default")
+  if has('mac')
+    if (system('command -v latexindent') =~ 'latexindent') == 0
+      call AskUserInstall("latexindent","default")
+    endif
   endif
-  let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
   "NOTE: 在Apple silicon中安装的/Library/TeX/texbin/latexindent有问题，需要手动通过brew install latexindent安装，同时还需要去掉高优先路径的执行权限：
   "$ chmod -x /Library/TeX/texbin/latexindent
+  "NOTE: Ubuntu在安装的texlive是可以直接使用的
+  let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
 endif
 "======================================================================
 if g:is_coc_vim
