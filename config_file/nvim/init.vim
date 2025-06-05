@@ -307,20 +307,39 @@ noremap <Leader>v :<C-u>vsplit<CR>
 
 " Tabs {
 "切换窗口
-"Ctrl + w + t 移动到第一个的窗口（模拟Chrome定位首个标签）
-nnoremap <silent> <C-0> :wincmd t<CR>
-nnoremap <silent> <A-0> :wincmd t<CR>
-"Ctrl + w + b 移动到最后一个的窗口（模拟Chrome定位最后一个标签）
-nnoremap <silent> <C-9> :wincmd b<CR>
-nnoremap <silent> <A-9> :wincmd b<CR>
+if has('mac')
+  "nnoremap <silent> <C-0> :wincmd t<CR>
+  "nnoremap <silent> <C-9> :wincmd b<CR>
+  "在iTerm2 的key Bindings:
+  "1. Keyboard Shortcut: Option + 0
+  "2. Action: Send Text with 'vim' Special Chars
+  "3. :wincmd t\n
+elseif has('linux')
+  "Ctrl + w + t 移动到第一个的窗口（模拟Chrome定位首个标签）
+  nnoremap <silent> <C-0> :wincmd t<CR>
+  "Ctrl + w + b 移动到最后一个的窗口（模拟Chrome定位最后一个标签）
+  nnoremap <silent> <C-9> :wincmd b<CR>
+endif
+
 
 "第N个窗口（从左至右）
-nnoremap <silent> <C-1> :1wincmd w<CR>
-nnoremap <silent> <A-1> :1wincmd w<CR>
-nnoremap <silent> <C-2> :2wincmd w<CR>
-nnoremap <silent> <A-2> :2wincmd w<CR>
-nnoremap <silent> <C-3> :3wincmd w<CR>
-nnoremap <silent> <A-3> :3wincmd w<CR>
+if has('mac')
+  "nnoremap <silent> <C-1> :1wincmd w<CR>
+  "nnoremap <silent> <C-2> :2wincmd w<CR>
+  "nnoremap <silent> <C-3> :3wincmd w<CR>
+  "在iTerm2 的key Bindings:
+  "1. Keyboard Shortcut: Option + 1
+  "2. Action: Send Text with 'vim' Special Chars
+  "3. :1wincmd w\n
+elseif has('linux')
+  nnoremap <silent> <C-1> :1wincmd w<CR>
+  nnoremap <silent> <C-2> :2wincmd w<CR>
+  nnoremap <silent> <C-3> :3wincmd w<CR>
+endif
+
+"nnoremap <silent> <A-1> :1wincmd w<CR>
+"nnoremap <silent> <A-2> :2wincmd w<CR>
+"nnoremap <silent> <A-3> :3wincmd w<CR>
 
 nnoremap <silent> <Tab> :wincmd w<CR>
 nnoremap <silent> <S-Tab> :wincmd p<CR>
