@@ -68,6 +68,7 @@ let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传
 let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式(已添加到脚本vimm中，不需要手动调整）
 let g:is_Android_jni=0 "1：将添加Android-JNI头文件到path中，0：不添加
 let g:is_inscape=1 "1：开启inkscape使用，0：不开启
+let g:is_ask=1 "1：开启环境依赖安装询问
 " }
 
 " Compatibility {
@@ -421,7 +422,7 @@ endif
 if g:is_latex == 1
   "Must -> brew install latexindent
   if (system('command -v latexindent') =~ 'latexindent') == 0
-    "call AskUserInstall("latexindent","default")
+    call AskUserInstall("latexindent","default")
   endif
   let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
   "NOTE: 在Apple silicon中安装的/Library/TeX/texbin/latexindent有问题，需要手动通过brew install latexindent安装，同时还需要去掉高优先路径的执行权限：
