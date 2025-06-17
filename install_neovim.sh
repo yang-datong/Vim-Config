@@ -46,6 +46,12 @@ main(){
 	if [ ! -d $HOME/.config/nvim ];then
 		mkdir $HOME/.config/nvim
 	fi
+	if [ ! -d $HOME/.config/nvim/autoload ];then
+		mkdir $HOME/.config/nvim/autoload
+	fi
+	if [ ! -f $HOME/.config/nvim/autoload/plug.vim ];then
+		cp $SH_FOOT/config_file/nvim/plug.vim  $HOME/.config/nvim/autoload/plug.vim
+	fi
 
 	cp $SH_FOOT/config_file/init.vim  $HOME/.config/nvim/init.vim
 

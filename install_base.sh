@@ -21,11 +21,12 @@ main() {
 	pushd $SH_FOOT
 	#Check OS System
 	if [ "$(uname)" == "Linux" ]; then
+		sudo apt update
+		sudo apt install -y software-properties-common
 		add-apt-repository --list | grep deadsnakes
 		if [ $? != 0 ]; then
 			sudo add-apt-repository ppa:deadsnakes/ppa -y
 		fi
-		sudo apt update
 		sudo apt install -y file passwd python3.10 gcc g++ gdb make cmake android-sdk-platform-tools #android-tools-adb
 	elif [ "$(uname)" == "Darwin" ]; then
 		if [ ! -x "$(command -v brew)" ]; then ./install_brew.sh; fi
@@ -49,6 +50,11 @@ main() {
 	if [ -f get-pip.py ]; then
 		rm get-pip.py
 	fi
+	if [ "$(uname)" == "Linux" ]; then
+		sudo apt install -y clang-format clangd universal-ctags fzf  silversearcher-ag translate-shell
+	elif [ "$(uname)" == "Darwin" ]; then
+		brew install clang-format clangd ctags fzf the_silver_searcher translate-shell
+	fi
 	./install_aria2c.sh #下载工具
 	./install_fish.sh
 	./install_zsh.sh
@@ -64,12 +70,12 @@ cc="brew"
 #Check OS System
 check_os() {
 	case "$(uname)" in
-	"Darwin") cc="brew" ;;
-	"Linux") cc="sudo apt -y" ;;
-	*)
-		echo "Windows has not been tested for the time being"
-		exit 1
-		;;
+		"Darwin") cc="brew" ;;
+		"Linux") cc="sudo apt -y" ;;
+		*)
+			echo "Windows has not been tested for the time being"
+			exit 1
+			;;
 	esac
 }
 
