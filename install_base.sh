@@ -53,7 +53,7 @@ main() {
 	if [ "$(uname)" == "Linux" ]; then
 		sudo apt install -y clang-format clangd universal-ctags fzf  silversearcher-ag translate-shell
 	elif [ "$(uname)" == "Darwin" ]; then
-		brew install clang-format clangd ctags fzf the_silver_searcher translate-shell
+		brew install clangd-format ctags fzf the_silver_searcher translate-shell
 	fi
 	./install_aria2c.sh #下载工具
 	./install_fish.sh
