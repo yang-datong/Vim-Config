@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+#Ubuntu使用GEF更好
 ubuntu(){
 	check_cmd gdb gdb
 	if [ ! -d $HOME/.pwngdb ];then
@@ -14,19 +15,37 @@ ubuntu(){
 }
 
 macos(){
-	#if [ ! -d $HOME/.voltron ];then
-	#git clone https://github.com/snare/voltron $HOME/.voltron
-	#pushd $HOME/.voltron
-	#./install.sh
-	#popd
-	#else
-	#echo -e "\033[31mInstalled??? Try to exec 'cd $HOME/.voltron && ./install.sh'\033[0m";exit
-	#fi
+	macos_for_llef
+	#macos_for_voltron
+	#macos_for_pwndbg
+}
+
+#MacOS无法使用GEF，但有一个仿照GEF的项目LLEF
+macos_for_llef(){
 	if [ ! -d $HOME/.llef_lldb ];then
 		git clone https://github.com/foundryzero/llef.git $HOME/.llef_lldb
 	fi
 	replace_symbols_link "$HOME/.lldbinit"        "$SH_FOOT/config_file/gdb/xx.lldbinit"
 	replace_symbols_link "$HOME/.llef"        "$SH_FOOT/config_file/gdb/xx.llef"
+}
+
+macos_for_voltron(){
+	if [ ! -d $HOME/.voltron ];then
+		git clone https://github.com/snare/voltron $HOME/.voltron
+		pushd $HOME/.voltron
+		./install.sh
+		popd
+	else
+		echo -e "\033[31mInstalled??? Try to exec 'cd $HOME/.voltron && ./install.sh'\033[0m";exit
+	fi
+}
+
+#MacOS使用Pwndbg-lldb
+macos_for_pwndbg(){
+	#For GDB
+	#brew install pwndbg/tap/pwndbg-gdb
+	#For LLDB
+	brew install pwndbg/tap/pwndbg-lldb
 }
 
 replace_symbols_link(){

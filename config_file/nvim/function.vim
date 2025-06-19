@@ -147,8 +147,9 @@ func OpenWindowIntoGDB(isMultiPoints)
 
   "let cwd = expand('%:p:h') "BUG:当编辑子目录文件时，会导致gdb无法找到文件
   let cwd = getcwd() "NOTE:使用当前工作目录
+  "命令前面使用一个空格可以让当前命令不记录到history
   if has('mac')
-    let gdb_cmd= filereadable("./gdb.sh") ? printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && ./gdb.sh -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, expand('%:t'), line('.')) : printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \"cd %s && gdb %s -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
+    let gdb_cmd= filereadable("./gdb.sh") ? printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \" cd %s && ./gdb.sh -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, expand('%:t'), line('.')) : printf("!osascript -e 'tell application \"iTerm2\" to set newWindow to (create window with default profile)' -e 'tell application \"System Events\" to keystroke \" cd %s && gdb %s -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.1 & key code 36'", cwd, gdb_file, expand('%:t'), line('.'))
   elseif has('Linux')
     let gdb_cmd = filereadable("./gdb.sh") ? printf("!terminator -x fish -c 'pwd && ./gdb.sh -ex \"b %s:%d\"; exec fish'", expand('%'), line('.')) : printf("!terminator -x fish -c 'pwd && gdb %s -ex \"b %s:%d\" -ex \"r\"; exec fish'", gdb_file, expand('%'), line('.'))
   endif
