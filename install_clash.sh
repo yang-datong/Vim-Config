@@ -6,11 +6,8 @@ url="https://"
 
 download_config() {
 	#wget "${url}" -O config.yaml
-	touch config.yaml
-	if [ $(uname) == "Linux" ]; then
-		mv config.yaml $HOME/.config/clash/
-	else
-		mv config.yaml $HOME/.config/clash/
+	if [ -f $HOME/.config/clash/config.yaml ];then
+		touch $HOME/.config/clash/
 	fi
 }
 
@@ -129,18 +126,18 @@ cc="brew"
 #Check OS System
 check_os() {
 	case "$(uname)" in
-	"Darwin")
-		cc="brew"
-		mac
-		;;
-	"Linux")
-		cc="sudo apt -y"
-		ubuntu
-		;;
-	*)
-		echo "Windows has not been tested for the time being"
-		exit 1
-		;;
+		"Darwin")
+			cc="brew"
+			mac
+			;;
+		"Linux")
+			cc="sudo apt -y"
+			ubuntu
+			;;
+		*)
+			echo "Windows has not been tested for the time being"
+			exit 1
+			;;
 	esac
 }
 

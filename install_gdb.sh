@@ -15,12 +15,12 @@ ubuntu(){
 
 macos(){
 	#if [ ! -d $HOME/.voltron ];then
-		#git clone https://github.com/snare/voltron $HOME/.voltron
-		#pushd $HOME/.voltron
-		#./install.sh
-		#popd
+	#git clone https://github.com/snare/voltron $HOME/.voltron
+	#pushd $HOME/.voltron
+	#./install.sh
+	#popd
 	#else
-		#echo -e "\033[31mInstalled??? Try to exec 'cd $HOME/.voltron && ./install.sh'\033[0m";exit
+	#echo -e "\033[31mInstalled??? Try to exec 'cd $HOME/.voltron && ./install.sh'\033[0m";exit
 	#fi
 	if [ ! -d $HOME/.llef ];then
 		git clone https://github.com/foundryzero/llef.git $HOME/.llef
@@ -41,7 +41,7 @@ replace_symbols_link(){
 	else
 		echo -e "\033[33m Add $file done~\033[0m"
 	fi
-		ln -s $really_file $file
+	ln -s $really_file $file
 }
 
 cc="brew"
