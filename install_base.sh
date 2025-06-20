@@ -84,8 +84,8 @@ main() {
 	fi
 	python3.10 get-pip.py
 
-	./install_fish.sh
 	./install_zsh.sh
+	./install_fish.sh
 	./install_neovim.sh
 	./install_gdb.sh
 	./install_aria2c.sh

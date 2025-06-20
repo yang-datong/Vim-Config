@@ -15,10 +15,11 @@ main(){
 	if [ ! $SH_FOOT ];then
 		echo "Setting environment to \$SH_FOOT"; export SH_FOOT=$HOME/sh_foot
 	fi
-	$cc install fish
-	curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
-	#curl -L https://get.oh-my.fish | fish
-	fish -c "omf install aight" && exit
+	if [ ! -x "$(command -v fish)" ];then
+		$cc install fish
+		curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+		curl -L https://get.oh-my.fish | fish
+	fi
 
 	#install rm foo -> mv foot foot-bck
 	#$cc install trash-cli
