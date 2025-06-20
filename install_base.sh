@@ -89,6 +89,8 @@ main() {
 	./install_neovim.sh
 	./install_gdb.sh
 	./install_aria2c.sh
+
+	pip3 install pyautogui
 	./install_vim_anywhere.sh
 
 	./tools/replace_symbols_link.sh
