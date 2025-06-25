@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 cc="brew"
@@ -23,7 +24,11 @@ main(){
 
 	#install rm foo -> mv foot foot-bck
 	#$cc install trash-cli
-	pip3 install trash-cli
+	if [ "$(uname)" == "Linux" ] && [ "$(arch)" == "aarch64" ]; then
+		pip3 install trash-cli --break-system-packages
+	else
+		pip3 install trash-cli
+	fi
 
 	$cc install colordiff
 	if [ "$(uname)" == "Linux" ];then

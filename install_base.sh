@@ -1,8 +1,11 @@
 #!/bin/bash
 
-set -e
+#set -e #开启后使用grep判断会有问题
+set -ex
 
 install_base_env_linux(){
+	#对于Ubuntu for Arm: https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu-ports/
+	#对于Ubuntu for x86: https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
 	sudo apt update
 	#安装Ubuntu集成工具，如release_lsb、add-apt-repository
 	sudo apt install -y software-properties-common
@@ -10,9 +13,15 @@ install_base_env_linux(){
 	if [ $? != 0 ]; then
 		sudo add-apt-repository ppa:deadsnakes/ppa -y
 	fi
-	sudo apt install -y file passwd python3.10 gcc g++ gdb make cmake git wget curl
+	if [ "$(arch)" == "aarch64" ];then
+		sudo apt install -y file passwd python3.12 gcc g++ gdb make cmake git wget curl
+	else
+		sudo apt install -y file passwd python3.10 gcc g++ gdb make cmake git wget curl
+	fi
+	#TODO Arm Ubuntu 24的清华/默认源好像只有python 3.12 <25-06-24 16:37:24, YangJing>
+
 	sudo apt install -y clang-format universal-ctags fzf  silversearcher-ag translate-shell
-	sudo apt install -y install clangd
+	sudo apt install -y clangd
 	sudo apt install -y android-sdk-platform-tools
 }
 
@@ -74,6 +83,8 @@ main() {
 	if [ ! -f /usr/local/bin/python3.10 ]; then
 		if [ "$(uname)" == "Darwin" ] && [ "$(arch)" == "arm64" ]; then
 			sudo ln -s /opt/homebrew/bin/python3.10 /usr/local/bin/python3.10
+		elif [ "$(uname)" == "Linux" ] && [ "$(arch)" == "aarch64" ]; then
+			sudo ln -s /usr/bin/python3.12 /usr/local/bin/python3.10
 		else
 			sudo ln -s /usr/bin/python3.10 /usr/local/bin/python3.10
 		fi
@@ -82,7 +93,13 @@ main() {
 	if [ ! -f get-pip.py ]; then
 		curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 	fi
-	python3.10 get-pip.py
+	#sudo apt install python3-pip -y? python 3.11以上需要指定一个虚拟环境安装
+	if [ "$(uname)" == "Linux" ] && [ "$(arch)" == "aarch64" ]; then
+		python3.10 get-pip.py --break-system-packages #TODO:这样是不推荐的
+		export PATH=$PATH:$HOME/.local/bin
+	else
+		python3.10 get-pip.py
+	fi
 
 	./install_zsh.sh
 	./install_fish.sh

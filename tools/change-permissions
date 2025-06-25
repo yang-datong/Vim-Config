@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dir=$1
+if [ ! $dir ];then
+	echo -e "\033[31mDir?\033[0m"
+	exit
+fi
+
+sudo chgrp -R $(whoami) $dir
+sudo chown -R $(whoami) $dir

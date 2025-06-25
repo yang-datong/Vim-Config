@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 #NOTE: 最终生成的ffmpeg_g基本是-O0，但是一些系统函数还是编译为-Os，如果需要完全的-O0，则需要手动修改config.mk文件，再次重新编译
 
 ScriptVersion="2.0"
@@ -11,7 +11,7 @@ unset directory
 ff_version="ffmpeg-4.4.2"
 ff="${ff_version}.tar.bz2"
 
-x264_version="x264-master"
+x264_version="x264_0.164.5"
 x264="${x264_version}.tar.bz2"
 x265_version="x265_3.6"
 x265="${x265_version}.tar.gz"
@@ -82,10 +82,29 @@ build_ff() {
 		${make} clean
 	fi
 
+	#不要用-ggdb，-g3就是最高调试级别，-ggdb反而没有这么多调试信息
+	args=(
+		"--prefix=$(pwd)/build"
+		"--enable-gpl" "--enable-libx264" "--enable-libx265"
+		"--enable-protocol=tcp" "--enable-protocol=udp" "--enable-protocol=rtp" "--enable-demuxer=rtsp"
+		"--disable-doc" "--disable-htmlpages" "--disable-manpages" "--disable-podpages" "--disable-txtpages"
+		"--disable-ffplay" "--disable-ffprobe"
+		"--disable-avdevice" "--disable-swresample" "--disable-postproc"
+		"--disable-asm" "--disable-mmx" "--disable-sse" "--disable-avx" "--disable-vfp" "--disable-neon" "--disable-inline-asm" "--disable-x86asm" "--disable-mipsdsp"
+		"--disable-stripping" "--enable-debug=3" "--disable-optimizations" "--ignore-tests=TESTS"
+	)
+	#--disable-stripping 开启动态库的调试符号
+	#--enable-libxcb 使用xcb需要去掉--disable-avdevice
+	#--enable-small \ #会强制添加-Os编译选项
+
+	export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	#pkg-config --with-path=${work_dir}/${x264_version}/build/lib/pkgconfig/ --libs --cflags x264
+	#pkg-config --with-path=${work_dir}/${x265_version}/build/lib/pkgconfig/ --libs --cflags x265
+
 	if [ "$static" == "1" ]; then
-		confg_static
+		confg_static "${args[@]}"
 	elif [ "$shared" == "1" ]; then
-		confg_shared
+		confg_shared "${args[@]}"
 	fi
 
 	${make} && make install
@@ -93,56 +112,46 @@ build_ff() {
 }
 
 confg_static() {
-	# -Wdeprecated-declarations 不打印函数过时的警告
 	# 如果开启了 --enable-libx265 会一直报错：ERROR: x265 not found using pkg-config，已经解决： 报错原因：/usr/bin/ld: cannot find -lgcc_s: No such file or directory，
 	# 解决：
-	sed -i 's/Libs.private: -lstdc++ -lm -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl/Libs.private: -lstdc++ -lm/' ${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig/x265.pc
-
 	if [ $(uname) == "Linux" ]; then
-		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
-	elif [ $(uname) == "Darwin" ]; then
-		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/darwin_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+		sed -i 's/Libs.private: -lstdc++ -lm -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl/Libs.private: -lstdc++ -lm/' ${work_dir}/${x265_version}/build/lib/pkgconfig/x265.pc
 	fi
-	#pkg-config --with-path=${work_dir}/${x264_version}/build/lib/pkgconfig/ --libs --cflags x264
-	#pkg-config --with-path=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig/ --libs --cflags x265
 
-	#不要用-ggdb，-g3就是最高调试级别，-ggdb反而没有这么多调试信息
-	./configure --prefix=$(pwd)/build \
-		--extra-cflags="-static -O0 -g3 -Wno-deprecated-declarations" --extra-ldflags="-static" --pkg-config-flags="--static" \
-		--enable-gpl --enable-libx264 --enable-libx265 ${hwaccel} \
-		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
-		--disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages \
-		--disable-ffplay --disable-ffprobe \
-		--disable-avdevice --disable-swresample --disable-postproc \
-		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
-		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
-	#--enable-libxcb 使用xcb需要去掉--disable-avdevice
-	#--enable-small \ #会强制添加-Os编译选项
+	local -a args=("$@")
+	args+=("--extra-cflags=-static -O0 -g3 -Wno-deprecated-declarations")
+	# -Wdeprecated-declarations 不打印函数过时的警告
+	if [ "$(uname)" == "Darwin" ];then
+		#ERROR:No working C compiler found.
+		echo "默认部分静态链接"
+		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build/lib")
+		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
+	elif [ "$(uname)" == "Linux" ];then
+		args+=("--extra-ldflags=-static")
+		args+=("${hwaccel}")
+	fi
+	args+=("--pkg-config-flags=--static")
+
+	./configure "${args[@]}"
 }
 
 confg_shared() {
 	#使用动态库：
 	#1.删除 --extra-cflags="-static" --extra-ldflags="-static" \
 	#2.添加 --enable-shared \
-	if [ $(uname) == "Linux" ]; then
-		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/linux_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
-	elif [ $(uname) == "Darwin" ]; then
-		export PKG_CONFIG_PATH=${work_dir}/${x265_version}/build/darwin_amd64/lib/pkgconfig:${HOME}/${x264_version}/build/lib/pkgconfig
+	local -a args=("$@")
+
+	args+=("--extra-cflags=-O0 -g3 -Wno-deprecated-declarations")
+	args+=("--enable-shared")
+	args+=("--disable-static")
+	if [ "$(uname)" == "Darwin" ];then
+		echo "TODO"
+		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build/lib")
+		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
+	elif [ "$(uname)" == "Linux" ];then
+		args+=("${hwaccel}")
 	fi
-	./configure \
-		--prefix=$(pwd)/build \
-		--extra-cflags="-O0 -g3 -Wno-deprecated-declarations" \
-		--enable-shared --disable-static \
-		--enable-gpl --enable-libx264 --enable-libx265 \
-		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
-		--disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages \
-		--disable-ffplay --disable-ffprobe \
-		--disable-avdevice --disable-swresample --disable-postproc \
-		--enable-protocol=tcp --enable-protocol=udp --enable-protocol=rtp --enable-demuxer=rtsp \
-		--disable-asm --disable-mmx --disable-sse --disable-avx --disable-vfp --disable-neon --disable-inline-asm --disable-x86asm --disable-mipsdsp \
-		--enable-debug=3 --disable-optimizations --ignore-tests=TESTS
-	#--enable-libxcb 使用xcb需要去掉--disable-avdevice
-	#--enable-small \ #会强制添加-Os编译选项
+	./configure "${args[@]}"
 }
 
 fetch_x264_lib() {
@@ -155,29 +164,44 @@ fetch_x264_lib() {
 	fi
 
 	cd $x264_version
+
+
+	args=(
+		"--prefix=$(pwd)/build"
+		"--disable-asm"
+		"--disable-opencl"
+		"--disable-cli"
+		"--enable-debug"
+		"--extra-cflags=-g3 -O0"
+	)
+
+	#--disable-asm: 禁用汇编代码优化。
+	#--disable-cli: 禁用 x264 命令行工具的构建。
+	#--disable-opencl: 禁用 OpenCL 支持。
+	#--disable-avs, --disable-lavf, --disable-swscale: 禁用其他库的依赖。
+	#--disable-strip: 禁用从可执行文件和库中删除调试符号。
+	#--extra-cflags="-g -O0": 添加编译器选项:
+	#-g: 包含调试信息.
+	#-O0: 禁用所有代码优化。
+
 	if [ "$type" == "static" ]; then
-		if [ ! -f "./build/lib/libx264.a" ]; then
-			./configure --enable-static --disable-asm --prefix=$(pwd)/build --disable-opencl --disable-cli --enable-debug --extra-cflags="-g3 -O0" --extra-ldflags="-static"
-			#--enable-static: 启用静态库的构建。
-			#--disable-asm: 禁用汇编代码优化。
-			#--disable-cli: 禁用 x264 命令行工具的构建。
-			#--disable-opencl: 禁用 OpenCL 支持。
-			#--disable-avs, --disable-lavf, --disable-swscale: 禁用其他库的依赖。
-			#--disable-strip: 禁用从可执行文件和库中删除调试符号。
-			#--extra-cflags="-g -O0": 添加编译器选项:
-			#-g: 包含调试信息.
-			#-O0: 禁用所有代码优化。
-			#--extra-ldflags="-static": 添加链接器选项:
-			#-static: 使用静态链接。
-			${make} && make install
+		args+=("--enable-static")
+		#--enable-static: 启用静态库的构建。
+		if [ "$(uname)" == "Darwin" ];then
+			#ERROR:No working C compiler found.
+			echo "默认部分静态链接"
+		elif [ "$(uname)" == "Linux" ];then
+			args+=("--extra-ldflags=-static")
 		fi
+		#--extra-ldflags="-static": 添加链接器选项:
+		#-static: 使用静态链接。
 	elif [ "$type" == "shared" ]; then
-		./configure --enable-shared --disable-asm --prefix=$(pwd)/build --disable-opencl --disable-cli --enable-debug --extra-cflags="-g3 -O0"
-		${make} && make install
+		args+=("--enable-shared")
 	else
-		echo -e "\033[31mfetch_x264_lib failed\033[0m"
-		exit
+		echo -e "\033[31mfetch_x264_lib failed\033[0m"; exit
 	fi
+	./configure "${args[@]}"
+	${make} && make install
 	popd
 }
 
@@ -192,26 +216,32 @@ fetch_x265_lib() {
 		tar -xvf $x265
 	fi
 
-	cd $x265_version/build/linux
+	cd $x265_version/build
+	args=(
+		"-DCMAKE_CXX_FLAGS_DEBUG=-g3 -O0"
+		"-DCMAKE_C_FLAGS_DEBUG=-g3 -O0"
+		"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
+		"-DCMAKE_BUILD_TYPE=Debug"
+		"-DENABLE_ASSEMBLY=OFF"
+		"-DENABLE_CLI=ON"
+		"-DHIGH_BIT_DEPTH=OFF"
+		"-DENABLE_PIC=OFF"
+		"-DCHECKED_BUILD=ON"
+		"-DSTATIC_LINK_CRT=OFF"
+	)
+	#NOTE: 如果是下载的源代码包文件如tar.gz，那么就不会有版本信息，因为cmake会通过git检测版本，当版本信息未知时，会跳过对pkg_config的生成
+
 	if [ "$type" == "static" ]; then
-		if [ ! -f libx265.a ]; then
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_SHARED=OFF -DENABLE_CLI=ON -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DEXTRA_LDFLAGS="-static" -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
-			#-DENABLE_CLI=OFF: 禁用 x265 命令行工具的构建。
-			#-DHIGHBITDEPTH=OFF: 禁用高比特深度支持 (可选)。
-			${make} && make install
-		fi
+		args+=("-DENABLE_SHARED=OFF")
 	elif [ "$type" == "shared" ]; then
-		if [ "$(uname)" == "Darwin" ]; then
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/darwin_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=ON -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
-		else
-			cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build/linux_amd64 -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLI=ON -DHIGHBITDEPTH=OFF -DASM=OFF -DEXTRA_CFLAGS="-g3 -O0" -DSTATIC_LINK_CRT=OFF -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../../source
-		fi
-		#NOTE: Cmake可以生成compile_commands_file
-		make && make install
+		args+=("-DENABLE_SHARED=ON")
 	else
 		echo -e "\033[31mfetch_x265_lib failed\033[0m"
 		exit
 	fi
+	cmake -G "Unix Makefiles" "${args[@]}" ../source
+	#NOTE: Cmake可以生成compile_commands_file
+	make && make install
 	popd
 }
 
@@ -227,53 +257,63 @@ usage() {
 	-D, --directory DIRECTORY   Target directory
 	--static                    Static compilation ffmpeg components and static link(default)
 	--shared                    Dynamic compilation ffmpeg components and dynamic link
+	--build_x264                Separate compilation libx264
+	--build_x265                Separate compilation libx265
 	--build_ffmpeg              Separate compilation ffmpeg"
 }
 
 while getopts ":hdpvf:D:-:" opt; do
 	case "${opt}" in
-	h) usage && exit 0 ;;
-	d) set -x ;;
-	p) set -o posix ;;
-	v)
-		echo "$0 -- Version $ScriptVersion"
-		exit
-		;;
-	f) file=${OPTARG} ;;
-	D) directory=${OPTARG} ;;
-	-) case "${OPTARG}" in
-		help) usage && exit 0 ;;
-		debug) set -x ;;
-		posix) set -o posix ;;
-		version)
+		h) usage && exit 0 ;;
+		d) set -x ;;
+		p) set -o posix ;;
+		v)
 			echo "$0 -- Version $ScriptVersion"
 			exit
 			;;
-		file)
-			file=${!OPTIND}
-			OPTIND=$((OPTIND + 1))
-			;;
-		directory)
-			directory=${!OPTIND}
-			OPTIND=$((OPTIND + 1))
-			;;
-		static)
-			static=1
-			shared=0
-			;;
-		shared)
-			shared=1
-			static=0
-			;;
-		build_ffmpeg)
-			build_ff
-			exit
-			;;
-		*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+		f) file=${OPTARG} ;;
+		D) directory=${OPTARG} ;;
+		-) case "${OPTARG}" in
+			help) usage && exit 0 ;;
+			debug) set -x ;;
+			posix) set -o posix ;;
+			version)
+				echo "$0 -- Version $ScriptVersion"
+				exit
+				;;
+			file)
+				file=${!OPTIND}
+				OPTIND=$((OPTIND + 1))
+				;;
+			directory)
+				directory=${!OPTIND}
+				OPTIND=$((OPTIND + 1))
+				;;
+			static)
+				static=1
+				shared=0
+				;;
+			shared)
+				shared=1
+				static=0
+				;;
+			build_ffmpeg)
+				build_ff
+				exit
+				;;
+			build_x264)
+				fetch_x264_lib shared
+				exit
+				;;
+			build_x265)
+				fetch_x265_lib shared
+				exit
+				;;
+			*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
 		esac ;;
 	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
 	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
-	esac
+esac
 done
 shift $((OPTIND - 1))
 
