@@ -24,12 +24,7 @@ main(){
 
 	#install rm foo -> mv foot foot-bck
 	#$cc install trash-cli
-	if [ "$(uname)" == "Linux" ] && [ "$(arch)" == "aarch64" ]; then
-		pip3 install trash-cli --break-system-packages
-	else
-		pip3 install trash-cli
-	fi
-
+	pip3 install trash-cli
 	$cc install colordiff
 	if [ "$(uname)" == "Linux" ];then
 		#sudo apt install batcat
