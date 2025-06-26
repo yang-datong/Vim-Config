@@ -39,6 +39,7 @@ main(){
 	fi
 	check_cmd nvim neovim
 	check_py_pack pynvim
+	check_py_pack greenlet
 	check_py_pack neovim-remote
 	./install_nodejs.sh
 
