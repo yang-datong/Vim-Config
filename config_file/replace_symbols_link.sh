@@ -11,7 +11,7 @@ main(){
 	fi
 
 	if [ -f /.dockerenv ]; then
-		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt_docker.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
+		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt_docker.fish.fish"
 	else
 		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
 	fi
