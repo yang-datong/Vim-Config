@@ -9,7 +9,13 @@ main(){
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/ubuntu_config.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/ubuntu_xx.bashrc"
 	fi
-	replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
+
+	if [ -f /.dockerenv ]; then
+		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt_docker.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
+	else
+		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
+	fi
+
 	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
 	replace_symbols_link "$HOME/.clangd"                           "$SH_FOOT/config_file/xx.clangd"

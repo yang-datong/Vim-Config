@@ -76,6 +76,11 @@ let g:is_nvim_notify=1
 let g:is_coc_vim=1
 " }
 
+" 在 Docker 容器中，关闭notify
+if filereadable('/.dockerenv')
+  let g:is_nvim_notify=0
+endif
+
 call CheckIsSetMinimunMode()
 
   " 如果文件大于3MB（3000000字节），在配置文件的最后会再次调用一次
