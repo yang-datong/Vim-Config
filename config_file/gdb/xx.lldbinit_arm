@@ -1,0 +1,18 @@
+command script import "~/.llef_lldb/llef.py"
+
+settings set stop-disassembly-display never
+settings set target.x86-disassembly-flavor intel
+
+settings set stop-line-count-before 10
+settings set stop-line-count-after 10
+
+settings set prompt-ansi-prefix "${ansi.fg.green}"
+settings set prompt "gef➤  "
+#settings set prompt-ansi-suffix "${ansi.fg.normal}"
+
+settings set auto-confirm true
+
+command alias ls context
+command alias backtrace context trace
+command alias stack context stack 
+command alias threads context threads
