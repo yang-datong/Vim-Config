@@ -4,12 +4,12 @@ set -e
 main(){
 	if [ "$(uname)" == "Darwin" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/macos_config.fish"
-		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/macos_xx.bashrc"
 	elif [ "$(uname)" == "Linux" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/ubuntu_config.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/ubuntu_xx.bashrc"
 	fi
+	replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish"  "$SH_FOOT/config_file/shell/fish_prompt.fish"
 	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
 	replace_symbols_link "$HOME/.clangd"                           "$SH_FOOT/config_file/xx.clangd"
