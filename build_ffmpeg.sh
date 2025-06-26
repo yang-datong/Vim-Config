@@ -1,9 +1,14 @@
 #!/bin/bash
-set -ex
+#set -ex
 #NOTE: 最终生成的ffmpeg_g基本是-O0，但是一些系统函数还是编译为-Os，如果需要完全的-O0，则需要手动修改config.mk文件，再次重新编译
 
 ScriptVersion="2.0"
 work_dir=$(pwd)
+
+
+#时候开启编译调试模式（ffmpeg、x264,x265都会带有调试符号，以及最小优化）
+#debug=1
+unset debug
 
 unset file
 unset directory
@@ -82,17 +87,42 @@ build_ff() {
 		${make} clean
 	fi
 
-	#不要用-ggdb，-g3就是最高调试级别，-ggdb反而没有这么多调试信息
-	args=(
+	#编译较小的ffmpeg、最大化便于调试、无任何优化
+	args_debug=(
+		"--prefix=$(pwd)/build"
+		"--enable-gpl" "--enable-libx264" "--enable-libx265"
+		# 协议与解复用器（只需要常用的）
+		"--enable-protocol=tcp" "--enable-protocol=udp" "--enable-protocol=rtp" "--enable-demuxer=rtsp"
+		# 禁用文档和工具（加快编译速度）
+		"--disable-doc" "--disable-htmlpages" "--disable-manpages" "--disable-podpages" "--disable-txtpages"
+		# 去掉额外的命令行工具编译（加快编译速度）
+		"--disable-ffplay" "--disable-ffprobe"
+		# 禁用非核心模块（减少干扰）
+		"--disable-avdevice" "--disable-swresample" "--disable-postproc"
+		# 禁用所有平台优化（防止汇编干扰）
+		"--disable-asm" "--disable-mmx" "--disable-sse" "--disable-avx" "--disable-vfp" "--disable-neon" "--disable-inline-asm" "--disable-x86asm" "--disable-mipsdsp"
+		# 禁用所有编译器优化（-O0）
+		"--disable-optimizations"
+		# 开启动态库的调试符号
+		"--disable-stripping"
+		# 调试核心配置（最高调试级别）
+		"--enable-debug=3"
+		"--ignore-tests=TESTS"
+	)
+	#--enable-libxcb 使用xcb需要去掉--disable-avdevice
+	#--enable-small \ #会强制添加-Os编译选项
+
+	#编译较小的ffmpeg、最大化便于调试、开启正常优化
+	args_release=(
 		"--prefix=$(pwd)/build"
 		"--enable-gpl" "--enable-libx264" "--enable-libx265"
 		"--enable-protocol=tcp" "--enable-protocol=udp" "--enable-protocol=rtp" "--enable-demuxer=rtsp"
 		"--disable-doc" "--disable-htmlpages" "--disable-manpages" "--disable-podpages" "--disable-txtpages"
 		"--disable-ffplay" "--disable-ffprobe"
 		"--disable-avdevice" "--disable-swresample" "--disable-postproc"
-		"--disable-asm" "--disable-mmx" "--disable-sse" "--disable-avx" "--disable-vfp" "--disable-neon" "--disable-inline-asm" "--disable-x86asm" "--disable-mipsdsp"
-		"--disable-stripping" "--enable-debug=3" "--disable-optimizations" "--ignore-tests=TESTS"
+		"--disable-stripping" "--enable-debug=3" "--ignore-tests=TESTS"
 	)
+	#不要用-ggdb，-g3就是最高调试级别，-ggdb反而没有这么多调试信息
 	#--disable-stripping 开启动态库的调试符号
 	#--enable-libxcb 使用xcb需要去掉--disable-avdevice
 	#--enable-small \ #会强制添加-Os编译选项
@@ -102,9 +132,17 @@ build_ff() {
 	#pkg-config --with-path=${work_dir}/${x265_version}/build/lib/pkgconfig/ --libs --cflags x265
 
 	if [ "$static" == "1" ]; then
-		confg_static "${args[@]}"
+		if [ $debug ];then
+			confg_static "${args_debug[@]}"
+		else
+			confg_static "${args_release[@]}"
+		fi
 	elif [ "$shared" == "1" ]; then
-		confg_shared "${args[@]}"
+		if [ $debug ];then
+			confg_shared "${args_debug[@]}"
+		else
+			confg_shared "${args_release[@]}"
+		fi
 	fi
 
 	${make} && make install
@@ -165,15 +203,22 @@ fetch_x264_lib() {
 
 	cd $x264_version
 
-
-	args=(
-		"--prefix=$(pwd)/build"
-		"--disable-asm"
-		"--disable-opencl"
-		"--disable-cli"
-		"--enable-debug"
-		"--extra-cflags=-g3 -O0"
-	)
+	if [ $debug ];then
+		args=(
+			"--prefix=$(pwd)/build"
+			"--disable-asm"
+			"--disable-opencl"
+			"--disable-cli"
+			"--enable-debug"
+			"--extra-cflags=-g3 -O0"
+		)
+	else
+		args=(
+			"--prefix=$(pwd)/build"
+			"--disable-cli"
+			"--extra-cflags=-g3 -O3"
+		)
+	fi
 
 	#--disable-asm: 禁用汇编代码优化。
 	#--disable-cli: 禁用 x264 命令行工具的构建。
@@ -217,18 +262,38 @@ fetch_x265_lib() {
 	fi
 
 	cd $x265_version/build
-	args=(
-		"-DCMAKE_CXX_FLAGS_DEBUG=-g3 -O0"
-		"-DCMAKE_C_FLAGS_DEBUG=-g3 -O0"
-		"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
-		"-DCMAKE_BUILD_TYPE=Debug"
-		"-DENABLE_ASSEMBLY=OFF"
-		"-DENABLE_CLI=ON"
-		"-DHIGH_BIT_DEPTH=OFF"
-		"-DENABLE_PIC=OFF"
-		"-DCHECKED_BUILD=ON"
-		"-DSTATIC_LINK_CRT=OFF"
-	)
+
+
+	if [ $debug ];then
+		args=(
+			"-DCMAKE_CXX_FLAGS_DEBUG=-g3 -O0"
+			"-DCMAKE_C_FLAGS_DEBUG=-g3 -O0"
+			"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
+			# 启用调试符号，禁用优化
+			"-DCMAKE_BUILD_TYPE=Debug"
+			# 禁用汇编优化（简化代码路径）
+			"-DENABLE_ASSEMBLY=OFF"
+			# 保留命令行工具（方便测试）
+			"-DENABLE_CLI=ON"
+			# 禁用高比特深度（减少复杂度）
+			"-DHIGH_BIT_DEPTH=OFF"
+			# 禁用位置无关代码（简化链接）
+			"-DENABLE_PIC=OFF"
+			# 启用运行时检查（额外调试）
+			"-DCHECKED_BUILD=ON"
+			# TODO
+			"-DSTATIC_LINK_CRT=OFF"
+		)
+	else
+		args=(
+			"-DCMAKE_CXX_FLAGS_DEBUG=-g3 -O3"
+			"-DCMAKE_C_FLAGS_DEBUG=-g3 -O3"
+			"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
+			"-DENABLE_ASSEMBLY=ON"
+			"-DENABLE_AVX2=ON"
+			"-DHIGH_BIT_DEPTH=ON"
+		)
+	fi
 	#NOTE: 如果是下载的源代码包文件如tar.gz，那么就不会有版本信息，因为cmake会通过git检测版本，当版本信息未知时，会跳过对pkg_config的生成
 
 	if [ "$type" == "static" ]; then
