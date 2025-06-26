@@ -248,6 +248,19 @@ if [ $(check_proxy) == 1 ];then
 fi
 endsnippet
 	
+snippet 'is(darwin|mac|osx|ubuntu|linux|windows|win|wind)' "check_os" rw
+`!p 
+name = match.group(1)
+if name == "mac" or name == "osx" or name == "darwin":
+	snip.rv = "if [ \"$(uname)\" == \"Darwin\" ]; then"
+elif name == "linux" or name == "ubuntu":
+	snip.rv = "if [ \"$(uname)\" == \"Linux\" ]; then"
+else:
+	snip.rv = "if [ \"$(uname)\" != \"Linux\" ] && [ \"$(uname)\" == \"Darwin\" ]; then"
+`	
+	$0
+fi
+endsnippet
 
 snippet check_os "check_os"
 cc="brew"

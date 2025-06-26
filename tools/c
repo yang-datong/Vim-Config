@@ -123,7 +123,7 @@ $(if [ "${pkg_config}" ]; then
   fi)
 EOF
 
-  ${cmake} . && ${make}
+${cmake} . && ${make}
 }
 
 clean_cmake() {
@@ -218,12 +218,12 @@ generate_makefile() {
 #Check OS System
 check_os() {
   case "$(uname)" in
-  "Darwin") echo ".dylib" ;;
-  "Linux") echo ".so" ;;
-  *)
-    echo "Windows has not been tested for the time being"
-    exit 1
-    ;;
+    "Darwin") echo ".dylib" ;;
+    "Linux") echo ".so" ;;
+    *)
+      echo "Windows has not been tested for the time being"
+      exit 1
+      ;;
   esac
 }
 
@@ -313,7 +313,7 @@ generate_gdb_file() {
 #!/bin/bash
 
 #设置动态库执行路径，在动态库存在于用户目录时
-#export LD_LIBRARY_PATH=libavcodec:libavdevice:libavfilter:libavformat:libavresample:libavutil:libpostproc:libswresample:libswscale
+#export LD_LIBRARY_PATH=../build/lib
 
 #程序
 program="a.out"
@@ -332,12 +332,14 @@ program="a.out"
 if [ "\$(uname)" == "Linux" ]; then
   gdb \${program} -ex "set args \${args}" -ex "directory \${source_dir}" -ex "b main" -ex "r" "\$@" -ex "c"
 else
-  lldb \${program} -o "run \${args}" -o "b main" -o "r" "\$@" -o "c"
+  lldb \${program} -o "b main" "\$@" -o "run \${args}"
+  #设置动态库执行路径，在动态库存在于用户目录时
+  #lldb \${program} -o "settings set target.env-vars DYLD_LIBRARY_PATH=../build/lib" -o "b main" "\$@" -o "run \${args}"
 fi
 EOF
 
-  echo -e "\033[32mOutput -> gdb.sh\033[0m"
-  cat gdb.sh
+echo -e "\033[32mOutput -> gdb.sh\033[0m"
+cat gdb.sh
 }
 
 #---------------------------------------- Command Handle ----------------------------------------
@@ -371,61 +373,61 @@ usage() {
 
 while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
   case "${opt}" in
-  h) usage && exit 0 ;;
-  d) set -x ;;
-  p) set -o posix ;;
-  v)
-    echo "$0 -- Version $ScriptVersion"
-    exit
-    ;;
-  f) flag="${OPTARG}" ;;
-  c) src=${OPTARG} ;;
-  I) include_path="${OPTARG}" ;;
-  l) libs="${OPTARG}" ;;
-  L) lib_path=${OPTARG} ;;
-  t) cc=${OPTARG} ;;
-  D) dir=${OPTARG} ;;
-  -) case "${OPTARG}" in
-    help) usage && exit 0 ;;
-    debug) set -x ;;
-    posix) set -o posix ;;
-    version)
+    h) usage && exit 0 ;;
+    d) set -x ;;
+    p) set -o posix ;;
+    v)
       echo "$0 -- Version $ScriptVersion"
       exit
       ;;
-    flag)
-      flag=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    source)
-      src=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    include)
-      include_path=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    lib)
-      libs=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    library)
-      lib_path=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    type)
-      cc=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    dir)
-      dir=${!OPTIND}
-      OPTIND=$((OPTIND + 1))
-      ;;
-    cmake) is_cmake=1 ;;
-    no-cmake) is_cmake=0 ;;
-    makefile) is_cmake=0 ;;
-    #对于pkg-config 必须使用Cmake
-    pkg)
+    f) flag="${OPTARG}" ;;
+    c) src=${OPTARG} ;;
+    I) include_path="${OPTARG}" ;;
+    l) libs="${OPTARG}" ;;
+    L) lib_path=${OPTARG} ;;
+    t) cc=${OPTARG} ;;
+    D) dir=${OPTARG} ;;
+    -) case "${OPTARG}" in
+      help) usage && exit 0 ;;
+      debug) set -x ;;
+      posix) set -o posix ;;
+      version)
+        echo "$0 -- Version $ScriptVersion"
+        exit
+        ;;
+      flag)
+        flag=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      source)
+        src=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      include)
+        include_path=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      lib)
+        libs=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      library)
+        lib_path=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      type)
+        cc=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      dir)
+        dir=${!OPTIND}
+        OPTIND=$((OPTIND + 1))
+        ;;
+      cmake) is_cmake=1 ;;
+      no-cmake) is_cmake=0 ;;
+      makefile) is_cmake=0 ;;
+      #对于pkg-config 必须使用Cmake
+      pkg)
       is_cmake=1
       pkg_config=${!OPTIND}
       OPTIND=$((OPTIND + 1))
@@ -439,10 +441,10 @@ while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
       exit
       ;;
     *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
-    esac ;;
-  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
-  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
-  esac
+  esac ;;
+:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+esac
 done
 
 shift $((OPTIND - 1))

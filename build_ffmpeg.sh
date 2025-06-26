@@ -157,7 +157,11 @@ confg_static() {
 	fi
 
 	local -a args=("$@")
-	args+=("--extra-cflags=-static -O0 -g3 -Wno-deprecated-declarations")
+	if [ $debug ];then
+		args+=("--extra-cflags=-static -O0 -g3 -Wno-deprecated-declarations")
+	else
+		args+=("--extra-cflags=-static -g3 -Wno-deprecated-declarations")
+	fi
 	# -Wdeprecated-declarations 不打印函数过时的警告
 	if [ "$(uname)" == "Darwin" ];then
 		#ERROR:No working C compiler found.
@@ -179,7 +183,11 @@ confg_shared() {
 	#2.添加 --enable-shared \
 	local -a args=("$@")
 
-	args+=("--extra-cflags=-O0 -g3 -Wno-deprecated-declarations")
+	if [ $debug ];then
+		args+=("--extra-cflags=-O0 -g3 -Wno-deprecated-declarations")
+	else
+		args+=("--extra-cflags=-g3 -Wno-deprecated-declarations")
+	fi
 	args+=("--enable-shared")
 	args+=("--disable-static")
 	if [ "$(uname)" == "Darwin" ];then
@@ -216,7 +224,7 @@ fetch_x264_lib() {
 		args=(
 			"--prefix=$(pwd)/build"
 			"--disable-cli"
-			"--extra-cflags=-g3 -O3"
+			"--extra-cflags=-g3"
 		)
 	fi
 
@@ -286,12 +294,9 @@ fetch_x265_lib() {
 		)
 	else
 		args=(
-			"-DCMAKE_CXX_FLAGS_DEBUG=-g3 -O3"
-			"-DCMAKE_C_FLAGS_DEBUG=-g3 -O3"
+			"-DCMAKE_CXX_FLAGS_DEBUG=-g3"
+			"-DCMAKE_C_FLAGS_DEBUG=-g3"
 			"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
-			"-DENABLE_ASSEMBLY=ON"
-			"-DENABLE_AVX2=ON"
-			"-DHIGH_BIT_DEPTH=ON"
 		)
 	fi
 	#NOTE: 如果是下载的源代码包文件如tar.gz，那么就不会有版本信息，因为cmake会通过git检测版本，当版本信息未知时，会跳过对pkg_config的生成
