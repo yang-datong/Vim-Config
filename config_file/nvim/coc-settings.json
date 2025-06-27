@@ -10,4 +10,12 @@
   "inlayHint.enable": false,
   "semanticTokens.enable": false,
   "python.pythonPath":"/usr/local/bin/python3.10"
+  //"languageserver": {
+  //  "asm": {
+  //    "command": "asm-lsp",
+  //    "args": ["-l", "{filetype}"], // 传递当前文件类型给 asm-lsp
+  //    "filetypes": ["asm", "s", "S", "nasm", "gas", "masm", "armasm", "riscv_asm"], // 关联的文件类型
+  //    "rootPatterns": [".git", ".asm-lsp.toml"] // 指定项目根目录模式，用于查找配置文件
+  //  }
+  //}
 }

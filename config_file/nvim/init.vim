@@ -458,7 +458,7 @@ endif
 "======================================================================
 if g:is_coc_vim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell'] "自动安装Coc插件
+let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell','coc-lua','coc-yaml'] "自动安装Coc插件
 "---More in lua config---
 if g:is_latex == 1
   autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
@@ -679,6 +679,7 @@ endif
 "======================================================================
 if &filetype != 'tex' && &filetype != 'plaintex'
   Plug 'github/copilot.vim'
+  "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
 endif
 "======================================================================
 call plug#end()
@@ -856,6 +857,11 @@ autocmd FileType math set filetype=tex
 
 autocmd FileType manim UltiSnipsAddFiletypes python.snippets
 autocmd FileType manim set filetype=python
+" }
+
+" Assembler file {
+au BufNewFile,BufRead *.s set filetype=gas
+au BufNewFile,BufRead *.asm set filetype=nasm
 " }
 
 " Restore to the position where it was last closed {
