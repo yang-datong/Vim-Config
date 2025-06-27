@@ -109,6 +109,46 @@ build_ff() {
 		"--enable-debug=3"
 		"--ignore-tests=TESTS"
 	)
+
+	#args_debug=(
+	#	# 在开始前，确保你已经安装了 libx264, libx265, 和 libaom (for AV1) 的开发库
+	#	# 例如在 Ubuntu: sudo apt-get install libx264-dev libx265-dev libaom-dev
+	#	# 在 macOS (brew): brew install x264 x265 aom
+	#	"--prefix=$(pwd)/build"
+	#	"--disable-everything"
+	#	"--enable-gpl"
+	#	"--enable-nonfree"
+	#	"--enable-debug"
+	#	"--disable-stripping"
+
+	#	# 2. 启用你需要的编、解码器
+	#	"--enable-libx264" "--enable-libx265" "--enable-libdav1d" "--enable-libaom"
+	#	"--enable-encoder=aac"
+	#	"--enable-decoder=h264"
+	#	"--enable-decoder=hevc"
+	#	"--enable-decoder=av1"
+	#	"--enable-decoder=aac"
+
+	#	# 3. 启用你需要的封装/解封装格式 (Muxer/Demuxer)
+	#	"--enable-muxer=mp4"
+	#	"--enable-demuxer=mov"
+	#	"--enable-muxer=hevc"
+	#	"--enable-muxer=h264"
+	#	"--enable-muxer=ivf"
+
+	#	# 4. 启用支持上述格式所需的解析器 (Parser)
+	#	"--enable-parser=h264"
+	#	"--enable-parser=hevc"
+	#	"--enable-parser=av1"
+	#	"--enable-parser=aac"
+
+	#	# 5. 启用最基本的协议（如果需要处理本地文件）
+	#	"--enable-protocol=file"
+
+	#	# 6. 禁用文档和工具（加快编译速度）
+	#	"--disable-doc" "--disable-htmlpages" "--disable-manpages" "--disable-podpages" "--disable-txtpages"
+	#)
+
 	#--enable-libxcb 使用xcb需要去掉--disable-avdevice
 	#--enable-small \ #会强制添加-Os编译选项
 

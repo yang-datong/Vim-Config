@@ -745,7 +745,7 @@ endif
 " Open current gdb window {
 if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
   :command Gdb call OpenWindowIntoGDB(0)
-  :command GDB call OpenWindowIntoGDB(0)
+  :command GDB call OpenVimWindowIntoGDB(0)
   :command GDBS call OpenWindowIntoGDB(1)
   nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB(0)<CR>
 endif

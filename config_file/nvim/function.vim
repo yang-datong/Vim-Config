@@ -182,6 +182,58 @@ endfunc
 " }
 
 
+func OpenVimWindowIntoGDB(isMultiPoints)
+  let gdb_file = ''
+  for file in ["./ffmpeg_g", expand('%:t:r'), "./build/" . expand('%:t:r'), "a.out", "./build/a.out"]
+    if filereadable(file)
+      let gdb_file = file
+      break
+    endif
+  endfor
+
+  if gdb_file == '' && !filereadable("./gdb.sh")
+    echo "Not found the executable file"
+    return -1
+  endif
+
+  "let cwd = expand('%:p:h') "BUG:当编辑子目录文件时，会导致gdb无法找到文件
+  let cwd = getcwd() "NOTE:使用当前工作目录
+  "命令前面使用一个空格可以让当前命令不记录到history
+
+  if has('mac')
+    let gdb_cmd = filereadable("./gdb.sh") ?
+          \   printf("cd %s && ./gdb.sh -o \"b %s:%d\" -o \"r\"",
+          \          cwd, expand('%:t'), line('.')) :
+          \   printf("cd %s && lldb %s -o \"b %s:%d\" -o \"r\"",
+          \          cwd, gdb_file, expand('%:t'), line('.'))
+  elseif has('Linux')
+    let gdb_cmd = filereadable("./gdb.sh") ?
+          \   printf("./gdb.sh -ex \"b %s:%d\"",
+          \          expand('%'), line('.')) :
+          \   printf("gdb %s -ex \"b %s:%d\" -ex \"r\"",
+          \          gdb_file, expand('%'), line('.'))
+  endif
+
+  if a:isMultiPoints == 1
+    let points = GetAllMarksToGDBDbgPoints()
+    if has('mac')
+      echo "TODO"
+    elseif has('Linux')
+      let gdb_cmd = filereadable("./gdb.sh") ?
+            \   printf("./gdb.sh %s'", points) :
+            \   printf("gdb %s %s'", gdb_file, points)
+    endif
+  endif
+
+  "echo gdb_cmd
+  ""在一个新标签页打开
+  silent exec "tabnew | terminal " . gdb_cmd | normal i
+  "在底部（一半）打开
+  "silent exec "botright split | terminal " . gdb_cmd | normal i
+  silent exec "setlocal laststatus=0"
+endfunc
+  
+
 " Show all snippets command {
 " Public Interface for tex.snippets
 func GetAllSnippets()
