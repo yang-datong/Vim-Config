@@ -30,7 +30,7 @@ if [ $is_bear == 1 ]; then
 	make="bear -- make -j16"
 fi
 
-hwaccel="--enable-vaapi " #sudo apt install ffmpeg vainfo libva-dev libdrm-dev
+#hwaccel="--enable-vaapi " #sudo apt install ffmpeg vainfo libva-dev libdrm-dev
 
 main() {
 	confirmation_info
@@ -158,7 +158,7 @@ confg_static() {
 
 	local -a args=("$@")
 	if [ $debug ];then
-		args+=("--extra-cflags=-static -O0 -g3 -Wno-deprecated-declarations")
+		args+=("--extra-cflags=-static -O0 -g3 -Wno-deprecated-declarations -w")
 	else
 		args+=("--extra-cflags=-static -g3 -Wno-deprecated-declarations")
 	fi
@@ -170,7 +170,9 @@ confg_static() {
 		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 	elif [ "$(uname)" == "Linux" ];then
 		args+=("--extra-ldflags=-static")
-		args+=("${hwaccel}")
+		if [ $hwaccel ];then
+			args+=("${hwaccel}")
+		fi
 	fi
 	args+=("--pkg-config-flags=--static")
 
@@ -184,7 +186,7 @@ confg_shared() {
 	local -a args=("$@")
 
 	if [ $debug ];then
-		args+=("--extra-cflags=-O0 -g3 -Wno-deprecated-declarations")
+		args+=("--extra-cflags=-O0 -g3 -Wno-deprecated-declarations -w")
 	else
 		args+=("--extra-cflags=-g3 -Wno-deprecated-declarations")
 	fi
@@ -195,7 +197,9 @@ confg_shared() {
 		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build/lib")
 		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 	elif [ "$(uname)" == "Linux" ];then
-		args+=("${hwaccel}")
+		if [ $hwaccel ];then
+			args+=("${hwaccel}")
+		fi
 	fi
 	./configure "${args[@]}"
 }
@@ -218,7 +222,7 @@ fetch_x264_lib() {
 			"--disable-opencl"
 			"--disable-cli"
 			"--enable-debug"
-			"--extra-cflags=-g3 -O0"
+			"--extra-cflags=-g3 -O0 -w"
 		)
 	else
 		args=(
@@ -253,6 +257,7 @@ fetch_x264_lib() {
 	else
 		echo -e "\033[31mfetch_x264_lib failed\033[0m"; exit
 	fi
+	${make} clean
 	./configure "${args[@]}"
 	${make} && make install
 	popd
@@ -274,8 +279,8 @@ fetch_x265_lib() {
 
 	if [ $debug ];then
 		args=(
-			"-DCMAKE_CXX_FLAGS_DEBUG=-g3 -O0"
-			"-DCMAKE_C_FLAGS_DEBUG=-g3 -O0"
+			"-DCMAKE_CXX_FLAGS=-g3 -O0 -w"
+			"-DCMAKE_C_FLAGS=-g3 -O0 -w"
 			"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
 			# 启用调试符号，禁用优化
 			"-DCMAKE_BUILD_TYPE=Debug"
@@ -294,12 +299,14 @@ fetch_x265_lib() {
 		)
 	else
 		args=(
-			"-DCMAKE_CXX_FLAGS_DEBUG=-g3"
-			"-DCMAKE_C_FLAGS_DEBUG=-g3"
+			"-DCMAKE_CXX_FLAGS=-g3"
+			"-DCMAKE_C_FLAGS=-g3"
 			"-DCMAKE_INSTALL_PREFIX=${work_dir}/${x265_version}/build"
 		)
 	fi
 	#NOTE: 如果是下载的源代码包文件如tar.gz，那么就不会有版本信息，因为cmake会通过git检测版本，当版本信息未知时，会跳过对pkg_config的生成
+	#NOTE: 如果cmake警告Could NOT find NUMA，则：sudo apt install libnuma-dev
+	#NOTE: 汇编器: The package name passed to `find_package_handle_standard_args` (nasm) -> sudo apt install nasm
 
 	if [ "$type" == "static" ]; then
 		args+=("-DENABLE_SHARED=OFF")
@@ -309,6 +316,7 @@ fetch_x265_lib() {
 		echo -e "\033[31mfetch_x265_lib failed\033[0m"
 		exit
 	fi
+	${make} clean
 	cmake -G "Unix Makefiles" "${args[@]}" ../source
 	#NOTE: Cmake可以生成compile_commands_file
 	make && make install

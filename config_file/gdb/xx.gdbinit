@@ -102,6 +102,7 @@ document linked-list
 end
 
 alias link=linked-list
+alias di=disassemble
 
 #trace在大程序的情况下会导致视图卡顿
 gef config context.layout "-legend regs -stack code args source threads -trace extra memory"
@@ -119,3 +120,10 @@ set disable-randomization on
 #限制字符串输出内容最大为300字符，防止在输出uint8_t* data时，输出内容直接沾满了屏幕
 set print elements 300
 #set max-value-size unlimited
+
+#显示 main() 之后 的调用栈（如 exit()、析构函数）（默认off）
+set backtrace past-main on
+#显示 main() 之前 的调用栈（如 _start、动态链接器代码）（默认off）
+set backtrace past-entry on
+#以更直观的多行格式 显示数组内容（尤其是大型数组），每行显示多个元素，并自动换行，避免输出混乱。
+set print array on

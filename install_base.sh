@@ -13,7 +13,8 @@ install_base_env_linux(){
 		sudo add-apt-repository ppa:deadsnakes/ppa -y
 	fi
 
-	sudo apt install -y file passwd python3.10 gcc g++ gdb make cmake git wget curl
+	sudo apt install -y file passwd gcc g++ gdb nasm
+	sudo apt install -y python3.10 make cmake pkg-config bear git wget curl
 	sudo apt install -y clang-format universal-ctags fzf  silversearcher-ag translate-shell
 	sudo apt install -y clangd
 	sudo apt install -y android-sdk-platform-tools
@@ -36,7 +37,7 @@ install_base_env_mac(){
 	export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
 	brew update
 
-	brew install coreutils python@3.10 make cmake git wget curl
+	brew install coreutils python@3.10 make cmake pkg-config bear git wget curl
 	brew install clang-format ctags fzf the_silver_searcher translate-shell
 	#brew install clangd  #不需要单独安装clangd，默认集成
 	brew install --cask android-platform-tools
