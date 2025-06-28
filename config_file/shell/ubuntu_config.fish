@@ -3,8 +3,8 @@ if status is-interactive
 set fish_greeting #去除提示
 
 #Ubuntu
+#set -x PATH $PATH $HOME/Android/Sdk/ndk/21.4.7075529
 set -x PATH $PATH $HOME/.local/bin/
-set -x PATH $PATH $HOME/Android/Sdk/ndk/21.4.7075529
 set -x PATH $PATH $HOME/MySoftWare/jadx/bin
 
 set -x SH_FOOT $HOME/sh_foot
@@ -23,6 +23,7 @@ alias rm-rf='rm -rf'
 alias du='du -sh'
 alias cat='batcat -p'
 alias vim='nvim'
+alias gdb='gdb -q'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
 
