@@ -8,6 +8,21 @@ source ~/.hide_command.py
 #1. $ 命令可以直接以不同进制来查看变量值
 #2. start 代替 b main , r 命令
 
+#在x86架构中，gdb和lldb默认都是AT&T语法，这里转为intel语法
+set disassembly-flavor intel
+set disable-randomization on
+
+#限制字符串输出内容最大为300字符，防止在输出uint8_t* data时，输出内容直接沾满了屏幕
+set print elements 300
+#set max-value-size unlimited
+
+#显示 main() 之后 的调用栈（如 exit()、析构函数）（默认off）
+set backtrace past-main on
+#显示 main() 之前 的调用栈（如 _start、动态链接器代码）（默认off）
+set backtrace past-entry on
+#以更直观的多行格式 显示数组内容（尤其是大型数组），每行显示多个元素，并自动换行，避免输出混乱。
+set print array on
+
 define hook-run
 python
 import angelheap
@@ -114,16 +129,3 @@ end
 define src
 layout src
 end
-
-set disable-randomization on
-
-#限制字符串输出内容最大为300字符，防止在输出uint8_t* data时，输出内容直接沾满了屏幕
-set print elements 300
-#set max-value-size unlimited
-
-#显示 main() 之后 的调用栈（如 exit()、析构函数）（默认off）
-set backtrace past-main on
-#显示 main() 之前 的调用栈（如 _start、动态链接器代码）（默认off）
-set backtrace past-entry on
-#以更直观的多行格式 显示数组内容（尤其是大型数组），每行显示多个元素，并自动换行，避免输出混乱。
-set print array on

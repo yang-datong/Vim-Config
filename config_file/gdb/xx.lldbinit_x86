@@ -1,6 +1,7 @@
 command script import "~/.llef_lldb/llef.py"
 
 settings set stop-disassembly-display never
+#在x86架构中，gdb和lldb默认都是AT&T语法，这里转为intel语法
 settings set target.x86-disassembly-flavor intel
 
 settings set stop-line-count-before 10

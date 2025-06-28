@@ -1,7 +1,9 @@
 command script import "~/.llef_lldb/llef.py"
 
 settings set stop-disassembly-display never
-settings set target.x86-disassembly-flavor intel
+
+#ARM 汇编本身就没有像 x86 有明显的“Intel”和“AT&T”风格之分
+#settings set target.x86-disassembly-flavor intel
 
 settings set stop-line-count-before 10
 settings set stop-line-count-after 10
