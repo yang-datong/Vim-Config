@@ -860,8 +860,7 @@ autocmd FileType manim set filetype=python
 " }
 
 " Assembler file {
-au BufNewFile,BufRead *.s set filetype=gas
-au BufNewFile,BufRead *.asm set filetype=nasm
+au BufNewFile,BufRead *.s set filetype=asm
 " }
 
 " Restore to the position where it was last closed {
