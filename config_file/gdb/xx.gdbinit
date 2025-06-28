@@ -8,8 +8,8 @@ source ~/.hide_command.py
 #1. $ 命令可以直接以不同进制来查看变量值
 #2. start 代替 b main , r 命令
 
-#在x86架构中，gdb和lldb默认都是AT&T语法，这里转为intel语法
-set disassembly-flavor intel
+#在x86架构中，gdb和lldb默认都是AT&T语法，这里转为intel语法（好像gdb 15没有这个选项了，默认也是intel）
+#set disassembly-flavor intel
 set disable-randomization on
 
 #限制字符串输出内容最大为300字符，防止在输出uint8_t* data时，输出内容直接沾满了屏幕
@@ -116,12 +116,6 @@ document linked-list
 	COUNT:      需要打印个数,没有表示打印全部
 end
 
-alias link=linked-list
-alias di=disassemble
-
-#trace在大程序的情况下会导致视图卡顿
-gef config context.layout "-legend regs -stack code args source threads -trace extra memory"
-
 define trace
 contex trace
 end
@@ -129,3 +123,8 @@ end
 define src
 layout src
 end
+
+alias link=linked-list
+
+#trace在大程序的情况下会导致视图卡顿
+gef config context.layout "-legend regs -stack code args source threads -trace extra memory"
