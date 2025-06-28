@@ -861,6 +861,7 @@ autocmd FileType manim set filetype=python
 
 " Assembler file {
 au BufNewFile,BufRead *.s set filetype=asm
+au BufNewFile,BufRead *.S set filetype=asm
 " }
 
 " Restore to the position where it was last closed {
