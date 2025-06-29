@@ -26,6 +26,18 @@ main(){
     echo -e "\033[31m Try --help\033[0m";exit
   fi
 
+  # 存在本地共享目录映射，自己通过简单的cp名了完成即可
+  if [ -d $HOME/docker-home ] || [ -d $HOME/Docker-home ] ;then
+    if [[ -f "$one_obj" || -d "$one_obj" ]];then
+      echo "cp -r" "${one_obj%/}" "$HOME/docker-home/"
+      cp -r "${one_obj%/}" "$HOME/docker-home/"
+    else
+      echo "TODO"
+    fi
+    # 退出
+    return
+  fi
+
   try_fetch_docker_id
 
   if [[ -f "$one_obj" || -d "$one_obj" ]];then
