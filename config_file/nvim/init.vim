@@ -212,19 +212,19 @@ endif
 " }
 ""}
 
-if has("mac")
-  " 开启鼠标支持,NOTE:
-  " 复制时，需要开启insert模式，或者visual模式，这里只是添加了正常模式下的鼠标上下滚动支持
-  set mouse=n
-  " 但禁用鼠标左键点击切换光标位置
-  noremap <LeftMouse> <Nop>
-  noremap <2-LeftMouse> <Nop>
-  noremap <3-LeftMouse> <Nop>
-  noremap <4-LeftMouse> <Nop>
+"if has("mac")
+" 开启鼠标支持,NOTE:
+" 复制时，需要开启insert模式，或者visual模式，这里只是添加了正常模式下的鼠标上下滚动支持
+set mouse=n
+" 但禁用鼠标左键点击切换光标位置
+noremap <LeftMouse> <Nop>
+noremap <2-LeftMouse> <Nop>
+noremap <3-LeftMouse> <Nop>
+noremap <4-LeftMouse> <Nop>
 
-  " 但禁用鼠标拖动选择
-  "noremap <LeftDrag> <Nop>
-endif
+" 但禁用鼠标拖动选择
+"noremap <LeftDrag> <Nop>
+"endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                      2. 按键映射区域                              "

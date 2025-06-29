@@ -338,7 +338,7 @@ func Run()
   let filetype = &filetype
   let exec_cmd = ''
 
-  if filetype == 'c' || filetype == 'cpp' || expand('%:t') == 'CMakeLists.txt' || expand('%:t') == 'Makefile'
+  if filetype == 'c' || filetype == 'cpp' || expand('%:t') == 'CMakeLists.txt' || expand('%:t') == 'Makefile' || filetype == 'asm'
     let compiler = filetype == 'c' ? 'gcc' : 'g++'
     " NOTE: 1. 直接在源代码中声明 -> 执行程序要传入的参数(只能在第一、二行)
     let args = stridx(getline(1), '// arg') == 0 ? strpart(getline(1), strlen('// arg')) : ''
