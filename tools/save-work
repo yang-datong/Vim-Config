@@ -14,9 +14,13 @@ to_icloud() {
 }
 
 to_github() {
-	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note)
-	for i in ${work_dirs[@]}; do
-		pushd "$i"
+	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note $HOME/H264Decoder $HOME/H264Encoder)
+	for in_dir in ${work_dirs[@]}; do
+		if [ ! -d ${in_dir} ]; then
+			echo "Not fond dir: ${in_dir}, skip it"
+			continue
+		fi
+		pushd "${in_dir}"
 		#git add . && git commit -m "Auto commit from[$0]" && git push
 		#不执行add，为了防止提交了不完整的更改
 		git commit -m "Auto commit from[$0]" && git push

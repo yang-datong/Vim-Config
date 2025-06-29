@@ -5,7 +5,7 @@ echo "Are you sure you want to pull it? The original file will be overwritten! [
 
 read is_ok
 
-function from_icloud() {
+from_icloud() {
 	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
 	cp -rv ./sh_foot/init.vim ~/.config/nvim/init.vim
 	cp -rv ./sh_foot/markdown.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/markdown.snippets
@@ -14,10 +14,14 @@ function from_icloud() {
 	echo -e "\033[31m[🍺##########Done#############]"
 }
 
-function from_github() {
-	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note)
-	for i in ${work_dirs[@]}; do
-		pushd "$i"
+from_github() {
+	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note $HOME/H264Decoder $HOME/H264Encoder)
+	for in_dir in ${work_dirs[@]}; do
+		if [ ! -d ${in_dir} ]; then
+			echo "Not fond dir: ${in_dir}, skip it"
+			continue
+		fi
+		pushd "${in_dir}"
 		git pull
 		popd
 	done
