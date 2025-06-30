@@ -30,7 +30,7 @@ function show_status -a last_status
     end
 
     set_color $current_color
-    echo -en "d\$ "
+    echo -en "% "
     set_color normal
 end
 

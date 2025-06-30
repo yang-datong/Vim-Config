@@ -5,9 +5,11 @@ main(){
 	if [ "$(uname)" == "Darwin" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/macos_config.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/macos_xx.bashrc"
+		replace_symbols_link "$HOME/.zshrc"                    "$SH_FOOT/config_file/shell/macos_xx.zshrc"
 	elif [ "$(uname)" == "Linux" ];then
 		replace_symbols_link "$HOME/.config/fish/config.fish"  "$SH_FOOT/config_file/shell/ubuntu_config.fish"
 		replace_symbols_link "$HOME/.bashrc"                   "$SH_FOOT/config_file/shell/ubuntu_xx.bashrc"
+		replace_symbols_link "$HOME/.zshrc"                    "$SH_FOOT/config_file/shell/ubuntu_xx.zshrc"
 	fi
 
 	if [ -f /.dockerenv ]; then
@@ -19,7 +21,6 @@ main(){
 	replace_symbols_link "$HOME/.config/nvim/filetype.vim"         "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$HOME/.clang-format"                     "$SH_FOOT/config_file/xx.clang-format"
 	replace_symbols_link "$HOME/.clangd"                           "$SH_FOOT/config_file/xx.clangd"
-	replace_symbols_link "$HOME/.zshrc"                            "$SH_FOOT/config_file/shell/xx.zshrc"
 	replace_symbols_link "$HOME/.config/nvim/init.vim"             "$SH_FOOT/config_file/nvim/init.vim"
 	replace_symbols_link "$HOME/.config/nvim/yj.lua"               "$SH_FOOT/config_file/nvim/yj.lua"
 	replace_symbols_link "$HOME/.config/nvim/coc-settings.json"    "$SH_FOOT/config_file/nvim/coc-settings.json"

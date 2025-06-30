@@ -1,37 +1,41 @@
 ZSH_THEME="example"
 
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting autojump )
-
-export SH_FOOT=$HOME/sh_foot
 export ZSH=$HOME/.oh-my-zsh
+
+#MacOS
+#export PATH=$PATH:$HOME/Library/Android/sdk/ndk/21.1.6352462
+export PATH=/opt/homebrew/bin:$PATH #Apple silicon M1芯片安装的brew会在/opt目录下（注意顺序，这里提高了homebrew的优先级，是因为在某些情况下会有重复的软件，但版本不同）
+export PATH=$PATH:/Applications/Inkscape.app/Contents/MacOS
+export PATH=$PATH:$HOME/Library/Python/3.10/bin
 export PATH=$PATH:$HOME/.local/bin/
-export PATH=$PATH:$HOME/Android/Sdk/ndk/21.4.7075529
-export PATH=$PATH:$HOME/MySoftWare/Inkscape
-export PATH=$PATH:$HOME/MySoftWare/jadx/bin
 
 export SH_FOOT=$HOME/sh_foot
-export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
-export JAVA_HOME=$HOME/MySoftWare/android-studio/jbr
-export ANDROID_NDK_ROOT=$HOME/Android/Sdk/ndk/25.1.8937393
-
-eval "$(/opt/homebrew/bin/brew shellenv)" #Apple silicon M1芯片安装的brew会在/opt目录下
+export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
+export ANDROID_NDK_ROOT=$HOME/Library/Android/Sdk/ndk/25.1.8937393
 
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
 alias huya="echo '15886670991, qweasdzxc123'"
-#alias ip='curl -s -m 5 https://ipleak.net/json/'
 
-alias ls='ls --color'
 alias cl='clear'
+alias rm='trash'
 alias rm-rf='rm -rf'
 alias du='du -sh'
+alias cat='bat -p'
 alias vim='nvim'
-alias axel='axel -n 16'
+alias gdb='lldb'
 alias pping="httping -x 127.0.0.1:7890"
+alias diff='colordiff -w'
+alias ldd='otool -L'
+
+alias pip='pip3.10'
+alias pip3='pip3.10'
+alias python='python3.10'
+alias python3='python3.10'
 
 alias reboot='sudo reboot'
-alias shutdown='sudo shutdown -h now'
-alias apt='sudo apt'
+alias shutdown='sudo shutdown'
 
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
 alias diff='colordiff -w' #brew install colordiff
@@ -39,7 +43,18 @@ alias clang='clang -std=c17 -Wall'
 alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
-alias set-proxy='source /usr/local/bin/set-proxy'
+alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890'
+alias dis-proxy='export https_proxy= http_proxy= all_proxy='
+
+# ffmpeg
+alias ffmpeg-q="ffmpeg -loglevel quiet"
+alias ffplay-q="ffplay -loglevel quiet"
+alias ffprobe-q="ffprobe -loglevel quiet"
+
+# TODO?
+set-proxy
+
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting autojump )
 
 source $ZSH/oh-my-zsh.sh
 
