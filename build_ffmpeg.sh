@@ -364,8 +364,8 @@ fetch_x265_lib() {
 
 make_clean(){
 	local lists=(
+		${work_dir}/${x264_version}
 		${work_dir}/${x265_version}/build
-		${work_dir}/${x264_version}/build
 		${work_dir}/${ff_version}
 	)
 
