@@ -205,6 +205,8 @@ confg_static() {
 	if [ "$(uname)" == "Darwin" ]; then
 		#ERROR:No working C compiler found.
 		echo "默认部分静态链接"
+		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build")
+		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 	elif [ "$(uname)" == "Linux" ]; then
 		args+=("--extra-ldflags=-static")
 		if [ $hwaccel ]; then
@@ -212,8 +214,6 @@ confg_static() {
 		fi
 	fi
 	args+=("--pkg-config-flags=--static")
-	args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build")
-	#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 
 	./configure "${args[@]}"
 }
@@ -233,13 +233,13 @@ confg_shared() {
 	args+=("--disable-static")
 	if [ "$(uname)" == "Darwin" ]; then
 		echo "TODO"
+		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build")
+		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 	elif [ "$(uname)" == "Linux" ]; then
 		if [ $hwaccel ]; then
 			args+=("${hwaccel}")
 		fi
 	fi
-	args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build")
-	#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 	./configure "${args[@]}"
 }
 
