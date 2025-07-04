@@ -5,7 +5,6 @@
 ScriptVersion="2.0"
 work_dir=$(pwd)
 
-
 #时候开启编译调试模式（ffmpeg、x264,x265都会带有调试符号，以及最小优化）
 #debug=1
 unset debug
@@ -172,13 +171,13 @@ build_ff() {
 	#pkg-config --with-path=${work_dir}/${x265_version}/build/lib/pkgconfig/ --libs --cflags x265
 
 	if [ "$static" == "1" ]; then
-		if [ $debug ];then
+		if [ $debug ]; then
 			confg_static "${args_debug[@]}"
 		else
 			confg_static "${args_release[@]}"
 		fi
 	elif [ "$shared" == "1" ]; then
-		if [ $debug ];then
+		if [ $debug ]; then
 			confg_shared "${args_debug[@]}"
 		else
 			confg_shared "${args_release[@]}"
@@ -197,20 +196,20 @@ confg_static() {
 	fi
 
 	local -a args=("$@")
-	if [ $debug ];then
+	if [ $debug ]; then
 		args+=("--extra-cflags=-static -O0 -g3 -Wno-deprecated-declarations -w")
 	else
 		args+=("--extra-cflags=-static -g3 -Wno-deprecated-declarations")
 	fi
 	# -Wdeprecated-declarations 不打印函数过时的警告
-	if [ "$(uname)" == "Darwin" ];then
+	if [ "$(uname)" == "Darwin" ]; then
 		#ERROR:No working C compiler found.
 		echo "默认部分静态链接"
 		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build/lib")
 		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
-	elif [ "$(uname)" == "Linux" ];then
+	elif [ "$(uname)" == "Linux" ]; then
 		args+=("--extra-ldflags=-static")
-		if [ $hwaccel ];then
+		if [ $hwaccel ]; then
 			args+=("${hwaccel}")
 		fi
 	fi
@@ -225,22 +224,22 @@ confg_shared() {
 	#2.添加 --enable-shared \
 	local -a args=("$@")
 
-	if [ $debug ];then
+	if [ $debug ]; then
 		args+=("--extra-cflags=-O0 -g3 -Wno-deprecated-declarations -w")
 	else
 		args+=("--extra-cflags=-g3 -Wno-deprecated-declarations")
 	fi
 	args+=("--enable-shared")
 	args+=("--disable-static")
-	if [ "$(uname)" == "Darwin" ];then
+	if [ "$(uname)" == "Darwin" ]; then
 		echo "TODO"
-		args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build/lib")
-		#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
-	elif [ "$(uname)" == "Linux" ];then
-		if [ $hwaccel ];then
+	elif [ "$(uname)" == "Linux" ]; then
+		if [ $hwaccel ]; then
 			args+=("${hwaccel}")
 		fi
 	fi
+	args+=("--extra-ldflags=-rpath ${work_dir}/${x265_version}/build/lib")
+	#--extra-ldflags="-rpath ${work_dir}/${x265_version}/build/lib" 对于x265需要重新指定rpath（MacOS for Arm），不然编译后会需要手动指定DYLD_LIBRARY_PATH
 	./configure "${args[@]}"
 }
 
@@ -255,7 +254,7 @@ fetch_x264_lib() {
 
 	cd $x264_version
 
-	if [ $debug ];then
+	if [ $debug ]; then
 		args=(
 			"--prefix=$(pwd)/build"
 			"--disable-asm"
@@ -284,10 +283,10 @@ fetch_x264_lib() {
 	if [ "$type" == "static" ]; then
 		args+=("--enable-static")
 		#--enable-static: 启用静态库的构建。
-		if [ "$(uname)" == "Darwin" ];then
+		if [ "$(uname)" == "Darwin" ]; then
 			#ERROR:No working C compiler found.
 			echo "默认部分静态链接"
-		elif [ "$(uname)" == "Linux" ];then
+		elif [ "$(uname)" == "Linux" ]; then
 			args+=("--extra-ldflags=-static")
 		fi
 		#--extra-ldflags="-static": 添加链接器选项:
@@ -295,7 +294,8 @@ fetch_x264_lib() {
 	elif [ "$type" == "shared" ]; then
 		args+=("--enable-shared")
 	else
-		echo -e "\033[31mfetch_x264_lib failed\033[0m"; exit
+		echo -e "\033[31mfetch_x264_lib failed\033[0m"
+		exit
 	fi
 	${make} clean
 	./configure "${args[@]}"
@@ -316,8 +316,7 @@ fetch_x265_lib() {
 
 	cd $x265_version/build
 
-
-	if [ $debug ];then
+	if [ $debug ]; then
 		args=(
 			"-DCMAKE_CXX_FLAGS=-g3 -O0 -w"
 			"-DCMAKE_C_FLAGS=-g3 -O0 -w"
@@ -382,56 +381,56 @@ usage() {
 
 while getopts ":hdpvf:D:-:" opt; do
 	case "${opt}" in
-		h) usage && exit 0 ;;
-		d) set -x ;;
-		p) set -o posix ;;
-		v)
+	h) usage && exit 0 ;;
+	d) set -x ;;
+	p) set -o posix ;;
+	v)
+		echo "$0 -- Version $ScriptVersion"
+		exit
+		;;
+	f) file=${OPTARG} ;;
+	D) directory=${OPTARG} ;;
+	-) case "${OPTARG}" in
+		help) usage && exit 0 ;;
+		debug) set -x ;;
+		posix) set -o posix ;;
+		version)
 			echo "$0 -- Version $ScriptVersion"
 			exit
 			;;
-		f) file=${OPTARG} ;;
-		D) directory=${OPTARG} ;;
-		-) case "${OPTARG}" in
-			help) usage && exit 0 ;;
-			debug) set -x ;;
-			posix) set -o posix ;;
-			version)
-				echo "$0 -- Version $ScriptVersion"
-				exit
-				;;
-			file)
-				file=${!OPTIND}
-				OPTIND=$((OPTIND + 1))
-				;;
-			directory)
-				directory=${!OPTIND}
-				OPTIND=$((OPTIND + 1))
-				;;
-			static)
-				static=1
-				shared=0
-				;;
-			shared)
-				shared=1
-				static=0
-				;;
-			build_ffmpeg)
-				build_ff
-				exit
-				;;
-			build_x264)
-				fetch_x264_lib shared
-				exit
-				;;
-			build_x265)
-				fetch_x265_lib shared
-				exit
-				;;
-			*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+		file)
+			file=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		directory)
+			directory=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		static)
+			static=1
+			shared=0
+			;;
+		shared)
+			shared=1
+			static=0
+			;;
+		build_ffmpeg)
+			build_ff
+			exit
+			;;
+		build_x264)
+			fetch_x264_lib shared
+			exit
+			;;
+		build_x265)
+			fetch_x265_lib shared
+			exit
+			;;
+		*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
 		esac ;;
 	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
 	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
-esac
+	esac
 done
 shift $((OPTIND - 1))
 
