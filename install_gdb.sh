@@ -14,6 +14,7 @@ ubuntu() {
 	replace_symbols_link "$HOME/.hide_command.py" "$SH_FOOT/config_file/gdb/xx.hide_command.py"
 }
 
+#NOTE: MacOS无法使用gdb（高版本下），会报错：Unable to find Mach task port for process-id 861: (os/kern) failure (0x5).
 macos() {
 	macos_for_llef
 	#macos_for_voltron

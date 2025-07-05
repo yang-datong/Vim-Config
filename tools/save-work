@@ -14,7 +14,21 @@ to_icloud() {
 }
 
 to_github() {
-	work_dirs=($HOME/sh_foot $HOME/Study $HOME/MD-Note $HOME/H264Decoder $HOME/H264Encoder)
+	work_dirs=(
+		#Config
+		$HOME/sh_foot
+		$HOME/Study
+		$HOME/MD-Note
+		#My Project
+		$HOME/JPEGer
+		$HOME/H264Decoder
+		$HOME/H264Encoder
+		$HOME/HEVCDecoder
+		#Project 1
+		$HOME/ffmpeg-4.4.2
+		$HOME/x264_0.164.5
+		$HOME/x265_3.6
+	)
 	for in_dir in ${work_dirs[@]}; do
 		if [ ! -d ${in_dir} ]; then
 			echo "Not fond dir: ${in_dir}, skip it"
