@@ -347,7 +347,8 @@ func Run()
     endif
     let make_cmd = "make -j4 && if [ -f a.out ]; then ./a.out ". args ."; fi"
     let make2_cmd = "make -C build -j4 && if [ -f build/a.out ]; then ./build/a.out ". args ."; fi"
-    let build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out ". args ."; fi"
+    let cmake_build_cmd = "cmake -B build . && cmake --build build -j4 && if [ -f ./build/a.out ]; then ./build/a.out ". args ."; fi"
+    let meson_build_cmd = "meson setup build . && ninja -C build -j4 && if [ -f ./build/a.out ]; then ./build/a.out ". args ."; fi"
 
     " NOTE: 2. 直接在源代码中声明 -> 编译程序后执行的命令，比如执行程序，或执行测试脚本(只能在第一、二、三行)
     let run = stridx(getline(1), '// run') == 0 ? strpart(getline(1), strlen('// run')) : ''
@@ -368,7 +369,9 @@ func Run()
     elseif filereadable('./build/Makefile')
       let exec_cmd = "!bash -c '" . make2_cmd . run . "'"
     elseif filereadable('CMakeLists.txt')
-      let exec_cmd = "!bash -c '" . build_cmd . run . "'"
+      let exec_cmd = "!bash -c '" . cmake_build_cmd . run . "'"
+    elseif filereadable('meson.build')
+      let exec_cmd = "!bash -c '" . meson_build_cmd . run . "'" 
     else
       " NOTE: 3. 直接在源代码中声明 -> 编译参数(只能在第一行)
       let firstLine = getline(1)

@@ -21,9 +21,11 @@ make2="make -j $(nproc)"
 cmake_version=3.10
 cmake_cxx_standard=14
 
+meson="meson setup build"
+ninja="ninja -C build -j $(nproc)"
+
 #---------------------------------------- CMakeLists Generate ----------------------------------------
 cmake_main() {
-  whether_has_source_file
   if [ "$1" == "clean" ]; then
     clean_cmake "all" && exit
   elif [ "$1" == "make" ]; then
@@ -123,7 +125,7 @@ $(if [ "${pkg_config}" ]; then
   fi)
 EOF
 
-${cmake} . && ${make}
+  ${cmake} . && ${make}
 }
 
 clean_cmake() {
@@ -147,6 +149,27 @@ clean_cmake() {
   if [ -d build ]; then
     mv build /tmp/build_$date
   fi
+}
+
+#---------------------------------------- Meson Generate ----------------------------------------
+meson_main() {
+  local f="meson.build"
+  if [ -f $f ]; then
+    #read -p "是否重新生成${f}？[y/N]" OK
+    #if [ "$OK" != "y" ]; then
+    ${meson} . && ${ninja}
+    #else
+    #generate_cmakelists
+    #fi
+  else
+    #  TODO YangJing  <25-07-23 15:59:28> #
+    #generate_cmakelists
+    echo "todo"
+  fi
+  #现在默认不清理生成文件，提高二次编译速度
+  #clean_cmake
+  #生成compile_commands.json文件到项目根目录
+  #TODO  <25-07-23 16:03:11, YangJing>
 }
 
 #---------------------------------------- Makefile Generate ----------------------------------------
@@ -218,12 +241,12 @@ generate_makefile() {
 #Check OS System
 check_os() {
   case "$(uname)" in
-    "Darwin") echo ".dylib" ;;
-    "Linux") echo ".so" ;;
-    *)
-      echo "Windows has not been tested for the time being"
-      exit 1
-      ;;
+  "Darwin") echo ".dylib" ;;
+  "Linux") echo ".so" ;;
+  *)
+    echo "Windows has not been tested for the time being"
+    exit 1
+    ;;
   esac
 }
 
@@ -258,6 +281,28 @@ check_build_type() {
     c_kind
   elif [ $c_total == 0 -a $cpp_total -gt 0 ]; then
     cpp_kind
+  fi
+}
+
+check_source_or_condif_file() {
+  #NOTE: 如果当前目录存在项目构建配置文件，则使用现有的配置文件，反之则自动生成一个CmakeLists配置文件，使用cmake进行管理
+
+  #Cmake
+  if [ -f CMakeLists.txt ]; then
+    cmake_main "$@"
+  #Meson
+  elif [ -f meson.build ]; then
+    meson_main "$@"
+  #Makefile
+  elif [ -f Makefile ]; then
+    makefile_main "$@"
+  #Ninja
+  elif [ -f build.ninja ]; then
+    echo "todo" #TODO  <25-07-23 15:56:25, YangJing>
+  #检查是否存在源代码文件，进而生成一个"cmake"配置文件
+  else
+    whether_has_source_file
+    cmake_main "$@"
   fi
 }
 
@@ -338,8 +383,8 @@ else
 fi
 EOF
 
-echo -e "\033[32mOutput -> gdb.sh\033[0m"
-cat gdb.sh
+  echo -e "\033[32mOutput -> gdb.sh\033[0m"
+  cat gdb.sh
 }
 
 #---------------------------------------- Command Handle ----------------------------------------
@@ -373,61 +418,61 @@ usage() {
 
 while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
   case "${opt}" in
-    h) usage && exit 0 ;;
-    d) set -x ;;
-    p) set -o posix ;;
-    v)
+  h) usage && exit 0 ;;
+  d) set -x ;;
+  p) set -o posix ;;
+  v)
+    echo "$0 -- Version $ScriptVersion"
+    exit
+    ;;
+  f) flag="${OPTARG}" ;;
+  c) src=${OPTARG} ;;
+  I) include_path="${OPTARG}" ;;
+  l) libs="${OPTARG}" ;;
+  L) lib_path=${OPTARG} ;;
+  t) cc=${OPTARG} ;;
+  D) dir=${OPTARG} ;;
+  -) case "${OPTARG}" in
+    help) usage && exit 0 ;;
+    debug) set -x ;;
+    posix) set -o posix ;;
+    version)
       echo "$0 -- Version $ScriptVersion"
       exit
       ;;
-    f) flag="${OPTARG}" ;;
-    c) src=${OPTARG} ;;
-    I) include_path="${OPTARG}" ;;
-    l) libs="${OPTARG}" ;;
-    L) lib_path=${OPTARG} ;;
-    t) cc=${OPTARG} ;;
-    D) dir=${OPTARG} ;;
-    -) case "${OPTARG}" in
-      help) usage && exit 0 ;;
-      debug) set -x ;;
-      posix) set -o posix ;;
-      version)
-        echo "$0 -- Version $ScriptVersion"
-        exit
-        ;;
-      flag)
-        flag=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      source)
-        src=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      include)
-        include_path=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      lib)
-        libs=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      library)
-        lib_path=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      type)
-        cc=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      dir)
-        dir=${!OPTIND}
-        OPTIND=$((OPTIND + 1))
-        ;;
-      cmake) is_cmake=1 ;;
-      no-cmake) is_cmake=0 ;;
-      makefile) is_cmake=0 ;;
-      #对于pkg-config 必须使用Cmake
-      pkg)
+    flag)
+      flag=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    source)
+      src=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    include)
+      include_path=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    lib)
+      libs=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    library)
+      lib_path=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    type)
+      cc=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    dir)
+      dir=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    cmake) is_cmake=1 ;;
+    no-cmake) is_cmake=0 ;;
+    makefile) is_cmake=0 ;;
+    #对于pkg-config 必须使用Cmake
+    pkg)
       is_cmake=1
       pkg_config=${!OPTIND}
       OPTIND=$((OPTIND + 1))
@@ -441,16 +486,12 @@ while getopts ":hdpvf:c:I:l:L:t:D:-:" opt; do
       exit
       ;;
     *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
-  esac ;;
-:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
-*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
-esac
+    esac ;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+  esac
 done
 
 shift $((OPTIND - 1))
 
-if [ $is_cmake == 1 ]; then
-  cmake_main "$@"
-else
-  makefile_main "$@"
-fi
+check_source_or_condif_file
