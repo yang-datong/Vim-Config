@@ -28,6 +28,7 @@ to_github() {
 		$HOME/ffmpeg-4.4.2
 		$HOME/x264_0.164.5
 		$HOME/x265_3.6
+		$HOME/dav1d-1.5.1
 	)
 	for in_dir in ${work_dirs[@]}; do
 		if [ ! -d ${in_dir} ]; then
