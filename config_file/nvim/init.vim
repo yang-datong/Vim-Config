@@ -614,6 +614,8 @@ endif
 "======================================================================
 Plug 'preservim/nerdcommenter'  "注释插件（'n' 为正常模式下的触发，'x'为选中默认下的触发）
 " Multiple trigger {
+let g:NERDCustomDelimiters = { 'c': { 'left': '/* ','right': ' */' } }
+let g:NERDCustomDelimiters = { 'asm': { 'left': '// '} }
 noremap <silent> <leader>/ :call nerdcommenter#Comment('n', 'toggle')<CR> :execute 'normal 0 j'<CR>
 vnoremap <silent> <leader>/ :call nerdcommenter#Comment('x', 'invert')<CR>
 "noremap <silent> <leader>c :call nerdcommenter#Comment('n', 'toggle')<CR>
