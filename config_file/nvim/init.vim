@@ -679,10 +679,11 @@ if &filetype == 'tex' || &filetype == 'plaintex'
   augroup END
 endif
 "======================================================================
-if &filetype != 'tex' && &filetype != 'plaintex'
-  Plug 'github/copilot.vim'
+"TODO: 账号试用期过期了。
+"if &filetype != 'tex' && &filetype != 'plaintex'
+  "Plug 'github/copilot.vim'
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
-endif
+"endif
 "======================================================================
 call plug#end()
 " }
