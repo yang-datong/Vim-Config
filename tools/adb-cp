@@ -1,0 +1,32 @@
+#!/bin/bash
+
+docker_id="/sdcard"
+main() {
+	local one_obj="$1"
+	local two_obj="$2"
+
+	if [ -z "$one_obj" ]; then
+		echo -e "\033[31m Try --help\033[0m"
+		exit
+	fi
+
+	if [[ -f "$one_obj" || -d "$one_obj" ]]; then
+		local_tar="$one_obj"
+		docker_tar="${docker_id}/${two_obj}"
+		if [ -z "$two_obj" ]; then
+			docker_tar="${docker_id}/${user}"
+		fi
+		echo "adb push \"$local_tar\" \"$docker_tar\""
+		adb push "$local_tar" "$docker_tar"
+	else
+		docker_tar="${docker_id}/${one_obj}"
+		local_tar="$two_obj"
+		if [ -z "$two_obj" ]; then
+			local_tar="./"
+		fi
+		echo "adb pull \"$docker_tar\" \"$local_tar\""
+		adb pull "$docker_tar" "$local_tar"
+	fi
+}
+
+main "$@"
