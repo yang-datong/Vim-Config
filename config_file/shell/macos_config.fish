@@ -28,6 +28,7 @@ alias gdb='lldb'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
 alias ldd='otool -L'
+alias ida='/Applications/IDA\ Professional\ 9.0.app/Contents/MacOS/ida'
 
 alias pip='pip3.10'
 alias pip3='pip3.10'

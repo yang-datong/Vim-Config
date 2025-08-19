@@ -191,7 +191,11 @@ except sp.TimeoutExpired:
 endsnippet
 
 snippet "-(.*)-(expr|calc|calculate|sum|all)" "all" wr
-`!p snip.rv = f"{match.group(1)} = {eval(match.group(1))}"`
+`!p 
+s = match.group(1).replace(" ", "").replace(",", "")
+  # 输出: Helloworld!Thisisatest.
+snip.rv = f"{match.group(1)} = {eval(s)}"
+`
 endsnippet
 
 #import requests

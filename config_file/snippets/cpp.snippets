@@ -470,6 +470,15 @@ if(f){
 endsnippet
 
 #-------------------- 5. Global Env ---------------
+priority 1002
+snippet inline "inline" w
+__attribute__((always_inline))
+endsnippet
+
+priority 1002
+snippet noinline "inline" w
+__attribute__((noinline))
+endsnippet
 # TODO YangJing 有问题，场景如下： <24-03-30 16:15:01> #
 # for (int i = 0; i < original.size()<在这按tab就一直循环在()里面 ; ++i) {
 #  }

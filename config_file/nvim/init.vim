@@ -443,6 +443,7 @@ endif
 "Cmake : pip install cmake-format
 "Markdown : npm install -g remark-cli
 "Shell : apt install shfmt
+"Asm : brew intall asmfmt
 if g:is_latex == 1
   "Must -> brew install latexindent
   if has('mac')
