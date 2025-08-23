@@ -1,4 +1,21 @@
 #!/bin/bash
+##!/usr/bin/expect
+
+#set timeout 2
+#set path "/data/local/tmp"
+#spawn adb shell
+
+#expect "*$ " {send "su\n"}
+#expect "*# " {send "$path/.bash\n"}
+#expect "*" {send "PS1='\\033\[1;37m\\$ \\033\[0m'\n"}
+#expect "*" {send "export HOME=$path\n"}
+#expect "*" {send "alias cl=clear\n"}
+#expect "*" {send "alias ls='ls --color'\n"}
+#expect "*" {send "alias ll='ls -lFh --color'\n"}
+#expect "*" {send "alias du='du -sh'\n"}
+#expect "*" {send "cd&&cl&&pwd&&./termux.sh&&cd\n"}
+
+#interact
 
 main(){
 	adb shell "/data/local/tmp/.bash --version" || install_bash
@@ -6,7 +23,7 @@ main(){
 	if [ ! $(adb shell 'id -u') == '0' ];then #进入shell即为非root的情况
 		adb shell "$1" || person=$(user) #再次检测su是否成功提权，否则为普通用户
 	fi
-	echo $person | base64 -d > /tmp/into_adb_shell.expect && expect /tmp/into_adb_shell.expect
+	expect /tmp/into_adb_shell.expect
 }
 
 install_bash(){
@@ -29,15 +46,35 @@ install_bash(){
 
 
 user(){
+	echo "TODO"
+	exit
 	echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgIiRwYXRoLy5iYXNoXG4ifQpleHBlY3QgIioiIHtzZW5kICJQUzE9J1xcMDMzXFsxOzM3bVxcJCBcXDAzM1xbMG0nXG4ifQpleHBlY3QgIiQgIiB7c2VuZCAiZXhwb3J0IEhPTUU9JHBhdGhcbiJ9CmV4cGVjdCAiJCAiIHtzZW5kICJhbGlhcyBjbD1jbGVhclxuIn0KZXhwZWN0ICIkICIge3NlbmQgImFsaWFzIGxzPSdscyAtLWNvbG9yJ1xuIn0KZXhwZWN0ICIkICIge3NlbmQgImFsaWFzIGxsPSdscyAtbEZoIC0tY29sb3InXG4ifQpleHBlY3QgIiQgIiB7c2VuZCAiYWxpYXMgZHU9J2R1IC1zaCdcbiJ9CmV4cGVjdCAiJCAiIHtzZW5kICJjZCYmY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
 	#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgImNkICRwYXRoXG4ifQpleHBlY3QgIiokcGF0aCAkICIge3NlbmQgImlkXG4ifQpleHBlY3QgIiokcGF0aCAkICIge3NlbmQgIlBTMT0nJCAnXG4ifQpleHBlY3QgIiQgIiB7c2VuZCAiYWxpYXMgY2w9Y2xlYXJcbiJ9CmV4cGVjdCAiJCAiIHtzZW5kICJhbGlhcyBscz0nbHMgLS1jb2xvcidcbiJ9CmV4cGVjdCAiJCAiIHtzZW5kICJhbGlhcyBsbD0nbHMgLWxGaCAtLWNvbG9yJ1xuIn0KZXhwZWN0ICIkICIge3NlbmQgImFsaWFzIGR1PSdkdSAtc2gnXG4ifQpleHBlY3QgIiQgIiB7c2VuZCAiY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
 }
 
 root(){
-	echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgIiRwYXRoLy5iYXNoXG4ifQpleHBlY3QgIioiIHtzZW5kICJQUzE9J1xcMDMzXFsxOzM3bVxcJCBcXDAzM1xbMG0nXG4ifQpleHBlY3QgIioiIHtzZW5kICJleHBvcnQgSE9NRT0kcGF0aFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiYWxpYXMgY2w9Y2xlYXJcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxzPSdscyAtLWNvbG9yJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiYWxpYXMgbGw9J2xzIC1sRmggLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGR1PSdkdSAtc2gnXG4ifQpleHBlY3QgIioiIHtzZW5kICJjZCYmY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg==" 
-	#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgImNkICRwYXRoXG4ifQpleHBlY3QgIiojICIge3NlbmQgIi4vYmFzaFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiUFMxPScjICdcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGNsPWNsZWFyXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBscz0nbHMgLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxsPSdscyAtbEZoIC0tY29sb3InXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBkdT0nZHUgLXNoJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
-	#Update -> PS1 : #
-	#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgImNkICRwYXRoXG4ifQpleHBlY3QgIiojICIge3NlbmQgIi4vYmFzaFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiaWRcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGNsPWNsZWFyXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBscz0nbHMgLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxsPSdscyAtbEZoIC0tY29sb3InXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBkdT0nZHUgLXNoJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
+	cat <<EOF > /tmp/into_adb_shell.expect
+set timeout 2
+set path "/data/local/tmp"
+spawn adb shell
+
+expect "*$ " {send "su\n"}
+expect "*# " {send "\$path/.bash\n"}
+expect "*" {send "PS1='\$ '\n"}
+expect "*" {send "export HOME=\$path\n"}
+expect "*" {send "alias cl=clear\n"}
+expect "*" {send "alias ls='ls --color'\n"}
+expect "*" {send "alias ll='ls -lFh --color'\n"}
+expect "*" {send "alias du='du -sh'\n"}
+expect "*" {send "cd&&./termux.sh\n"}
+expect "*" {send "cd&&cl&&pwd\n"}
+
+interact
+EOF
+#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgIiRwYXRoLy5iYXNoXG4ifQpleHBlY3QgIioiIHtzZW5kICJQUzE9J1xcMDMzXFsxOzM3bVxcJCBcXDAzM1xbMG0nXG4ifQpleHBlY3QgIioiIHtzZW5kICJleHBvcnQgSE9NRT0kcGF0aFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiYWxpYXMgY2w9Y2xlYXJcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxzPSdscyAtLWNvbG9yJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiYWxpYXMgbGw9J2xzIC1sRmggLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGR1PSdkdSAtc2gnXG4ifQpleHBlY3QgIioiIHtzZW5kICJjZCYmY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
+#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgImNkICRwYXRoXG4ifQpleHBlY3QgIiojICIge3NlbmQgIi4vYmFzaFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiUFMxPScjICdcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGNsPWNsZWFyXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBscz0nbHMgLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxsPSdscyAtbEZoIC0tY29sb3InXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBkdT0nZHUgLXNoJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
+#Update -> PS1 : #
+#echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCB0aW1lb3V0IDIKc2V0IHBhdGggIi9kYXRhL2xvY2FsL3RtcCIKc3Bhd24gYWRiIHNoZWxsCgpleHBlY3QgIiokICIge3NlbmQgInN1XG4ifQpleHBlY3QgIiojICIge3NlbmQgImNkICRwYXRoXG4ifQpleHBlY3QgIiojICIge3NlbmQgIi4vYmFzaFxuIn0KZXhwZWN0ICIqIiB7c2VuZCAiaWRcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGNsPWNsZWFyXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBscz0nbHMgLS1jb2xvcidcbiJ9CmV4cGVjdCAiKiIge3NlbmQgImFsaWFzIGxsPSdscyAtbEZoIC0tY29sb3InXG4ifQpleHBlY3QgIioiIHtzZW5kICJhbGlhcyBkdT0nZHUgLXNoJ1xuIn0KZXhwZWN0ICIqIiB7c2VuZCAiY2wmJnB3ZFxuIn0KCmludGVyYWN0Cg=="
 }
 
 main "su -c 'id'"
