@@ -56,7 +56,7 @@ source $NVIM_FOLDER/function.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:minimun_use=0
+let g:minimun_use=1
 " Whether to enable plug-in(0->off | 1->on){
 let g:is_latex=1  "Latex
 let g:is_markdown=1  "Markdown
@@ -686,7 +686,7 @@ endif
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
 "endif
 "======================================================================
-Plug 'nvim-treesitter/nvim-treesitter'
+"Plug 'nvim-treesitter/nvim-treesitter'
 "======================================================================
 call plug#end()
 " }
