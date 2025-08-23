@@ -56,7 +56,7 @@ source $NVIM_FOLDER/function.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     0. 变量控制区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:minimun_use=1
+let g:minimun_use=0
 " Whether to enable plug-in(0->off | 1->on){
 let g:is_latex=1  "Latex
 let g:is_markdown=1  "Markdown
