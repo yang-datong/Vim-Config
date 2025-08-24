@@ -682,11 +682,11 @@ endif
 "======================================================================
 "TODO: 账号试用期过期了。
 if &filetype != 'tex' && &filetype != 'plaintex'
-  Plug 'github/copilot.vim'
+  "Plug 'github/copilot.vim'
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
 endif
 "======================================================================
-"Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter'
 "======================================================================
 call plug#end()
 " }
