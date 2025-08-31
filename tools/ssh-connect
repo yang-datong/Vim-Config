@@ -6,46 +6,55 @@ ssh_history="$HOME/.ssh_history"
 unset ip
 unset user
 unset passwd
+unset port
 
-main(){
+main() {
   init_input_info
   local date=$(date +"%Y%m%d%H%M%S")
-  echo "$ip $user $passwd" >> $ssh_history && cat $ssh_history | sort | uniq | sed '/^$/d' > tmp_$date && mv tmp_$date $ssh_history
-  echo "IyEvdXNyL2Jpbi9leHBlY3QKc2V0IHRpbWVvdXQgMzAKCnNldCBpcCAgW2xpbmRleCAkYXJndiAwXQpzZXQgbmFtZSAgW2xpbmRleCAkYXJndiAxXQpzZXQgcHN3ZCAgW2xpbmRleCAkYXJndiAyXQoKc3Bhd24gc3NoICRuYW1lQCRpcApleHBlY3QgewogICAgICAgICJBcmUgeW91IHN1cmUgeW91IHdhbnQgdG8gY29udGludWUgY29ubmVjdGluZyoiCiAgICAgICAge3NlbmQgInllc1xuIjtleHBfY29udGludWV9CiAgICAgICAgInBhc3N3b3JkOiIKICAgICAgICB7c2VuZCAiJHBzd2RcbiJ9Cn0KaW50ZXJhY3QK" | base64 -d > /tmp/load_ssh.expect && expect /tmp/load_ssh.expect $ip $user $passwd
+  if [ ! $port ]; then
+    port=22
+  fi
+  echo "$ip $user $passwd $port" >>$ssh_history && cat $ssh_history | sort | uniq | sed '/^$/d' >tmp_$date && mv tmp_$date $ssh_history
+  echo "IyEvdXNyL2Jpbi9leHBlY3QKc2V0IHRpbWVvdXQgMzAKCnNldCBpcCAgW2xpbmRleCAkYXJndiAwXQpzZXQgbmFtZSAgW2xpbmRleCAkYXJndiAxXQpzZXQgcHN3ZCAgW2xpbmRleCAkYXJndiAyXQpzZXQgcG9ydCBbbGluZGV4ICRhcmd2IDNdCgpzcGF3biBzc2ggLXAgJHBvcnQgJG5hbWVAJGlwCmV4cGVjdCB7CiAgICAgICAgIkFyZSB5b3Ugc3VyZSB5b3Ugd2FudCB0byBjb250aW51ZSBjb25uZWN0aW5nKiIKICAgICAgICB7c2VuZCAieWVzXG4iO2V4cF9jb250aW51ZX0KICAgICAgICAicGFzc3dvcmQ6IgogICAgICAgIHtzZW5kICIkcHN3ZFxuIn0KfQppbnRlcmFjdAo=" | base64 -d >/tmp/load_ssh.expect && expect /tmp/load_ssh.expect $ip $user $passwd $port
 }
 
-init_input_info(){
-  if [ ! $ip ] || [ ! $user ] || [ ! $passwd ];then
+init_input_info() {
+  if [ ! $ip ] || [ ! $user ] || [ ! $passwd ]; then
     # 没有输入连接信息
-    if [ ! -f $ssh_history ];then # 尝试本地获取历史信息
-      echo -e "\033[31m Don't found user configure, Input you're $(basename $0) -i [ip] -u [username] -p [passwd] \033[0m";exit
+    if [ ! -f $ssh_history ]; then # 尝试本地获取历史信息
+      echo -e "\033[31m Don't found user configure, Input you're $(basename $0) -i [ip] -u [username] -p [passwd] \033[0m"
+      exit
     else
       local line=$(cat "$ssh_history" | wc -l)
-      if [ $line -gt 1 ];then
+      if [ $line -gt 1 ]; then
         echo -e "\033[33m存在多个连接信息：\033[0m"
         local line_number=0
-        while read line;do
+        while read line; do
           ((line_number++))
           echo $line_number. $line | awk '{print $1,$2,$3,$5}'
-        done < "$ssh_history"
-        echo -en "\033[33m请选择要连接的目标信息：\033[0m" ; read opt
-        if [[ $opt =~ ^[0-9]+$ ]];then
-          ip=$(cat "$ssh_history" | sed -n ${opt}p  | awk '{print $1}' )
-          user=$(cat "$ssh_history" | sed -n ${opt}p  | awk '{print $2}' )
-          passwd=$(cat "$ssh_history" | sed -n ${opt}p  | awk '{print $3}' )
+        done <"$ssh_history"
+        echo -en "\033[33m请选择要连接的目标信息：\033[0m"
+        read opt
+        if [[ $opt =~ ^[0-9]+$ ]]; then
+          ip=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $1}')
+          user=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $2}')
+          passwd=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $3}')
+          port=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $4}')
         else
-          echo -e "\033[31m输入错误，请输入对应的数字序号\033[0m";exit
+          echo -e "\033[31m输入错误，请输入对应的数字序号\033[0m"
+          exit
         fi
       else
         ip=$(cat "$ssh_history" | awk '{print $1}')
         user=$(cat "$ssh_history" | awk '{print $2}')
         passwd=$(cat "$ssh_history" | awk '{print $3}')
+        port=$(cat "$ssh_history" | awk '{print $4}')
       fi
     fi
   fi
 }
 
-usage (){
+usage() {
   echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
   Options:
@@ -57,37 +66,59 @@ usage (){
   -s, --show user             Show SSH user list
   -i, --ip address            SSH IP address
   -u, --user user             SSH User
-  -p, --passwd password       SSH Password"
+  -p, --passwd password       SSH Password
+  -P, --port port             SSH connect port"
 
 }
 
-while getopts ":hdvf:D:si:u:p:-:" opt; do
+while getopts ":hdvf:D:si:u:p:P:-:" opt; do
   case "${opt}" in
-    h) usage && exit 0;;
-    d) set -x ;;
-    v) echo "$0 -- Version $ScriptVersion"; exit ;;
-    f) file=${OPTARG};;
-    D) directory=${OPTARG};;
-    s) cat $ssh_history && exit;;
-    i) ip=${OPTARG};;
-    u) user=${OPTARG};;
-    p) passwd=${OPTARG};;
-    -) case "${OPTARG}" in
-      help) usage && exit 0;;
-      debug)      set -x ;;
-      version)    echo "$0 -- Version $ScriptVersion"; exit ;;
-      file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      ip)         ip=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      user)       user=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      passwd)     passwd=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
-    esac;;
-  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
-  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
-esac
+  h) usage && exit 0 ;;
+  d) set -x ;;
+  v)
+    echo "$0 -- Version $ScriptVersion"
+    exit
+    ;;
+  f) file=${OPTARG} ;;
+  D) directory=${OPTARG} ;;
+  s) cat $ssh_history && exit ;;
+  i) ip=${OPTARG} ;;
+  u) user=${OPTARG} ;;
+  p) passwd=${OPTARG} ;;
+  P) port=${OPTARG} ;;
+  -) case "${OPTARG}" in
+    help) usage && exit 0 ;;
+    debug) set -x ;;
+    version)
+      echo "$0 -- Version $ScriptVersion"
+      exit
+      ;;
+    file)
+      file=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    directory)
+      directory=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    ip)
+      ip=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    user)
+      user=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    passwd)
+      passwd=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+    esac ;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+  esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
 main "$@"
-
