@@ -6,11 +6,12 @@ ssh_history="$HOME/.ssh_history"
 unset ip
 unset user
 unset passwd
+unset port
 
-main(){
+main() {
   obj="$1"
   init_input_info
-  if [[ -f "$obj" || -d "$obj" ]];then
+  if [[ -f "$obj" || -d "$obj" ]]; then
     # 本地存在则为本地文件，表示要上传到服务器文件
     scp_up
   else
@@ -19,48 +20,53 @@ main(){
   fi
 }
 
-init_input_info(){
-  if [ ! $ip ] || [ ! $user ] || [ ! $passwd ];then
+init_input_info() {
+  if [ ! $ip ] || [ ! $user ] || [ ! $passwd ]; then
     # 没有输入连接信息
-    if [ ! -f $ssh_history ];then # 尝试本地获取历史信息
-      echo -e "\033[31m Don't found user configure, Input you're $(basename $0) -i [ip] -u [username] -p [passwd] \033[0m";exit
+    if [ ! -f $ssh_history ]; then # 尝试本地获取历史信息
+      echo -e "\033[31m Don't found user configure, Input you're $(basename $0) -i [ip] -u [username] -p [passwd] \033[0m"
+      exit
     else
       local line=$(cat "$ssh_history" | wc -l)
-      if [ $line -gt 1 ];then
+      if [ $line -gt 1 ]; then
         echo -e "\033[33m存在多个连接信息：\033[0m"
         local line_number=0
-        while read line;do
+        while read line; do
           ((line_number++))
           echo $line_number. $line | awk '{print $1,$2,$3}'
-        done < "$ssh_history"
-        echo -en "\033[33m请选择要连接的目标信息：\033[0m" ; read opt
-        if [[ $opt =~ ^[0-9]+$ ]];then
-          ip=$(cat "$ssh_history" | sed -n ${opt}p  | awk '{print $1}' )
-          user=$(cat "$ssh_history" | sed -n ${opt}p  | awk '{print $2}' )
-          passwd=$(cat "$ssh_history" | sed -n ${opt}p  | awk '{print $3}' )
+        done <"$ssh_history"
+        echo -en "\033[33m请选择要连接的目标信息：\033[0m"
+        read opt
+        if [[ $opt =~ ^[0-9]+$ ]]; then
+          ip=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $1}')
+          user=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $2}')
+          passwd=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $3}')
+          port=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $4}')
         else
-          echo -e "\033[31m输入错误，请输入对应的数字序号\033[0m";exit
+          echo -e "\033[31m输入错误，请输入对应的数字序号\033[0m"
+          exit
         fi
       else
         ip=$(cat "$ssh_history" | awk '{print $1}')
         user=$(cat "$ssh_history" | awk '{print $2}')
         passwd=$(cat "$ssh_history" | awk '{print $3}')
+        port=$(cat "$ssh_history" | awk '{print $4}')
       fi
     fi
   fi
 }
 
-scp_up(){
+scp_up() {
   echo "upload file"
-  echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCBmaWxlIFtsaW5kZXggJGFyZ3YgMF0Kc2V0IGlwICAgW2xpbmRleCAkYXJndiAxXQpzZXQgbmFtZSBbbGluZGV4ICRhcmd2IDJdCnNldCBwc3dkIFtsaW5kZXggJGFyZ3YgM10KCnNwYXduIHNjcCAtciAkZmlsZSAkbmFtZUAkaXA6LgpleHBlY3QgewogICAgICAgICJwYXNzd29yZDoiCiAgICAgICAge3NlbmQgIiRwc3dkXG4ifQoJfQppbnRlcmFjdAo=" | base64 -d > /tmp/scp_up.expect && expect /tmp/scp_up.expect $obj $ip $user $passwd
+  echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCBmaWxlIFtsaW5kZXggJGFyZ3YgMF0Kc2V0IGlwICAgW2xpbmRleCAkYXJndiAxXQpzZXQgbmFtZSBbbGluZGV4ICRhcmd2IDJdCnNldCBwc3dkIFtsaW5kZXggJGFyZ3YgM10Kc2V0IHBvcnQgW2xpbmRleCAkYXJndiA0XQoKc3Bhd24gc2NwIC1yIC1QICRwb3J0ICRmaWxlICRuYW1lQCRpcDouCmV4cGVjdCB7CiAgICAgICAgInBhc3N3b3JkOiIKICAgICAgICB7c2VuZCAiJHBzd2RcbiJ9Cgl9CmludGVyYWN0Cg==" | base64 -d >/tmp/scp_up.expect && expect /tmp/scp_up.expect $obj $ip $user $passwd $port
 }
 
-scp_down(){
+scp_down() {
   echo "download file"
-  echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCBmaWxlIFtsaW5kZXggJGFyZ3YgMF0Kc2V0IGlwICAgW2xpbmRleCAkYXJndiAxXQpzZXQgbmFtZSBbbGluZGV4ICRhcmd2IDJdCnNldCBwc3dkIFtsaW5kZXggJGFyZ3YgM10KCnNwYXduIHNjcCAtciAkbmFtZUAkaXA6JGZpbGUgLgpleHBlY3QgewogICAgICAgICJwYXNzd29yZDoiCiAgICAgICAge3NlbmQgIiRwc3dkXG4ifQoJfQppbnRlcmFjdAo=" | base64 -d > /tmp/scp_down.expect && expect /tmp/scp_down.expect $obj $ip $user $passwd
+  echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCBmaWxlIFtsaW5kZXggJGFyZ3YgMF0Kc2V0IGlwICAgW2xpbmRleCAkYXJndiAxXQpzZXQgbmFtZSBbbGluZGV4ICRhcmd2IDJdCnNldCBwc3dkIFtsaW5kZXggJGFyZ3YgM10Kc2V0IHBvcnQgW2xpbmRleCAkYXJndiA0XQoKc3Bhd24gc2NwIC1yIC1QICRwb3J0ICRuYW1lQCRpcDokZmlsZSAuCmV4cGVjdCB7CiAgICAgICAgInBhc3N3b3JkOiIKICAgICAgICB7c2VuZCAiJHBzd2RcbiJ9Cgl9CmludGVyYWN0Cg==" | base64 -d >/tmp/scp_down.expect && expect /tmp/scp_down.expect $obj $ip $user $passwd $port
 }
 
-usage (){
+usage() {
   echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
   Options:
@@ -72,39 +78,66 @@ usage (){
   -s, --show user             Show SSH user list
   -i, --ip address            SSH IP address
   -u, --user user             SSH User
-  -p, --passwd password       SSH Password"
+  -p, --passwd password       SSH Password
+  -P, --port port             SSH connect port"
 
 }
 
-while getopts ":hdvf:D:si:u:p:-:" opt; do
+while getopts ":hdvf:D:si:u:p:P:-:" opt; do
   case "${opt}" in
-    h) usage && exit 0;;
-    d) set -x ;;
-    v) echo "$0 -- Version $ScriptVersion"; exit ;;
-    f) file=${OPTARG};;
-    D) directory=${OPTARG};;
-    s) cat $ssh_history && exit;;
-    i) ip=${OPTARG};;
-    u) user=${OPTARG};;
-    p) passwd=${OPTARG};;
-    -) case "${OPTARG}" in
-      help) usage && exit 0;;
-      debug)      set -x ;;
-      version)    echo "$0 -- Version $ScriptVersion"; exit ;;
-      file)       file=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      directory)  directory=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      ip)         ip=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      user)       user=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      passwd)     passwd=${!OPTIND}; OPTIND=$((OPTIND+1));;
-      *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
-    esac;;
-  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
-  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
-esac
+  h) usage && exit 0 ;;
+  d) set -x ;;
+  v)
+    echo "$0 -- Version $ScriptVersion"
+    exit
+    ;;
+  f) file=${OPTARG} ;;
+  D) directory=${OPTARG} ;;
+  s) cat $ssh_history && exit ;;
+  i) ip=${OPTARG} ;;
+  u) user=${OPTARG} ;;
+  p) passwd=${OPTARG} ;;
+  P) port=${OPTARG} ;;
+  -) case "${OPTARG}" in
+    help) usage && exit 0 ;;
+    debug) set -x ;;
+    version)
+      echo "$0 -- Version $ScriptVersion"
+      exit
+      ;;
+    file)
+      file=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    directory)
+      directory=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    ip)
+      ip=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    user)
+      user=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    passwd)
+      passwd=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    port)
+      passwd=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+    esac ;;
+  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+  esac
 done
-shift $((OPTIND-1))
+shift $((OPTIND - 1))
 
-if [ ! $1 ];then
+if [ ! $1 ]; then
   echo -e "\033[31m Need target file/directory \033[0m"
   exit
 fi
