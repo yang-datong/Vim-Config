@@ -20,6 +20,9 @@
 " Base Path{
 let $NVIM_FOLDER=expand('$HOME/.config/nvim')
 let $VIM_FOLDER=expand('$HOME/.vim')
+let $MYLUARC = $NVIM_FOLDER . '/yj.lua'
+let $LUA_LAZY = $NVIM_FOLDER . '/lua/lazy.lua'
+let $LUA_LAZY_PLUG = $NVIM_FOLDER . '/lua/plugins.lua'
 " }
 
 " Load funciton.vim {
@@ -391,6 +394,7 @@ nnoremap <silent> <F5> :call ToggleTheme()<CR>
 "                      3. 插件配置区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "" Plugins {
+"luafile $LUA_LAZY "暂时还替换不了，代码提示什么的会有一些报错，后面再看看
 if has("nvim")
   let s:vim_plug_dir=$NVIM_FOLDER . '/autoload'
 else
@@ -681,10 +685,10 @@ if &filetype == 'tex' || &filetype == 'plaintex'
 endif
 "======================================================================
 "TODO: 账号试用期过期了。
-"if &filetype != 'tex' && &filetype != 'plaintex'
+if &filetype != 'tex' && &filetype != 'plaintex'
   "Plug 'github/copilot.vim'
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
-"endif
+endif
 "======================================================================
 Plug 'nvim-treesitter/nvim-treesitter'
 "======================================================================
@@ -693,9 +697,7 @@ call plug#end()
 
 "" Load lua config file {
 if g:is_lua == 1
-  let $MYLUARC = $NVIM_FOLDER . '/yj.lua'
   luafile $MYLUARC
-
   if has("nvim") && g:is_nvim_notify == 1
     lua vim.notify = require("notify")
     "弹窗美化 :lua vim.notify("This is an error message", "error")
@@ -716,13 +718,13 @@ colorscheme seoul256
 " }
 
 " Unite Configure {
-call unite#filters#matcher_default#use(['matcher_fuzzy'])
-nnoremap <Leader>f :<C-u>Unite file_rec/neovim<CR>
-"nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
-"nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
-"nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
-" Start insert.
-call unite#custom#profile('default', 'context', { 'start_insert': 1 })
+"call unite#filters#matcher_default#use(['matcher_fuzzy'])
+"nnoremap <Leader>f :<C-u>Unite file_rec/neovim<CR>
+""nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
+""nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
+""nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
+"" Start insert.
+"call unite#custom#profile('default', 'context', { 'start_insert': 1 })
 " }
 
 if exists('s:install_plug')
@@ -787,6 +789,7 @@ endif
 :command Configfun :e $NVIM_FOLDER/function.vim
 if g:is_lua == 1
   :command ConfigLua :e $MYLUARC
+  :command ConfigLuaPlug :e $LUA_LAZY_PLUG
 endif
 " }
 

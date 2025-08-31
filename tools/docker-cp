@@ -13,7 +13,7 @@ user="/home/hi"
 
 case "$(uname)" in
   "Darwin") docker="docker";;
-  "Linux") docker="sudo docker";;
+  "Linux") docker="docker";;
   *)echo "Windows has not been tested for the time being";exit 1
 esac
 
@@ -92,22 +92,22 @@ usage (){
 
   }
 
-while getopts ":hdpvi:D:-:" opt; do
-  case "${opt}" in
-    h) usage && exit 0;;
-    d) set -x ;;
-    p) set -o posix ;;
-    v) echo "$0 -- Version $ScriptVersion"; exit ;;
-    -) case "${OPTARG}" in
-      help) usage && exit 0;;
-      debug)      set -x ;;
-      posix)      set -o posix ;;
-      version)    echo "$0 -- Version $ScriptVersion"; exit ;;
-      *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
-    esac;;
-  :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
-  *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
-esac
+  while getopts ":hdpvi:D:-:" opt; do
+    case "${opt}" in
+      h) usage && exit 0;;
+      d) set -x ;;
+      p) set -o posix ;;
+      v) echo "$0 -- Version $ScriptVersion"; exit ;;
+      -) case "${OPTARG}" in
+        help) usage && exit 0;;
+        debug)      set -x ;;
+        posix)      set -o posix ;;
+        version)    echo "$0 -- Version $ScriptVersion"; exit ;;
+        *)          echo "Invalid option: --${OPTARG}" >&2 && exit 1;;
+      esac;;
+    :) echo "Option -${OPTARG} requires an argument." >&2 && exit 1;;
+    *) echo "Invalid option: -${OPTARG}" >&2 && exit 1;;
+  esac
 done
 shift $((OPTIND-1))
 

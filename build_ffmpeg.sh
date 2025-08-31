@@ -239,6 +239,7 @@ confg_shared() {
 		if [ $hwaccel ]; then
 			args+=("${hwaccel}")
 		fi
+		args+=("--extra-ldflags=-Wl,-rpath=build/lib:${work_dir}/${x265_version}/build")
 	fi
 	./configure "${args[@]}"
 }
@@ -364,16 +365,16 @@ fetch_x265_lib() {
 
 make_clean(){
 	local lists=(
-		${work_dir}/${x264_version}
-		${work_dir}/${x265_version}/build
-		${work_dir}/${ff_version}
-	)
+	${work_dir}/${x264_version}
+	${work_dir}/${x265_version}/build
+	${work_dir}/${ff_version}
+)
 
-	for d in ${lists[@]};do
-		pushd $d
-		make clean
-		popd
-	done
+for d in ${lists[@]};do
+	pushd $d
+	make clean
+	popd
+done
 }
 
 usage() {

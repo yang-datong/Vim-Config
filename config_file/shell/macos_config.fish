@@ -12,7 +12,7 @@ set -x PATH $PATH $HOME/.local/bin/
 set -x SH_FOOT $HOME/sh_foot
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
 set -x JAVA_HOME /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-set -x ANDROID_NDK_ROOT $HOME/Library/Android/Sdk/ndk/25.1.8937393
+set -x ANDROID_NDK_ROOT $HOME/Library/Android/Sdk/ndk
 
 alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
