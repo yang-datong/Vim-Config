@@ -26,6 +26,8 @@ alias vim='nvim'
 alias gdb='gdb -q'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
+alias perf-record='perf record'
+alias perf-report='perf report'
 
 alias pip='pip3.10'
 alias pip3='pip3.10'
