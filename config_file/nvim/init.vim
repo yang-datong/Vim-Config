@@ -848,7 +848,7 @@ autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,
 au! BufNewFile,BufRead *.tpp set filetype=cpp
 "autocmd FileType c,cpp,tex,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
 "NOTE:关掉了latex的format，在实时编辑的时候太卡顿了
-autocmd FileType c,cpp,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
+autocmd FileType sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
 " }
 
 " Save mksession on vimleave {

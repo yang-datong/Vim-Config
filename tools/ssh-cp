@@ -57,13 +57,49 @@ init_input_info() {
 }
 
 scp_up() {
-  echo "upload file"
-  echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCBmaWxlIFtsaW5kZXggJGFyZ3YgMF0Kc2V0IGlwICAgW2xpbmRleCAkYXJndiAxXQpzZXQgbmFtZSBbbGluZGV4ICRhcmd2IDJdCnNldCBwc3dkIFtsaW5kZXggJGFyZ3YgM10Kc2V0IHBvcnQgW2xpbmRleCAkYXJndiA0XQoKc3Bhd24gc2NwIC1yIC1QICRwb3J0ICRmaWxlICRuYW1lQCRpcDouCmV4cGVjdCB7CiAgICAgICAgInBhc3N3b3JkOiIKICAgICAgICB7c2VuZCAiJHBzd2RcbiJ9Cgl9CmludGVyYWN0Cg==" | base64 -d >/tmp/scp_up.expect && expect /tmp/scp_up.expect $obj $ip $user $passwd $port
+  echo -e "\033[32mUpload File\033[0m"
+
+  cat <<EOF >/tmp/scp_up.expect
+#!/usr/bin/expect
+
+set file [lindex \$argv 0]
+set ip   [lindex \$argv 1]
+set name [lindex \$argv 2]
+set pswd [lindex \$argv 3]
+set port [lindex \$argv 4]
+
+spawn scp -r -P \$port \$file \$name@\$ip:.
+expect {
+        "password:"
+        {send "\$pswd\n"}
+	}
+interact
+EOF
+
+  expect /tmp/scp_up.expect $obj $ip $user $passwd $port
 }
 
 scp_down() {
-  echo "download file"
-  echo "IyEvdXNyL2Jpbi9leHBlY3QKCnNldCBmaWxlIFtsaW5kZXggJGFyZ3YgMF0Kc2V0IGlwICAgW2xpbmRleCAkYXJndiAxXQpzZXQgbmFtZSBbbGluZGV4ICRhcmd2IDJdCnNldCBwc3dkIFtsaW5kZXggJGFyZ3YgM10Kc2V0IHBvcnQgW2xpbmRleCAkYXJndiA0XQoKc3Bhd24gc2NwIC1yIC1QICRwb3J0ICRuYW1lQCRpcDokZmlsZSAuCmV4cGVjdCB7CiAgICAgICAgInBhc3N3b3JkOiIKICAgICAgICB7c2VuZCAiJHBzd2RcbiJ9Cgl9CmludGVyYWN0Cg==" | base64 -d >/tmp/scp_down.expect && expect /tmp/scp_down.expect $obj $ip $user $passwd $port
+  echo -e "\033[32mDownload File\033[0m"
+
+  cat <<EOF >/tmp/scp_down.expect
+#!/usr/bin/expect
+
+set file [lindex \$argv 0]
+set ip   [lindex \$argv 1]
+set name [lindex \$argv 2]
+set pswd [lindex \$argv 3]
+set port [lindex \$argv 4]
+
+spawn scp -r -P \$port \$name@\$ip:\$file .
+expect {
+        "password:"
+        {send "\$pswd\n"}
+	}
+interact
+EOF
+
+  expect /tmp/scp_down.expect $obj $ip $user $passwd $port
 }
 
 usage() {
