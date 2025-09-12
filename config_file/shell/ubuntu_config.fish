@@ -26,8 +26,6 @@ alias vim='nvim'
 alias gdb='gdb -q'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
-alias perf-record='perf record'
-alias perf-report='perf report'
 
 alias pip='pip3.10'
 alias pip3='pip3.10'
@@ -53,6 +51,10 @@ alias dock-show='gnome-extensions enable ubuntu-dock@ubuntu.com'
 alias ffmpeg-q="ffmpeg -loglevel quiet"
 alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
+
+# Perf
+alias perf-record="perf record"
+alias perf-report="perf report"
 
 # TODO?
 set-proxy

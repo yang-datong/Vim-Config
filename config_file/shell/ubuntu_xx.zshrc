@@ -51,6 +51,10 @@ alias ffmpeg-q="ffmpeg -loglevel quiet"
 alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
 
+# Perf
+alias perf-record="perf record"
+alias perf-report="perf report"
+
 # TODO?
 set-proxy
 
