@@ -29,6 +29,10 @@ alias reboot='sudo reboot'
 alias shutdown='sudo shutdown -h now'
 alias apt='sudo apt'
 
+# Perf
+alias perf-record="perf record"
+alias perf-report="perf report"
+
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
 alias diff='colordiff -w' #brew install colordiff
 alias clang='clang -std=c17 -Wall'

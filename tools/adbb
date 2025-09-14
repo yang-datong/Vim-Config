@@ -1,12 +1,22 @@
 #!/bin/bash
 
+path="/data/local/tmp"
+
 main() {
 	#adb shell "/data/local/tmp/.bash --version" || install_bash
-	person=$(root)
-	if [ ! $(adb shell 'id -u') == '0' ]; then #进入shell即为非root的情况
-		adb shell "$1" || person=$(user)          #再次检测su是否成功提权，否则为普通用户
-	fi
-	expect /tmp/into_adb_shell.expect
+	#person=$(root)
+	#person=$(user)
+	#if [ ! $(adb shell 'id -u') == '0' ]; then #进入shell即为非root的情况
+	#	adb shell "$1" || person=$(user)          #再次检测su是否成功提权，否则为普通用户
+	#fi
+
+	local user="$2"
+
+	if [ ! $user ]; then user="root"; fi
+
+	root
+
+	expect /tmp/into_adb_shell.expect $path $user
 }
 
 install_bash() {
@@ -27,18 +37,14 @@ install_bash() {
 	adb shell "chmod +x /data/local/tmp/.bash"
 }
 
-user() {
-	echo "TODO user!"
-	exit
-}
-
 root() {
 	cat <<EOF >/tmp/into_adb_shell.expect
 set timeout 2
-set path "/data/local/tmp"
+set path [lindex \$argv 0]
+set user [lindex \$argv 1]
 spawn adb shell
 
-expect "*$ " {send "su\n"}
+expect "*$ " {send "su \$user\n"}
 expect "*# " {send "\$path/.bash\n"}
 expect "*" {send "PS1='\$ '\n"}
 expect "*" {send "export HOME=\$path\n"}
@@ -47,10 +53,11 @@ expect "*" {send "alias ls='ls --color'\n"}
 expect "*" {send "alias ll='ls -lFh --color'\n"}
 expect "*" {send "alias du='du -sh'\n"}
 expect "*" {send "cd&&./termux.sh\n"}
+expect "*" {send "if \[ ! -x '\$\(command -v zh\)' \];then zsh; fi\n"}
 expect "*" {send "cd&&cl&&pwd\n"}
 
 interact
 EOF
 }
 
-main "su -c 'id'"
+main "su -c 'id'" $1
