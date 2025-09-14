@@ -762,7 +762,7 @@ nnoremap <C-G> :GDB<CR>
 "}
 
 " Back to <gf> window buffers {
-nnoremap gF <C-o>
+"nnoremap gF <C-o>
 " }
 
 " Latex fast open Inkscape {
@@ -852,9 +852,9 @@ autocmd FileType sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
 " }
 
 " Save mksession on vimleave {
-if g:is_vim_studio == 1
-  autocmd VimLeave * mksession!
-endif
+"if g:is_vim_studio == 1
+  "autocmd VimLeave * mksession!
+"endif
 "}
 
 " Mathematics file {
