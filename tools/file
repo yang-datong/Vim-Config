@@ -3,7 +3,7 @@
 set -e
 
 if [ $1 ]; then
-    echo ${PWD}/$(basename $1)
+    echo ${PWD}/$1
 fi
 
 /usr/bin/file $@
