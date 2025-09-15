@@ -7,6 +7,7 @@ unset ip
 unset user
 unset passwd
 unset port
+unset is_sftp
 
 main() {
   init_input_info
@@ -19,12 +20,14 @@ main() {
 #!/usr/bin/expect
 set timeout 30
 
-set ip  [lindex \$argv 0]
-set name  [lindex \$argv 1]
-set pswd  [lindex \$argv 2]
+set ip   [lindex \$argv 0]
+set name [lindex \$argv 1]
+set pswd [lindex \$argv 2]
 set port [lindex \$argv 3]
+set ssh  [lindex \$argv 4]
+set ssh_port_cmd  [lindex \$argv 5]
 
-spawn ssh -p \$port \$name@\$ip
+spawn \$ssh \$ssh_port_cmd \$port \$name@\$ip
 expect {
         "Are you sure you want to continue connecting*"
         {send "yes\n";exp_continue}
@@ -33,7 +36,12 @@ expect {
 }
 interact
 EOF
-  expect /tmp/load_ssh.expect $ip $user $passwd $port
+  # cmd -> ssh | sftp
+  if [ $is_sftp ]; then
+    expect /tmp/load_ssh.expect $ip $user $passwd $port sftp -P
+  else
+    expect /tmp/load_ssh.expect $ip $user $passwd $port ssh -p
+  fi
 }
 
 init_input_info() {
@@ -130,6 +138,10 @@ while getopts ":hdvf:D:si:u:p:P:-:" opt; do
       ;;
     passwd)
       passwd=${!OPTIND}
+      OPTIND=$((OPTIND + 1))
+      ;;
+    sftp)
+      is_sftp=1
       OPTIND=$((OPTIND + 1))
       ;;
     *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
