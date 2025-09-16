@@ -608,14 +608,15 @@ let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize=30
-nnoremap <silent> <Leader>f :NERDTreeFind<CR>
+nnoremap <silent> <Leader>F :NERDTreeFind<CR> "光标定位到目录的当前编辑文件
+nnoremap <silent> <Leader>f :NERDTreeFind <Bar> wincmd p<CR> "同上，但光标马上移动回来
 noremap <F1> :NERDTreeToggle<CR>
 " Close NERDTree if no other window open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" if g:is_vim_studio == 1
-"   autocmd VimEnter * nested :NERDTreeToggle
-"   autocmd VimEnter * NERDTree | wincmd p
-" endif
+ if g:is_vim_studio == 1
+   autocmd VimEnter * nested :NERDTreeToggle
+   autocmd VimEnter * NERDTree | wincmd p
+ endif
 " }
 "======================================================================
 Plug 'preservim/nerdcommenter'  "注释插件（'n' 为正常模式下的触发，'x'为选中默认下的触发）
@@ -912,7 +913,8 @@ source $NVIM_FOLDER/unite_extension.vim
 call CheckISLargeFile(3000000)
 
 
-" if g:is_vim_studio == 1
-"   autocmd VimEnter * nested :NERDTreeFind
-"   autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
-" endif
+if g:is_vim_studio == 1
+  autocmd VimEnter * nested :NERDTreeFind
+  autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
+  highlight CursorLine guibg=#3A3A3A gui=NONE ctermbg=237 cterm=NONE
+endif
