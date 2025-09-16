@@ -768,6 +768,24 @@ snip.rv = s
 `
 endsnippet
 
+priority 1000
+context "function()"
+snippet '(cout|printf|printk|avlog|av_log|pf|pk)\.\((.*)\)' "cout << info: << info << endl" r
+`!p 
+t = match.group(1)
+s = match.group(2)
+if t == "cout":
+	s = f"std::cout << \"{s}:\" << {s} << std::endl;"
+elif t == "pf" or t == "printf":
+	s = f"printf(\"{s}:%d\\n\", {s});"
+elif t == "pk" or t == "printk":
+	s = f"printk(DEBUG \"{s}:%d\\n\", {s});"
+elif t == "avlog" or t == "av_log":
+	s = f"av_log(NULL, AV_LOG_INFO, \"{s}:%d\\n\", {s});"
+snip.rv = s
+`
+endsnippet
+
 priority 1001
 context "function()"
 snippet '(\w+)\.(cout|printf|printk|avlog|av_log|pf|pk)' "cout << info: << info << endl" r

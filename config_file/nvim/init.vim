@@ -599,7 +599,7 @@ endif
 "======================================================================
 Plug 'scrooloose/nerdtree'
 " NERDTree {
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite,.git
+"set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite,.git
 let g:NERDTreeChDirMode=2
 let NERDTreeShowHidden=1
 let g:NERDTreeIgnore=['.out$','.cmake$','.vim$','.git','CMakeCache.txt','CMakeFiles','__pycache__']
@@ -608,13 +608,14 @@ let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize=30
-"nnoremap <silent> <Leader>l :NERDTreeFind<CR>
+nnoremap <silent> <Leader>f :NERDTreeFind<CR>
 noremap <F1> :NERDTreeToggle<CR>
 " Close NERDTree if no other window open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-if g:is_vim_studio == 1
-  autocmd VimEnter * nested :NERDTreeToggle
-endif
+" if g:is_vim_studio == 1
+"   autocmd VimEnter * nested :NERDTreeToggle
+"   autocmd VimEnter * NERDTree | wincmd p
+" endif
 " }
 "======================================================================
 Plug 'preservim/nerdcommenter'  "注释插件（'n' 为正常模式下的触发，'x'为选中默认下的触发）
@@ -686,7 +687,7 @@ endif
 "======================================================================
 "TODO: 账号试用期过期了。
 if &filetype != 'tex' && &filetype != 'plaintex'
-  "Plug 'github/copilot.vim'
+  Plug 'github/copilot.vim'
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
 endif
 "======================================================================
@@ -911,7 +912,7 @@ source $NVIM_FOLDER/unite_extension.vim
 call CheckISLargeFile(3000000)
 
 
-if g:is_vim_studio == 1
-  "autocmd VimEnter * echo "Total windows: " . winnr('$') . ", Current window: " . winnr()  
-  autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
-endif
+" if g:is_vim_studio == 1
+"   autocmd VimEnter * nested :NERDTreeFind
+"   autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
+" endif
