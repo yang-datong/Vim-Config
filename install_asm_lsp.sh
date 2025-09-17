@@ -19,7 +19,9 @@ tar -zxvf asm_lsp.tar.gz
 
 mv asm-lsp ~/.local/bin/asm-lsp
 
-cat <<EOF >$HOME/.config/asm-lsp/asm-lsp.toml
+if [ ! -d $HOME/.config/asm-lsp ]; then mkdir $HOME/.config/asm-lsp; fi
+
+cat <<EOF >$HOME/.config/asm-lsp/.asm-lsp.toml
 [default_config]
 version = "0.10.0"
 assembler = "gas"
@@ -29,3 +31,5 @@ instruction_set = "arm64"
 diagnostics = true
 default_diagnostics = true
 EOF
+
+if [ -f asm_lsp.tar.gz ]; then rm asm_lsp.tar.gz; fi
