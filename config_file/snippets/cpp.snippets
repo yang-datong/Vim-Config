@@ -146,6 +146,16 @@ endsnippet
 
 #-------------------- 3. Function Env ---------------
 context "function()"
+snippet '(un)?likely' "unlikely" wr
+__builtin_expect(${VISUAL:a = b}, `!p 
+if match.group(1):
+	snip.rv = "0"
+else:
+	snip.rv = "1"
+`)
+endsnippet
+
+context "function()"
 snippet '(int|char|size_t|uint8_t)\[\]=' "varible[]" r
 `!p snip.rv = match.group(1)` ${1:name}[] = {0};
 $0
