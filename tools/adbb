@@ -1,6 +1,8 @@
 #!/bin/bash
 
 path="/data/local/tmp"
+#path="/sdcard"
+#path="/data/data/com.termux/files/home"
 
 main() {
 	#adb shell "/data/local/tmp/.bash --version" || install_bash
@@ -53,7 +55,7 @@ expect "*" {send "alias ls='ls --color'\n"}
 expect "*" {send "alias ll='ls -lFh --color'\n"}
 expect "*" {send "alias du='du -sh'\n"}
 expect "*" {send "cd&&./termux.sh\n"}
-expect "*" {send "if \[ ! -x '\$\(command -v zh\)' \];then zsh; fi\n"}
+expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
 expect "*" {send "cd&&cl&&pwd\n"}
 
 interact
