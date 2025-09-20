@@ -11,6 +11,7 @@ main() {
 		replace_symbols_link "$HOME/.bashrc" "$SH_FOOT/config_file/shell/ubuntu_xx.bashrc"
 		replace_symbols_link "$HOME/.zshrc" "$SH_FOOT/config_file/shell/ubuntu_xx.zshrc"
 	fi
+	replace_symbols_link "$HOME/.common_aliases.sh" "$SH_FOOT/config_file/shell/xx.common_aliases.sh"
 
 	if [ -f /.dockerenv ]; then
 		replace_symbols_link "$HOME/.config/fish/functions/fish_prompt.fish" "$SH_FOOT/config_file/shell/fish_prompt_docker.fish"

@@ -14,30 +14,5 @@ export PATH=$PATH:$HOME/.local/bin/
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
 
-alias mkdir='mkdir -p'
-alias phone='echo 15886670991'
-alias huya="echo '15886670991, qweasdzxc123'"
-
-alias ls='ls --color'
-alias cl='clear'
-alias rm-rf='rm -rf'
-alias du='du -sh'
-alias vim='nvim'
-alias pping="httping -x 127.0.0.1:7890"
-
-alias reboot='sudo reboot'
-alias shutdown='sudo shutdown -h now'
-alias apt='sudo apt'
-
-# Perf
-alias perf-record="perf record"
-alias perf-report="perf report"
-
-alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
-alias diff='colordiff -w' #brew install colordiff
-alias clang='clang -std=c17 -Wall'
-alias clang++='clang++ -std=c++14 -Wall'
-alias gcc='gcc -std=c17 -Wall'
-alias g++='g++ -std=c++14 -Wall'
-alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890'
-alias dis-proxy='export https_proxy= http_proxy= all_proxy='
+#Aliases
+source $HOME/.common_aliases.sh
