@@ -169,13 +169,11 @@ require'marks'.setup {
 --============================== nvim-Treesitter ===============================
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all" (the listed parsers MUST always be installed)
-  --ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "asm", "nasm" },
-  ensure_installed = { "asm", "nasm" },
+  ensure_installed = { "bash", "c", "cpp", "python", "lua", "vim", "latex", "asm", "nasm", "yaml", "json", },
   sync_install = false,
   auto_install = true,
   highlight = {
     enable = true,
-    --disable = { "c","cpp", "rust" },
     disable = function(lang, buf)
         local max_filesize = 100 * 1024 -- 100 KB
         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))

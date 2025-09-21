@@ -406,8 +406,9 @@ func ToggleTheme()
     colorscheme seoul256
     let g:current_theme = 'light'
   else
-    set background=light
-    colorscheme oxocarbon
+    "set background=light
+    "colorscheme oxocarbon
+    colorscheme vscode
     let g:current_theme = 'dark'
   endif
 endfunc
