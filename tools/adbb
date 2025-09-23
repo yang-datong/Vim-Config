@@ -13,10 +13,12 @@ main() {
 	#fi
 
 	local user="$2"
-
-	if [ ! $user ]; then user="root"; fi
-
-	root
+	is_root=$(adb shell "ls /system/bin/su")
+	if [ $is_root == "/system/bin/su" ]; then
+		root
+	else
+		user
+	fi
 
 	expect /tmp/into_adb_shell.expect $path $user
 }
@@ -39,6 +41,28 @@ install_bash() {
 	adb shell "chmod +x /data/local/tmp/.bash"
 }
 
+user() {
+	cat <<EOF >/tmp/into_adb_shell.expect
+set timeout 2
+set path [lindex \$argv 0]
+set user [lindex \$argv 1]
+spawn adb shell
+
+expect "*$ " {send "run-as com.termux files/usr/bin/bash -li\n"}
+#expect "*" {send "PS1='\$ '\n"}
+expect "*" {send "export HOME=\$path\n"}
+expect "*" {send "alias cl=clear\n"}
+expect "*" {send "alias ls='ls --color'\n"}
+expect "*" {send "alias ll='ls -lFh --color'\n"}
+expect "*" {send "alias du='du -sh'\n"}
+expect "*" {send "source ./termux.sh\n"}
+expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
+expect "*" {send "cd&&cl&&pwd\n"}
+
+interact
+EOF
+}
+
 root() {
 	cat <<EOF >/tmp/into_adb_shell.expect
 set timeout 2
@@ -55,6 +79,23 @@ expect "*" {send "alias ls='ls --color'\n"}
 expect "*" {send "alias ll='ls -lFh --color'\n"}
 expect "*" {send "alias du='du -sh'\n"}
 expect "*" {send "cd&&./termux.sh\n"}
+
+expect "*" {send "export SHELL='/data/data/com.termux/files/usr/bin/bash'\n"}
+expect "*" {send "export PREFIX='/data/data/com.termux/files/usr'\n"}
+expect "*" {send "export PWD='/data/data/com.termux/files/home'\n"}
+expect "*" {send "export EXTERNAL_STORAGE='/sdcard'\n"}
+expect "*" {send "export LD_PRELOAD='/data/data/com.termux/files/usr/lib/libtermux-exec.so'\n"}
+expect "*" {send "export HOME='/data/data/com.termux/files/home'\n"}
+expect "*" {send "export LANG='en_US.UTF-8'\n"}
+expect "*" {send "export TMPDIR='/data/data/com.termux/files/usr/tmp'\n"}
+expect "*" {send "export ANDROID_DATA='/data'\n"}
+expect "*" {send "export TERM='xterm-256color'\n"}
+expect "*" {send "export SHLVL='1'\n"}
+expect "*" {send "export ANDROID_ROOT='/system'\n"}
+expect "*" {send "export LD_LIBRARY_PATH='/data/data/com.termux/files/usr/lib'\n"}
+expect "*" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets'\n"}
+expect "*" {send "export _='/data/data/com.termux/files/usr/bin/env'\n"}
+
 expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
 expect "*" {send "cd&&cl&&pwd\n"}
 
