@@ -23,13 +23,19 @@ plugins=(git zsh-autosuggestions zsh-syntax-highlighting autojump )
 
 source $ZSH/oh-my-zsh.sh
 
-# Customize zsh-syntax-highlighting colors
-ZSH_HIGHLIGHT_STYLES[command]='fg=111'          # Command (e.g., ls, pwd)
-ZSH_HIGHLIGHT_STYLES[builtin]='fg=111'          # Built-in commands
-ZSH_HIGHLIGHT_STYLES[alias]='fg=111'            # Aliases
-ZSH_HIGHLIGHT_STYLES[path]='fg=150'             # Paths
-ZSH_HIGHLIGHT_STYLES[precommand]='fg=114'       # Pre-commands (e.g., sudo)
-ZSH_HIGHLIGHT_STYLES[argument]='fg=150'         # Arguments
-ZSH_HIGHLIGHT_STYLES[redirection]='fg=216'      # Redirection (e.g., >, <)
-ZSH_HIGHLIGHT_STYLES[comment]='fg=240'          # Comments
-ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=203'    # Unknown commands
+ZSH_HIGHLIGHT_STYLES['command']='fg=#88c0d0'
+ZSH_HIGHLIGHT_STYLES['parameter']='fg=#d8dee9'
+ZSH_HIGHLIGHT_STYLES['arg0']='fg=#88c0d0' 
+ZSH_HIGHLIGHT_STYLES['single-quoted-argument']='fg=#a3be8c'
+ZSH_HIGHLIGHT_STYLES['double-quoted-argument']='fg=#a3be8c'
+ZSH_HIGHLIGHT_STYLES['redirection']='fg=#b48ead,bold'
+ZSH_HIGHLIGHT_STYLES['comment']='fg=#4c566a,italic'
+ZSH_HIGHLIGHT_STYLES['unknown-token']='fg=#bf616a,bold'
+ZSH_HIGHLIGHT_STYLES['path']='fg=#d8dee9'
+ZSH_HIGHLIGHT_STYLES['path_prefix']='fg=#d8dee9'
+ZSH_HIGHLIGHT_STYLES['option']='fg=#8fbcbb'
+ZSH_HIGHLIGHT_STYLES['default']='default'
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#4c566a'
+zstyle ':completion:*:*:*:*:*' menu select='bg=#434c5e'
+export LSCOLORS="exfxcxdxbxegedabagacad"
+export LS_COLORS="rs=0:di=38;5;33:ln=38;5;38:mh=00:pi=40;38;5;226:so=38;5;13:do=38;5;5:bd=40;38;5;226:cd=40;38;5;226:or=40;38;5;221:mi=00:su=38;5;1:sg=38;5;16:ca=38;5;9:tw=40;38;5;222:ow=38;5;34:st=40;38;5;13:ex=38;5;121:"
