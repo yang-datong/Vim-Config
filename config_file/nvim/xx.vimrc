@@ -61,24 +61,21 @@ source $NVIM_FOLDER/function.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:minimun_use=0
 " Whether to enable plug-in(0->off | 1->on){
-let g:is_latex=1  "Latex
-let g:is_markdown=1  "Markdown
-let g:is_lua=1  "Lua config
-if !has("nvim")
-let g:is_lua=0
-endif
+let g:is_latex=0  "Latex
+let g:is_markdown=0  "Markdown
+let g:is_lua=0  "Lua config
 " }
 
 " Whether to enable plug-in(0->off | 1->on){
 let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传入参数
 let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式(已添加到脚本vimm中，不需要手动调整）
 let g:is_Android_jni=0 "1：将添加Android-JNI头文件到path中，0：不添加
-let g:is_inscape=1 "1：开启inkscape使用，0：不开启
-let g:is_ask=1 "1：开启环境依赖安装询问
+let g:is_inscape=0 "1：开启inkscape使用，0：不开启
+let g:is_ask=0 "1：开启环境依赖安装询问
 " }
 
 " Compatibility {
-let g:is_nvim_notify=1
+let g:is_nvim_notify=0
 let g:is_coc_vim=1
 " }
 
@@ -691,7 +688,7 @@ endif
 "======================================================================
 "TODO: 账号试用期过期了。
 if &filetype != 'tex' && &filetype != 'plaintex'
-  Plug 'github/copilot.vim'
+  "Plug 'github/copilot.vim'
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
 endif
 "======================================================================
