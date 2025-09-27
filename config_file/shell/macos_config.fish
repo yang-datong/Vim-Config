@@ -16,6 +16,10 @@ set -x ANDROID_NDK_ROOT $HOME/Library/Android/Sdk/ndk
 
 #Aliases
 source $HOME/.common_aliases.sh
+alias cat='bat -p'
+alias gdb='lldb'
+alias ldd='otool -L'
+alias ida='/Applications/IDA\ Professional\ 9.0.app/Contents/MacOS/ida'
 
 set-proxy
 

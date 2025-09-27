@@ -1,6 +1,5 @@
 #!/bin/bash
 
-alias mkdir='mkdir -p'
 alias phone='echo 15886670991'
 alias huya="echo '15886670991, qweasdzxc123'"
 
@@ -8,13 +7,10 @@ alias cl='clear'
 alias rm='trash'
 alias rm-rf='rm -rf'
 alias du='du -sh'
-alias cat='bat -p'
 alias vim='nvim'
-alias gdb='lldb'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
-alias ldd='otool -L'
-alias ida='/Applications/IDA\ Professional\ 9.0.app/Contents/MacOS/ida'
+alias mkdir='mkdir -p'
 
 alias pip='pip3.10'
 alias pip3='pip3.10'

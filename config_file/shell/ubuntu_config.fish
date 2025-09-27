@@ -14,6 +14,8 @@ set -x ANDROID_NDK_ROOT $HOME/Android/Sdk/ndk/25.1.8937393
 
 #Aliases
 source $HOME/.common_aliases.sh
+alias cat='batcat -p'
+alias apt='sudo apt'
 
 set-proxy
 
