@@ -90,6 +90,47 @@ endfunc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  4. 自定义命令、按键区域                          "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 高亮具有相同编号的相关寄存器的函数 {
+func! HighlightSimilarRegisters()
+  " 如果之前有高亮，先清除掉 (使用 w: 变量使其仅对当前窗口有效)
+  if exists('w:similar_reg_match_id')
+    silent! call matchdelete(w:similar_reg_match_id)
+    unlet w:similar_reg_match_id
+  endif
+
+  " 保存当前的寄存器 "a" 的内容
+  let l:save_a = getreg('a')
+  let l:save_a_type = getregtype('a')
+
+  " 在 Visual 模式下，将选中的文本复制到寄存器 "a" 中
+  normal! gv"ay
+
+  " 获取选中的文本
+  let l:selected_text = getreg('a')
+
+  " 恢复寄存器 "a" 的内容
+  call setreg('a', l:save_a, l:save_a_type)
+
+  " 正则表达式，检查选中的文本是否为 w, x, q, s, v 中的一个字母开头，后跟数字
+  " ^...$ 确保完全匹配选中的内容
+  if l:selected_text =~# '^\v[wxqdsv]\d+$'
+    " 从选中的文本中提取数字部分
+    " 例如，从 "w12" 中提取出 "12"
+    let l:number = substitute(l:selected_text, '^\v[wxqsv]', '', '')
+
+    " 构建用于高亮的正则表达式
+    " \v<...> 表示匹配独立的单词
+    " [wxqsv] 匹配这五个字母中的任意一个
+    " l:number 是我们刚刚提取出来的数字
+    let l:highlight_pattern = '\v<[wxqsv]' . l:number . '>'
+
+    " 添加新的高亮，并将其 ID 保存到窗口变量中
+    let w:similar_reg_match_id = matchadd('SimilarRegsHighlight', l:highlight_pattern)
+  endif
+endfunc
+" }
+
+
 " Hex model edit{
 function! ToggleHexMode()
   " 对于非文本类型的文件&filetype会为空，则开启转换十六进制模式

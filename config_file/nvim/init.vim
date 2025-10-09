@@ -921,3 +921,8 @@ if g:is_vim_studio == 1
   autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
   highlight CursorLine guibg=#3A3A3A gui=NONE ctermbg=237 cterm=NONE
 endif
+
+" 在 Visual 模式下创建映射，按下 <C-h> (Ctrl+h) 时调用函数 {
+highlight SimilarRegsHighlight ctermbg=DarkCyan guibg=DarkCyan ctermfg=white guifg=white
+vnoremap <C-h> <Cmd>call HighlightSimilarRegisters()<CR>
+" }
