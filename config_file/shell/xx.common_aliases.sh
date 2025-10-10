@@ -30,6 +30,7 @@ alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.
 alias dis-proxy='export https_proxy= http_proxy= all_proxy='
 
 # ffmpeg
+alias ffmpeg="ffmpeg -hide_banner"
 alias ffmpeg-q="ffmpeg -loglevel quiet"
 alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"

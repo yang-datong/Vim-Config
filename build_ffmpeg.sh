@@ -363,18 +363,18 @@ fetch_x265_lib() {
 	popd
 }
 
-make_clean(){
+make_clean() {
 	local lists=(
-	${work_dir}/${x264_version}
-	${work_dir}/${x265_version}/build
-	${work_dir}/${ff_version}
-)
+		${work_dir}/${x264_version}
+		${work_dir}/${x265_version}/build
+		${work_dir}/${ff_version}
+	)
 
-for d in ${lists[@]};do
-	pushd $d
-	make clean
-	popd
-done
+	for d in ${lists[@]}; do
+		pushd $d
+		make clean
+		popd
+	done
 }
 
 usage() {
@@ -396,60 +396,60 @@ usage() {
 
 while getopts ":hdpvf:D:-:" opt; do
 	case "${opt}" in
-		h) usage && exit 0 ;;
-		d) set -x ;;
-		p) set -o posix ;;
-		v)
+	h) usage && exit 0 ;;
+	d) set -x ;;
+	p) set -o posix ;;
+	v)
+		echo "$0 -- Version $ScriptVersion"
+		exit
+		;;
+	f) file=${OPTARG} ;;
+	D) directory=${OPTARG} ;;
+	-) case "${OPTARG}" in
+		help) usage && exit 0 ;;
+		debug) set -x ;;
+		posix) set -o posix ;;
+		version)
 			echo "$0 -- Version $ScriptVersion"
 			exit
 			;;
-		f) file=${OPTARG} ;;
-		D) directory=${OPTARG} ;;
-		-) case "${OPTARG}" in
-			help) usage && exit 0 ;;
-			debug) set -x ;;
-			posix) set -o posix ;;
-			version)
-				echo "$0 -- Version $ScriptVersion"
-				exit
-				;;
-			file)
-				file=${!OPTIND}
-				OPTIND=$((OPTIND + 1))
-				;;
-			directory)
-				directory=${!OPTIND}
-				OPTIND=$((OPTIND + 1))
-				;;
-			static)
-				static=1
-				shared=0
-				;;
-			shared)
-				shared=1
-				static=0
-				;;
-			build_ffmpeg)
-				build_ff
-				exit
-				;;
-			build_x264)
-				fetch_x264_lib shared
-				exit
-				;;
-			build_x265)
-				fetch_x265_lib shared
-				exit
-				;;
-			clean)
-				make_clean
-				exit
-				;;
-			*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+		file)
+			file=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		directory)
+			directory=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		static)
+			static=1
+			shared=0
+			;;
+		shared)
+			shared=1
+			static=0
+			;;
+		build_ffmpeg)
+			build_ff
+			exit
+			;;
+		build_x264)
+			fetch_x264_lib shared
+			exit
+			;;
+		build_x265)
+			fetch_x265_lib shared
+			exit
+			;;
+		clean)
+			make_clean
+			exit
+			;;
+		*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
 		esac ;;
 	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
 	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
-esac
+	esac
 done
 shift $((OPTIND - 1))
 
