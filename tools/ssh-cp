@@ -70,7 +70,7 @@ set port [lindex \$argv 4]
 
 spawn scp -r -P \$port \$file \$name@\$ip:.
 expect {
-        "password:"
+        "assword:"
         {send "\$pswd\n"}
 	}
 interact
@@ -93,7 +93,7 @@ set port [lindex \$argv 4]
 
 spawn scp -r -P \$port \$name@\$ip:\$file .
 expect {
-        "password:"
+        "assword:"
         {send "\$pswd\n"}
 	}
 interact

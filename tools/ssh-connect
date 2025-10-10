@@ -31,7 +31,7 @@ spawn \$ssh \$ssh_port_cmd \$port \$name@\$ip
 expect {
         "Are you sure you want to continue connecting*"
         {send "yes\n";exp_continue}
-        "password:"
+        "assword:"
         {send "\$pswd\n"}
 }
 interact
