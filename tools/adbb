@@ -153,4 +153,5 @@ interact
 EOF
 }
 
+adb shell 'ls /data/local/tmp/.bash' || install_bash
 main $@
