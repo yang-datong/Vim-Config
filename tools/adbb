@@ -72,7 +72,7 @@ expect "*" {send "export _='/data/data/com.termux/files/usr/bin/env'\n"}
 
 
 
-expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
+#expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
 expect "*" {send "cd&&cl&&pwd\n"}
 
 interact
