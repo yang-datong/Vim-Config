@@ -8,12 +8,11 @@ main() {
 	local user="$1"
 	if [ ! $user ]; then
 		is_root=$(adb shell "ls /system/bin/su")
-		if [ $is_root == "/system/bin/su" ]; then root; else user; fi
-	elif [ $user == "root" ]; then
-		#root
-		root1
+		if [[ $is_root == "/system/bin/su" ]]; then root; else user; fi
+	elif [[ $user == "root" ]]; then
+		root
 	else
-		user
+		termux
 	fi
 
 	expect /tmp/into_adb_shell.expect $path $user
@@ -37,7 +36,7 @@ install_bash() {
 	adb shell "chmod +x /data/local/tmp/.bash"
 }
 
-user() {
+termux() {
 	cat <<EOF >/tmp/into_adb_shell.expect
 set timeout 2
 set path [lindex \$argv 0]
@@ -61,6 +60,7 @@ expect "*" {send "export LD_PRELOAD='/data/data/com.termux/files/usr/lib/libterm
 expect "*" {send "export HOME='/data/data/com.termux/files/home'\n"}
 expect "*" {send "export LANG='en_US.UTF-8'\n"}
 expect "*" {send "export TMPDIR='/data/data/com.termux/files/usr/tmp'\n"}
+expect "*" {send "export TMP='/data/local/tmp'\n"}
 expect "*" {send "export ANDROID_DATA='/data'\n"}
 expect "*" {send "export TERM='xterm-256color'\n"}
 expect "*" {send "export SHLVL='1'\n"}
@@ -103,6 +103,7 @@ expect "*" {send "export LD_PRELOAD='/data/data/com.termux/files/usr/lib/libterm
 expect "*" {send "export HOME='/data/data/com.termux/files/home'\n"}
 expect "*" {send "export LANG='en_US.UTF-8'\n"}
 expect "*" {send "export TMPDIR='/data/data/com.termux/files/usr/tmp'\n"}
+expect "*" {send "export TMP='/data/local/tmp'\n"}
 expect "*" {send "export ANDROID_DATA='/data'\n"}
 expect "*" {send "export TERM='xterm-256color'\n"}
 expect "*" {send "export SHLVL='1'\n"}
@@ -117,35 +118,31 @@ interact
 EOF
 }
 
-root1() {
+user() {
 	cat <<EOF >/tmp/into_adb_shell.expect
 set timeout 2
 set path [lindex \$argv 0]
 set user [lindex \$argv 1]
 spawn adb shell
 
-expect "*$ " {send "\$path/.bash\n"}
-expect "*" {send "PS1='\$ '\n"}
-expect "*" {send "export HOME=\$path\n"}
-expect "*" {send "alias cl=clear\n"}
-expect "*" {send "alias ls='ls --color'\n"}
-expect "*" {send "alias ll='ls -lFh --color'\n"}
-expect "*" {send "alias du='du -sh'\n"}
+expect "$ " {send "\$path/.bash\n"}
+#expect "$ " {send "PS1='\$ '\n"}
+expect "$ " {send "PS1='\\\033\[1;37m\$ \\\033\[0m'\n"}
+expect "$" {send "export HOME=\$path\n"}
+expect "$" {send "alias cl=clear\n"}
+expect "$" {send "alias ls='ls --color'\n"}
+expect "$" {send "alias ll='ls -lFh --color'\n"}
+expect "$" {send "alias du='du -sh'\n"}
+expect "$" {send "alias mkdir='mkdir -p'\n"}
 
-expect "*" {send "export SHELL='/data/data/com.termux/files/usr/bin/bash'\n"}
-expect "*" {send "export PREFIX='/data/data/com.termux/files/usr'\n"}
-expect "*" {send "export PWD='/data/data/com.termux/files/home'\n"}
-expect "*" {send "export EXTERNAL_STORAGE='/sdcard'\n"}
-#expect "*" {send "export LD_PRELOAD='/data/data/com.termux/files/usr/lib/libtermux-exec.so'\n"}
-#expect "*" {send "export HOME='/data/data/com.termux/files/home'\n"}
-expect "*" {send "export LANG='en_US.UTF-8'\n"}
-expect "*" {send "export TMPDIR='/data/data/com.termux/files/usr/tmp'\n"}
-expect "*" {send "export ANDROID_DATA='/data'\n"}
-expect "*" {send "export TERM='xterm-256color'\n"}
-expect "*" {send "export SHLVL='1'\n"}
-expect "*" {send "export ANDROID_ROOT='/system'\n"}
-expect "*" {send "export LD_LIBRARY_PATH='/data/data/com.termux/files/usr/lib'\n"}
-expect "*" {send "export PATH=\"/product/bin:/apex/com.android.runtime/bin:/apex/com.android.art/bin:/system_ext/bin:/system/bin:/system/xbin:/odm/bin:/vendor/bin:/vendor/xbin:/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets\"\n"}
+expect "$" {send "export SHELL='\$path/.bash'\n"}
+expect "$" {send "export PWD='\$path'\n"}
+expect "$" {send "export EXTERNAL_STORAGE='/sdcard'\n"}
+expect "$" {send "export LANG='en_US.UTF-8'\n"}
+expect "$" {send "export TMP='/data/local/tmp'\n"}
+expect "$" {send "export TERM='xterm-256color'\n"}
+expect "$" {send "export SHLVL='1'\n"}
+expect "$" {send "export ANDROID_ROOT='/system'\n"}
 
 expect "*" {send "cd&&cl&&pwd\n"}
 
@@ -153,5 +150,6 @@ interact
 EOF
 }
 
+adb devices
 adb shell 'ls /data/local/tmp/.bash' || install_bash
 main $@

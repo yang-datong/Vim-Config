@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ ! $@ ]; then exit; fi
+
+adb shell "HOME=/data/local/tmp && cd \$HOME && $@"
