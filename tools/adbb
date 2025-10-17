@@ -150,6 +150,7 @@ interact
 EOF
 }
 
-adb devices
+adb get-state
+if [ $? != 0 ]; then exit 1; fi
 adb shell 'ls /data/local/tmp/.bash' || install_bash
 main $@
