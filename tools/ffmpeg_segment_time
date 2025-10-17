@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 file="$1"
 
@@ -9,17 +9,31 @@ if [ ! $file ]; then
 	exit
 fi
 
+if [[ $file =~ ".yuv" ]]; then
+	video_size="$2"
+	pixel_format="$3"
+fi
+
+if [ ! $video_size ]; then video_size="1920x1080"; fi
+if [ ! $pixel_format ]; then pixel_format="yuv420p"; fi
+if [[ $file =~ ".yuv" ]]; then
+	echo "use video_size:$video_size, pixel_format:$pixel_format, ok?[Y/n]"
+	read okay
+	if [[ $okay == "n" ]]; then exit; fi
+fi
+
 ab_file="$file"
 file=$(basename "$file")
 
-file_name=${file%.*}
+#file_name=${file%.*}
+file_name=${file}
+out_file=YUV_${video_size}_${file_name}/frames%d.yuv
 
-out_file=YUV-${file_name}/frames%d.yuv
+if [ ! -d YUV_${video_size}_${file_name} ]; then mkdir YUV_${video_size}_${file_name}; fi
 
-if [ ! -d YUV-${file_name} ]; then
-	mkdir YUV-${file_name}
-fi
-
-ffmpeg -i "$ab_file" -f segment -segment_time 0.01 $out_file
+# -segment_time 0.001:设置每个段的时长为 0.001 秒。只要这个时间小于一帧的实际时长（即 $1 / \text{帧率}$），FFmpeg 就会确保每个输出文件只包含一帧。
+# -reset_timestamps 1: 重置每个段的时间戳，确保从 0 开始
+ffmpeg -f rawvideo -video_size ${video_size} -pixel_format ${pixel_format} -i "$ab_file" \
+	-c:v copy -f segment -segment_time 0.001 -reset_timestamps 1 $out_file
 
 echo -e "\033[32mOut file to -> $out_file\033[0m"
