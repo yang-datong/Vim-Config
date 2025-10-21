@@ -4,10 +4,11 @@ path="/data/local/tmp"
 #path="/sdcard"
 #path="/data/data/com.termux/files/home"
 
+adb="adb -d"
 main() {
 	local user="$1"
 	if [ ! $user ]; then
-		is_root=$(adb shell "ls /system/bin/su")
+		is_root=$(${adb} shell "ls /system/bin/su")
 		if [[ $is_root == "/system/bin/su" ]]; then root; else user; fi
 	elif [[ $user == "root" ]]; then
 		root
@@ -21,7 +22,7 @@ main() {
 install_bash() {
 	version="5.2.015-1.2.3-2"
 
-	abi=$(adb shell getprop ro.product.cpu.abi)
+	abi=$(${adb} shell getprop ro.product.cpu.abi)
 	if [ "$abi" == "arm64-v8a" ]; then
 		abi="aarch64"
 	elif [ "$abi" == "x86_64" ]; then
@@ -32,8 +33,8 @@ install_bash() {
 		wget https://github.com/robxu9/bash-static/releases/download/${version}/bash-linux-${abi} -O /tmp/bash-linux-${abi}
 	fi
 
-	adb push /tmp/bash-linux-${abi} /data/local/tmp/.bash
-	adb shell "chmod +x /data/local/tmp/.bash"
+	${adb} push /tmp/bash-linux-${abi} /data/local/tmp/.bash
+	${adb} shell "chmod +x /data/local/tmp/.bash"
 }
 
 termux() {
@@ -41,7 +42,7 @@ termux() {
 set timeout 2
 set path [lindex \$argv 0]
 set user [lindex \$argv 1]
-spawn adb shell
+spawn ${adb} shell
 
 expect "*$ " {send "run-as com.termux files/usr/bin/bash -li\n"}
 #expect "*" {send "PS1='\$ '\n"}
@@ -84,7 +85,7 @@ root() {
 set timeout 2
 set path [lindex \$argv 0]
 set user [lindex \$argv 1]
-spawn adb shell
+spawn ${adb} shell
 
 expect "*$ " {send "su \$user\n"}
 expect "*# " {send "\$path/.bash\n"}
@@ -123,7 +124,7 @@ user() {
 set timeout 2
 set path [lindex \$argv 0]
 set user [lindex \$argv 1]
-spawn adb shell
+spawn ${adb} shell
 
 expect "$ " {send "\$path/.bash\n"}
 #expect "$ " {send "PS1='\$ '\n"}
@@ -150,7 +151,7 @@ interact
 EOF
 }
 
-adb get-state
+${adb} get-state
 if [ $? != 0 ]; then exit 1; fi
-adb shell 'ls /data/local/tmp/.bash' || install_bash
+${adb} shell 'ls /data/local/tmp/.bash' || install_bash
 main $@
