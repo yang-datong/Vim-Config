@@ -70,10 +70,24 @@ set port [lindex \$argv 4]
 
 spawn scp -r -P \$port \$file \$name@\$ip:.
 expect {
-        "assword:"
-        {send "\$pswd\n"}
-	}
-interact
+    timeout {
+        puts "Error: Timeout waiting for prompt."
+        exit 1
+    }
+    "yes/no" {
+        send "yes\n"
+        exp_continue
+    }
+    "assword:" {
+        send "\$pswd\n"
+        exp_continue
+    }
+    eof {
+        # File transfer completed
+    }
+}
+#expect eof
+#interact
 EOF
 
   expect /tmp/scp_up.expect $obj $ip $user $passwd $port
@@ -93,10 +107,24 @@ set port [lindex \$argv 4]
 
 spawn scp -r -P \$port \$name@\$ip:\$file .
 expect {
-        "assword:"
-        {send "\$pswd\n"}
-	}
-interact
+    timeout {
+        puts "Error: Timeout waiting for prompt."
+        exit 1
+    }
+    "yes/no" {
+        send "yes\n"
+        exp_continue
+    }
+    "assword:" {
+        send "\$pswd\n"
+        exp_continue
+    }
+    eof {
+        # File transfer completed
+    }
+}
+#expect eof
+#interact
 EOF
 
   expect /tmp/scp_down.expect $obj $ip $user $passwd $port
