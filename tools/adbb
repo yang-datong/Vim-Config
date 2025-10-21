@@ -5,6 +5,9 @@ path="/data/local/tmp"
 #path="/data/data/com.termux/files/home"
 
 adb="adb -d"
+if [[ $2 =~ "-" ]]; then
+	adb="adb $2"
+fi
 main() {
 	local user="$1"
 	if [ ! $user ]; then
