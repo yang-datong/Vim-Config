@@ -1,13 +1,13 @@
 #!/bin/bash
 
+ScriptVersion="1.0"
+
 path="/data/local/tmp"
 #path="/sdcard"
 #path="/data/data/com.termux/files/home"
 
-adb="adb -d"
-if [[ $2 =~ "-" ]]; then
-	adb="adb $2"
-fi
+adb="adb"
+
 main() {
 	local user="$1"
 	if [ ! $user ]; then
@@ -154,7 +154,55 @@ interact
 EOF
 }
 
+usage() {
+	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+
+  Options:
+  -h, --help                  Display this message
+  -d, --debug                 Debug model run
+  -p, --posix                 Posix model parse shell command
+  -v, --version               Display script version
+  -f, --file FILE             Target file 
+  -D, --directory DIRECTORY   Target directory"
+
+}
+
+while getopts ":hdevf:D:-:" opt; do
+	case "${opt}" in
+	h) usage && exit 0 ;;
+	d) adb="adb -d" ;;
+	e) adb="adb -e" ;;
+	v)
+		echo "$0 -- Version $ScriptVersion"
+		exit
+		;;
+	f) file=${OPTARG} ;;
+	D) directory=${OPTARG} ;;
+	-) case "${OPTARG}" in
+		help) usage && exit 0 ;;
+		debug) set -x ;;
+		posix) set -o posix ;;
+		version)
+			echo "$0 -- Version $ScriptVersion"
+			exit
+			;;
+		file)
+			file=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		directory)
+			directory=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+		esac ;;
+	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+	esac
+done
+shift $((OPTIND - 1))
+
 ${adb} get-state
 if [ $? != 0 ]; then exit 1; fi
 ${adb} shell 'ls /data/local/tmp/.bash' || install_bash
-main $@
+main "$@"
