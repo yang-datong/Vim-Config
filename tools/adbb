@@ -130,9 +130,8 @@ set user [lindex \$argv 1]
 spawn ${adb} shell
 
 expect "$ " {send "\$path/.bash\n"}
-#expect "$ " {send "PS1='\$ '\n"}
+expect "$ " {send "set +o history\n"}
 expect "$ " {send "PS1='\\\033\[1;37m\$ \\\033\[0m'\n"}
-expect "$" {send "export HOME=\$path\n"}
 expect "$" {send "alias cl=clear\n"}
 expect "$" {send "alias ls='ls --color'\n"}
 expect "$" {send "alias ll='ls -lFh --color'\n"}
@@ -147,8 +146,12 @@ expect "$" {send "export TMP='/data/local/tmp'\n"}
 expect "$" {send "export TERM='xterm-256color'\n"}
 expect "$" {send "export SHLVL='1'\n"}
 expect "$" {send "export ANDROID_ROOT='/system'\n"}
-
+expect "$" {send "export HOME=\$path\n"}
+expect "$" {send "export HISTCONTROL=ignoreboth\n"}
+expect "$" {send "export HISTFILE=\$path/.bash_history\n"}
+expect "$" {send "history -r \$path/.bash_history\n"}
 expect "*" {send "cd&&cl&&pwd\n"}
+expect "$" {send "set -o history\n"}
 
 interact
 EOF
