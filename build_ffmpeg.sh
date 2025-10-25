@@ -19,6 +19,8 @@ x264_version="x264_0.164.5"
 x264="${x264_version}.tar.bz2"
 x265_version="x265_3.6"
 x265="${x265_version}.tar.gz"
+svtav1_version="svtav1-3.1.2"
+svtav1="${svtav1_version}.tar.gz"
 
 static=0
 shared=1
@@ -154,7 +156,7 @@ build_ff() {
 	#编译较小的ffmpeg、最大化便于调试、开启正常优化
 	args_release=(
 		"--prefix=$(pwd)/build"
-		"--enable-gpl" "--enable-libx264" "--enable-libx265"
+		"--enable-gpl" "--enable-libx264" "--enable-libx265" "--enable-libsvtav1" "--enable-libdav1d"
 		"--enable-protocol=tcp" "--enable-protocol=udp" "--enable-protocol=rtp" "--enable-demuxer=rtsp"
 		"--disable-doc" "--disable-htmlpages" "--disable-manpages" "--disable-podpages" "--disable-txtpages"
 		"--disable-ffplay" "--disable-ffprobe"
@@ -363,6 +365,61 @@ fetch_x265_lib() {
 	popd
 }
 
+fetch_svtav1_lib() {
+	local type="$1"
+	pushd $work_dir
+
+	if [ ! -d "$svtav1_version" ]; then
+		if [ ! -f "$svtav1" ]; then
+			echo -e "\033[31mTODO\033[0m"
+			#wget https://bitbucket.org/multicoreware/svtav1_git/downloads/${svtav1} -O $svtav1
+		fi
+		echo TODO
+		#tar -xvf $svtav1
+	fi
+
+	cd $svtav1_version
+
+	if [ $debug ]; then
+		args=(
+			-DCMAKE_BUILD_TYPE=Debug
+
+			-DBUILD_APPS=ON
+			-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+			-DBUILD_TESTING=OFF
+			-DSVT_AV1_LTO:BOOL=OFF
+			#-DSVT_AV1_PGO:BOOL=OFF
+		)
+	#关闭lto使得编译速度更快，Release模式下记得开启
+	else
+		args=(
+			-DCMAKE_BUILD_TYPE=Release
+
+			-DBUILD_APPS=ON
+			-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+			-DBUILD_TESTING=OFF
+			-DSVT_AV1_LTO:BOOL=OFF
+		)
+	fi
+
+	args+=("-DCMAKE_INSTALL_PREFIX=${work_dir}/${svtav1_version}/build")
+	if [ "$type" == "static" ]; then
+		args+=("-DBUILD_SHARED_LIBS=OFF")
+	elif [ "$type" == "shared" ]; then
+		args+=("-DBUILD_SHARED_LIBS=ON")
+	else
+		echo -e "\033[31mfetch_svtav1_lib failed\033[0m"
+		exit
+	fi
+
+	${make} clean
+	cmake -B build ${lists[@]}
+	make -C build -j $(nproc)
+	popd
+}
+
 make_clean() {
 	local lists=(
 		${work_dir}/${x264_version}
@@ -391,6 +448,7 @@ usage() {
 	--shared                    Dynamic compilation ffmpeg components and dynamic link
 	--build_x264                Separate compilation libx264
 	--build_x265                Separate compilation libx265
+	--build_svtav1              Separate compilation libxSvtAv1Enc
 	--build_ffmpeg              Separate compilation ffmpeg"
 }
 
@@ -441,6 +499,10 @@ while getopts ":hdpvf:D:-:" opt; do
 			fetch_x265_lib shared
 			exit
 			;;
+		build_svtav1)
+			fetch_svtav1_lib shared
+			exit
+			;;
 		clean)
 			make_clean
 			exit
@@ -455,7 +517,7 @@ shift $((OPTIND - 1))
 
 main "$@"
 
-#动态编译时间：
+#动态编译时间(没有包含svtav1之前)：
 #________________________________________________________
 #Executed in   66.57 secs    fish           external
 #   usr time  531.84 secs    0.00 micros  531.84 secs
