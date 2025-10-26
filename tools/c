@@ -494,4 +494,8 @@ done
 
 shift $((OPTIND - 1))
 
-check_source_or_condif_file
+if [ -f ./build.sh ]; then
+  ./build.sh "$@"
+else
+  check_source_or_condif_file
+fi
