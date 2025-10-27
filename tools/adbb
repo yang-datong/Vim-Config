@@ -70,7 +70,7 @@ expect "*" {send "export TERM='xterm-256color'\n"}
 expect "*" {send "export SHLVL='1'\n"}
 expect "*" {send "export ANDROID_ROOT='/system'\n"}
 expect "*" {send "export LD_LIBRARY_PATH='/data/data/com.termux/files/usr/lib'\n"}
-expect "*" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets'\n"}
+expect "*" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets:/data/data/com.termux/files/home/.local/bin'\n"}
 
 expect "*" {send "export _='/data/data/com.termux/files/usr/bin/env'\n"}
 
@@ -113,7 +113,7 @@ expect "*" {send "export TERM='xterm-256color'\n"}
 expect "*" {send "export SHLVL='1'\n"}
 expect "*" {send "export ANDROID_ROOT='/system'\n"}
 expect "*" {send "export LD_LIBRARY_PATH='/data/data/com.termux/files/usr/lib'\n"}
-expect "*" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets'\n"}
+expect "*" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets:/data/data/com.termux/files/home/.local/bin'\n"}
 
 expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
 expect "*" {send "cd&&cl&&pwd\n"}
