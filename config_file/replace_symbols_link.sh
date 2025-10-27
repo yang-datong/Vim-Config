@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 ME=$HOME
+TMP=/tmp
 
 main() {
 	if [ "$(uname)" == "Darwin" ]; then
@@ -57,9 +58,10 @@ replace_symbols_link() {
 	fi
 	if [[ -L "$file" ]] || [[ -f "$file" ]]; then
 		local date=$(date +"%Y%m%d%H%M%S")
-		mv $file "/tmp/$(basename $file)_$date"
+		mv $file "$TMP/$(basename $file)_$date"
 		echo -e "\033[32m Replace $file done~\033[0m"
 	else
+		mkdir -p $(dirname $file)
 		echo -e "\033[33m Add $file done~\033[0m"
 	fi
 	ln -s $really_file $file
