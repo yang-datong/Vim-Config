@@ -3,6 +3,39 @@ snippet todo "TODO comment" bw
 // TODO YangJing ${1:} <`!v strftime('%y-%m-%d %T')`>
 endsnippet
 
+snippet NAME "NAME"
+#if defined(__APPLE__) && defined(__MACH__)
+    #define NAME(name) _##name
+#else
+    #define NAME(name) name
+#endif
+endsnippet
+
+snippet fun "fun"
+.globl NAME($1)
+NAME($1):
+  ${2:ret}
+endsnippet
+
+#arm64
+snippet main "main"
+#if defined(__APPLE__) && defined(__MACH__)
+    #define NAME(name) _##name
+#else
+    #define NAME(name) name
+#endif
+
+.global NAME(foo)
+
+//.arch armv9-a+sve2
+//.arch armv8.6-a+i8mm
+//.arch armv8.4-a+dotprod
+.arch armv8.2-a
+
+NAME(foo):
+  ${2:ret}
+endsnippet
+
 snippet scode "Start basic code for assembly"
 	.data
 

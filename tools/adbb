@@ -55,6 +55,7 @@ expect "com.termux" {send "alias ll='ls -lFh --color'\n"}
 expect "com.termux" {send "alias du='du -sh'\n"}
 expect "com.termux" {send "export TMP='/data/local/tmp'\n"}
 expect "com.termux" {send "export TMPDIR='/data/data/com.termux/files/usr/tmp'\n"}
+expect "com.termux" {send "export PREFIX=/data/data/com.termux/files/usr\n"}
 expect "com.termux" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets:/data/data/com.termux/files/home/.local/bin'\n"}
 
 #expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}

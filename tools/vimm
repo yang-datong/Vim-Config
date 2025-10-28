@@ -3,8 +3,8 @@
 set -e
 
 TMP=/tmp
-vim=vim
-#vim=nvim
+#vim=vim
+vim=nvim
 
 file="$@"
 #  如果只是输入了vimm则进入判断 #
