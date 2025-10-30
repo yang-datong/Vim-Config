@@ -9,11 +9,13 @@ set -x PATH $PATH $HOME/.local/bin/
 
 set -x SH_FOOT $HOME/sh_foot
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
+set -x HOMEBREW_BOTTLE_DOMAIN https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 if test (uname -m) = "arm64"
-    set -x ANDROID_NDK_ROOT /opt/homebrew/Caskroom/android-ndk/28c/AndroidNDK13676358.app/Contents/NDK
-    set -x PATH /opt/homebrew/bin $PATH #Apple silicon M1芯片安装的brew会在/opt目录下（注意顺序，这里提高了homebrew的优先级，是因为在某些情况下会有重复的软件，但版本不同）
+    set -x ANDROID_NDK_HOME /opt/homebrew/share/android-ndk
+    #Apple silicon M1芯片安装的brew会在/opt目录下（注意顺序，提高homebrew的优先级，在某些情况下会有重复的软件但版本不同）
+    set -x PATH /opt/homebrew/bin $PATH 
 else
-    set -x ANDROID_NDK_ROOT $HOME/Library/Android/Sdk/ndk
+    set -x ANDROID_NDK_HOME $HOME/Library/Android/Sdk/ndk
 end
 
 #Aliases

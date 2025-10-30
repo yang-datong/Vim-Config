@@ -10,7 +10,6 @@ export PATH=$PATH:$HOME/.local/bin/
 
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
-export ANDROID_NDK_ROOT=$HOME/Library/Android/Sdk/ndk/25.1.8937393
 
 #Aliases
 source $HOME/.common_aliases.sh
