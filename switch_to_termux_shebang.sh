@@ -1,8 +1,6 @@
-#!/bin/bash
-
 read -p "the directory path to update shebangs, ok?[y/N]" ok
 
-if [ $ok != "y" ]; then exit 0; fi
+if [[ $ok != "y" ]]; then exit 0; fi
 
 find $SH_FOOT/ -name "*.sh" | while read -r file; do
   if head -n 1 "$file" | grep -qE '^#!.*(/bin/bash|/bin/sh)'; then
