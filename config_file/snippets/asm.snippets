@@ -17,6 +17,17 @@ NAME($1):
   ${2:ret}
 endsnippet
 
+snippet MOVREL "movrel"
+.macro  movrel rd, val, offset=0
+#if defined(__APPLE__)
+  adrp            \rd, \val+(\offset)@PAGE
+#elif defined(PIC)
+  adrp            \rd, \val+(\offset)
+  add             \rd, \rd, :lo12:\val+(\offset)
+#endif
+.endm
+endsnippet
+
 #arm64
 snippet main_arm "main"
 //.arch armv9-a+sve2

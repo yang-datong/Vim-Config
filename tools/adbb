@@ -59,7 +59,7 @@ expect "com.termux" {send "export PREFIX=/data/data/com.termux/files/usr\n"}
 expect "com.termux" {send "export PATH='/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets:/data/data/com.termux/files/home/.local/bin'\n"}
 
 #expect "*" {send "if \[ ! -x '\$\(command -v zsh\)' \];then zsh; fi\n"}
-expect "*" {send "cd&&cl&&pwd\n"}
+expect "*" {send "cd&&cl&&pwd&&source .bashrc\n"}
 
 interact
 EOF

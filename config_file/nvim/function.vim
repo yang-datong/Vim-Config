@@ -418,8 +418,7 @@ func Run()
       let firstLine = getline(1)
       let remainingChars = stridx(firstLine, filetype == 'c' ? '// gcc' : '// g++') == 0 ? strpart(firstLine, strlen(filetype == 'c' ? '// gcc' : '// g++')) : ''
       let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c17' : 'c++14', remainingChars)
-      exec exec_cmd . ' && ./%<' . args . run
-      return 0
+      let exec_cmd = exec_cmd . ' && ./%<' . args . run
     endif
   elseif filetype == 'python'
     let firstLine = getline(1)
@@ -434,6 +433,12 @@ func Run()
     :MarkdownPreview
   endif
 
+  " NOTE: 4. （最高优先级）直接在源代码中声明 -> 由用户自定义的执行命令(只能在第一行)：
+  " 1. 可以定义如何编译
+  " 2. 可以定义如何编译+运行
+  " 3. 可以定义如何编译+运行+传入参数
+  let me = stridx(getline(1), '// ME:') == 0 ? strpart(getline(1), strlen('// ME:')) : ''
+  let exec_cmd = me != '' ? '!' . me : exec_cmd
   if exec_cmd != ''
     exec exec_cmd
   endif
