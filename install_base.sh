@@ -2,7 +2,17 @@
 
 #set -e #开启后使用grep判断会有问题
 
-install_base_env_linux(){
+install_base_env_termux() {
+	pkg update
+	pkg install -y file passwd clang gdb binutils
+	pkg install -y python3.10 make cmake pkg-config git wget curl
+	pkg install -y clang-format universal-ctags fzf silversearcher-ag translate-shell
+	pkg install -y clangd
+	#termux只进行简单的安装即可
+	exit 0
+}
+
+install_base_env_linux() {
 	#对于Ubuntu for Arm: https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu-ports/
 	#对于Ubuntu for x86: https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
 	sudo apt update
@@ -15,12 +25,12 @@ install_base_env_linux(){
 
 	sudo apt install -y file passwd gcc g++ gdb nasm
 	sudo apt install -y python3.10 make cmake pkg-config bear git wget curl
-	sudo apt install -y clang-format universal-ctags fzf  silversearcher-ag translate-shell
+	sudo apt install -y clang-format universal-ctags fzf silversearcher-ag translate-shell
 	sudo apt install -y clangd
 	sudo apt install -y android-sdk-platform-tools
 }
 
-install_base_env_mac(){
+install_base_env_mac() {
 	# 首先安装brew
 	if [ ! -x "$(command -v brew)" ]; then ./install_brew.sh; fi
 	if [ "$(arch)" == "arm64" ]; then
@@ -43,7 +53,7 @@ install_base_env_mac(){
 	brew install --cask android-platform-tools
 }
 
-clean(){
+clean() {
 	if [ -f get-pip.py ]; then rm get-pip.py; fi
 }
 
@@ -69,9 +79,13 @@ main() {
 
 	pushd $SH_FOOT
 	#Check OS System
-	if [ "$(uname)" == "Linux" ]; then
-		install_base_env_linux
-	elif [ "$(uname)" == "Darwin" ]; then
+	if [[ "$(uname)" == "Linux" ]]; then
+		if [[ "$(uname -o)" == "Android" ]]; then
+			install_base_env_termux
+		else
+			install_base_env_linux
+		fi
+	elif [[ "$(uname)" == "Darwin" ]]; then
 		install_base_env_mac
 	fi
 
@@ -114,12 +128,12 @@ cc="brew"
 #Check OS System
 check_os() {
 	case "$(uname)" in
-		"Darwin") cc="brew" ;;
-		"Linux") cc="sudo apt -y" ;;
-		*)
-			echo "Windows has not been tested for the time being"
-			exit 1
-			;;
+	"Darwin") cc="brew" ;;
+	"Linux") cc="sudo apt -y" ;;
+	*)
+		echo "Windows has not been tested for the time being"
+		exit 1
+		;;
 	esac
 }
 
