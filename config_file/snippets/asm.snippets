@@ -27,6 +27,7 @@ snippet main_arm "main"
 import platform
 if platform.system() == "Darwin":
 	snip.rv = """
+// as demo.S -o demo.o && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) -e _main && ./a.out
 .global _main
 .global _foo
 
@@ -39,6 +40,7 @@ _main:
 """
 else:
 	snip.rv = """
+// as demo.S -o demo.o && ld demo.o && ./a.out
 .global _start
 .global foo
 
@@ -61,6 +63,7 @@ if platform.system() == "Darwin":
 """
 else:
 	snip.rv = """
+; nasm -felf64 demo.asm && ld demo.o && ./a.out
 global _start
 global foo
 
