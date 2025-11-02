@@ -1,3 +1,7 @@
+if [[ $(uname -o) != "Android" ]]; then
+  exit 0
+fi
+
 read -p "the directory path to update shebangs, ok?[y/N]" ok
 
 if [[ $ok != "y" ]]; then exit 0; fi
