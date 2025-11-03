@@ -21,6 +21,7 @@ snippet MOVREL "movrel"
 .macro  movrel rd, val, offset=0
 #if defined(__APPLE__)
   adrp            \rd, \val+(\offset)@PAGE
+  add             \rd, \rd, \val+(\offset)@PAGEOFF
 #elif defined(PIC)
   adrp            \rd, \val+(\offset)
   add             \rd, \rd, :lo12:\val+(\offset)
