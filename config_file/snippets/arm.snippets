@@ -1,0 +1,67 @@
+snippet todo "TODO comment" bw
+// TODO YangJing ${1:} <`!v strftime('%y-%m-%d %T')`>
+endsnippet
+
+snippet NAME "NAME"
+#if defined(__APPLE__) && defined(__MACH__)
+  #define NAME(name) _##name
+#else
+  #define NAME(name) name
+#endif
+endsnippet
+
+snippet fun "fun"
+.globl NAME($1)
+NAME($1):
+  ${2:ret}
+endsnippet
+
+snippet MOVREL "movrel"
+.macro  movrel rd, val, offset=0
+#if defined(__APPLE__)
+  adrp            \rd, \val+(\offset)@PAGE
+  add             \rd, \rd, \val+(\offset)@PAGEOFF
+#elif defined(PIC)
+  adrp            \rd, \val+(\offset)
+  add             \rd, \rd, :lo12:\val+(\offset)
+#endif
+.endm
+endsnippet
+
+#arm64
+priority 1000
+snippet main "main_arm"
+//.arch armv9-a+sve2
+//.arch armv8.6-a+i8mm
+//.arch armv8.4-a+dotprod
+.arch armv8.2-a
+`!p 
+import platform
+if platform.system() == "Darwin":
+	snip.rv = """
+// as demo.S -o demo.o && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) -e _main && ./a.out
+.global _main
+.global _foo
+
+_foo:
+  ret
+
+_main:
+  mov x0, #0
+  ret
+"""
+else:
+	snip.rv = """
+// as demo.S -o demo.o && ld demo.o && ./a.out
+.global _start
+.global foo
+
+foo:
+  ret
+
+_start:
+  mov     x0, #0
+  mov     x8, #93
+  svc     #0 // call exit(0)
+	"""`
+endsnippet
