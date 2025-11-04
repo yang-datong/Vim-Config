@@ -65,3 +65,142 @@ _start:
   svc     #0 // call exit(0)
 	"""`
 endsnippet
+
+
+############################### Linux 系统调用片段 ################################
+# Exit with status 0 (no error)
+snippet exit0 "Exit with status 0"
+	mov x0, #0      // Status code
+	mov x8, #93     // 'exit' syscall number
+	svc #0
+endsnippet
+
+# Exit with a specific status code
+snippet exit "Exit with status code"
+	mov x0, #${1:0} // Status code
+	mov x8, #93     // 'exit' syscall number
+	svc #0
+endsnippet
+
+# Write a string to stdout
+snippet writestdout "Write to stdout"
+	mov x0, #1      // fd: stdout
+	adr x1, ${1:message} // buffer
+	mov x2, ${2:length} // count
+	mov x8, #64     // 'write' syscall number
+	svc #0
+endsnippet
+
+# Write a string to stderr
+snippet writestderr "Write to stderr"
+	mov x0, #2      // fd: stderr
+	adr x1, ${1:message} // buffer
+	mov x2, ${2:length} // count
+	mov x8, #64     // 'write' syscall number
+	svc #0
+endsnippet
+
+# Read from stdin
+snippet readfstdin "Read from stdin"
+	mov x0, #0      // fd: stdin
+	adr x1, ${1:buffer} // buffer
+	mov x2, ${2:size} // count
+	mov x8, #63     // 'read' syscall number
+	svc #0
+endsnippet
+
+############################### 算术运算片段 ################################
+snippet add "Add (64-bit)"
+	add x0, ${1:x1}, ${2:x2}
+endsnippet
+
+# Multiplication (64-bit)
+snippet mul "Multiply (64-bit)"
+	mul x0, ${1:x1}, ${2:x2}
+endsnippet
+
+# Signed Division (64-bit)
+snippet sdiv "Signed Divide (64-bit)"
+	sdiv x0, ${1:x1}, ${2:x2}
+endsnippet
+
+# Unsigned Division (64-bit)
+snippet udiv "Unsigned Divide (64-bit)"
+	udiv x0, ${1:x1}, ${2:x2}
+endsnippet
+
+############################### 条件跳转片段 ################################
+# Jump if lower (signed <)
+snippet jmpl "Conditional jump if lower (signed)"
+	cmp ${1:x0}, ${2:x1}
+	b.lt ${3:label}
+endsnippet
+
+# Jump if lower or equal (signed <=)
+snippet jmple "Conditional jump if lower or equal (signed)"
+	cmp ${1:x0}, ${2:x1}
+	b.le ${3:label}
+endsnippet
+
+# Jump if equal
+snippet jmpe "Conditional jump if equal"
+	cmp ${1:x0}, ${2:x1}
+	b.eq ${3:label}
+endsnippet
+
+# Jump if not equal
+snippet jmpne "Conditional jump if not equal"
+	cmp ${1:x0}, ${2:x1}
+	b.ne ${3:label}
+endsnippet
+
+# Jump if greater (signed >)
+snippet jmpg "Conditional jump if greater (signed)"
+	cmp ${1:x0}, ${2:x1}
+	b.gt ${3:label}
+endsnippet
+
+# Jump if greater or equal (signed >=)
+snippet jmpge "Conditional jump if greater or equal (signed)"
+	cmp ${1:x0}, ${2:x1}
+	b.ge ${3:label}
+endsnippet
+
+############################### 循环结构片段 ################################
+# Loop N times (counter-based)
+snippet loopn "Loop N times"
+	mov x9, #${1:10}         // Loop counter
+${2:et_for}:
+	// Loop body
+	${3}
+
+	sub x9, x9, #1           // Decrement counter
+	cbnz x9, ${2:et_for}  // Continue if counter is not zero
+endsnippet
+
+############################### 函数与过程片段 ################################
+# Basic procedure/function structure
+snippet proc "Basic procedure"
+${1:func_name}:
+	stp x29, x30, [sp, #-16]! // Save FP and LR to stack
+	mov x29, sp              // Set up new frame pointer
+
+	// Function body
+	${2}
+
+	ldp x29, x30, [sp], #16  // Restore FP and LR from stack
+	ret                      // Return to caller (address in LR)
+endsnippet
+
+# Call a function (e.g., printf)
+snippet call "Call a function"
+	bl ${1:printf}
+endsnippet
+
+# Prepare for and call printf
+snippet printf "Call printf"
+	adr x0, ${1:format_string} // 1st argument (format string) in x0
+	// mov x1, ...           // 2nd argument in x1
+	// mov x2, ...           // 3rd argument in x2
+	bl printf
+endsnippet
