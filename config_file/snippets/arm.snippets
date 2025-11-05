@@ -21,7 +21,7 @@ snippet MOVREL "movrel"
 #if defined(__APPLE__)
   adrp            \rd, \val+(\offset)@PAGE
   add             \rd, \rd, \val+(\offset)@PAGEOFF
-#elif defined(PIC)
+#elif defined(__linux__)
   adrp            \rd, \val+(\offset)
   add             \rd, \rd, :lo12:\val+(\offset)
 #endif
