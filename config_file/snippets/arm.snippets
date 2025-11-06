@@ -39,7 +39,7 @@ snippet main "main_arm"
 import platform
 if platform.system() == "Darwin":
 	snip.rv = """
-// as demo.S -o demo.o && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) -e _main && ./a.out
+// as demo.S -o demo.o && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) && ./a.out
 .global _main
 .global _foo
 

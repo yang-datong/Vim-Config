@@ -438,6 +438,10 @@ func Run()
   " 2. 可以定义如何编译+运行
   " 3. 可以定义如何编译+运行+传入参数
   let me = stridx(getline(1), '// ME:') == 0 ? strpart(getline(1), strlen('// ME:')) : ''
+  "对于nasm编译器，无法使用// 注释
+  if me == ''
+    let me = stridx(getline(1), '; ME:') == 0 ? strpart(getline(1), strlen('; ME:')) : ''
+  endif
   let exec_cmd = me != '' ? '!' . me : exec_cmd
   if exec_cmd != ''
     exec exec_cmd
