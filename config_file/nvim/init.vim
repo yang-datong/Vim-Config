@@ -463,6 +463,10 @@ if g:is_latex == 1
   "NOTE: Ubuntu在安装的texlive是可以直接使用的
   let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
 endif
+"Arm64-gas use -> https://github.com/klauspost/asmfmt
+"x86-64-nasm use -> wget https://github.com/yamnikov-oleg/nasmfmt/releases/download/v0.1/nasmfmt_linux64.tar.gz
+let b:formatdef_nasmfmt='"asmfmt"'
+let b:formatters_nasm = ['nasmfmt']
 "======================================================================
 if g:is_coc_vim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}

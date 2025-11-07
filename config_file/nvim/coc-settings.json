@@ -13,7 +13,7 @@
   "languageserver": {
     "asm": {
       "command": "asm-lsp",
-      "filetypes": ["asm", "s", "S"],
+      "filetypes": ["nasm", "asm"],
       "rootPatterns": [".git"]
     }
   }
