@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 #docker_id="/sdcard"
 docker_id="/data/local/tmp"
 adb="adb"

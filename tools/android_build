@@ -1,5 +1,8 @@
 #!/bin/bash
-if [ $1 ];then
+
+set -e
+
+if [ $1 ]; then
 	./gradlew installDebug && adb shell am start-activity -n $1
 else
 	echo -e "\033[31m当前未指定应用，默认运行com.example.myapplication/.MainActivity\033[0m"

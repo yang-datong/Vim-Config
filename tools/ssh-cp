@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 ScriptVersion="1.0"
 
 ssh_history="$HOME/.ssh_history"

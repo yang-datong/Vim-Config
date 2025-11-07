@@ -1,7 +1,9 @@
 #!/bin/bash
 
+set -e
+
 dir=$1
-if [ ! $dir ];then
+if [ ! $dir ]; then
 	echo -e "\033[31mDir?\033[0m"
 	exit
 fi

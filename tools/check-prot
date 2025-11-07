@@ -1,7 +1,10 @@
 #!/bin/bash
 
-if [ ! $1 ];then
-	echo -e "\033[31mA port needs to be specified!\033[0m" ; exit
+set -e
+
+if [ ! $1 ]; then
+	echo -e "\033[31mA port needs to be specified!\033[0m"
+	exit 1
 fi
 
 port="$1"

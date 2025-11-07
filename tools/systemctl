@@ -1,6 +1,8 @@
 #!/bin/bash
 
-if [ "$(uname)" == "Linux" ];then
+set -e
+
+if [ "$(uname)" == "Linux" ]; then
 	systemctl $@
 	exit
 fi

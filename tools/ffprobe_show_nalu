@@ -1,7 +1,10 @@
 #!/bin/bash
 
-if [ ! $1 ];then
-	echo -e "\033[31mNeed target .h264/.h265 file\033[0m";exit
+set -e
+
+if [ ! $1 ]; then
+	echo -e "\033[31mNeed target .h264/.h265 file\033[0m"
+	exit
 fi
 
 file="$1"

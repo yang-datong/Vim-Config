@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 on() {
 	if [ "$(uname)" == "Linux" ]; then
 		gsettings set org.gnome.system.proxy mode 'manual'
@@ -60,10 +62,9 @@ ip="$2"
 http_proxy="$3"
 socks_proxy="$4"
 
-
-if [ ! "$ip" ];then ip="127.0.0.1"; fi
-if [ ! "$http_proxy" ];then http_proxy="7890"; fi
-if [ ! "$socks_proxy" ];then socks_proxy="7891"; fi
+if [ ! "$ip" ]; then ip="127.0.0.1"; fi
+if [ ! "$http_proxy" ]; then http_proxy="7890"; fi
+if [ ! "$socks_proxy" ]; then socks_proxy="7891"; fi
 
 case "${opt}" in
 on) on ;;

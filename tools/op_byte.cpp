@@ -130,25 +130,26 @@ int main(int argc, char *argv[]) {
   std::string file_name = argv[2];
   std::string s3(argv[3]);
   std::string s4(argv[4]);
+
   long offset = 0;
   int numBytes = 0;
   to_int(s3, offset);
   to_int(s4, numBytes);
 
   int ret;
-  if (op == "--insert") {
+  if (op == "--insert")
     ret = insertBytes(file_name, offset, numBytes);
-  } else if (op == "--delete") {
+  else if (op == "--delete")
     ret = deleteBytes(file_name, offset, numBytes);
-  } else {
+  else {
     std::cerr << "Use: ./tools --[insert|delete] file offset size" << std::endl;
     return 0;
   }
 
-  if (ret) {
+  if (ret)
     std::cout << "Successfully." << std::endl;
-  } else {
+  else
     std::cout << "Error." << std::endl;
-  }
+
   return 0;
 }

@@ -1,5 +1,8 @@
 #!/bin/bash
-if [ $1 ];then
+
+set -e
+
+if [ $1 ]; then
 	readlink -f $1
 	#realpath $1
 else

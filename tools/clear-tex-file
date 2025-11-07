@@ -5,17 +5,16 @@ list=(*.lof *.lot *.aux *.fdb_latexmk *.fls *.log *.out *.synctex.gz *.toc *.xdv
 
 date=$(date +"%Y%m%d%H%M%S")
 sum=0
-for i in ${list[*]};do
-	if [ -f $i ];then
+for i in ${list[*]}; do
+	if [ -f $i ]; then
 		mv $i /tmp/${date}-$i
 		#((sum++)) #这个运算配合set -e在Linux运行一次就停止整个shell脚本了
 		let sum+=1
 	fi
 done
 
-if [ $sum == 0 ];then
+if [ $sum == 0 ]; then
 	echo -e "\033[31mNo the Tex files to be cleaned up were found\033[0m"
 else
 	echo -e "\033[32mok!\033[0m"
 fi
-

@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e
+
 #adb shell dumpsys activity top | grep ACTIVITY #显示当前栈的Activity
 # Output:
 #  ACTIVITY com.android.settings/.HWSettings 9a09459 pid=13293
@@ -7,8 +10,6 @@
 #  ACTIVITY com.huawei.android.launcher/.unihome.UniHomeLauncher 8b0ab94 pid=2768
 #  ACTIVITY com.google.android.apps.books/com.google.android.apps.play.books.home.HomeActivity 88e3219 pid=26284
 
-adb shell dumpsys window | grep  mCurrentFocus | awk '{print $3}' | sed 's/}//'
+adb shell dumpsys window | grep mCurrentFocus | awk '{print $3}' | sed 's/}//'
 # Output:
 #  mCurrentFocus=Window{a501fd9 u0 com.google.android.apps.books/com.google.android.apps.play.books.home.HomeActivity}
-
-
