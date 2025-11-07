@@ -1,0 +1,271 @@
+priority 100
+
+snippet main "main_x86"
+`!p 
+import platform
+if platform.system() == "Darwin":
+	snip.rv = """
+; nasm -fmacho64 demo.asm && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) -platform_version macos 11.0 11.0  && ./a.out
+global _main
+global foo
+
+foo:
+  ret
+
+_main:
+  mov     rax, 0x2000001
+  mov     rdi, 0
+  syscall ; call exit(0)
+"""
+else:
+	snip.rv = """
+; nasm -felf64 demo.asm && ld demo.o && ./a.out
+global _start
+global foo
+
+foo:
+  ret
+
+_start:
+  mov     eax, 60
+  mov     rdi, 0
+  syscall ; call exit(0)
+"""
+`
+endsnippet
+
+snippet scode "Start basic code for assembly"
+	.data
+
+
+	.text
+
+
+	.global main
+
+
+	main:
+endsnippet
+
+snippet scodes "Start basic code for assembly with _start label"
+	.data
+
+
+	.text
+
+
+	.globl _start
+
+
+	_start:
+endsnippet
+
+snippet lo "Long"
+	$1: .long $2
+endsnippet
+snippet wo "Word"
+	$1: .word $2
+endsnippet
+snippet by "Byte"
+	$1: .byte $2
+endsnippet
+snippet sp "Space"
+	$1: .space $2
+endsnippet
+snippet ai "Ascii"
+	$1: .ascii "$2"
+endsnippet
+snippet az "Asciz"
+	$1: .asciz "$2"
+endsnippet
+snippet ze "Zero"
+	$1: .zero "$2"
+endsnippet
+snippet qu "Quad"
+	$1: .quad "$2"
+endsnippet
+snippet si "Single"
+	$1: .single "$2"
+endsnippet
+snippet do "Double"
+	$1: .single "$2"
+endsnippet
+snippet fl "Float"
+	$1: .single "$2"
+endsnippet
+snippet oc "Octa"
+	$1: .single "$2"
+endsnippet
+snippet sh "Short"
+	$1: .single "$2"
+endsnippet
+snippet exit0 "Exit without error"
+	movl \$1, %eax
+	xorl %ebx, %ebx
+	int \$0x80
+
+endsnippet
+snippet exit "Exit with error"
+	mov \$1, %eax
+	mov $1, %ebx
+	int \$0x80
+
+endsnippet
+snippet readfstdin "Read fixed length text from stdin"
+	mov \$3, %eax
+	mov \$2, %ebx
+	mov $1, %ecx
+	mov $2, %edx
+	int \$0x80
+
+endsnippet
+snippet writestdout "Write text to stdout"
+	mov \$4, %eax
+	mov \$1, %ebx
+	mov $1, %ecx
+	mov $2, %edx
+	int \$0x80
+
+endsnippet
+snippet writestderr "Write text to stderr"
+	mov \$4, %eax
+	mov \$2, %ebx
+	mov $1, %ecx
+	mov $2, %edx
+	int \$0x80
+
+endsnippet
+snippet * "Multiplication"
+	mov $1, %eax
+	mul $2
+
+endsnippet
+snippet / "Division"
+	mov $1, %eax
+	div $2
+
+endsnippet
+snippet jmpl "Conditional lower jump"
+	cmp $1, $2
+	jl $3 
+
+endsnippet
+snippet jmple "Conditional lower or equal jump"
+	cmp $1, $2
+	jle $3 
+
+endsnippet
+snippet jmpe "Conditional equal jump"
+	cmp $1, $2
+	je $3 
+
+endsnippet
+snippet jmpn "Conditional not equal jump"
+	cmp $1, $2
+	jn $3
+
+endsnippet
+snippet jmpg "Conditional greater jump"
+	cmp $1, $2
+	jg $3
+
+endsnippet
+snippet jmpge "Conditional greater or equal jump"
+	cmp $1, $2
+	je $3
+
+endsnippet
+snippet loopn "Loop n times"
+	mov $1, %ecx
+
+	et_for:
+		$2
+
+		loop et_for
+
+endsnippet
+snippet loopnn "Loop n-1 times"
+	mov $1, %ecx
+	dec %ecx
+
+	et_for:
+		$2
+
+		loop et_for
+
+endsnippet
+snippet loopv "Loop through a vector"
+	lea $1, %edi
+	xor %ecx, %ecx
+
+	et_for:
+		cmp %ecx, $2
+		je $3
+
+		$4
+
+		inc %ecx
+		jmp et_for
+
+endsnippet
+snippet mul "Multiply"
+	xor %edx, %edx
+	mov $1, %eax
+	mul $2
+endsnippet
+snippet mul64 "Multiply numbers greater than 2^32"
+	mov $1, %edx
+	mov $2, %eax
+	mul $3
+endsnippet
+snippet div "Divide"
+	xor %edx, %edx
+	mov $1, %eax
+	div $2
+endsnippet
+snippet div64 "Divide numbers greater than 2^32"
+	mov $1, %edx
+	mov $2, %eax
+	div $3
+endsnippet
+snippet pr "Call printf"
+	pushl $1
+	call printf
+	popl $2
+endsnippet
+snippet sc "Call scanf"
+	pushl $1
+	call scanf
+	popl $2
+endsnippet
+snippet mindex "Current index from a matrix"
+	xor %edx, %edx
+	movl $1, %eax
+	mull $2
+	addl $3, %eax
+endsnippet
+snippet ffl "Call fflush"
+	pushl \$0
+	call fflush
+	popl $1
+endsnippet
+snippet at "Call atoi"
+	pushl $1
+	call atoi
+	popl $2
+endsnippet
+snippet len "Call strlen"
+	pushl $1
+	call strlen
+	popl $2
+endsnippet
+snippet proc "Basic procedure"
+	$1:
+	pushl %ebp
+	movl %esp, %ebp
+
+	$2
+
+	popl %ebp
+	ret
+endsnippet

@@ -874,8 +874,10 @@ autocmd FileType manim set filetype=python
 " }
 
 " Assembler file {
-autocmd FileType arm UltiSnipsAddFiletypes arm.snippets
-autocmd FileType arm set filetype=asm
+" for x86.asm use nasm
+"autocmd FileType asm set filetype=nasm
+" for arm.s use gas
+"autocmd FileType arm set filetype=asm
 " }
 
 " Restore to the position where it was last closed {
