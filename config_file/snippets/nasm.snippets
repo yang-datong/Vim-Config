@@ -4,29 +4,29 @@ snippet main "main_x86"
 `!p 
 import platform
 if platform.system() == "Darwin":
-	snip.rv = """
-; nasm -fmacho64 demo.asm && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) -platform_version macos 11.0 11.0  && ./a.out
-global _main
-global foo
+	snip.rv = """; nasm -fmacho64 demo.asm && ld demo.o -lSystem -syslibroot $(xcrun --show-sdk-path) -platform_version macos 11.0 11.0  && ./a.out
+	global _main
+	global foo
 
 foo:
   ret
 
 _main:
+.0:
   mov     rax, 0x2000001
   mov     rdi, 0
   syscall ; call exit(0)
 """
 else:
-	snip.rv = """
-; nasm -felf64 demo.asm && ld demo.o && ./a.out
-global _start
-global foo
+	snip.rv = """; nasm -felf64 demo.asm && ld demo.o && ./a.out
+	global _start
+	global foo
 
 foo:
   ret
 
 _start:
+.0:
   mov     eax, 60
   mov     rdi, 0
   syscall ; call exit(0)
