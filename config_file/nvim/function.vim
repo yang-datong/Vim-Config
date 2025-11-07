@@ -417,7 +417,7 @@ func Run()
       " NOTE: 3. 直接在源代码中声明 -> 编译参数(只能在第一行)
       let firstLine = getline(1)
       let remainingChars = stridx(firstLine, filetype == 'c' ? '// gcc' : '// g++') == 0 ? strpart(firstLine, strlen(filetype == 'c' ? '// gcc' : '// g++')) : ''
-      let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c17' : 'c++14', remainingChars)
+      let exec_cmd = printf("!%s %% -o %%< -g3 -O0 -Wall -std=%s %s", compiler, filetype == 'c' ? 'c99' : 'c++14', remainingChars)
       let exec_cmd = exec_cmd . ' && ./%<' . args . run
     endif
   elseif filetype == 'python'
