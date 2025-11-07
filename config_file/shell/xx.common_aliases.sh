@@ -1,11 +1,7 @@
 #!/bin/bash
 
-alias phone='echo 15886670991'
-alias huya="echo '15886670991, qweasdzxc123'"
-
 alias cl='clear'
 alias rm='trash'
-alias rm-rf='rm -rf'
 alias du='du -sh'
 alias vim='nvim'
 alias pping="httping -x 127.0.0.1:7890"
@@ -21,8 +17,8 @@ alias reboot='sudo reboot'
 alias shutdown='sudo shutdown'
 
 alias ifconfig="ifconfig | grep inet | grep -v 'inet6\|127.0.0.1'"
-alias diff='colordiff -w' #brew install colordiff
-alias clang='clang -std=c17 -Wall'
+alias diff='colordiff -w'
+alias clang='clang -std=c99 -Wall'
 alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
@@ -34,3 +30,10 @@ alias ffmpeg="ffmpeg -hide_banner"
 alias ffmpeg-q="ffmpeg -loglevel quiet"
 alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
+
+# perf
+alias perf-top="perf top"
+alias perf-stat="perf stat"
+alias perf-record="perf record"
+alias perf-report="perf report"
+alias perf-kernel="perf record -e cycles:u -a --call-graph dwarf"

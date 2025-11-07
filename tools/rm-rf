@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+if [[ $# > 0 ]]; then
+	echo "Are you sure you want to remove "${@}" and all its contents? (y/N): "
+	read confirm
+	if [[ "$confirm" != "y" ]]; then exit 0; fi
+	size=$(du -sh "$@" | awk '{print $1}')
+	rm -rf "$@"
+	echo "'$@' has been removed(size:${size})."
+else
+	echo "Usage: $0 <directory>/<file>"
+	exit 1
+fi

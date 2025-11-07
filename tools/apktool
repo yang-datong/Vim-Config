@@ -1,0 +1,84 @@
+#!/bin/bash
+ScriptVersion="1.0"
+
+unset file
+unset directory
+
+main() {
+	file=$1
+	# 如果只有一个参数
+	if [ $# == 1 ]; then
+		# apk文件，则进行快速反编译
+		if [[ $file =~ ".apk" ]]; then
+			#-f,--force                Force delete destination directory.
+			#-l,--lib <package:file>   Use shared library <package> located in <file>. Can be specified multiple times.
+			#-o,--output <dir>         Output decoded files to <dir>. (default: apk.out)
+			#-p,--frame-path <dir>     Use framework files located in <dir>.
+			#-r,--no-res               Do not decode resources.
+			#-s,--no-src               Do not decode sources.
+			#-t,--frame-tag <tag>      Use framework files tagged with <tag>.
+			#fast decode
+			apk=$(basename "$file")
+			apktool d "$file" -o ./${apk%.apk}_apkout -r -s
+
+			# directory存在且为_apkout结尾，则进行打包
+		elif [[ -d $file ]] && [[ $file =~ "_apkout" ]]; then
+			apk=$(basename "$file")
+			apktool b "$file" -o ./${apk%_apkout}_rebuild.apk
+		else
+			echo "Invalid argument. Please provide a valid .apk file or a directory ending with _apkout."
+			exit 1
+		fi
+	fi
+
+}
+
+usage() {
+	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+
+	Options:
+	-h, --help                  Display this message
+	-d, --debug                 Debug model run
+	-p, --posix                 Posix model parse shell command
+	-v, --version               Display script version
+	-f, --file FILE             Target file
+	-D, --directory DIRECTORY   Target directory"
+
+}
+
+while getopts ":hdpvf:D:-:" opt; do
+	case "${opt}" in
+	h) usage && exit 0 ;;
+	d) set -x ;;
+	p) set -o posix ;;
+	v)
+		echo "$0 -- Version $ScriptVersion"
+		exit
+		;;
+	f) file=${OPTARG} ;;
+	D) directory=${OPTARG} ;;
+	-) case "${OPTARG}" in
+		help) usage && exit 0 ;;
+		debug) set -x ;;
+		posix) set -o posix ;;
+		version)
+			echo "$0 -- Version $ScriptVersion"
+			exit
+			;;
+		file)
+			file=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		directory)
+			directory=${!OPTIND}
+			OPTIND=$((OPTIND + 1))
+			;;
+		*) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
+		esac ;;
+	:) echo "Option -${OPTARG} requires an argument." >&2 && exit 1 ;;
+	*) echo "Invalid option: -${OPTARG}" >&2 && exit 1 ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+main "$@"
