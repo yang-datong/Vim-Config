@@ -18,8 +18,10 @@ else
     set -x ANDROID_NDK_HOME $HOME/Library/Android/Sdk/ndk
 end
 
-set -x GEMINI_API_KEY AIzaSyDZutpb5rMUoJBsNN7ttlL-QBwuI0gcugI
+set -x GEMINI_API_KEY (cat $CLOUD/AI-Key.txt | grep GEMINI_API_KEY | awk '{print $2}')
 set -x AVANTE_GEMINI_API_KEY $GEMINI_API_KEY
+set -x OPENAI_API_KEY (cat $CLOUD/AI-Key.txt | grep OPENAI_API_KEY | awk '{print $2}')
+set -x AVANTE_OPENAI_API_KEY $OPENAI_API_KEY
 
 #Aliases
 source $HOME/.common_aliases.sh
