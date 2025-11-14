@@ -18,6 +18,9 @@ else
     set -x ANDROID_NDK_HOME $HOME/Library/Android/Sdk/ndk
 end
 
+set -x GEMINI_API_KEY AIzaSyDZutpb5rMUoJBsNN7ttlL-QBwuI0gcugI
+set -x AVANTE_GEMINI_API_KEY $GEMINI_API_KEY
+
 #Aliases
 source $HOME/.common_aliases.sh
 alias cat='bat -p'

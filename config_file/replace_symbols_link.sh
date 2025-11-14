@@ -28,7 +28,8 @@ main() {
 	#vim
 	replace_symbols_link "$ME/.vimrc" "$SH_FOOT/config_file/nvim/xx.vimrc"
 	#neovim
-	replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init.vim"
+	replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init-lazy.vim" #lazy-vim
+	#replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init.vim" #vim-plug
 	replace_symbols_link "$ME/.config/nvim/yj.lua" "$SH_FOOT/config_file/nvim/yj.lua"
 	replace_symbols_link "$ME/.config/nvim/coc-settings.json" "$SH_FOOT/config_file/nvim/coc-settings.json"
 	replace_symbols_link "$ME/.config/nvim/function.vim" "$SH_FOOT/config_file/nvim/function.vim"
@@ -42,10 +43,14 @@ main() {
 
 	for file in snippets/*.snippets; do
 		file_name=$(basename $file)
-		#FIXME:之前vim-plug的目录
-		replace_symbols_link "$ME/.config/nvim/plugged/vim-snippets/UltiSnips/$file_name" "$SH_FOOT/config_file/$file"
-		#FIXME:目前lazy.nvim的目录
-		#replace_symbols_link "$ME/.local/share/nvim/lazy/vim-snippets/UltiSnips/$file_name" "$SH_FOOT/config_file/$file"
+		if [ -d $ME/.local/share/nvim/lazy/vim-snippets/UltiSnips ]; then
+			#lazy.nvim的目录(优先)
+			local plug_path=$ME/.local/share/nvim/lazy/vim-snippets/UltiSnips
+		else
+			#vim-plug的目录
+			local plug_path=$ME/.config/nvim/plugged/vim-snippets/UltiSnips
+		fi
+		replace_symbols_link "${plug_path}/$file_name" "$SH_FOOT/config_file/$file"
 	done
 }
 
