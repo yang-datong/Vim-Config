@@ -63,7 +63,7 @@ replace_symbols_link() {
 	fi
 	if [[ -L "$file" ]] || [[ -f "$file" ]]; then
 		local date=$(date +"%Y%m%d%H%M%S")
-		mv $file "/tmp/$(basename $file)_$date"
+		mv $file "$TMPDIR/$(basename $file)_$date"
 		echo -e "\033[32m Replace $file done~\033[0m"
 	else
 		echo -e "\033[33m Add $file done~\033[0m"

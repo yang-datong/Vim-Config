@@ -815,7 +815,7 @@ if should_install_command_line_tools && version_ge "${macos_version}" "10.13"
 then
   ohai "Searching online for the Command Line Tools"
   # This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
-  clt_placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
+  clt_placeholder="$TMPDIR/.com.apple.dt.CommandLineTools.installondemand.in-progress"
   execute_sudo "${TOUCH}" "${clt_placeholder}"
 
   clt_label_command="/usr/sbin/softwareupdate -l |

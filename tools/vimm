@@ -2,7 +2,7 @@
 
 set -e
 
-TMP=/tmp
+TMP=$TMPDIR
 #vim=vim
 vim=nvim
 

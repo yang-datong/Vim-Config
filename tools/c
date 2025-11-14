@@ -134,22 +134,22 @@ clean_cmake() {
   local date=$(date +"%Y%m%d%H%M%S")
   if [[ -f "Makefile" && "$1" == "all" ]]; then
     ${make} clean
-    mv Makefile /tmp/Makefile_$date
+    mv Makefile $TMPDIR/Makefile_$date
   fi
   if [ -f CMakeCache.txt ]; then
-    mv CMakeCache.txt /tmp/CMakeCache.txt_$date
+    mv CMakeCache.txt $TMPDIR/CMakeCache.txt_$date
   fi
   if [ -f cmake_install.cmake ]; then
-    mv cmake_install.cmake /tmp/cmake_install.cmake_$date
+    mv cmake_install.cmake $TMPDIR/cmake_install.cmake_$date
   fi
   if [ -f CTestTestfile.cmake ]; then
-    mv CTestTestfile.cmake /tmp/CTestTestfile.cmake_$date
+    mv CTestTestfile.cmake $TMPDIR/CTestTestfile.cmake_$date
   fi
   if [ -d CMakeFiles ]; then
-    mv CMakeFiles /tmp/CMakeFiles_$date
+    mv CMakeFiles $TMPDIR/CMakeFiles_$date
   fi
   if [ -d build ]; then
-    mv build /tmp/build_$date
+    mv build $TMPDIR/build_$date
   fi
 }
 

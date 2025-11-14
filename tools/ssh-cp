@@ -62,7 +62,7 @@ init_input_info() {
 scp_up() {
   echo -e "\033[32mUpload File\033[0m"
 
-  cat <<EOF >/tmp/scp_up.expect
+  cat <<EOF >$TMPDIR/scp_up.expect
 #!/usr/bin/expect
 
 set file [lindex \$argv 0]
@@ -93,13 +93,13 @@ expect {
 #interact
 EOF
 
-  expect /tmp/scp_up.expect $obj $ip $user $passwd $port
+  expect $TMPDIR/scp_up.expect $obj $ip $user $passwd $port
 }
 
 scp_down() {
   echo -e "\033[32mDownload File\033[0m"
 
-  cat <<EOF >/tmp/scp_down.expect
+  cat <<EOF >$TMPDIR/scp_down.expect
 #!/usr/bin/expect
 
 set file [lindex \$argv 0]
@@ -130,7 +130,7 @@ expect {
 #interact
 EOF
 
-  expect /tmp/scp_down.expect $obj $ip $user $passwd $port
+  expect $TMPDIR/scp_down.expect $obj $ip $user $passwd $port
 }
 
 usage() {

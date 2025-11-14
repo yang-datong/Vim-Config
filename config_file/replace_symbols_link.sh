@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 ME=$HOME
-TMP=/tmp
+TMP=$TMPDIR
 
 main() {
 	if [ "$(uname)" == "Darwin" ]; then

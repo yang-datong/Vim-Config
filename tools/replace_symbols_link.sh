@@ -2,7 +2,7 @@
 set -e
 #ME=/usr/local/bin
 ME=$HOME/.local/bin
-TMP=/tmp
+TMP=$TMPDIR
 self=$(basename $0)
 
 main() {

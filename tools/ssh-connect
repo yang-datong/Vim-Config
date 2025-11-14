@@ -19,7 +19,7 @@ main() {
     port=22
   fi
   echo "$ip $user $passwd $port" >>$ssh_history && cat $ssh_history | sort | uniq | sed '/^$/d' >tmp_$date && mv tmp_$date $ssh_history
-  cat <<EOF >/tmp/load_ssh.expect
+  cat <<EOF >$TMPDIR/load_ssh.expect
 #!/usr/bin/expect
 set timeout 30
 
@@ -41,9 +41,9 @@ interact
 EOF
   # cmd -> ssh | sftp
   if [ $is_sftp ]; then
-    expect /tmp/load_ssh.expect $ip $user $passwd $port sftp -P
+    expect $TMPDIR/load_ssh.expect $ip $user $passwd $port sftp -P
   else
-    expect /tmp/load_ssh.expect $ip $user $passwd $port ssh -p
+    expect $TMPDIR/load_ssh.expect $ip $user $passwd $port ssh -p
   fi
 }
 
