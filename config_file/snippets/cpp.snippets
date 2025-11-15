@@ -233,11 +233,11 @@ snippet fprintf "fprintf ..."
 fprintf(${1:stderr}, "${2:%s}\n"${2/([^%]|%%)*(%.)?.*/(?2:, :\);)/}$3${2/([^%]|%%)*(%.)?.*/(?2:\);)/}
 endsnippet
 
-snippet < "add <<" "re.match('^(std::|\s+std::)?cout << .*? << (std::)?endl;$', snip.buffer[snip.line])" e
+snippet < "add <<" "re.match('^(std::|\\s+std::)?cout << .*? << (std::)?endl;$', snip.buffer[snip.line])" e
  << $0
 endsnippet
 
-snippet << "add <<" "re.match('^(std::|\s+std::)?cout << .*? << (std::)?endl;$', snip.buffer[snip.line])" e
+snippet << "add <<" "re.match('^(std::|\\s+std::)?cout << .*? << (std::)?endl;$', snip.buffer[snip.line])" e
  << $0
 endsnippet
 
@@ -295,21 +295,21 @@ endsnippet
 
 priority 1000
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*)\.if' ".if" r
+snippet '^\\s{0,4}([a-z|A-Z|_].*)\.if' ".if" r
 	if(`!p snip.rv = match.group(1)`){
 		$0
 	}
 endsnippet
 
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*)\.while' ".while" r
+snippet '^\\s{0,4}([a-z|A-Z|_].*)\.while' ".while" r
 	while(`!p snip.rv = match.group(1)`){
 		$0
 	}
 endsnippet
 
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*)\.null' ".null" r
+snippet '^\\s{0,4}([a-z|A-Z|_].*)\.null' ".null" r
 	if(!`!p snip.rv = match.group(1)`){
 		std::cerr << "Fail `!p snip.rv = match.group(1)` is nullptr" << std::endl;
 		return ${1:-1};
@@ -317,7 +317,7 @@ snippet '^\s{0,4}([a-z|A-Z|_].*)\.null' ".null" r
 endsnippet
 
 context "function()"
-snippet '^\s{0,4}([a-z|A-Z|_].*)\.err' ".err" r
+snippet '^\\s{0,4}([a-z|A-Z|_].*)\.err' ".err" r
 	if(`!p snip.rv = match.group(1)`){
 		fprintf(stderr, "Error `!p snip.rv = match.group(1)`\n");
 		return ${1:-1};
@@ -692,7 +692,7 @@ endsnippet
 #-------------------- 6. Variable type inference ---------------
 #uint8_t *nulBuffer = new uint8_t[_bufferLen];
 priority 2001
-snippet "new\s(uint8_t|char|int|int8_t)\[(.*)\]" "new var_type[]" br
+snippet "new\\s(uint8_t|char|int|int8_t)\[(.*)\]" "new var_type[]" br
 `!p 
 varible_type = match.group(1)
 malloc_size = match.group(2)
