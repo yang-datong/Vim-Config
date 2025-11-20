@@ -1,5 +1,9 @@
 export ZSH="$HOME/.oh-my-zsh"
 
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=500000
+export SAVEHIST=500000
+
 setopt prompt_subst
 autoload -Uz add-zsh-hook colors
 colors
