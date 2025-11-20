@@ -11,10 +11,10 @@
 
 
 "Env -> {
-  " 1. python3.10
-  " 2. pip3.10
-  " 3. brew(apt)
-  " 4. iTerm2(Terminator)
+" 1. python3
+" 2. pip3
+" 3. brew(apt)
+" 4. iTerm2(Terminator)
 " }
 
 " Base Path{
@@ -65,7 +65,7 @@ let g:is_latex=1  "Latex
 let g:is_markdown=1  "Markdown
 let g:is_lua=1  "Lua config
 if !has("nvim")
-let g:is_lua=0
+  let g:is_lua=0
 endif
 " }
 
@@ -89,7 +89,7 @@ endif
 
 call CheckIsSetMinimunMode()
 
-  " 如果文件大于3MB（3000000字节），在配置文件的最后会再次调用一次
+" 如果文件大于3MB（3000000字节），在配置文件的最后会再次调用一次
 call CheckISLargeFile(3000000)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                               "
@@ -101,9 +101,9 @@ set formatoptions+=nM
 " }
 
 " Set include path -> use "gf" jump {
-if has("mac") || has('linux')
-  let g:python3_host_prog='/usr/local/bin/python3.10'
-endif
+"if has("mac") || has('linux')
+  "let g:python3_host_prog='/usr/local/bin/python3.10'
+"endif
 if has("mac")
   set path+=/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1
 elseif has('linux')
@@ -118,9 +118,9 @@ endif
 
 if g:is_Android_jni == 1
   if has("mac")
-    set path+=expand('$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include')
+    set path+=expand('$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include')
   elseif has('linux')
-    set path+=expand('$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include')
+    set path+=expand('$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include')
   endif
 endif
 " }
@@ -128,7 +128,7 @@ endif
 " Attribute {
 "共享剪贴板
 if has("mac")
-  set clipboard=unnamed  
+  set clipboard=unnamed
 elseif has('linux')
   set clipboard=unnamedplus
 elseif has('win32')
@@ -203,12 +203,12 @@ if g:is_vim_studio == 1
   set laststatus=2
   "set statusline=file:[%<%f],\ funciton:[%{coc#status()}%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
   set statusline=file:[%<%f],\ funciton:[%{get(b:,'coc_current_function','')}()]\ %=\ [%P]
-    "set statusline=%<%f\ %h%m%r%=\ %P
-    "%<%f：显示文件的完整路径。
-    "%h%m%r：显示文件的状态，h 代表帮助文件，m 代表修改过的文件，r 代表只读文件。
-    "%=：左右两边的内容平分状态栏。
-    "%-14.(%l,%c%V%)：显示光标位置，包括行号（%l）和列号（%c 和 %V）。
-    "%P：显示光标的百分比位置。
+  "set statusline=%<%f\ %h%m%r%=\ %P
+  "%<%f：显示文件的完整路径。
+  "%h%m%r：显示文件的状态，h 代表帮助文件，m 代表修改过的文件，r 代表只读文件。
+  "%=：左右两边的内容平分状态栏。
+  "%-14.(%l,%c%V%)：显示光标位置，包括行号（%l）和列号（%c 和 %V）。
+  "%P：显示光标的百分比位置。
 endif
 " }
 
@@ -389,7 +389,7 @@ endif
 
 
 " Switch Theme {
-let g:current_theme = 'light' 
+let g:current_theme = 'light'
 nnoremap <silent> <F5> :call ToggleTheme()<CR>
 " }
 
@@ -457,18 +457,18 @@ let b:formatdef_nasmfmt='"asmfmt"'
 let b:formatters_nasm = ['nasmfmt']
 "======================================================================
 if g:is_coc_vim
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}  "-> to lazy.nvim
-let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell','coc-lua','coc-yaml'] "自动安装Coc插件
-"---More in lua config---
-if g:is_latex == 1
-  autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
-  if has('mac')
-    if (system('command -v texlab') =~ 'texlab') == 0
-      echo "Please use -> brew install --HEAD texlab"
-      "call AskUserInstall("texlab","default") #需要先安装mactex
-    endif
-  endif    "Must -> brew install --HEAD texlab
-endif
+  "Plug 'neoclide/coc.nvim', {'branch': 'release'}  "-> to lazy.nvim
+  let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell','coc-lua','coc-yaml'] "自动安装Coc插件
+  "---More in lua config---
+  if g:is_latex == 1
+    autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
+    if has('mac')
+      if (system('command -v texlab') =~ 'texlab') == 0
+        echo "Please use -> brew install --HEAD texlab"
+        "call AskUserInstall("texlab","default") #需要先安装mactex
+      endif
+    endif    "Must -> brew install --HEAD texlab
+  endif
 endif
 "======================================================================
 "Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲  "-> to lazy.nvim
@@ -554,28 +554,28 @@ if g:is_latex == 1
 
         "\   '-outdir=build',
         "\   '-auxdir=build',
-  let g:vimtex_compiler_latexmk = {
-        \ 'executable' : 'latexmk',
-        \ 'options' : [
-        \   '-file-line-error',
-        \   '-synctex=1',
-        \   '-interaction=batchmode',
-        \   '-pretex=' . shellescape(macro_definition) ,
-        \   '-usepretex'],
-        \ }
-        "\   '-jobname=' . expand('%:r') . '-全编译',
-        "\   '-interaction=nonstopmode',
-        "\   '-interaction=batchmode', "最低交互模式，编译速度最快
-  "-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
-  "-interaction=nonstopmode : 禁止交互式操作。当 LaTeX 编译器遇到错误或需要用户输入时，默认情况下会暂停编译并等待用户响应。
+let g:vimtex_compiler_latexmk = {
+      \ 'executable' : 'latexmk',
+      \ 'options' : [
+      \   '-file-line-error',
+      \   '-synctex=1',
+      \   '-interaction=batchmode',
+      \   '-pretex=' . shellescape(macro_definition) ,
+      \   '-usepretex'],
+      \ }
+      "\   '-jobname=' . expand('%:r') . '-全编译',
+      "\   '-interaction=nonstopmode',
+      "\   '-interaction=batchmode', "最低交互模式，编译速度最快
+"-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
+"-interaction=nonstopmode : 禁止交互式操作。当 LaTeX 编译器遇到错误或需要用户输入时，默认情况下会暂停编译并等待用户响应。
 
-  "Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}  "-> to lazy.nvim
-  let g:tex_conceal_frac=1
-  let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
-  let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
-  set conceallevel=2
-  let g:tex_conceal='abdmg'
-  hi Conceal ctermbg=none
+"Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}  "-> to lazy.nvim
+let g:tex_conceal_frac=1
+let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
+let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
+set conceallevel=2
+let g:tex_conceal='abdmg'
+hi Conceal ctermbg=none
 endif
 "======================================================================
 if g:is_markdown == 1
@@ -608,10 +608,10 @@ nnoremap <silent> <Leader>f :NERDTreeFind <Bar> wincmd p<CR> "同上，但光标
 noremap <F1> :NERDTreeToggle<CR>
 " Close NERDTree if no other window open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
- if g:is_vim_studio == 1
-   autocmd VimEnter * nested :NERDTreeToggle
-   autocmd VimEnter * NERDTree | wincmd p
- endif
+if g:is_vim_studio == 1
+  autocmd VimEnter * nested :NERDTreeToggle
+  autocmd VimEnter * NERDTree | wincmd p
+endif
 " }
 "======================================================================
 "Plug 'preservim/nerdcommenter'  "注释插件（'n' 为正常模式下的触发，'x'为选中默认下的触发）  "-> to lazy.nvim
@@ -668,7 +668,7 @@ endif
 "======================================================================
 "重新排序选项卡
 "Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
- "Plug 'ryanoasis/vim-devicons' Icons without colours
+"Plug 'ryanoasis/vim-devicons' Icons without colours
 "Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 "======================================================================
 "自动保存写入
@@ -757,10 +757,10 @@ nnoremap <C-G> :GDB<CR>
 
 " Latex fast open Inkscape {
 if g:is_inscape == 1
-inoremap <silent> <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
-if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
-  call AskUserInstall("inkscape-figures","pip3.10")
-endif
+  inoremap <silent> <C-f> <Esc>: silent exec '.!inkscape-figures create "'.getline('.').'" "'.b:vimtex.root.'/figures/"'<CR><CR>:w<CR>
+  if (system('command -v inkscape-figures') =~ 'inkscape-figures') == 0
+    call AskUserInstall("inkscape-figures","pip3.10")
+  endif
 endif
 " }
 
@@ -790,13 +790,13 @@ endif
 " Command {  "Expand t-o-d-o list
 ":command TODO :vimgrep /TODO/gj **/* | botright copen
 :command TODO :Ag TODO
-  "vimgrep 是 Vim 的内置命令，用于在文件中搜索指定的模式。
-  "/t-o-d-o/ 是要搜索的模式，即 “t-o-d-o” 字符串。
-  ""g 表示全局搜索，即搜索整个文件。
-  "j 表示 “jump”，即在搜索完成后不跳转到第一个匹配的位置。
-  "% 表示当前文件。
-  "botright：窗口在最后一个窗口的底部弹出（多窗口时）
-  "copen：这个命令打开一个新窗口显示所有的搜索结果
+"vimgrep 是 Vim 的内置命令，用于在文件中搜索指定的模式。
+"/t-o-d-o/ 是要搜索的模式，即 “t-o-d-o” 字符串。
+""g 表示全局搜索，即搜索整个文件。
+"j 表示 “jump”，即在搜索完成后不跳转到第一个匹配的位置。
+"% 表示当前文件。
+"botright：窗口在最后一个窗口的底部弹出（多窗口时）
+"copen：这个命令打开一个新窗口显示所有的搜索结果
 " }
 
 " Fast into head or source file {
@@ -804,9 +804,9 @@ if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype =
   "(手动实现）
   "map <silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
   "(coc-clangd实现)
-  map <silent> <S-h> :CocCommand clangd.switchSourceHeader <CR> 
-  "分割缓冲区中打开 
-  map <silent> <S-l> :CocCommand clangd.switchSourceHeader vsplit <CR> 
+  map <silent> <S-h> :CocCommand clangd.switchSourceHeader <CR>
+  "分割缓冲区中打开
+  map <silent> <S-l> :CocCommand clangd.switchSourceHeader vsplit <CR>
 endif
 " }
 
@@ -843,7 +843,7 @@ autocmd FileType sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
 
 " Save mksession on vimleave {
 "if g:is_vim_studio == 1
-  "autocmd VimLeave * mksession!
+"autocmd VimLeave * mksession!
 "endif
 "}
 

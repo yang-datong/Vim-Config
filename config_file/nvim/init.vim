@@ -118,9 +118,9 @@ endif
 
 if g:is_Android_jni == 1
   if has("mac")
-    set path+=expand('$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include')
+    set path+=expand('$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/include')
   elseif has('linux')
-    set path+=expand('$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include')
+    set path+=expand('$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include')
   endif
 endif
 " }
