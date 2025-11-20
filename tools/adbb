@@ -188,13 +188,13 @@ EOF
 usage() {
 	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
-  Options:
-  -h, --help                  Display this message
-  -d, --debug                 Debug model run
-  -p, --posix                 Posix model parse shell command
-  -v, --version               Display script version
-  -f, --file FILE             Target file 
-  -D, --directory DIRECTORY   Target directory"
+	Options:
+	-h, --help                  Display this message
+	-d, --debug                 Debug model run
+	-p, --posix                 Posix model parse shell command
+	-v, --version               Display script version
+	-f, --file FILE             Target file
+	-D, --directory DIRECTORY   Target directory"
 
 }
 
@@ -235,5 +235,10 @@ shift $((OPTIND - 1))
 
 ${adb} get-state
 if [ $? != 0 ]; then exit 1; fi
-${adb} shell 'ls /data/local/tmp/.bash' || install_bash
+
+ss=$(${adb} shell 'ls /data/local/tmp/.bash')
+if [ $? != 0 ] || [[ $ss =~ "No such file or directory" ]]; then
+	install_bash
+fi
+
 main "$@"

@@ -5,12 +5,12 @@ end
 
 return {
     -- 基础工具
-    --{"dense-analysis/ale", lazy = false},
-    {"Shougo/unite.vim", lazy = false},
-    --{"Shougo/neomru.vim", lazy = false},
-    --{"Shougo/deoplete.nvim", { 'do': ':UpdateRemotePlugins' } , lazy = false},
-    --{"Shougo/ddc.vim", lazy = false},
-    {"airblade/vim-gitgutter", lazy = false},
+    --{"dense-analysis/ale"},
+    {"Shougo/unite.vim"},
+    --{"Shougo/neomru.vim"},
+    --{"Shougo/deoplete.nvim", { 'do': ':UpdateRemotePlugins' } },
+    --{"Shougo/ddc.vim"},
+    {"airblade/vim-gitgutter"},
     {
         "chentoast/marks.nvim",
         lazy = false,
@@ -18,28 +18,28 @@ return {
             require("marks").setup({})
         end
     },
-    {"tpope/vim-fugitive", lazy = false},
-    {"sheerun/vim-polyglot", lazy = false},
-    {"vim-autoformat/vim-autoformat", lazy = false},
+    {"tpope/vim-fugitive"},
+    {"sheerun/vim-polyglot"},
+    {"vim-autoformat/vim-autoformat"},
     {
         "neoclide/coc.nvim",
         branch = "release",
         lazy = false,
         cond = flag_enabled("is_coc_vim")
     },
-    {"majutsushi/tagbar", lazy = false},
-    --{"bronson/vim-trailing-whitespace", lazy = false},
+    {"majutsushi/tagbar"},
+    --{"bronson/vim-trailing-whitespace"},
     -- 主题
-    {"junegunn/seoul256.vim", lazy = false, priority = 1000},
-    {"shaunsingh/nord.nvim", lazy = false},
-    --{"doums/darcula", lazy = false},
-    {"Mofiqul/vscode.nvim", lazy = false},
-    --{"dylanaraps/wal", lazy = false},
-    --{"morhetz/gruvbox", lazy = false},
-    {"nyoom-engineering/oxocarbon.nvim", lazy = false},
+    {"junegunn/seoul256.vim", priority = 1000},
+    {"shaunsingh/nord.nvim"},
+    --{"doums/darcula"},
+    {"Mofiqul/vscode.nvim"},
+    --{"dylanaraps/wal"},
+    --{"morhetz/gruvbox"},
+    {"nyoom-engineering/oxocarbon.nvim"},
     -- 代码片段
-    {"SirVer/ultisnips", lazy = false},
-    {"keelii/vim-snippets", lazy = false},
+    {"SirVer/ultisnips"},
+    {"keelii/vim-snippets"},
     -- LaTeX
     {
         "lervag/vimtex",
@@ -62,8 +62,8 @@ return {
         end
     },
     -- 文件/注释/通知等
-    {"scrooloose/nerdtree", lazy = false},
-    {"preservim/nerdcommenter", lazy = false},
+    {"scrooloose/nerdtree"},
+    {"preservim/nerdcommenter"},
     {
         "rcarriga/nvim-notify",
         cond = function()
@@ -73,7 +73,7 @@ return {
             vim.notify = require("notify")
         end
     },
-    {"deris/vim-shot-f", lazy = false},
+    {"deris/vim-shot-f"},
     -- FZF
     {
         "junegunn/fzf",
@@ -87,20 +87,20 @@ return {
         lazy = false,
         dependencies = {"junegunn/fzf"}
     },
-    --{"BurntSushi/ripgrep", lazy = false},
-    --{"rking/ag.vim", lazy = false},
-    --{"nvim-tree/nvim-tree.lua", lazy = false},
-    --{"nvim-tree/nvim-web-devicons", lazy = false},
-    --{"nvim-tree/nvim-web-devicons", lazy = false},
-    --{"lewis6991/gitsigns.nvim", lazy = false},
-    --{"romgrk/barbar.nvim", lazy = false},
-    --{"nvim-tree/nvim-web-devicons", lazy = false},
-    --{"ryanoasis/vim-devicons' Icons without colours, lazy = false},
-    --{"akinsho/bufferline.nvim", { 'tag': '*' }, lazy = false},
+    --{"BurntSushi/ripgrep"},
+    --{"rking/ag.vim"},
+    --{"nvim-tree/nvim-tree.lua"},
+    --{"nvim-tree/nvim-web-devicons"},
+    --{"nvim-tree/nvim-web-devicons"},
+    --{"lewis6991/gitsigns.nvim"},
+    --{"romgrk/barbar.nvim"},
+    --{"nvim-tree/nvim-web-devicons"},
+    --{"ryanoasis/vim-devicons' Icons without colours},
+    --{"akinsho/bufferline.nvim", { 'tag': '*' }},
     -- 自动保存
-    {"907th/vim-auto-save", lazy = false},
+    {"907th/vim-auto-save"},
     -- copilot
-    --{ "github/copilot.vim", lazy = false },
+    --{ "github/copilot.vim" },
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",

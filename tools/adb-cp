@@ -2,48 +2,42 @@
 
 set -e
 
-#docker_id="/sdcard"
-docker_id="/data/local/tmp"
+#targetpath="/sdcard"
+targetpath="/data/local/tmp"
 adb="adb"
 
 main() {
-	local one_obj="$1"
-	local two_obj="$2"
+	local obj="$1"
+	local path="$2"
 
-	if [ -z "$one_obj" ]; then
+	if [ -z "$obj" ]; then
 		echo -e "\033[31m Try --help\033[0m"
-		exit
+		exit 1
 	fi
 
-	if [[ -f "$one_obj" || -d "$one_obj" ]]; then
-		local_tar="$one_obj"
-		docker_tar="${docker_id}/${two_obj}"
-		if [ -z "$two_obj" ]; then
-			docker_tar="${docker_id}/${user}"
-		fi
-		echo "adb push \"$local_tar\" \"$docker_tar\""
-		adb push "$local_tar" "$docker_tar"
+	if [ $path ]; then targetpath="$path"; fi
+
+	# 本地存在则为推送
+	if [[ -f "$obj" || -d "$obj" ]]; then
+		echo adb push $obj ${targetpath}/
+		adb push $obj ${targetpath}/
+
+	# 本地不存在则为拉取
 	else
-		docker_tar="${docker_id}/${one_obj}"
-		local_tar="$two_obj"
-		if [ -z "$two_obj" ]; then
-			local_tar="./"
-		fi
-		echo "adb pull \"$docker_tar\" \"$local_tar\""
-		adb pull "$docker_tar" "$local_tar"
+		echo adb pull ${targetpath}/$obj $obj
+		adb pull ${targetpath}/$obj $obj
 	fi
 }
 
 usage() {
-	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
+	echo "Usage :  $(basename "$0") [options] [--] cp-file cp-path($targetpath)
 
-  Options:
-  -h, --help                  Display this message
-  -d, --debug                 Debug model run
-  -p, --posix                 Posix model parse shell command
-  -v, --version               Display script version
-  -f, --file FILE             Target file 
-  -D, --directory DIRECTORY   Target directory"
+	Options:
+	-h, --help                  Display this message
+	-p, --posix                 Posix model parse shell command
+	-v, --version               Display script version
+	-d                          Use usb device
+	-e                          Use network device"
 
 }
 
