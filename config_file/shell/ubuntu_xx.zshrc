@@ -84,18 +84,9 @@ prompt_virtualenv_segment() {
 
 prompt_git_segment() {
   command git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return
-  local branch dirty="" git_status
+  local branch
   branch="$(command git symbolic-ref --quiet --short HEAD 2>/dev/null || command git rev-parse --short HEAD 2>/dev/null)"
-  git_status="$(command git status --porcelain --ignore-submodules=dirty -uno 2>/dev/null)"
-  if [[ -n "$git_status" ]]; then
-    if print -r -- "$git_status" | command grep -q '^ M'; then
-      dirty="*"
-    fi
-    if print -r -- "$git_status" | command grep -q '^[MDA]'; then
-      dirty="${dirty}+"
-    fi
-  fi
-  printf "(%s%s) " "$branch" "$dirty"
+  printf "(%s) " "$branch"
 }
 
 prompt_compact_path() {
