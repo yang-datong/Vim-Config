@@ -56,6 +56,7 @@ usage() {
   --reset                     call reset()"
 
 }
+
 if [ $# == 0 ]; then
   usage
   exit

@@ -4,10 +4,9 @@
 
 install_base_env_termux() {
 	pkg update
-	pkg install -y file passwd clang gdb binutils
-	pkg install -y python3.10 make cmake pkg-config git wget curl
-	pkg install -y clang-format universal-ctags fzf silversearcher-ag translate-shell
-	pkg install -y clangd
+	pkg install -y file clang gdb binutils
+	pkg install -y python3 python-pip make cmake pkg-config git wget curl ninja nodejs neovim
+	pkg install -y ctags fzf silversearcher-ag translate-shell
 	#termux只进行简单的安装即可
 	exit 0
 }
