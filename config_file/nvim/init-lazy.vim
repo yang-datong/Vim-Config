@@ -403,29 +403,19 @@ else
   echom 'lazy.nvim 仅支持 Neovim，已跳过插件加载'
 endif
 "======================================================================
-"Plug 'dense-analysis/ale' "主要是用clang-tidy
 "======================================================================
-"Plug 'Shougo/unite.vim' "跟Coc有点类似，但基本被Coc取代了，它的目标是建一个用户界面（UI），可以从各种不同的源（如文件、缓冲区、最近使用的文件或寄存器）中搜索和显示信息。你可以在 unite 窗口中对目标执行多个预定义的操作。比如：  "-> to lazy.nvim
 "1. 显示文件和缓冲区：运行 :Unite file buffer，它会在 unite 窗口中列出当前目录中的所有文件和缓冲区，你可以通过按 j 和 k 键在列表中选择其中一个文件或缓冲区。
 "2. 使用过滤器：如果你想筛选文件，可以运行 :Unite -input=foo file，其中 foo 是你的过滤条件。这将只显示文件名中包含 foo 的文件。
 "类似与在vim里面重新配置一些“自己”的东西
 "======================================================================
-"Plug 'Shougo/neomru.vim'
-"Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' } "代码提示 .可以提示snippet的代码
-"Plug 'Shougo/ddc.vim' "代码提示
 "======================================================================
-"Plug 'airblade/vim-gitgutter'  "配合git 左边栏显示更改、删除行标记  "-> to lazy.nvim
-"Plug 'chentoast/marks.nvim' "左边栏显示当前mark标记  "-> to lazy.nvim
 "======================================================================
-"Plug 'tpope/vim-fugitive' "大名鼎鼎tpope开发的，在vim插件世界中，一直有着“TPope 出品，必属精品”的说法  "-> to lazy.nvim
 noremap <Leader>gs :Git<CR>
 "noremap <Leader>gb :Gblame<CR> "不知道怎么用
 noremap <Leader>gd :Gvdiff<CR>
 "很好用，再也不用使用cp new_file tmp && git restore new_file && vim -d new_file tmp了
 "======================================================================
-"Plug 'sheerun/vim-polyglot' "语法高亮，代码缩进  "-> to lazy.nvim
 "======================================================================
-"Plug 'vim-autoformat/vim-autoformat'  "-> to lazy.nvim
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
 endif
@@ -457,7 +447,6 @@ let b:formatdef_nasmfmt='"asmfmt"'
 let b:formatters_nasm = ['nasmfmt']
 "======================================================================
 if g:is_coc_vim
-  "Plug 'neoclide/coc.nvim', {'branch': 'release'}  "-> to lazy.nvim
   let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell','coc-lua','coc-yaml'] "自动安装Coc插件
   "---More in lua config---
   if g:is_latex == 1
@@ -471,7 +460,6 @@ if g:is_coc_vim
   endif
 endif
 "======================================================================
-"Plug 'majutsushi/tagbar' "需要执行`:Tagbar`命令 可查看代码大纲  "-> to lazy.nvim
 "let g:tagbar_position = 'vertical'
 noremap <F2> :TagbarToggle <CR>
 if (system('command -v ctags') =~ 'ctags') == 0
@@ -486,25 +474,16 @@ if g:is_vim_studio == 1
 endif
 let g:tagbar_sort= 0
 "关闭函数等排序（默认会按照函数首字母来排序，不好定义源代码）
-"Plug 'bronson/vim-trailing-whitespace' "加载这个插件会有冲突
 "======================================================================
 " Color thems
 " Dark {
-"Plug 'junegunn/seoul256.vim'  "-> to lazy.nvim
-"Plug 'shaunsingh/nord.nvim' "Math style  "-> to lazy.nvim
-"Plug 'doums/darcula'
-"Plug 'Mofiqul/vscode.nvim'  "-> to lazy.nvim
-"Plug 'dylanaraps/wal'
-"Plug 'morhetz/gruvbox'
 " }
 " Light {
-"Plug 'nyoom-engineering/oxocarbon.nvim'  "-> to lazy.nvim
 " }
 "======================================================================
 "Ultisnips (moved to lazy.nvim)
 "======================================================================
 if g:is_latex == 1
-  "Plug 'lervag/vimtex', { 'tag': 'v2.14' }  "-> to lazy.nvim
   let g:vimtex_quickfix_mode=0
   let g:tex_flavor = 'latex'
   if has('mac')
@@ -563,7 +542,6 @@ let g:vimtex_compiler_latexmk = {
 "-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
 "-interaction=nonstopmode : 禁止交互式操作。当 LaTeX 编译器遇到错误或需要用户输入时，默认情况下会暂停编译并等待用户响应。
 
-"Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}  "-> to lazy.nvim
 let g:tex_conceal_frac=1
 let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
 let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
@@ -574,7 +552,6 @@ endif
 "======================================================================
 if g:is_markdown == 1
   autocmd FileType math set filetype=markdown
-  "Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}  "-> to lazy.nvim
   autocmd FileType math set filetype=tex
   let g:mkdp_theme ='dark'
   if has('mac')
@@ -586,7 +563,6 @@ if g:is_markdown == 1
   endif
 endif
 "======================================================================
-"Plug 'scrooloose/nerdtree'  "-> to lazy.nvim
 " NERDTree {
 "set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite,.git
 let g:NERDTreeChDirMode=2
@@ -608,7 +584,6 @@ if g:is_vim_studio == 1
 endif
 " }
 "======================================================================
-"Plug 'preservim/nerdcommenter'  "注释插件（'n' 为正常模式下的触发，'x'为选中默认下的触发）  "-> to lazy.nvim
 " Multiple trigger {
 let g:NERDCustomDelimiters = { 'c': { 'left': '/* ','right': ' */' } }
 let g:NERDCustomDelimiters = { 'asm': { 'left': '// '} }
@@ -629,16 +604,11 @@ endif
 " }
 "======================================================================
 if has("nvim") && g:is_nvim_notify == 1
-  "Plug 'rcarriga/nvim-notify'  "-> to lazy.nvim
 endif
 "======================================================================
-"Plug 'deris/vim-shot-f' "高亮f/F,t/T命令  "-> to lazy.nvim
 "======================================================================
-"Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }  "-> to lazy.nvim
-"Plug 'junegunn/fzf.vim' "主要是使用 Files查找文件，以及Ag查找字符  "-> to lazy.nvim
 "nvim-telescope/telescope.nvim 也具有类似功能
 "Ag功能需要额外安装：
-"Plug 'BurntSushi/ripgrep' "Rg 官网描述是比Ag更快
 if (system('command -v fzf') =~ 'fzf') == 0
   call AskUserInstall("fzf","default")
 endif
@@ -650,23 +620,13 @@ if (system('command -v ag') =~ 'ag') == 0
   endif
 endif
 
-"Plug 'rking/ag.vim' "界面不好看
 "======================================================================
-"Plug 'nvim-tree/nvim-tree.lua' "和NERDTreeToggle差不多
-"Plug 'nvim-tree/nvim-web-devicons'
 "======================================================================
 "重新排序选项卡
-"Plug 'nvim-tree/nvim-web-devicons' " OPTIONAL: for file icons
-"Plug 'lewis6991/gitsigns.nvim' " OPTIONAL: for git status
-"Plug 'romgrk/barbar.nvim'
 "======================================================================
 "重新排序选项卡
-"Plug 'nvim-tree/nvim-web-devicons' " Recommended (for coloured icons)
-"Plug 'ryanoasis/vim-devicons' Icons without colours
-"Plug 'akinsho/bufferline.nvim', { 'tag': '*' }
 "======================================================================
 "自动保存写入
-"Plug '907th/vim-auto-save' -> to lazy.nvim
 let b:auto_save = 0
 if &filetype == 'tex' || &filetype == 'plaintex'
   augroup ft_tex
@@ -677,11 +637,9 @@ endif
 "======================================================================
 "TODO: 账号试用期过期了。
 if &filetype != 'tex' && &filetype != 'plaintex'
-  "Plug 'github/copilot.vim'  "-> to lazy.nvim
   "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
 endif
 "======================================================================
-"Plug 'nvim-treesitter/nvim-treesitter'  "-> to lazy.nvim
 "======================================================================
 source $NVIM_FOLDER/filetype.vim
 " }
