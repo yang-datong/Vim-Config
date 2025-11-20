@@ -38,8 +38,16 @@ return {
     --{"morhetz/gruvbox"},
     {"nyoom-engineering/oxocarbon.nvim"},
     -- 代码片段
-    {"SirVer/ultisnips"},
-    {"keelii/vim-snippets"},
+    {
+        "SirVer/ultisnips",
+        lazy = false,
+        dependencies = {"keelii/vim-snippets"},
+        init = function()
+            vim.g.UltiSnipsExpandTrigger = "<tab>"
+            vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
+            vim.g.UltiSnipsJumpBackwardTrigger = "<S-tab>"
+        end
+    },
     -- LaTeX
     {
         "lervag/vimtex",

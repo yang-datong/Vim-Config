@@ -501,13 +501,7 @@ let g:tagbar_sort= 0
 "Plug 'nyoom-engineering/oxocarbon.nvim'  "-> to lazy.nvim
 " }
 "======================================================================
-"Ultisnips
-"Plug 'SirVer/ultisnips'  "-> to lazy.nvim
-"Plug 'keelii/vim-snippets'  "-> to lazy.nvim
-" Key mapping
-let g:UltiSnipsExpandTrigger = '<tab>'
-let g:UltiSnipsJumpForwardTrigger = '<tab>'
-let g:UltiSnipsJumpBackwardTrigger = '<S-tab>'
+"Ultisnips (moved to lazy.nvim)
 "======================================================================
 if g:is_latex == 1
   "Plug 'lervag/vimtex', { 'tag': 'v2.14' }  "-> to lazy.nvim
