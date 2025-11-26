@@ -65,6 +65,8 @@ scp_up() {
   cat <<EOF >$TMPDIR/scp_up.expect
 #!/usr/bin/expect
 
+set timeout -1
+
 set file [lindex \$argv 0]
 set ip   [lindex \$argv 1]
 set name [lindex \$argv 2]
@@ -101,6 +103,8 @@ scp_down() {
 
   cat <<EOF >$TMPDIR/scp_down.expect
 #!/usr/bin/expect
+
+set timeout -1
 
 set file [lindex \$argv 0]
 set ip   [lindex \$argv 1]
