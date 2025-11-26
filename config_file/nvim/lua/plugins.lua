@@ -125,8 +125,8 @@ return {
             providers = {
                 gemini = {
                     --endpoint = "https://api.anthropic.com",
-                    model = "gemini-2.5-flash",
-                    --model = "gemini-2.5-pro",
+                    --model = "gemini-2.5-flash",
+                    model = "gemini-2.5-pro",
                     timeout = 30000, -- Timeout in milliseconds
                     extra_request_body = {
                         temperature = 0.75,

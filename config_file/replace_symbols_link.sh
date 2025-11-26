@@ -28,8 +28,8 @@ main() {
 	#vim
 	replace_symbols_link "$ME/.vimrc" "$SH_FOOT/config_file/nvim/xx.vimrc"
 	#neovim
-	#replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init-lazy.vim" #lazy-vim
-	replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init.vim" #vim-plug
+	replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init-lazy.vim" #lazy-vim
+	#replace_symbols_link "$ME/.config/nvim/init.vim" "$SH_FOOT/config_file/nvim/init.vim" #vim-plug
 	replace_symbols_link "$ME/.config/nvim/yj.lua" "$SH_FOOT/config_file/nvim/yj.lua"
 	replace_symbols_link "$ME/.config/nvim/coc-settings.json" "$SH_FOOT/config_file/nvim/coc-settings.json"
 	replace_symbols_link "$ME/.config/nvim/function.vim" "$SH_FOOT/config_file/nvim/function.vim"
