@@ -169,7 +169,7 @@ require'marks'.setup {
 --============================== nvim-Treesitter ===============================
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {"asm", "nasm"},
-  auto_install = true,
+  auto_install = false,
   highlight = {
     enable = true,
     disable = function(lang, buf)

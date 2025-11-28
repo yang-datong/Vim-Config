@@ -13,7 +13,6 @@ return {
     {"airblade/vim-gitgutter"},
     {
         "chentoast/marks.nvim",
-        lazy = false,
         config = function()
             require("marks").setup({})
         end
@@ -24,7 +23,6 @@ return {
     {
         "neoclide/coc.nvim",
         branch = "release",
-        lazy = false,
         cond = flag_enabled("is_coc_vim")
     },
     {"majutsushi/tagbar"},
@@ -40,7 +38,6 @@ return {
     -- 代码片段
     {
         "SirVer/ultisnips",
-        lazy = false,
         dependencies = {"keelii/vim-snippets"},
         init = function()
             vim.g.UltiSnipsExpandTrigger = "<tab>"
@@ -52,7 +49,6 @@ return {
     {
         "lervag/vimtex",
         tag = "v2.14",
-        lazy = false,
         cond = flag_enabled("is_latex")
     },
     {
@@ -85,14 +81,12 @@ return {
     -- FZF
     {
         "junegunn/fzf",
-        lazy = false,
         build = function()
             vim.fn["fzf#install"]()
         end
     },
     {
         "junegunn/fzf.vim",
-        lazy = false,
         dependencies = {"junegunn/fzf"}
     },
     --{"BurntSushi/ripgrep"},
@@ -112,7 +106,6 @@ return {
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
-        lazy = false,
         build = ":TSUpdate"
     },
     {
@@ -138,31 +131,6 @@ return {
         dependencies = {
             "nvim-lua/plenary.nvim",
             "MunifTanjim/nui.nvim",
-            --- option
-            "echasnovski/mini.pick", -- 用于文件选择器提供者 mini.pick
-            --"nvim-telescope/telescope.nvim", -- 用于文件选择器提供者 telescope
-            "hrsh7th/nvim-cmp", -- avante 命令和提及的自动完成
-            --"ibhagwan/fzf-lua", -- 用于文件选择器提供者 fzf
-            "nvim-tree/nvim-web-devicons", -- 或 echasnovski/mini.icons
-            --"zbirenbaum/copilot.lua", -- 用于 providers='copilot'
-            {
-                -- 支持图像粘贴
-                "HakonHarnes/img-clip.nvim",
-                event = "VeryLazy",
-                opts = {
-                    default = {
-                        embed_image_as_base64 = false,
-                        prompt_for_file_name = false,
-                        drag_and_drop = {insert_mode = true},
-                        use_absolute_path = true
-                    }
-                }
-            },
-            {
-                "MeanderingProgrammer/render-markdown.nvim",
-                opts = {file_types = {"markdown", "Avante"}},
-                ft = {"markdown", "Avante"}
-            }
         }
     }
 }

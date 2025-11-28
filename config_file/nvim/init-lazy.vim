@@ -731,7 +731,7 @@ endif
 :command Configfun :e $NVIM_FOLDER/function.vim
 if g:is_lua == 1
   :command ConfigLua :e $MYLUARC
-  :command ConfigLuaPlug :e $LUA_LAZY_PLUG
+  :command ConfigPlug :e $LUA_LAZY_PLUG
 endif
 " }
 

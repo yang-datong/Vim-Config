@@ -1585,7 +1585,7 @@ def create_matrix_middle(snip, types=0):
         #body += ' & '.join(['$' + str(row*columns+col)
         body += ' & '.join(['${' + str(row*columns+col) + ':a_{'+ str(row) + str(col) +'}}'
                            for col in range(1, columns+1)]) + terminator
-    anon_end = " \end{"+types+"matrix}"
+    anon_end = " \\end{"+types+"matrix}"
     snip.expand_anon(old_str + anon_befor + body + anon_end)
 
 def create_matrix(snip, types=0):
@@ -1609,7 +1609,7 @@ def create_matrix(snip, types=0):
             terminator = "  \\\\\\\\  \n"
         body += ' & '.join(['${' + str(row*columns+col) + ':x_{'+ str(row) + str(col) +'}}'
                            for col in range(1, columns+1)]) + terminator
-    anon_end = "\end{"+types+"matrix}"
+    anon_end = "\\end{"+types+"matrix}"
     snip.expand_anon(anon_befor + body + anon_end)
 
 def show_display_frac():
@@ -1750,9 +1750,9 @@ for path in paths_to_check:
 		is_live = 1
 		break
 if is_live == 1:
-	snip.rv = "\documentclass{" + path + f"/{file_to_check.replace('.cls','')}}}"
+	snip.rv = "\\documentclass{" + path + f"/{file_to_check.replace('.cls','')}}}"
 else:
-	snip.rv = """\documentclass{ctexmath}"""
+	snip.rv = """\\documentclass{ctexmath}"""
 `
 %--------------------------------- Head -------------------------------------
 \title{`!p snip.rv = snip.basename[:1].upper() + snip.basename[1:]`}

@@ -2,22 +2,30 @@
 
 cc="brew"
 
-ubuntu(){
-	curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
+ubuntu() {
+	curl -sL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 	$cc install -y nodejs
 }
 
-macos(){
+macos() {
 	$cc install nodejs
 }
 
-
 #Check OS System
-check_os(){
+check_os() {
 	case "$(uname)" in
-		"Darwin") cc="brew";macos;;
-		"Linux") cc="sudo apt -y";ubuntu;;
-		*)echo "Windows has not been tested for the time being";exit 1
+	"Darwin")
+		cc="brew"
+		macos
+		;;
+	"Linux")
+		cc="sudo apt -y"
+		ubuntu
+		;;
+	*)
+		echo "Windows has not been tested for the time being"
+		exit 1
+		;;
 	esac
 }
 
