@@ -343,14 +343,10 @@ if has('mac')
   "2. Action: Send Text with 'vim' Special Chars
   "3. :1wincmd w\n
 elseif has('linux')
-  nnoremap <silent> <C-1> :1wincmd w<CR>
-  nnoremap <silent> <C-2> :2wincmd w<CR>
-  nnoremap <silent> <C-3> :3wincmd w<CR>
+  nnoremap <silent> <A-1> :1wincmd w<CR>
+  nnoremap <silent> <A-2> :2wincmd w<CR>
+  nnoremap <silent> <A-3> :3wincmd w<CR>
 endif
-
-"nnoremap <silent> <A-1> :1wincmd w<CR>
-"nnoremap <silent> <A-2> :2wincmd w<CR>
-"nnoremap <silent> <A-3> :3wincmd w<CR>
 
 nnoremap <silent> <Tab> :wincmd w<CR>
 nnoremap <silent> <S-Tab> :wincmd p<CR>
