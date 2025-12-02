@@ -9,22 +9,21 @@ autoload -Uz add-zsh-hook colors
 colors
 
 # MacOS 环境
-if [[ "$(uname -m)" == "arm64" ]]; then
-  export ANDROID_NDK_HOME="/opt/homebrew/share/android-ndk"
-  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && export PATH="/opt/homebrew/bin:$PATH"
-else
-  export ANDROID_NDK_HOME="$HOME/Library/Android/Sdk/ndk"
-fi
-
 export PATH=$PATH:/Applications/Inkscape.app/Contents/MacOS
 export PATH=$PATH:$HOME/Library/Python/3.10/bin
 export PATH=$PATH:$HOME/.local/bin/
 
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
+if [[ "$(uname -m)" == "arm64" ]]; then
+  export ANDROID_NDK_HOME="/opt/homebrew/share/android-ndk"
+  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && export PATH="/opt/homebrew/bin:$PATH"
+else
+  export ANDROID_NDK_HOME="$HOME/Library/Android/Sdk/ndk"
+fi
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 
-AI_KEY_FILE="$CLOUD/AI-Key.txt"
+AI_KEY_FILE="$HOME/.AI-Key.txt"
 if [[ -r "$AI_KEY_FILE" ]]; then
   export GEMINI_API_KEY="$(awk '/GEMINI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
   export AVANTE_GEMINI_API_KEY="$GEMINI_API_KEY"
@@ -33,10 +32,15 @@ if [[ -r "$AI_KEY_FILE" ]]; then
 fi
 
 # Aliases & helpers
-[[ -f "$HOME/.common_aliases.sh" ]] && source "$HOME/.common_aliases.sh"
-[[ -f "$HOME/.autojump/share/autojump/autojump.zsh" ]] && source "$HOME/.autojump/share/autojump/autojump.zsh"
+source "$HOME/.common_aliases.sh"
+alias cat='bat -p'
+alias gdb='lldb'
+alias ldd='otool -L'
+alias ida='/Applications/IDA\ Professional\ 9.0.app/Contents/MacOS/ida'
 
 set-proxy
+
+[[ -f "$HOME/.autojump/share/autojump/autojump.zsh" ]] && source "$HOME/.autojump/share/autojump/autojump.zsh"
 
 plugins=(git zsh-autosuggestions autojump zsh-syntax-highlighting)
 

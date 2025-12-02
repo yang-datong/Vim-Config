@@ -11,19 +11,29 @@ colors
 
 export PATH=$PATH:$HOME/.local/bin/
 export PATH=$PATH:$HOME/MySoftWare/jadx/bin
+
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
 export ANDROID_NDK_HOME=$HOME/Android/Sdk/ndk/25.1.8937393
 export TMPDIR=/tmp/
 
+AI_KEY_FILE="$HOME/.AI-Key.txt"
+if [[ -r "$AI_KEY_FILE" ]]; then
+  export GEMINI_API_KEY="$(awk '/GEMINI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
+  export AVANTE_GEMINI_API_KEY="$GEMINI_API_KEY"
+  export OPENAI_API_KEY="$(awk '/OPENAI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
+  export AVANTE_OPENAI_API_KEY="$OPENAI_API_KEY"
+fi
 
 # Aliases & helpers
-[[ -f "$HOME/.common_aliases.sh" ]] && source "$HOME/.common_aliases.sh"
-[[ -f "$HOME/.autojump/share/autojump/autojump.zsh" ]] && source "$HOME/.autojump/share/autojump/autojump.zsh"
+source "$HOME/.common_aliases.sh"
 alias cat='batcat -p'
 alias apt='sudo apt'
+alias ida='wine /home/hi/MySoftWare/IDA_Pro_7.7/ida64.exe'
 
 set-proxy
+
+[[ -f "$HOME/.autojump/share/autojump/autojump.zsh" ]] && source "$HOME/.autojump/share/autojump/autojump.zsh"
 
 plugins=(git zsh-autosuggestions autojump zsh-syntax-highlighting)
 
