@@ -102,7 +102,7 @@ return {
     -- 自动保存
     {"907th/vim-auto-save"},
     -- copilot
-    --{ "github/copilot.vim" },
+    { "github/copilot.vim" },
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
