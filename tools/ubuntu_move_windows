@@ -14,9 +14,7 @@ set -e
 #
 #`wmctrl -r :ACTIVE: -e 0,0,0,500,500`这个命令会将当前活动的窗口移动到屏幕的左上角，并将窗口的大小设置为500x500。
 #
-ScriptVersion="1.1"
-#修正了高度问题，主要是在计算屏幕可用高度时，考虑了Dock栏的高度，从而避免窗口被Dock栏遮挡的问题。
-
+ScriptVersion="1.0"
 #set -x
 
 unset key
@@ -33,129 +31,33 @@ convert_to_int() {
 	fi
 }
 
-# 获取Dock栏高度
-get_dock_height() {
-	local dock_height=0
-
-	if command -v gsettings &>/dev/null; then
-		# GNOME Shell Dock (Ubuntu Dock)
-		if gsettings get org.gnome.shell.extensions.dash-to-dock dock-fixed >/dev/null 2>&1; then
-			dock_height=$(gsettings get org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 2>/dev/null | awk '{print $1}')
-			if [ -n "$dock_height" ] && [ "$dock_height" -gt 0 ]; then
-				echo $((dock_height + 10)) # 加上一些边距
-				return
-			fi
-		fi
-	fi
-
-	# 方法2: 使用xwininfo查找Dock窗口
-	local dock_window=$(xwininfo -root -tree 2>/dev/null | grep -iE '(dock|panel|gnome-shell)' | grep -v 'grep' | head -1 | awk '{print $1}')
-	if [ -n "$dock_window" ]; then
-		dock_height=$(xwininfo -id $dock_window 2>/dev/null | grep 'Height' | awk '{print $2}')
-		if [ -n "$dock_height" ] && [ "$dock_height" -gt 0 ]; then
-			echo $dock_height
-			return
-		fi
-	fi
-
-	# 默认返回0
-	echo 0
-}
-
-# 获取Dock栏位置（上、下、左、右）
-get_dock_position() {
-	echo "bottom"
-}
-
-get_topbar_height() {
-	local topbar_height=0
-
-	local panel_ids=$(xwininfo -root -tree 2>/dev/null | grep -iE '(panel|top bar|gnome-shell)' | grep -v 'grep' | awk '{print $1}')
-
-	for pid in $panel_ids; do
-		# 获取窗口的位置和大小
-		window_info=$(xwininfo -id $pid 2>/dev/null)
-		window_y=$(echo "$window_info" | grep "Absolute upper-left Y" | awk '{print $4}')
-		window_height=$(echo "$window_info" | grep "Height" | awk '{print $2}')
-
-		# 如果窗口在屏幕顶部（y坐标很小，比如小于50像素），假设它是顶部栏
-		if [ $window_y -lt 50 ] && [ $window_height -gt 0 ]; then
-			topbar_height=$window_height
-			break
-		fi
-	done
-
-	# 如果上述方法没找到，尝试使用wmctrl列出窗口，查找面板
-	if [ $topbar_height -eq 0 ]; then
-		panel_window=$(wmctrl -lG 2>/dev/null | grep -iE '(panel|top bar|gnome-shell)' | head -1)
-		if [ -n "$panel_window" ]; then
-			topbar_height=$(echo $panel_window | awk '{print $6}')
-		fi
-	fi
-
-	# 如果还是没找到，使用默认值
-	if [ $topbar_height -eq 0 ]; then
-		topbar_height=75 # 默认高度
-	fi
-
-	echo $topbar_height
-}
-
-get_topbar_position() {
-	echo "top"
-}
-
 init_info() {
 	wid=$(xwininfo -root | grep Width | awk '{print $2}')
 	hei=$(xwininfo -root | grep Height | awk '{print $2}')
+	#如果有多个屏幕，那么需要给每个屏幕都设置dock栏的显示，不然会有高度计算不准的情况
 
-	# 获取Dock栏信息
-	dock_height=$(get_dock_height)
-	dock_position=$(get_dock_position)
-
-	topbar_height=$(get_topbar_height)
-	topbar_position=$(get_topbar_position)
-
-	echo $topbar_height
-
-	# 如果有Dock在底部，调整可用高度
-	if [ "$dock_position" = "bottom" ] && [ $dock_height -gt 0 ]; then
-		hei=$(xprop -root _NET_WORKAREA | awk '{print $6}')
-	fi
-
-	# 如果有多个屏幕，那么需要给每个屏幕都设置dock栏的显示，不然会有高度计算不准的情况
 	screen_count=$(xrandr 2>/dev/null | grep ' connected' | wc -l)
 	if [ $screen_count == "1" ]; then
-		# 如果是一个屏幕则不需要进一步判断
+		#如果是一个屏幕则不需要进一步判断
 		half_wid=$(expr $wid / 2)
 		half_hei=$(expr $hei / 2)
-		primary_screen_width=$wid
-		primary_screen_height=$hei
-		secondary_screen_width=0
-		secondary_screen_height=0
 	elif [ $screen_count == "2" ]; then
-		# 如果是两个屏幕,先获取主屏幕的宽高
+		#如果是两个屏幕,先获取主屏幕的宽高
 		primary_screen_info=$(xrandr 2>/dev/null | grep ' connected' | grep 'primary')
 		primary_screen_width=$(echo $primary_screen_info | awk '{print $4}' | awk -F "x" '{print $1}')
 		primary_screen_height=$(echo $primary_screen_info | awk '{print $4}' | awk -F "x" '{print $2}' | awk -F "+" '{print $1}')
 
-		# 调整主屏幕高度（减去Dock）
-		if [ "$dock_position" = "bottom" ] && [ $dock_height -gt 0 ]; then
-			primary_screen_height=$((primary_screen_height - dock_height))
-		fi
-
 		secondary_screen_info=$(xrandr 2>/dev/null | grep ' connected' | grep -v 'primary')
 		secondary_screen_width=$(echo $secondary_screen_info | awk '{print $3}' | awk -F "x" '{print $1}')
 		secondary_screen_height=$(echo $secondary_screen_info | awk '{print $3}' | awk -F "x" '{print $2}' | awk -F "+" '{print $1}')
-
 		if [ $primary_screen_width == $secondary_screen_width ] && [ $primary_screen_height == $secondary_screen_height ]; then
-			# 如果两个屏幕的分辨率是一样的
+			#如果两个屏幕的分辨率是一样的
 			half_wid=$(expr $wid / 4)
 			half_hei=$(expr $hei / 2)
-		else
-			# 如果两个屏幕的分辨率不一样，则只使用主屏幕
-			half_wid=$(expr $primary_screen_width / 2)
-			half_hei=$(expr $primary_screen_height / 2)
+			#		else
+			#			#如果两个屏幕的分辨率不一样，则只使用主屏幕
+			#			half_wid=$(expr $primary_screen_width / 2)
+			#			half_hei=$(expr $primary_screen_height / 2)
 		fi
 	else
 		echo "TODO 存在两个以上屏幕;"
@@ -170,10 +72,6 @@ init_info() {
 	echo secondary_screen_height:$(convert_to_int $secondary_screen_height) >>$screen_info_file
 	echo half_wid:$(convert_to_int $half_wid) >>$screen_info_file
 	echo half_hei:$(convert_to_int $half_hei) >>$screen_info_file
-	echo dock_height:$(convert_to_int $dock_height) >>$screen_info_file
-	echo dock_position:$dock_position >>$screen_info_file
-	echo topbar_height:$(convert_to_int $topbar_height) >>$screen_info_file
-	echo topbar_position:$topbar_position >>$screen_info_file
 	cat $screen_info_file
 }
 
@@ -186,21 +84,15 @@ read_database_info() {
 	secondary_screen_height=$(cat $screen_info_file | grep secondary_screen_height | awk -F ":" '{print $2}')
 	half_wid=$(cat $screen_info_file | grep half_wid | awk -F ":" '{print $2}')
 	half_hei=$(cat $screen_info_file | grep half_hei | awk -F ":" '{print $2}')
-	dock_height=$(cat $screen_info_file | grep dock_height | awk -F ":" '{print $2}')
-	dock_position=$(cat $screen_info_file | grep dock_position | awk -F ":" '{print $2}')
-	topbar_height=$(cat $screen_info_file | grep topbar_height | awk -F ":" '{print $2}')
-	topbar_position=$(cat $screen_info_file | grep topbar_position | awk -F ":" '{print $2}')
 
-	# echo all_width:$wid
-	# echo all_height:$hei
-	# echo primary_screen_width:$primary_screen_width
-	# echo primary_screen_height:$primary_screen_height
-	# echo secondary_screen_width:$secondary_screen_width
-	# echo secondary_screen_height:$secondary_screen_height
-	# echo half_wid:$half_wid
-	# echo half_hei:$half_hei
-	# echo dock_height:$dock_height
-	# echo dock_position:$dock_position
+	#echo all_width:$wid
+	#echo all_height:$hei
+	#echo primary_screen_width:$primary_screen_width
+	#echo primary_screen_height:$primary_screen_height
+	#echo secondary_screen_width:$secondary_screen_width
+	#echo secondary_screen_height:$secondary_screen_height
+	#echo half_wid:$half_wid
+	#echo half_hei:$half_hei
 }
 
 check_current_position() {
@@ -209,32 +101,18 @@ check_current_position() {
 	offset=0
 	if [ $primary_screen_width != 0 ]; then
 		if [ $current_position -le $primary_screen_width ]; then
-			# 在主屏
-			screen_wid=$primary_screen_width
-			screen_hei=$primary_screen_height
-			# 如果Dock在底部，调整屏幕可用高度
-			if [ "$dock_position" = "bottom" ] && [ $dock_height -gt 0 ]; then
-				screen_hei=$primary_screen_height
-			fi
-			half_wid=$(expr $screen_wid / 2)
-			half_hei=$(expr $screen_hei / 2)
+			#  TODO YangJing 仅考虑副屏幕在主屏幕的左边的情况 <24-04-12 11:37:08> #
+			#在主屏
+			half_wid=$(expr $primary_screen_width / 2)
+			half_hei=$(expr $primary_screen_height / 2)
 		elif [ $current_position -ge $primary_screen_width ]; then
-			# 在副屏
-			screen_wid=$secondary_screen_width
-			screen_hei=$secondary_screen_height
-			half_wid=$(expr $screen_wid / 2)
-			half_hei=$(expr $screen_hei / 2)
+			#在副屏
+			half_wid=$(expr $secondary_screen_width / 2)
+			half_hei=$(expr $secondary_screen_height / 2)
 			offset=$(expr $primary_screen_width + 10)
 		fi
-	else
-		# 只有一个屏幕的情况
-		screen_wid=$wid
-		screen_hei=$hei
-		half_wid=$(expr $screen_wid / 2)
-		half_hei=$(expr $screen_hei / 2)
 	fi
 }
-
 windwos_name=":ACTIVE:"
 
 main() {
@@ -246,68 +124,59 @@ main() {
 	check_current_position
 
 	#echo offset:$offset
-	# echo screen_wid:$screen_wid
-	# echo screen_hei:$screen_hei
-	# echo half_wid:$half_wid
-	# echo half_hei:$half_hei
-
 	if [ "$key" == "left" ]; then
-		# 置于左半屏幕
-		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$screen_hei
+		#置于左半屏幕
+		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$hei
 	elif [ "$key" == "right" ]; then
-		# 置于右半屏幕
-		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$screen_hei
+		#置于右半屏幕
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$hei
 	elif [ "$key" == "u" ]; then
-		# 置于左上屏幕
+		#置于左上屏幕
 		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$half_hei
 	elif [ "$key" == "i" ]; then
-		# 置于右上屏幕
+		#置于右上屏幕
 		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$half_hei
 	elif [ "$key" == "j" ]; then
-		# 置于左下屏幕
-		wmctrl -r $windwos_name -e 2,$offset,$(expr $half_hei + $topbar_height),$half_wid,$half_hei
+		#置于左下屏幕
+		wmctrl -r $windwos_name -e 2,$offset,$half_hei,$half_wid,$half_hei
 	elif [ "$key" == "k" ]; then
-		# 置于右下屏幕
-		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$(expr $half_hei + $topbar_height),$half_wid,$half_hei
+		#置于右下屏幕
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$half_hei,$half_wid,$half_hei
 	elif [ "$key" == "top" ]; then
-		# 置于上半屏幕
-		wmctrl -r $windwos_name -e 2,$offset,0,$screen_wid,$half_hei
+		#置于上半屏幕
+		wmctrl -r $windwos_name -e 2,0,0,$wid,$half_hei
 	elif [ "$key" == "down" ]; then
-		# 置于下半屏幕
-		wmctrl -r $windwos_name -e 2,$offset,$half_hei,$screen_wid,$half_hei
+		#置于下半屏幕
+		wmctrl -r $windwos_name -e 2,0,$half_hei,$wid,$half_hei
 	elif [ "$key" == "center" ]; then
-		# 居中屏幕
+		#居中屏幕
 		get_current_windows_size
-	# elif [ "$key" == "Max" ];then
-	#     # 最大化屏幕（全屏）
-	#     wmctrl -r $windwos_name -e 2,0,0,$wid,$hei
+		#elif [ "$key" == "Max" ];then
+		#	#最大化屏幕（全屏）
+		#	wmctrl -r $windwos_name -e 2,0,0,$wid,$hei
 	fi
 }
 
 get_current_windows_size() {
 	windows_wid=$(xwininfo -id $(xdotool getactivewindow) | awk '/Width/ {print $2}')
 	windows_hei=$(xwininfo -id $(xdotool getactivewindow) | awk '/Height/ {print $2}')
-	wmctrl -r $windwos_name -e 2,$(expr $(expr $screen_wid - $windows_wid) / 2 + $offset),$(expr $(expr $screen_hei - $windows_hei) / 2),$windows_wid,$windows_hei
+	wmctrl -r $windwos_name -e 2,$(expr $(expr $wid - $windows_wid) / 2),$(expr $(expr $hei - $windows_hei) / 2),$windows_wid,$windows_hei
 }
 
 usage() {
 	echo "Usage :  $(basename "$0") [options] [--] argument-1 argument-2
 
-    Options:
-    -h, --help                  Display this message
-    -d, --debug                 Debug model run
-    -v, --version               Display script version
-    -p, Screen to be displayed, E.g: -p [1|2] Suitable for multiple monitors
-    -l, Move windows to Left
-    -r, Move windows to Right
-    -u, Move windows to Left-Up
-    -i, Move windows to Right-Up
-    -j, Move windows to Left-Down
-    -k, Move windows to Right-Down
-    -t, Move windows to Top half
-    -d, Move windows to Down half
-    -c, Center windows
-    -M, Maximize windows"
+	Options:
+	-h, --help                  Display this message
+	-d, --debug                 Debug model run
+	-v, --version               Display script version
+	-p, Screen to be displayed, E.g: -p [1|2] Suitable for multiple monitors
+	-l, Move windows to Left
+	-r, Move windows to Right
+	-u, Move windows to Left-Up
+	-i, Move windows to Right-Up
+	-j, Move windows to Left-Down
+	-k, Move windows to Right-Down"
 
 }
 
