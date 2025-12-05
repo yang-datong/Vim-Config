@@ -27,6 +27,8 @@ end
 
 #Aliases
 source $HOME/.common_aliases.sh
+#用于临时别名，某写情况下需要临时添加别名
+if test -f $HOME/.tmp_aliases.sh; source $HOME/.tmp_aliases.sh; end
 alias cat='bat -p'
 alias gdb='lldb'
 alias ldd='otool -L'

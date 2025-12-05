@@ -20,6 +20,8 @@ end
 
 #Aliases
 source $HOME/.common_aliases.sh
+#用于临时别名，某写情况下需要临时添加别名
+if test -f $HOME/.tmp_aliases.sh; source $HOME/.tmp_aliases.sh; end
 alias cat='batcat -p'
 alias apt='sudo apt'
 alias ida='wine /home/hi/MySoftWare/IDA_Pro_7.7/ida64.exe'
