@@ -14,10 +14,7 @@ set -e
 #
 #`wmctrl -r :ACTIVE: -e 0,0,0,500,500`这个命令会将当前活动的窗口移动到屏幕的左上角，并将窗口的大小设置为500x500。
 #
-ScriptVersion="1.1"
-#修正了高度问题，主要是在计算屏幕可用高度时，考虑了Dock栏的高度，从而避免窗口被Dock栏遮挡的问题。
-
-#set -x
+ScriptVersion="1.2"
 
 unset key
 unset file
@@ -67,61 +64,25 @@ get_dock_position() {
 	echo "bottom"
 }
 
-get_topbar_height() {
-	local topbar_height=0
-
-	local panel_ids=$(xwininfo -root -tree 2>/dev/null | grep -iE '(panel|top bar|gnome-shell)' | grep -v 'grep' | awk '{print $1}')
-
-	for pid in $panel_ids; do
-		# 获取窗口的位置和大小
-		window_info=$(xwininfo -id $pid 2>/dev/null)
-		window_y=$(echo "$window_info" | grep "Absolute upper-left Y" | awk '{print $4}')
-		window_height=$(echo "$window_info" | grep "Height" | awk '{print $2}')
-
-		# 如果窗口在屏幕顶部（y坐标很小，比如小于50像素），假设它是顶部栏
-		if [ $window_y -lt 50 ] && [ $window_height -gt 0 ]; then
-			topbar_height=$window_height
-			break
-		fi
-	done
-
-	# 如果上述方法没找到，尝试使用wmctrl列出窗口，查找面板
-	if [ $topbar_height -eq 0 ]; then
-		panel_window=$(wmctrl -lG 2>/dev/null | grep -iE '(panel|top bar|gnome-shell)' | head -1)
-		if [ -n "$panel_window" ]; then
-			topbar_height=$(echo $panel_window | awk '{print $6}')
-		fi
-	fi
-
-	# 如果还是没找到，使用默认值
-	if [ $topbar_height -eq 0 ]; then
-		topbar_height=75 # 默认高度
-	fi
-
-	echo $topbar_height
-}
-
-get_topbar_position() {
-	echo "top"
-}
-
 init_info() {
-	wid=$(xwininfo -root | grep Width | awk '{print $2}')
-	hei=$(xwininfo -root | grep Height | awk '{print $2}')
+	# 获取全部屏幕宽高
+	#wid=$(xwininfo -root | grep Width | awk '{print $2}')
+	#hei=$(xwininfo -root | grep Height | awk '{print $2}')
+
+	# 获取可用屏幕宽高
+	work_area=$(xprop -root _NET_WORKAREA | sed 's/_NET_WORKAREA(CARDINAL) = //; s/,//g')
+	x=$(echo $work_area | awk '{print $1}')
+	y=$(echo $work_area | awk '{print $2}')
+	wid=$(echo $work_area | awk '{print $3}')
+	hei=$(echo $work_area | awk '{print $4}')
 
 	# 获取Dock栏信息
 	dock_height=$(get_dock_height)
 	dock_position=$(get_dock_position)
 
-	topbar_height=$(get_topbar_height)
-	topbar_position=$(get_topbar_position)
-
-	echo $topbar_height
-
 	# 如果有Dock在底部，调整可用高度
-	if [ "$dock_position" = "bottom" ] && [ $dock_height -gt 0 ]; then
-		hei=$(xprop -root _NET_WORKAREA | awk '{print $6}')
-	fi
+	#if [ "$dock_position" = "bottom" ] && [ $dock_height -gt 0 ]; then
+	#fi
 
 	# 如果有多个屏幕，那么需要给每个屏幕都设置dock栏的显示，不然会有高度计算不准的情况
 	screen_count=$(xrandr 2>/dev/null | grep ' connected' | wc -l)
@@ -172,8 +133,8 @@ init_info() {
 	echo half_hei:$(convert_to_int $half_hei) >>$screen_info_file
 	echo dock_height:$(convert_to_int $dock_height) >>$screen_info_file
 	echo dock_position:$dock_position >>$screen_info_file
-	echo topbar_height:$(convert_to_int $topbar_height) >>$screen_info_file
-	echo topbar_position:$topbar_position >>$screen_info_file
+	echo x:$x >>$screen_info_file
+	echo y:$y >>$screen_info_file
 	cat $screen_info_file
 }
 
@@ -188,19 +149,8 @@ read_database_info() {
 	half_hei=$(cat $screen_info_file | grep half_hei | awk -F ":" '{print $2}')
 	dock_height=$(cat $screen_info_file | grep dock_height | awk -F ":" '{print $2}')
 	dock_position=$(cat $screen_info_file | grep dock_position | awk -F ":" '{print $2}')
-	topbar_height=$(cat $screen_info_file | grep topbar_height | awk -F ":" '{print $2}')
-	topbar_position=$(cat $screen_info_file | grep topbar_position | awk -F ":" '{print $2}')
-
-	# echo all_width:$wid
-	# echo all_height:$hei
-	# echo primary_screen_width:$primary_screen_width
-	# echo primary_screen_height:$primary_screen_height
-	# echo secondary_screen_width:$secondary_screen_width
-	# echo secondary_screen_height:$secondary_screen_height
-	# echo half_wid:$half_wid
-	# echo half_hei:$half_hei
-	# echo dock_height:$dock_height
-	# echo dock_position:$dock_position
+	x=$(cat $screen_info_file | grep x: | awk -F ":" '{print $2}')
+	y=$(cat $screen_info_file | grep y: | awk -F ":" '{print $2}')
 }
 
 check_current_position() {
@@ -245,42 +195,36 @@ main() {
 	fi
 	check_current_position
 
-	#echo offset:$offset
-	# echo screen_wid:$screen_wid
-	# echo screen_hei:$screen_hei
-	# echo half_wid:$half_wid
-	# echo half_hei:$half_hei
-
 	if [ "$key" == "left" ]; then
 		# 置于左半屏幕
-		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$screen_hei
+		wmctrl -r $windwos_name -e 2,$offset,$y,$half_wid,$screen_hei
 	elif [ "$key" == "right" ]; then
 		# 置于右半屏幕
-		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$screen_hei
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$y,$half_wid,$screen_hei
 	elif [ "$key" == "u" ]; then
 		# 置于左上屏幕
-		wmctrl -r $windwos_name -e 2,$offset,0,$half_wid,$half_hei
+		wmctrl -r $windwos_name -e 2,$offset,$y,$half_wid,$half_hei
 	elif [ "$key" == "i" ]; then
 		# 置于右上屏幕
-		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),0,$half_wid,$half_hei
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$y,$half_wid,$half_hei
 	elif [ "$key" == "j" ]; then
 		# 置于左下屏幕
-		wmctrl -r $windwos_name -e 2,$offset,$(expr $half_hei + $topbar_height),$half_wid,$half_hei
+		wmctrl -r $windwos_name -e 2,$offset,$(expr $half_hei + $y),$half_wid,$half_hei
 	elif [ "$key" == "k" ]; then
 		# 置于右下屏幕
-		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$(expr $half_hei + $topbar_height),$half_wid,$half_hei
+		wmctrl -r $windwos_name -e 2,$(expr $half_wid + $offset),$(expr $half_hei + $y),$half_wid,$half_hei
 	elif [ "$key" == "top" ]; then
 		# 置于上半屏幕
-		wmctrl -r $windwos_name -e 2,$offset,0,$screen_wid,$half_hei
+		wmctrl -r $windwos_name -e 2,$offset,$y,$screen_wid,$half_hei
 	elif [ "$key" == "down" ]; then
 		# 置于下半屏幕
 		wmctrl -r $windwos_name -e 2,$offset,$half_hei,$screen_wid,$half_hei
 	elif [ "$key" == "center" ]; then
 		# 居中屏幕
 		get_current_windows_size
-	# elif [ "$key" == "Max" ];then
-	#     # 最大化屏幕（全屏）
-	#     wmctrl -r $windwos_name -e 2,0,0,$wid,$hei
+	elif [ "$key" == "max" ]; then
+		# 最大化屏幕（全屏）
+		wmctrl -r $windwos_name -e 2,0,$y,$wid,$hei
 	fi
 }
 
@@ -307,11 +251,11 @@ usage() {
     -t, Move windows to Top half
     -d, Move windows to Down half
     -c, Center windows
-    -M, Maximize windows"
+    -m, Maximize windows"
 
 }
 
-while getopts ":hp:vlruijktdcMw:D:-:" opt; do
+while getopts ":hp:vlruijktdcmw:D:-:" opt; do
 	case "${opt}" in
 	h) usage && exit 0 ;;
 	p) second_screen="${OPTARG}" ;;
@@ -328,7 +272,7 @@ while getopts ":hp:vlruijktdcMw:D:-:" opt; do
 	t) key="top" ;;
 	d) key="down" ;;
 	c) key="center" ;;
-	M) key="Max" ;;
+	m) key="max" ;;
 	w) windwos_name="${OPTARG}" ;;
 	D) directory=${OPTARG} ;;
 	-) case "${OPTARG}" in
