@@ -30,6 +30,7 @@ to_github() {
 		$HOME/x265-3.6
 		$HOME/dav1d-1.5.1
 		$HOME/svtav1-3.1.2
+		$HOME/ffmpeg-hevc-decoder-8.0
 	)
 	for in_dir in ${work_dirs[@]}; do
 		if [ ! -d ${in_dir} ]; then
