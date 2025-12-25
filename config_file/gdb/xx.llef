@@ -1,3 +1,4 @@
 [LLEF]
 show_trace = False
+show_threads = False
 register_coloring = False

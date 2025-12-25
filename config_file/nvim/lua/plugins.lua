@@ -102,7 +102,7 @@ return {
     -- 自动保存
     {"907th/vim-auto-save"},
     -- copilot
-    { "github/copilot.vim" },
+    --{ "github/copilot.vim" },
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
@@ -118,8 +118,8 @@ return {
             providers = {
                 gemini = {
                     --endpoint = "https://api.anthropic.com",
-                    --model = "gemini-2.5-flash",
-                    model = "gemini-2.5-pro",
+                    model = "gemini-2.5-flash",
+                    --model = "gemini-2.5-pro",
                     timeout = 30000, -- Timeout in milliseconds
                     extra_request_body = {
                         temperature = 0.75,
@@ -130,7 +130,7 @@ return {
         },
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
+            "MunifTanjim/nui.nvim"
         }
     }
 }
