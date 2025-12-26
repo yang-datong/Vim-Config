@@ -530,7 +530,9 @@ let g:vimtex_compiler_latexmk = {
       \   '-synctex=1',
       \   '-interaction=batchmode',
       \   '-pretex=' . shellescape(macro_definition) ,
-      \   '-usepretex'],
+      \   '-usepretex',
+      \   '-output-directory=build'],
+      \  'out_dir' : 'build',
       \ }
       "\   '-jobname=' . expand('%:r') . '-全编译',
       "\   '-interaction=nonstopmode',

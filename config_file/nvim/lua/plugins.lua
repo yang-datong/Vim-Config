@@ -48,7 +48,6 @@ return {
     -- LaTeX
     {
         "lervag/vimtex",
-        tag = "v2.14",
         cond = flag_enabled("is_latex")
     },
     {
