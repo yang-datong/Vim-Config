@@ -347,7 +347,8 @@ generate_compile_commands_file() {
     fi
     #For Makefile
   else
-    echo "For Makefile build : exec 'apt install bear' -> exec 'make clean && bear -- make'"
+    #echo "For Makefile build : exec 'apt install bear' -> exec 'make clean && bear -- make'"
+    echo "For Makefile build : exec 'pip install compiledb' -> exec 'make clean && compiledb make'"
   fi
 }
 
