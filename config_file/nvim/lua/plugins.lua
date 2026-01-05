@@ -131,5 +131,6 @@ return {
             "nvim-lua/plenary.nvim",
             "MunifTanjim/nui.nvim"
         }
-    }
+    },
+    {"compnerd/arm64asm-vim"}
 }

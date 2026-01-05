@@ -178,7 +178,8 @@ require'nvim-treesitter.configs'.setup {
         if ok and stats and stats.size > max_filesize then
             return true
         else --除了汇编语言都关闭
-            return lang ~= "asm" and lang ~= "nasm"
+            --return lang ~= "asm" and lang ~= "nasm"
+            return lang ~= "nasm"
         end
     end,
    additional_vim_regex_highlighting = false,
