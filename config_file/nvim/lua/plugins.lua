@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+
 local function flag_enabled(name)
     local value = vim.g[name]
     return value == nil or value == 1
@@ -5,35 +7,26 @@ end
 
 return {
     -- 基础工具
-    --{"dense-analysis/ale"},
     {"Shougo/unite.vim"},
-    --{"Shougo/neomru.vim"},
-    --{"Shougo/deoplete.nvim", { 'do': ':UpdateRemotePlugins' } },
-    --{"Shougo/ddc.vim"},
-    {"airblade/vim-gitgutter"},
+    {
+        "lewis6991/gitsigns.nvim",
+        opts = {signs_staged_enable = false}
+    },
     {
         "chentoast/marks.nvim",
         config = function()
             require("marks").setup({})
         end
     },
+    -- Gdiff
     {"tpope/vim-fugitive"},
-    {"sheerun/vim-polyglot"},
     {"vim-autoformat/vim-autoformat"},
-    {
-        "neoclide/coc.nvim",
-        branch = "release",
-        cond = flag_enabled("is_coc_vim")
-    },
+    {"neoclide/coc.nvim", branch = "release", cond = flag_enabled("is_coc_vim")},
     {"majutsushi/tagbar"},
-    --{"bronson/vim-trailing-whitespace"},
     -- 主题
     {"junegunn/seoul256.vim", priority = 1000},
     {"shaunsingh/nord.nvim"},
-    --{"doums/darcula"},
     {"Mofiqul/vscode.nvim"},
-    --{"dylanaraps/wal"},
-    --{"morhetz/gruvbox"},
     {"nyoom-engineering/oxocarbon.nvim"},
     -- 代码片段
     {
@@ -46,15 +39,8 @@ return {
         end
     },
     -- LaTeX
-    {
-        "lervag/vimtex",
-        cond = flag_enabled("is_latex")
-    },
-    {
-        "KeitaNakamura/tex-conceal.vim",
-        ft = {"tex", "plaintex"},
-        cond = flag_enabled("is_latex")
-    },
+    {"lervag/vimtex", cond = flag_enabled("is_latex")},
+    {"KeitaNakamura/tex-conceal.vim", ft = {"tex", "plaintex"}, cond = flag_enabled("is_latex")},
     -- Markdown
     {
         "iamcco/markdown-preview.nvim",
@@ -65,7 +51,7 @@ return {
         end
     },
     -- 文件/注释/通知等
-    {"scrooloose/nerdtree"},
+    {"nvim-neo-tree/neo-tree.nvim"},
     {"preservim/nerdcommenter"},
     {
         "rcarriga/nvim-notify",
@@ -88,25 +74,12 @@ return {
         "junegunn/fzf.vim",
         dependencies = {"junegunn/fzf"}
     },
-    --{"BurntSushi/ripgrep"},
-    --{"rking/ag.vim"},
-    --{"nvim-tree/nvim-tree.lua"},
-    --{"nvim-tree/nvim-web-devicons"},
-    --{"nvim-tree/nvim-web-devicons"},
-    --{"lewis6991/gitsigns.nvim"},
-    --{"romgrk/barbar.nvim"},
-    --{"nvim-tree/nvim-web-devicons"},
-    --{"ryanoasis/vim-devicons' Icons without colours},
-    --{"akinsho/bufferline.nvim", { 'tag': '*' }},
     -- 自动保存
     {"907th/vim-auto-save"},
     -- copilot
     --{ "github/copilot.vim" },
     -- Treesitter
-    {
-        "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate"
-    },
+    {"nvim-treesitter/nvim-treesitter", build = ":TSUpdate"},
     {
         "yetone/avante.nvim",
         build = "make",
@@ -117,20 +90,14 @@ return {
             providers = {
                 gemini = {
                     --endpoint = "https://api.anthropic.com",
-                    model = "gemini-2.5-flash",
+                    model = "gemini-3-flash-preview",
+                    --model = "gemini-2.5-flash",
                     --model = "gemini-2.5-pro",
                     timeout = 30000, -- Timeout in milliseconds
-                    extra_request_body = {
-                        temperature = 0.75,
-                        max_tokens = 20480
-                    }
+                    extra_request_body = {temperature = 0.75, max_tokens = 20480}
                 }
             }
         },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim"
-        }
-    },
-    {"compnerd/arm64asm-vim"}
+        dependencies = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}
+    }
 }

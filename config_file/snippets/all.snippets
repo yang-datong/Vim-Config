@@ -190,7 +190,7 @@ except sp.TimeoutExpired:
 `
 endsnippet
 
-snippet "-(.*)-(expr|calc|calculate|sum|all)" "all" wr
+snippet "\((.*)\)(expr|calc|calculate|sum|all)" "all" wr
 `!p 
 s = match.group(1).replace(" ", "").replace(",", "")
   # 输出: Helloworld!Thisisatest.

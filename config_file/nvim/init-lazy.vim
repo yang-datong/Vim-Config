@@ -571,15 +571,11 @@ let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize=30
-nnoremap <silent> <Leader>F :NERDTreeFind<CR> "光标定位到目录的当前编辑文件
-nnoremap <silent> <Leader>f :NERDTreeFind <Bar> wincmd p<CR> "同上，但光标马上移动回来
-noremap <F1> :NERDTreeToggle<CR>
+nnoremap <silent> <Leader>F :Neotree focus<CR> "光标定位到目录的当前编辑文件
+
+noremap <F1> :Neotree show toggle<CR>
 " Close NERDTree if no other window open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-if g:is_vim_studio == 1
-  autocmd VimEnter * nested :NERDTreeToggle
-  autocmd VimEnter * NERDTree | wincmd p
-endif
 " }
 "======================================================================
 " Multiple trigger {
@@ -854,9 +850,7 @@ call CheckISLargeFile(3000000)
 
 
 if g:is_vim_studio == 1
-  autocmd VimEnter * nested :NERDTreeFind
-  autocmd VimEnter * if winnr('$') == 3 | exe "2wincmd w" | endif
-  highlight CursorLine guibg=#3A3A3A gui=NONE ctermbg=237 cterm=NONE
+  autocmd VimEnter * nested :Neotree source=filesystem reveal=true show
 endif
 
 " 在 Visual 模式下创建映射，按下 <C-h> (Ctrl+h) 时调用函数 {
