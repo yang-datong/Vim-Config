@@ -18,6 +18,8 @@ return {
             require("marks").setup({})
         end
     },
+    -- 这个插件可能过于庞大，我只是为了使用它的缩进样式
+    {"sheerun/vim-polyglot"},
     -- Gdiff
     {"tpope/vim-fugitive"},
     {"vim-autoformat/vim-autoformat"},

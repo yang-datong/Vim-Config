@@ -3,13 +3,9 @@
 set -e
 
 url="https://"
-
-download_config() {
-	#wget "${url}" -O config.yaml
-	if [ -f $HOME/.config/clash/config.yaml ];then
-		touch $HOME/.config/clash/
-	fi
-}
+target_dir=$HOME/.config/clash
+clash_version="v1.19.3"
+arch="$(uname -m)"
 
 set_systemctl() {
 	if [ $(uname) == "Linux" ]; then
@@ -26,7 +22,7 @@ set_systemctl() {
 		sudo systemctl status clash
 		sudo journalctl -xe
 
-	else
+	else #Macos
 		if [ -f $HOME/Library/LaunchAgents/com.example.clash.plist ]; then
 			rm $HOME/Library/LaunchAgents/com.example.clash.plist
 		fi
@@ -50,95 +46,50 @@ set_systemctl() {
 
 		# 查看服务日志
 		log show --predicate 'process == "clash"' --info --last 1h
+		echo "配置完后，在config.yaml文件内，将使用的节点中skip-cert-verify字段修改为true"
 	fi
 }
 
-ubuntu() {
-	if [ ! -d $HOME/.config/clash ]; then
-		mkdir $HOME/.config/clash
+download_clash() {
+	local clash_file="mihomo-$(uname -o | awk '{print tolower($0)}')-$(uname -m)-${clash_version}.gz"
+	local clash_bin=${clash_file%.*}
+	if [ ! -f ${target_dir}/clash ]; then
+		if [ ! -f ${clash_file} ] && [ ! -f ${clash_bin} ]; then
+			wget https://github.com/MetaCubeX/mihomo/releases/download/${clash_version}/${clash_file} -O $clash_file
+			#这一步会覆盖原有的压缩文件，即压缩后的文件会替换为压缩文件，所以这里删除了原压缩文件
+			gunzip $clash_file
+		fi
+		if [ -f ${clash_bin} ]; then
+			cp ${clash_bin} ${target_dir}/clash
+			chmod +x ${target_dir}/clash
+		fi
+		if [ ! -f ${target_dir}/clash ]; then
+			echo -e "\033[31mDownload clash failed\033[0m"
+			exit 1
+		fi
 	fi
 
 	local countrt_mmdb_version=20250212
-	local clash_version="v1.19.3"
-	local clash_file="mihomo-linux-amd64-${clash_version}.gz"
-	local clash_bin=${clash_file%.*}
-	if [ ! -f ${clash_file} ] && [ ! -f ${clash_bin} ]; then
-		wget https://github.com/MetaCubeX/mihomo/releases/download/${clash_version}/mihomo-linux-amd64-${clash_version}.gz -O ${clash_file}
-		#这一步会覆盖原有的压缩文件，即压缩后的文件会替换为压缩文件，所以这里删除了原压缩文件
-		gunzip ${clash_file}
-	fi
-	if [ -f ${clash_bin} ]; then
-		mv ${clash_bin} $HOME/.config/clash/clash
-		chmod +x $HOME/.config/clash/clash
-	fi
-	if [ ! -f $HOME/.config/clash/clash ]; then
-		echo -e "\033[31mDownload clash failed\033[0m"
-		exit
-	fi
-	if [ ! -f $HOME/.config/clash/Country.mmdb ]; then
+	if [ ! -f ${target_dir}/Country.mmdb ]; then
 		wget https://github.com/Dreamacro/maxmind-geoip/releases/download/${countrt_mmdb_version}/Country.mmdb -O Country.mmdb
-		mv Country.mmdb $HOME/.config/clash/
+		cp Country.mmdb ${target_dir}/
 	fi
-	if [ ! -f $HOME/.config/clash/geosite.dat ]; then
+
+	if [ ! -f ${target_dir}/geosite.dat ]; then
 		wget https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat -O geosite.dat
-		mv geosite.dat $HOME/.config/clash/
+		cp geosite.dat ${target_dir}/
 	fi
-	download_config
-	set_systemctl
+
+	if [ -f ${target_dir}/config.yaml ]; then
+		echo "bWl4ZWQtcG9ydDogNzg5MApwb3J0OiA3ODkwCnNvY2tzLXBvcnQ6IDc4OTEKbW9kZTogcnVsZSAjIOaooeW8j++8mnJ1bGXvvIjop4TliJnvvInjgIFnbG9iYWzvvIjlhajlsYDvvInjgIFkaXJlY3TvvIjnm7Tov57vvIkKCmFsbG93LWxhbjogdHJ1ZQpiaW5kLWFkZHJlc3M6ICIqIgppcHY2OiB0cnVlCmxvZy1sZXZlbDogaW5mbwpleHRlcm5hbC1jb250cm9sbGVyOiAxMjcuMC4wLjE6OTA5MAo=" | base64 -d >config.yaml
+		cp config.yaml ${target_dir}/
+	fi
+
+	echo "rm $clash_bin Country.mmdb geosite.dat config.yaml"
 }
 
-mac() {
-	local version="1.14.0"
-	if [ $(arch) == "arm64" ]; then
-		local arch="arm64"
-	else #i386
-		local arch="amd64"
-	fi
-	if [ ! -d $HOME/.config/clash ]; then
-		mkdir $HOME/.config/clash
-	fi
-	if [ ! -f Clash.Meta-darwin-${arch}-v${version}.gz ] && [ ! -f $HOME/.config/clash/clash ]; then
-		wget "https://github.com/MetaCubeX/mihomo/releases/download/v${version}/Clash.Meta-darwin-${arch}-v${version}.gz" -O Clash.Meta-darwin-${arch}-v${version}.gz
-		gunzip Clash.Meta-darwin-${arch}-v${version}.gz
-	fi
-	if [ -f Clash.Meta-darwin-${arch}-v${version} ]; then
-		mv Clash.Meta-darwin-${arch}-v${version} $HOME/.config/clash/clash
-		chmod +x $HOME/.config/clash/clash
-	fi
-	if [ ! -f $HOME/.config/clash/clash ]; then
-		echo -e "\033[31mDownload clash failed\033[0m"
-		exit
-	fi
-	if [ ! -f $HOME/.config/clash/Country.mmdb ]; then
-		wget https://github.com/Dreamacro/maxmind-geoip/releases/download/20240512/Country.mmdb -O Country.mmdb
-		mv Country.mmdb $HOME/.config/clash/
-	fi
-	if [ ! -f $HOME/.config/clash/geosite.dat ]; then
-		wget https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat -O geosite.dat
-		mv geosite.dat $HOME/.config/clash/
-	fi
-	download_config
-	set_systemctl
-	echo "配置完后，在config.yaml文件内，将使用的节点中skip-cert-verify字段修改为true"
-}
-
-cc="brew"
-#Check OS System
-check_os() {
-	case "$(uname)" in
-		"Darwin")
-			cc="brew"
-			mac
-			;;
-		"Linux")
-			cc="sudo apt -y"
-			ubuntu
-			;;
-		*)
-			echo "Windows has not been tested for the time being"
-			exit 1
-			;;
-	esac
-}
-
-check_os
+if [ ! -d ${target_dir} ]; then
+	mkdir ${target_dir}
+fi
+download_clash
+set_systemctl
