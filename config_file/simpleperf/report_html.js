@@ -43,6 +43,18 @@ const gHighlightedFunctionNames = new Set([
 		'recon_b_intra_8bpc',
 		'recon_b_inter_8bpc',
 
+		'avg_8bpc_neon',
+
+    'prep_8tap_neon_dotprod',
+    'put_8tap_neon_dotprod',
+    'lpf_16_wd16_neon',
+    'wiener_filter5_hv_8bpc_neon',
+    'prep_neon',
+    'emu_edge_8bpc_neon',
+    'lpf_h_sb_y_8bpc_neon',
+    'lpf_h_16_16_neon',
+    'put_neon',
+
 // ------------- 16 bit -------------------
     'prep_16bpc_neon',
     'prep_6tap_neon',
@@ -1799,7 +1811,9 @@ class DisassemblyView {
 
         // 否则，返回原始字符串
         //return valueStr;
-        return valueStr == "0.00%" ? '' : valueStr == "0.01%" ? '' : valueStr;
+        //return valueStr == "0.00%" ? '' : valueStr == "0.01%" ? '' : valueStr;
+        //TODO 只显示>0.10%的热点 <26-01-21 17:45:58, YangJing> 
+        return parseFloat(valueStr) < 0.1 ? '' : valueStr;
     }
     // --- MODIFICATION END ---
 
