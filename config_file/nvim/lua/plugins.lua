@@ -81,9 +81,17 @@ return {
     -- copilot
     --{ "github/copilot.vim" },
     -- Treesitter
-    {"nvim-treesitter/nvim-treesitter", build = ":TSUpdate"},
+    {
+        "nvim-treesitter/nvim-treesitter",
+        -- 兼容nvim 0.9.3版本
+        commit = "cfc6f2c",
+        build = ":TSUpdate"
+    },
     {
         "yetone/avante.nvim",
+        cond = function()
+            return vim.fn.has("nvim-0.10") == 1
+        end,
         build = "make",
         event = "VeryLazy",
         version = false, -- 永远不要将此值设置为 "*"！永远不要！

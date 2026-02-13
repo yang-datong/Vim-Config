@@ -1,4 +1,10 @@
+---@diagnostic disable: undefined-global
+
 vim.opt.termguicolors = true
+
+--  Perl,Ruby 插件的checkhealth警告
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 --============================== UltiSnips ========================================
 function GetAllSnippets()
