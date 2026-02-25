@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+on() {
+	git config --global http.proxy http://$ip:$http_proxy
+	git config --global https.proxy http://$ip:$http_proxy
+}
+
+off() {
+	git config --global http.proxy ""
+	git config --global https.proxy ""
+}
+
+opt="$1"
+ip="$2"
+http_proxy="$3"
+socks_proxy="$4"
+
+if [ ! "$ip" ]; then ip="127.0.0.1"; fi
+if [ ! "$http_proxy" ]; then http_proxy="7890"; fi
+if [ ! "$socks_proxy" ]; then socks_proxy="7891"; fi
+
+case "${opt}" in
+on) on ;;
+off) off ;;
+auto) auto ;;
+*) echo "Invalid option: -${OPTARG} , Do you say '$(basename $0) on|off|auto' ?" >&2 && exit 1 ;;
+esac

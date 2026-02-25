@@ -41,7 +41,7 @@ return {
         end
     },
     -- LaTeX
-    {"lervag/vimtex", cond = flag_enabled("is_latex")},
+    {"lervag/vimtex", tag = "v2.15", cond = flag_enabled("is_latex")},
     {"KeitaNakamura/tex-conceal.vim", ft = {"tex", "plaintex"}, cond = flag_enabled("is_latex")},
     -- Markdown
     {
