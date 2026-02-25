@@ -14,12 +14,13 @@ hi StatusLine cterm=NONE gui=NONE
 	else
 		sed -i -e 's/9A7372/2a2a2a/' -e 's/333233/2d2d2d/' -e 's/3F3F3F/2a2a2a/' -e 's/4B4B4B/2a2a2a/' -e 's/565656/2a2a2a/' -e 's/616161/2a2a2a/' $config_file
 
+		#家里台式ubuntu好像这4个都不需要执行
 		sed -i "/StatusLine'/a hi StatusLine cterm=NONE gui=NONE" $config_file
 		sed -i "/StatusLineNC'/a hi StatusLine cterm=NONE gui=NONE" $config_file
 
 		#公司的这台ubuntu25需要这样做：
-		#sed -i "/StatusLine'/a hi StatusLine cterm=bold,reverse gui=bold,reverse" $config_file
-		#sed -i "/StatusLineNC'/a hi StatusLineNC cterm=bold,reverse gui=bold,reverse" $config_file
+		sed -i "/StatusLine'/a hi StatusLine cterm=bold,reverse gui=bold,reverse" $config_file
+		sed -i "/StatusLineNC'/a hi StatusLineNC cterm=bold,reverse gui=bold,reverse" $config_file
 	fi
 }
 

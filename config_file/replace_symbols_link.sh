@@ -36,7 +36,9 @@ main() {
 	replace_symbols_link "$ME/.config/nvim/unite_extension.vim" "$SH_FOOT/config_file/nvim/unite_extension.vim"
 
 	#android ndk
-	replace_symbols_link "$ANDROID_NDK_HOME/simpleperf/report_html.js" "$SH_FOOT/config_file/simpleperf/report_html.js"
+	if [ "$(uname)" == "Darwin" ]; then
+		replace_symbols_link "$ANDROID_NDK_HOME/simpleperf/report_html.js" "$SH_FOOT/config_file/simpleperf/report_html.js"
+	fi
 
 	if [ ! -d $ME/.config/nvim/lua ]; then
 		mkdir $ME/.config/nvim/lua

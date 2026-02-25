@@ -53,10 +53,16 @@ return {
         end
     },
     -- 文件/注释/通知等
-    {"nvim-neo-tree/neo-tree.nvim"},
+    {"nvim-neo-tree/neo-tree.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+        }
+    },
     {"preservim/nerdcommenter"},
     {
         "rcarriga/nvim-notify",
+        version = "v3.13.5",
         cond = function()
             return vim.fn.has("nvim") == 1 and flag_enabled("is_nvim_notify")
         end,
@@ -83,7 +89,7 @@ return {
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
-        -- 兼容nvim 0.9.3版本
+        -- 兼容nvim 0.9.3版本 (第一次克隆插件时，它通常会先拉取仓库，然后再执行 checkout 到指定 commit 的操作，所以需要手动执行一下lazy的U)
         commit = "cfc6f2c",
         build = ":TSUpdate"
     },
