@@ -40,6 +40,10 @@ main() {
 		replace_symbols_link "$ANDROID_NDK_HOME/simpleperf/report_html.js" "$SH_FOOT/config_file/simpleperf/report_html.js"
 	fi
 
+	#mpv
+	if [ ! -d $ME/.config/mpv ]; then mkdir $ME/.config/mpv; fi
+	replace_symbols_link "$ME/.config/mpv/mpv.conf" "$SH_FOOT/config_file/mpv.conf"
+
 	if [ ! -d $ME/.config/nvim/lua ]; then
 		mkdir $ME/.config/nvim/lua
 	fi
