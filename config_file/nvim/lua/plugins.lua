@@ -7,30 +7,22 @@ end
 
 return {
     -- 基础工具
-    {"Shougo/unite.vim"},
-    {
-        "lewis6991/gitsigns.nvim",
-        opts = {signs_staged_enable = false}
-    },
+    --{"Shougo/unite.vim"},
+
+    -- Git
+    {"lewis6991/gitsigns.nvim", opts = {signs_staged_enable = false}},
+    {"tpope/vim-fugitive"},
+    -- 基础增强
     {
         "chentoast/marks.nvim",
-        config = function()
-            require("marks").setup({})
-        end
+        config = true
+        --config = function()
+        --require("marks").setup({})
+        --end
     },
-    -- 这个插件可能过于庞大，我只是为了使用它的缩进样式
-    {"sheerun/vim-polyglot"},
-    -- Gdiff
-    {"tpope/vim-fugitive"},
-    {"vim-autoformat/vim-autoformat"},
+    {"deris/vim-shot-f"},
+    -- LSP / 补全 / 格式化
     {"neoclide/coc.nvim", branch = "release", cond = flag_enabled("is_coc_vim")},
-    {"majutsushi/tagbar"},
-    -- 主题
-    {"junegunn/seoul256.vim", priority = 1000},
-    {"shaunsingh/nord.nvim"},
-    {"Mofiqul/vscode.nvim"},
-    {"nyoom-engineering/oxocarbon.nvim"},
-    -- 代码片段
     {
         "SirVer/ultisnips",
         dependencies = {"keelii/vim-snippets"},
@@ -40,23 +32,31 @@ return {
             vim.g.UltiSnipsJumpBackwardTrigger = "<S-tab>"
         end
     },
+    -- 主题
+    {"junegunn/seoul256.vim", priority = 1000},
+    {"shaunsingh/nord.nvim"},
+    {"Mofiqul/vscode.nvim"},
+    {"nyoom-engineering/oxocarbon.nvim"},
+    {"sheerun/vim-polyglot"}, -- 这个插件可能过于庞大，我只是为了使用它的缩进样式
+    -- Gdiff
+    {"vim-autoformat/vim-autoformat"},
+    {"majutsushi/tagbar"},
     -- LaTeX
     {"lervag/vimtex", tag = "v2.15", cond = flag_enabled("is_latex")},
     {"KeitaNakamura/tex-conceal.vim", ft = {"tex", "plaintex"}, cond = flag_enabled("is_latex")},
     -- Markdown
     {
         "iamcco/markdown-preview.nvim",
-        ft = {"markdown", "vim-plug"},
+        ft = {"markdown"},
         cond = flag_enabled("is_markdown"),
-        build = function()
-            vim.fn["mkdp#util#install"]()
-        end
+        build = "cd app && ./install.sh"
     },
     -- 文件/注释/通知等
-    {"nvim-neo-tree/neo-tree.nvim",
+    {
+        "nvim-neo-tree/neo-tree.nvim",
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "MunifTanjim/nui.nvim",
+            "MunifTanjim/nui.nvim"
         }
     },
     {"preservim/nerdcommenter"},
@@ -70,13 +70,10 @@ return {
             vim.notify = require("notify")
         end
     },
-    {"deris/vim-shot-f"},
     -- FZF
     {
         "junegunn/fzf",
-        build = function()
-            vim.fn["fzf#install"]()
-        end
+        build = "./install --all"
     },
     {
         "junegunn/fzf.vim",
@@ -100,7 +97,7 @@ return {
         end,
         build = "make",
         event = "VeryLazy",
-        version = false, -- 永远不要将此值设置为 "*"！永远不要！
+        version = false,
         opts = {
             provider = "gemini",
             providers = {
