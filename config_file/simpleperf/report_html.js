@@ -56,12 +56,9 @@ const gHighlightedFunctionNames = new Set([
     'put_neon',
 
 // ------------- 16 bit -------------------
-    'prep_16bpc_neon',
-    'prep_6tap_neon',
-    'put_16bpc_neon',
-    'put_6tap_neon',
-
-    'avg_16bpc_neon',
+    'prep_6tap_neon_i8mm',
+    'put_6tap_neon_i8mm',
+    'warp_affine_8x8_16bpc_neon_i8mm',
 
     'cdef_find_dir_16bpc_neon',
 
@@ -75,26 +72,11 @@ const gHighlightedFunctionNames = new Set([
     'cdef_padding8_16bpc_neon',
     'cdef_padding4_16bpc_neon',
 
-    'inv_dct_8h_x16_neon',
-
-    'emu_edge_16bpc_neon',
-    'emu_edge_16bpc_neon',
-
-    'msac_decode_symbol_adapt4_neon',
-
-    'inv_txfm_horz_dct_32x4_neon',
-
-    'inv_dct32_odd_8h_x16_neon',
-
     'cdef_brow_16bpc',
 
-    'wiener_filter5_hv_16bpc_neon',
-
     'recon_b_inter_16bpc',
-    'inv_dct_8h_x16_neon',
 
     'decode_b',
-    'decode_sb',
 ]);
 
 function getTimeInMs() {

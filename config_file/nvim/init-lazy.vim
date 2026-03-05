@@ -538,7 +538,7 @@ endif
 if g:is_markdown == 1
   autocmd FileType math set filetype=markdown
   autocmd FileType math set filetype=tex
-  let g:mkdp_theme ='dark'
+  "let g:mkdp_theme ='dark'
   if has('mac')
     let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
