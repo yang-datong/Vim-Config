@@ -19,11 +19,15 @@ to_github() {
 		$HOME/sh_foot
 		$HOME/Study
 		$HOME/MD-Note
+
 		#My Project
+		$HOME/H264Encoder
 		$HOME/JPEGer
 		$HOME/H264Decoder
-		$HOME/H264Encoder
 		$HOME/HEVCDecoder
+		$HOME/AV1Decoder
+		$HOME/VVCDecoder
+
 		#Project 1
 		$HOME/ffmpeg-4.4.2
 		$HOME/x264-0.164.5
