@@ -48,12 +48,24 @@ const gHighlightedFunctionNames = new Set([
     'prep_8tap_neon_dotprod',
     'put_8tap_neon_dotprod',
     'lpf_16_wd16_neon',
-    'wiener_filter5_hv_8bpc_neon',
     'prep_neon',
     'emu_edge_8bpc_neon',
+
     'lpf_h_sb_y_8bpc_neon',
     'lpf_h_16_16_neon',
+
     'put_neon',
+    'prep_8tap_neon_i8mm',
+    'put_8tap_neon_i8mm',
+
+    'load_tmvs_neon',
+
+    'lpf_16_wd16_neon',
+    'lpf_16_wd8_neon',
+    'lpf_16_wd6_neon',
+    'lpf_16_wd4_neon',
+
+    'warp_affine_8x8_8bpc_neon_dotprod',
 
 // ------------- 16 bit -------------------
     'prep_6tap_neon_i8mm',
@@ -73,6 +85,8 @@ const gHighlightedFunctionNames = new Set([
     'cdef_padding4_16bpc_neon',
 
     'cdef_brow_16bpc',
+
+    'wiener_filter5_hv2_16bpc_neon',
 
     'recon_b_inter_16bpc',
 
