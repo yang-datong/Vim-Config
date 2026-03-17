@@ -41,11 +41,12 @@ to_github() {
 			echo "Not fond dir: ${in_dir}, skip it"
 			continue
 		fi
-		pushd "${in_dir}"
+		pushd "${in_dir}" >/dev/null
+		echo -e "\033[31m${in_dir}\033[0m"
 		#git add . && git commit -m "Auto commit from[$0]" && git push
 		#不执行add，为了防止提交了不完整的更改
 		git commit -m "Auto commit from[$0]" && git push
-		popd
+		popd >/dev/null
 	done
 	echo "Done!"
 }

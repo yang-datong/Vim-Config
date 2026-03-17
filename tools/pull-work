@@ -42,9 +42,10 @@ from_github() {
 			echo "Not fond dir: ${in_dir}, skip it"
 			continue
 		fi
-		pushd "${in_dir}"
+		pushd "${in_dir}" >/dev/null
+		echo -e "\033[31m${in_dir}\033[0m"
 		git pull
-		popd
+		popd >/dev/null
 	done
 	echo "Done!"
 }
