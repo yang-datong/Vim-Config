@@ -359,15 +359,6 @@ noremap <Leader>c :bd<CR>
 nnoremap <silent> <leader><space> :noh<cr>
 " }
 
-" fast show view in PDF {
-augroup ft_tex_preview
-  autocmd!
-  autocmd FileType tex,plaintex nnoremap <buffer> \v \lv
-  autocmd FileType tex,plaintex nnoremap <buffer> 'v \lv
-augroup END
-" }
-
-
 " Switch Theme {
 let g:current_theme = 'light'
 nnoremap <silent> <F5> :call ToggleTheme()<CR>
@@ -382,20 +373,7 @@ if has("nvim")
 else
   echom 'lazy.nvim 仅支持 Neovim，已跳过插件加载'
 endif
-"======================================================================
-"======================================================================
-"1. 显示文件和缓冲区：运行 :Unite file buffer，它会在 unite 窗口中列出当前目录中的所有文件和缓冲区，你可以通过按 j 和 k 键在列表中选择其中一个文件或缓冲区。
-"2. 使用过滤器：如果你想筛选文件，可以运行 :Unite -input=foo file，其中 foo 是你的过滤条件。这将只显示文件名中包含 foo 的文件。
-"类似与在vim里面重新配置一些“自己”的东西
-"======================================================================
-"======================================================================
-"======================================================================
-noremap <Leader>gs :Git<CR>
-"noremap <Leader>gb :Gblame<CR> "不知道怎么用
-noremap <Leader>gd :Gvdiff<CR>
-"很好用，再也不用使用cp new_file tmp && git restore new_file && vim -d new_file tmp了
-"======================================================================
-"======================================================================
+" 环境依赖检查（插件配置本身已迁移到 lua/plugins.lua）
 if (system('command -v clang-format') =~ 'clang-format') == 0
   call AskUserInstall("clang-format","default")
 endif
@@ -419,29 +397,11 @@ if g:is_latex == 1
   "NOTE: 在Apple silicon中安装的/Library/TeX/texbin/latexindent有问题，需要手动通过brew install latexindent安装，同时还需要去掉高优先路径的执行权限：
   "$ chmod -x /Library/TeX/texbin/latexindent
   "NOTE: Ubuntu在安装的texlive是可以直接使用的
-  let g:formatdef_latexindent = '"latexindent -"'  "设置Autoformat的格式化插件为latexindent
 endif
 "Arm64-gas use -> https://github.com/klauspost/asmfmt
 "x86-64-nasm use -> wget https://github.com/yamnikov-oleg/nasmfmt/releases/download/v0.1/nasmfmt_linux64.tar.gz
-let b:formatdef_nasmfmt='"asmfmt"'
-let b:formatters_nasm = ['nasmfmt']
-"======================================================================
-if g:is_coc_vim
-  let g:coc_global_extensions = ['coc-clangd','coc-snippets','coc-texlab','coc-sh','coc-cmake','coc-json','coc-pyright','coc-powershell','coc-lua','coc-yaml'] "自动安装Coc插件
-  "---More in lua config---
-  if g:is_latex == 1
-    autocmd User CocJumpPlaceholderPre if !coc#rpc#ready() | silent! CocStart --channel-ignored | endif "Latex
-    if has('mac')
-      if (system('command -v texlab') =~ 'texlab') == 0
-        echo "Please use -> brew install --HEAD texlab"
-        "call AskUserInstall("texlab","default") #需要先安装mactex
-      endif
-    endif    "Must -> brew install --HEAD texlab
-  endif
-endif
 "======================================================================
 "let g:tagbar_position = 'vertical'
-noremap <F2> :TagbarToggle <CR>
 if (system('command -v ctags') =~ 'ctags') == 0
   if has('mac')
     call AskUserInstall("ctags","default")
@@ -449,131 +409,7 @@ if (system('command -v ctags') =~ 'ctags') == 0
     call AskUserInstall("universal-ctags","default")
   endif
 endif
-if g:is_vim_studio == 1
-  autocmd VimEnter * nested :TagbarOpen<CR>
-endif
-let g:tagbar_sort= 0
-"关闭函数等排序（默认会按照函数首字母来排序，不好定义源代码）
-"======================================================================
-" Color thems
-" Dark {
-" }
-" Light {
-" }
-"======================================================================
-"Ultisnips (moved to lazy.nvim)
-"======================================================================
-if g:is_latex == 1
-  let g:vimtex_quickfix_mode=0
-  let g:tex_flavor = 'latex'
-  if has('mac')
-    " Use Skim (Skim的字体展示会比较黑,但是zathura配置很麻烦）
-    let g:vimtex_view_general_viewer = 'skim'
-    let g:vimtex_view_method = 'skim'
-    "在skim中-同步：
-    "预设：自定义
-    "命令：nvim
-    "参数：--headless -c "VimtexInverseSearch %line '%file'"
-    "某些路径(或中文)会有问题导致使用正向定位会失效（绝对路径）
-  elseif has('linux')
-    " Use zathura
-    let g:vimtex_view_general_viewer = 'zathura'
-    let g:vimtex_view_method='zathura'
-  endif
-  " 是否转移焦点到PDF预览器中
-  let g:vimtex_view_skim_sync = 0
-  let g:vimtex_view_skim_activate = 0
-  "let g:vimtex_view_general_options = '-r @line @pdf @tex'
 
-  let g:vimtex_compiler_progname = 'nvr'
-  " 设置 Vimtex 使用的默认编译器程序为 Neovim Remote（nvr）。nvr 是一个 Neovim 的插件，用于在外部终端或窗口中运行编译命令。
-  "let g:vimtex_compiler_pdflatex = {'options' : ['-interaction=batchmode']}
-
-  if g:latex_full_compiled_mode == 0
-    " 添加编译器参数： 编译器开启批处理模式
-    " 类似于C的编译器参数
-    if has('mac')
-      let macro_definition = '\def\Mac{true}'
-    else
-      let macro_definition = ''
-    endif
-  else  " 全编译模式
-    let macro_definition = ''
-          \ .'\def\StandardModel{true}'
-          \ .'\def\ShowAfterClassExercises{true}'
-          \ .'\def\UseInkscapeTools{true}'
-    "        \ .'\def\ReleaseModel{true}'
-  endif
-
-        "\   '-outdir=build',
-        "\   '-auxdir=build',
-let g:vimtex_compiler_latexmk = {
-      \ 'executable' : 'latexmk',
-      \ 'options' : [
-      \   '-file-line-error',
-      \   '-synctex=1',
-      \   '-interaction=batchmode',
-      \   '-pretex=' . shellescape(macro_definition) ,
-      \   '-usepretex',
-      \   '-output-directory=build'],
-      \  'out_dir' : 'build',
-      \ }
-      "\   '-jobname=' . expand('%:r') . '-全编译',
-      "\   '-interaction=nonstopmode',
-      "\   '-interaction=batchmode', "最低交互模式，编译速度最快
-"-synctex : 它允许您在 PDF 阅读器中点击某个位置，并在源代码中自动跳转到相应的位置，或者从源代码中定位到 PDF 中的具体位置
-"-interaction=nonstopmode : 禁止交互式操作。当 LaTeX 编译器遇到错误或需要用户输入时，默认情况下会暂停编译并等待用户响应。
-
-let g:tex_conceal_frac=1
-let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
-let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
-set conceallevel=2
-let g:tex_conceal='abdmg'
-hi Conceal ctermbg=none
-endif
-"======================================================================
-if g:is_markdown == 1
-  "let g:mkdp_theme ='dark'
-  if has('mac')
-    let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-    "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/firefox'
-    "let g:mkdp_browser = '/Applications/Firefox.app/Contents/MacOS/Safari'
-  else
-    let g:mkdp_browser = '/usr/bin/google-chrome-stable'
-  endif
-endif
-"======================================================================
-" Neo-tree {
-nnoremap <silent> <Leader>F :Neotree focus<CR> "光标定位到目录的当前编辑文件
-
-noremap <F1> :Neotree toggle<CR>
-" }
-"======================================================================
-" Multiple trigger {
-let g:NERDCustomDelimiters = {
-      \ 'c': { 'left': '/* ', 'right': ' */' },
-      \ 'asm': { 'left': '// ' }
-      \ }
-noremap <silent> <leader>/ :call nerdcommenter#Comment('n', 'toggle')<CR> :execute 'normal 0 j'<CR>
-vnoremap <silent> <leader>/ :call nerdcommenter#Comment('x', 'invert')<CR>
-"noremap <silent> <leader>c :call nerdcommenter#Comment('n', 'toggle')<CR>
-"vnoremap <silent> <leader>c :call nerdcommenter#Comment('x', 'invert')<CR>
-"使用这个快捷键会有1秒左右的延迟
-if has('mac')
-  "在iterm2 的key Bindings:
-  "1. Keyboard Shortcut: Command + /
-  "2. Action: Send Text with 'vim' Special Chars
-  "3. :call nerdcommenter#Comment('n', 'invert') | exec "normal 0 j" \n
-elseif has('linux')
-  noremap <silent> <C-_> :call nerdcommenter#Comment('n', 'toggle')<CR>:execute 'normal 0 j'<CR>
-  vnoremap <silent> <C-_> :call nerdcommenter#Comment('x', 'invert')<CR>:execute 'normal 0 j'<CR>
-endif
-" }
-"======================================================================
-if has("nvim") && g:is_nvim_notify == 1
-endif
-"======================================================================
-"======================================================================
 "nvim-telescope/telescope.nvim 也具有类似功能
 "Ag功能需要额外安装：
 if (system('command -v fzf') =~ 'fzf') == 0
@@ -587,19 +423,7 @@ if (system('command -v ag') =~ 'ag') == 0
   endif
 endif
 
-"======================================================================
-"======================================================================
-"重新排序选项卡
-"======================================================================
-"重新排序选项卡
-"======================================================================
-"自动保存写入
-augroup ft_tex_auto_save
-  autocmd!
-  autocmd FileType tex,plaintex let b:auto_save = 1 "对于Latex时，自动执行保存文件
-augroup END
-"======================================================================
-"======================================================================
+" 自定义文件类型识别
 source $NVIM_FOLDER/filetype.vim
 " }
 
@@ -619,16 +443,6 @@ colorscheme seoul256
 "colorscheme nord
 " Light
 "colorscheme oxocarbon
-" }
-
-" Unite Configure {
-"call unite#filters#matcher_default#use(['matcher_fuzzy'])
-"nnoremap <Leader>f :<C-u>Unite file_rec/neovim<CR>
-""nnoremap <Leader>e :<C-u>Unite -no-split -buffer-name=mru file_mru<cr>
-""nnoremap <Leader>b :<C-u>Unite -quick-match buffer<cr>
-""nnoremap <Leader>r :<C-u>Unite -no-split -buffer-name=register register<CR>
-"" Start insert.
-"call unite#custom#profile('default', 'context', { 'start_insert': 1 })
 " }
 
 
@@ -810,10 +624,6 @@ source $NVIM_FOLDER/unite_extension.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  7. 后置命令与会话恢复区域                        "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if g:is_vim_studio == 1
-  autocmd VimEnter * nested :Neotree source=filesystem reveal=true show
-endif
-
 " 在 Visual 模式下创建映射，按下 <C-h> (Ctrl+h) 时调用函数 {
 highlight SimilarRegsHighlight ctermbg=DarkCyan guibg=DarkCyan ctermfg=white guifg=white
 vnoremap <C-h> <Cmd>call HighlightSimilarRegisters()<CR>
