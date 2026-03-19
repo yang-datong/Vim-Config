@@ -68,20 +68,25 @@ return {
 
             if vim.g.is_latex == 1 then
                 local grp = vim.api.nvim_create_augroup("CocLatexBootstrap", {clear = true})
-                vim.api.nvim_create_autocmd("User", {
-                    group = grp,
-                    pattern = "CocJumpPlaceholderPre",
-                    callback = function()
-                        if vim.fn.exists("*coc#rpc#ready") == 1 and vim.fn["coc#rpc#ready"]() == 0 then
-                            vim.cmd("silent! CocStart --channel-ignored")
+                vim.api.nvim_create_autocmd(
+                    "User",
+                    {
+                        group = grp,
+                        pattern = "CocJumpPlaceholderPre",
+                        callback = function()
+                            if vim.fn.exists("*coc#rpc#ready") == 1 and vim.fn["coc#rpc#ready"]() == 0 then
+                                vim.cmd("silent! CocStart --channel-ignored")
+                            end
                         end
-                    end
-                })
+                    }
+                )
 
                 if is_mac() and vim.fn.executable("texlab") == 0 then
-                    vim.schedule(function()
-                        vim.notify("Please use -> brew install --HEAD texlab", vim.log.levels.WARN)
-                    end)
+                    vim.schedule(
+                        function()
+                            vim.notify("Please use -> brew install --HEAD texlab", vim.log.levels.WARN)
+                        end
+                    )
                 end
             end
         end
@@ -100,7 +105,7 @@ return {
     {"shaunsingh/nord.nvim"},
     {"Mofiqul/vscode.nvim"},
     {"nyoom-engineering/oxocarbon.nvim"},
-    {"sheerun/vim-polyglot"}, -- 这个插件可能过于庞大，我只是为了使用它的缩进样式
+    {"tpope/vim-sleuth"},
     -- Gdiff
     {
         "vim-autoformat/vim-autoformat",
@@ -122,12 +127,15 @@ return {
             vim.g.tagbar_sort = 0
             if vim.g.is_vim_studio == 1 then
                 local grp = vim.api.nvim_create_augroup("TagbarStudioAutoOpen", {clear = true})
-                vim.api.nvim_create_autocmd("VimEnter", {
-                    group = grp,
-                    callback = function()
-                        vim.cmd("TagbarOpen")
-                    end
-                })
+                vim.api.nvim_create_autocmd(
+                    "VimEnter",
+                    {
+                        group = grp,
+                        callback = function()
+                            vim.cmd("TagbarOpen")
+                        end
+                    }
+                )
             end
         end
     },
@@ -158,10 +166,10 @@ return {
                     macro_definition = "\\def\\Mac{true}"
                 end
             else
-                macro_definition = ""
-                    .. "\\def\\StandardModel{true}"
-                    .. "\\def\\ShowAfterClassExercises{true}"
-                    .. "\\def\\UseInkscapeTools{true}"
+                macro_definition =
+                    "" ..
+                    "\\def\\StandardModel{true}" ..
+                        "\\def\\ShowAfterClassExercises{true}" .. "\\def\\UseInkscapeTools{true}"
             end
 
             vim.g.vimtex_compiler_latexmk = {
@@ -185,14 +193,17 @@ return {
             vim.cmd("hi Conceal ctermbg=none")
 
             local grp = vim.api.nvim_create_augroup("VimtexPreviewMap", {clear = true})
-            vim.api.nvim_create_autocmd("FileType", {
-                group = grp,
-                pattern = {"tex", "plaintex"},
-                callback = function(ev)
-                    vim.keymap.set("n", "\\v", "\\lv", {buffer = ev.buf})
-                    vim.keymap.set("n", "'v", "\\lv", {buffer = ev.buf})
-                end
-            })
+            vim.api.nvim_create_autocmd(
+                "FileType",
+                {
+                    group = grp,
+                    pattern = {"tex", "plaintex"},
+                    callback = function(ev)
+                        vim.keymap.set("n", "\\v", "\\lv", {buffer = ev.buf})
+                        vim.keymap.set("n", "'v", "\\lv", {buffer = ev.buf})
+                    end
+                }
+            )
         end
     },
     {"KeitaNakamura/tex-conceal.vim", ft = {"tex", "plaintex"}, cond = flag_enabled("is_latex")},
@@ -220,13 +231,54 @@ return {
         init = function()
             if vim.g.is_vim_studio == 1 then
                 local grp = vim.api.nvim_create_augroup("NeoTreeStudioAutoOpen", {clear = true})
-                vim.api.nvim_create_autocmd("VimEnter", {
-                    group = grp,
-                    callback = function()
-                        vim.cmd("Neotree source=filesystem reveal=true show")
-                    end
-                })
+                vim.api.nvim_create_autocmd(
+                    "VimEnter",
+                    {
+                        group = grp,
+                        callback = function()
+                            vim.cmd("Neotree source=filesystem reveal=true show")
+                        end
+                    }
+                )
             end
+        end,
+        opts = {
+            default_component_configs = {
+                indent = {
+                    with_markers = true,
+                    indent_marker = "|",
+                    last_indent_marker = "`",
+                    with_expanders = true,
+                    expander_collapsed = ">",
+                    expander_expanded = "v"
+                },
+                icon = {
+                    folder_closed = "+",
+                    folder_open = "-",
+                    folder_empty = "~",
+                    folder_empty_open = "~",
+                    default = "*",
+                    provider = function(icon)
+                        return icon
+                    end
+                },
+                git_status = {
+                    symbols = {
+                        added = "A",
+                        modified = "M",
+                        deleted = "D",
+                        renamed = "R",
+                        untracked = "U",
+                        ignored = "I",
+                        unstaged = "!",
+                        staged = "S",
+                        conflict = "X"
+                    }
+                }
+            }
+        },
+        config = function(_, opts)
+            require("neo-tree").setup(opts)
         end,
         cmd = {"Neotree"},
         keys = {
@@ -236,6 +288,7 @@ return {
     },
     {
         "preservim/nerdcommenter",
+        lazy = false,
         init = function()
             vim.g.NERDCustomDelimiters = {
                 c = {left = "/* ", right = " */"},
@@ -263,22 +316,28 @@ return {
             }
 
             if is_linux() then
-                table.insert(keys, {
-                    "<C-_>",
-                    function()
-                        nerdcommenter_toggle_normal()
-                    end,
-                    mode = "n",
-                    silent = true
-                })
-                table.insert(keys, {
-                    "<C-_>",
-                    function()
-                        nerdcommenter_toggle_visual(true)
-                    end,
-                    mode = "x",
-                    silent = true
-                })
+                table.insert(
+                    keys,
+                    {
+                        "<C-_>",
+                        function()
+                            nerdcommenter_toggle_normal()
+                        end,
+                        mode = "n",
+                        silent = true
+                    }
+                )
+                table.insert(
+                    keys,
+                    {
+                        "<C-_>",
+                        function()
+                            nerdcommenter_toggle_visual(true)
+                        end,
+                        mode = "x",
+                        silent = true
+                    }
+                )
             end
 
             return keys
@@ -308,13 +367,16 @@ return {
         "907th/vim-auto-save",
         init = function()
             local grp = vim.api.nvim_create_augroup("AutoSaveTexOnly", {clear = true})
-            vim.api.nvim_create_autocmd("FileType", {
-                group = grp,
-                pattern = {"tex", "plaintex"},
-                callback = function()
-                    vim.b.auto_save = 1
-                end
-            })
+            vim.api.nvim_create_autocmd(
+                "FileType",
+                {
+                    group = grp,
+                    pattern = {"tex", "plaintex"},
+                    callback = function()
+                        vim.b.auto_save = 1
+                    end
+                }
+            )
         end
     },
     -- copilot
@@ -322,10 +384,10 @@ return {
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
-        -- 兼容nvim 0.9.3版本 (第一次克隆插件时，它通常会先拉取仓库，然后再执行 checkout 到指定 commit 的操作，所以需要手动执行一下lazy的U)
+        -- 兼容 nvim 0.9.3 的跨端固定版本；0.11.6 的撤销越界问题在 yj.lua 中做运行时规避
         commit = "cfc6f2c",
         build = ":TSUpdate"
-    },
+    }
     -- {
     --     "yetone/avante.nvim",
     --     cond = function()
