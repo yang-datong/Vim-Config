@@ -196,7 +196,7 @@ func OpenWindowIntoGDB(isMultiPoints)
           \          s:osascript_base, cwd, expand('%:t'), line('.')) :
           \   printf("!%s cd %s && gdb %s -o \\\"b %s:%d\\\" -o \\\"r\\\" \" & return & delay 0.01 & key code 36'",
           \          s:osascript_base, cwd, gdb_file, expand('%:t'), line('.'))
-  elseif has('Linux')
+  elseif has('linux')
     let s:terminator_prefix = "terminator -x fish -c 'pwd && "
     let gdb_cmd = filereadable("./gdb.sh") ?
           \   printf("!%s./gdb.sh -ex \"b %s:%d\"; exec fish'",
@@ -209,7 +209,7 @@ func OpenWindowIntoGDB(isMultiPoints)
     let points = GetAllMarksToGDBDbgPoints()
     if has('mac')
       echo "TODO"
-    elseif has('Linux')
+    elseif has('linux')
       let s:terminator_prefix = "terminator -x fish -c 'pwd && "
       let gdb_cmd = filereadable("./gdb.sh") ?
             \   printf("!%s./gdb.sh %s; exec fish'", s:terminator_prefix, points) :
@@ -247,7 +247,7 @@ func OpenVimWindowIntoGDB(isMultiPoints)
           \          cwd, expand('%:t'), line('.')) :
           \   printf("cd %s && lldb %s -o \"b %s:%d\" -o \"r\"",
           \          cwd, gdb_file, expand('%:t'), line('.'))
-  elseif has('Linux')
+  elseif has('linux')
     let gdb_cmd = filereadable("./gdb.sh") ?
           \   printf("./gdb.sh -ex \"b %s:%d\"",
           \          expand('%'), line('.')) :
@@ -259,7 +259,7 @@ func OpenVimWindowIntoGDB(isMultiPoints)
     let points = GetAllMarksToGDBDbgPoints()
     if has('mac')
       echo "TODO"
-    elseif has('Linux')
+    elseif has('linux')
       let gdb_cmd = filereadable("./gdb.sh") ?
             \   printf("./gdb.sh %s'", points) :
             \   printf("gdb %s %s'", gdb_file, points)
@@ -290,12 +290,13 @@ endfunc
 
 " Fast into head/source file {
 func TryFindHeadfile(name)
-  if filereadable(name . '.hpp')
+  if filereadable(a:name . '.hpp')
     return ".hpp"
-  elseif filereadable(name . '.h')
+  elseif filereadable(a:name . '.h')
     return ".h"
   else
     return ""
+  endif
 endfunc
 
 func FindAndEditHeaderFile(filename,filetype,dir)

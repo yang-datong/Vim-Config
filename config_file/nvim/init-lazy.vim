@@ -75,9 +75,6 @@ if filereadable('/.dockerenv')
 endif
 
 call CheckIsSetMinimunMode()
-
-" 如果文件大于3MB（3000000字节），在配置文件的最后会再次调用一次
-call CheckISLargeFile(3000000)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                     1. 基本配置区域                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -138,7 +135,6 @@ set showcmd
 set hidden
 set backspace=indent,eol,start    " Fix backspace indent
 "set mousemodel=popup " GUI Vim effect
-set mouse= "Remove mouse operation
 " }
 
 " Visual {
@@ -364,10 +360,11 @@ nnoremap <silent> <leader><space> :noh<cr>
 " }
 
 " fast show view in PDF {
-if &filetype == 'tex' || &filetype == 'plaintex'
-  nmap \v \lv
-  nmap 'v \lv
-endif
+augroup ft_tex_preview
+  autocmd!
+  autocmd FileType tex,plaintex nnoremap <buffer> \v \lv
+  autocmd FileType tex,plaintex nnoremap <buffer> 'v \lv
+augroup END
 " }
 
 
@@ -536,8 +533,6 @@ hi Conceal ctermbg=none
 endif
 "======================================================================
 if g:is_markdown == 1
-  autocmd FileType math set filetype=markdown
-  autocmd FileType math set filetype=tex
   "let g:mkdp_theme ='dark'
   if has('mac')
     let g:mkdp_browser = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
@@ -548,26 +543,17 @@ if g:is_markdown == 1
   endif
 endif
 "======================================================================
-" NERDTree {
-"set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite,.git
-let g:NERDTreeChDirMode=2
-let NERDTreeShowHidden=1
-let g:NERDTreeIgnore=['.out$','.cmake$','.vim$','.git','CMakeCache.txt','CMakeFiles','__pycache__']
-"let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
-let g:NERDTreeShowBookmarks=1
-let g:nerdtree_tabs_focus_on_files=1
-let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
-let g:NERDTreeWinSize=30
+" Neo-tree {
 nnoremap <silent> <Leader>F :Neotree focus<CR> "光标定位到目录的当前编辑文件
 
-noremap <F1> :Neotree show toggle<CR>
-" Close NERDTree if no other window open
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+noremap <F1> :Neotree toggle<CR>
 " }
 "======================================================================
 " Multiple trigger {
-let g:NERDCustomDelimiters = { 'c': { 'left': '/* ','right': ' */' } }
-let g:NERDCustomDelimiters = { 'asm': { 'left': '// '} }
+let g:NERDCustomDelimiters = {
+      \ 'c': { 'left': '/* ', 'right': ' */' },
+      \ 'asm': { 'left': '// ' }
+      \ }
 noremap <silent> <leader>/ :call nerdcommenter#Comment('n', 'toggle')<CR> :execute 'normal 0 j'<CR>
 vnoremap <silent> <leader>/ :call nerdcommenter#Comment('x', 'invert')<CR>
 "noremap <silent> <leader>c :call nerdcommenter#Comment('n', 'toggle')<CR>
@@ -608,18 +594,10 @@ endif
 "重新排序选项卡
 "======================================================================
 "自动保存写入
-let b:auto_save = 0
-if &filetype == 'tex' || &filetype == 'plaintex'
-  augroup ft_tex
-    au!
-    au FileType tex let b:auto_save = 1 "对于Latex时，自动执行保存文件
-  augroup END
-endif
-"======================================================================
-"TODO: 账号试用期过期了。
-if &filetype != 'tex' && &filetype != 'plaintex'
-  "首次安装时，需要执行:Copilot setup，然后从github上面认证后，才可以使用
-endif
+augroup ft_tex_auto_save
+  autocmd!
+  autocmd FileType tex,plaintex let b:auto_save = 1 "对于Latex时，自动执行保存文件
+augroup END
 "======================================================================
 "======================================================================
 source $NVIM_FOLDER/filetype.vim
@@ -628,10 +606,6 @@ source $NVIM_FOLDER/filetype.vim
 "" Load lua config file {
 if g:is_lua == 1
   luafile $MYLUARC
-  if has("nvim") && g:is_nvim_notify == 1
-    lua vim.notify = require("notify")
-    "弹窗美化 :lua vim.notify("This is an error message", "error")
-  endif
 endif
 "" }
 
@@ -675,12 +649,10 @@ endif
 " }
 
 " Open current gdb window {
-if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' ||  &filetype == 'asm' || g:is_vim_studio == 1
-  :command Gdb call OpenWindowIntoGDB(0)
-  :command GDB call OpenVimWindowIntoGDB(0)
-  :command GDBS call OpenWindowIntoGDB(1)
-  nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB(0)<CR>
-endif
+command! Gdb call OpenWindowIntoGDB(0)
+command! GDB call OpenVimWindowIntoGDB(0)
+command! GDBS call OpenWindowIntoGDB(1)
+nnoremap <silent> <Leader>gdb :call OpenWindowIntoGDB(0)<CR>
 nnoremap <C-G> :GDB<CR>
 "}
 
@@ -698,13 +670,14 @@ endif
 " }
 
 " Check current line end char is ";" {
-if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
+augroup ft_c_semicolon
+  autocmd!
   if has('mac')
-    inoremap <expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-o>A<Esc>o" : "\<C-o>A;<Esc>o"
+    autocmd FileType c,cpp,h,hpp inoremap <buffer><expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-o>A<Esc>o" : "\<C-o>A;<Esc>o"
   elseif has('linux')
-    inoremap <expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-Enter>" : "\<C-o>A;<Esc>o"
+    autocmd FileType c,cpp,h,hpp inoremap <buffer><expr> <C-Enter> getline('.')[-1:] == ';' ? "\<C-Enter>" : "\<C-o>A;<Esc>o"
   endif
-endif
+augroup END
 " }
 
 " Fast open configure file {
@@ -733,14 +706,15 @@ endif
 " }
 
 " Fast into head or source file {
-if &filetype == 'cpp' || &filetype == 'c' ||  &filetype == 'hpp' ||  &filetype == 'h' || g:is_vim_studio == 1
-  "(手动实现）
-  "map <silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
-  "(coc-clangd实现)
-  map <silent> <S-h> :CocCommand clangd.switchSourceHeader <CR>
-  "分割缓冲区中打开
-  map <silent> <S-l> :CocCommand clangd.switchSourceHeader vsplit <CR>
-endif
+augroup ft_c_switch_header
+  autocmd!
+  " (手动实现）
+  " autocmd FileType c,cpp,h,hpp nnoremap <buffer><silent> <S-h> :call IntoHeadrOrSourceFile()<CR>
+  " (coc-clangd实现)
+  autocmd FileType c,cpp,h,hpp nnoremap <buffer><silent> <S-h> :CocCommand clangd.switchSourceHeader<CR>
+  " 分割缓冲区中打开
+  autocmd FileType c,cpp,h,hpp nnoremap <buffer><silent> <S-l> :CocCommand clangd.switchSourceHeader vsplit<CR>
+augroup END
 " }
 
 " Fast start file execution {
@@ -766,9 +740,15 @@ autocmd BufReadPre *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,o
 autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,out} call ToggleHexMode()
 " }
 
+" 大文件模式检查
+augroup large_file_mode
+  autocmd!
+  autocmd BufReadPre * call CheckISLargeFile(3000000)
+augroup END
+
 
 " 打开文件时自动调用检查函数（检查文件行数如果小于1000行，则在写入指定格式文件时自动格式化，以及在某些特定格式模版下，不需要进行格式化，比如小窗口的vim-tex，固定为3行，且不需要格式化）{
-au! BufNewFile,BufRead *.tpp set filetype=cpp
+autocmd BufNewFile,BufRead *.tpp set filetype=cpp
 "autocmd FileType c,cpp,tex,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
 "NOTE:关掉了latex的format，在实时编辑的时候太卡顿了
 autocmd FileType sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
@@ -820,9 +800,7 @@ autocmd BufWritePre * if &filetype == "xxd" | call ToggleHexMode() | endif
 
 " 在保存文件时根据使用notify通知当前警告和错误
 if has("nvim") && g:is_nvim_notify == 1
-  if &filetype != 'plaintex'
-    autocmd BufWritePre * call DiagnosticNotify()
-  endif
+  autocmd BufWritePre * if &filetype !=# 'plaintex' | call DiagnosticNotify() | endif
 endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  6. unite插件扩展区域                             "
@@ -832,10 +810,6 @@ source $NVIM_FOLDER/unite_extension.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                  7. 后置命令与会话恢复区域                        "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" 如果文件大于3MB（3000000字节）
-call CheckISLargeFile(3000000)
-
-
 if g:is_vim_studio == 1
   autocmd VimEnter * nested :Neotree source=filesystem reveal=true show
 endif

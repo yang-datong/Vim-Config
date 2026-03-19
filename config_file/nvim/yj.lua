@@ -1,7 +1,5 @@
 ---@diagnostic disable: undefined-global
 
-vim.opt.termguicolors = true
-
 --  Perl,Ruby 插件的checkhealth警告
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
@@ -41,7 +39,7 @@ end
 vim.opt.updatetime = 300 -- or 100
 local keyset = vim.keymap.set
 local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}
-keyset("i", "<Down>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<Down>" : coc#refresh()', opts)
+keyset("i", "<Down>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.CheckBackspace() ? "<Down>" : coc#refresh()', opts)
 keyset("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<Up>"]], opts)
 keyset("i", "<cr>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]], opts)
 -- 检查光标是否在一行的开头，或者光标前面的字符是否是空白字符
@@ -126,8 +124,7 @@ local coc_status_record = {}
 
 function coc_status_notify(msg, level)
   local notify_opts = { title = "LSP Status", timeout = 500, hide_from_history = true, on_close = reset_coc_status_record }
-  -- if coc_status_record is not {} then add it to notify_opts to key called "replace"
-  if coc_status_record ~= {} then
+  if coc_status_record and coc_status_record.id then
     notify_opts["replace"] = coc_status_record.id
   end
   coc_status_record = vim.notify(msg, level, notify_opts)
@@ -141,8 +138,7 @@ local coc_diag_record = {}
 
 function coc_diag_notify(msg, level)
   local notify_opts = { title = "LSP Diagnostics", timeout = 500, on_close = reset_coc_diag_record }
-  -- if coc_diag_record is not {} then add it to notify_opts to key called "replace"
-  if coc_diag_record ~= {} then
+  if coc_diag_record and coc_diag_record.id then
     notify_opts["replace"] = coc_diag_record.id
   end
   coc_diag_record = vim.notify(msg, level, notify_opts)
