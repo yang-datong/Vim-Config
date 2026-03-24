@@ -160,17 +160,17 @@ return {
             vim.g.vimtex_view_skim_activate = 0
             vim.g.vimtex_compiler_progname = "nvr"
 
-            local macro_definition = ""
-            if vim.g.latex_full_compiled_mode == 0 then
-                if is_mac() then
-                    macro_definition = "\\def\\Mac{true}"
-                end
-            else
-                macro_definition =
-                    "" ..
-                    "\\def\\StandardModel{true}" ..
-                        "\\def\\ShowAfterClassExercises{true}" .. "\\def\\UseInkscapeTools{true}"
+            local defs = {}
+            if is_mac() then
+              defs[#defs + 1] = "\\def\\Mac{true}"
             end
+            if tonumber(vim.g.latex_full_compiled_mode or 0) ~= 0 then
+              defs[#defs + 1] = "\\def\\StandardModel{true}"
+              defs[#defs + 1] = "\\def\\ShowAfterClassExercises{true}"
+              defs[#defs + 1] = "\\def\\UseInkscapeTools{true}"
+            end
+            local macro_definition = table.concat(defs)
+
 
             vim.g.vimtex_compiler_latexmk = {
                 executable = "latexmk",
@@ -192,16 +192,15 @@ return {
             vim.opt.conceallevel = 2
             vim.cmd("hi Conceal ctermbg=none")
 
-            local grp = vim.api.nvim_create_augroup("VimtexPreviewMap", {clear = true})
-            vim.api.nvim_create_autocmd(
-                "FileType",
-                {
-                    group = grp,
-                    pattern = {"tex", "plaintex"},
-                    callback = function(ev)
-                        vim.keymap.set("n", "\\v", "\\lv", {buffer = ev.buf})
-                        vim.keymap.set("n", "'v", "\\lv", {buffer = ev.buf})
-                    end
+            local grp = vim.api.nvim_create_augroup("VimtexPreviewMap", { clear = true })
+
+            vim.api.nvim_create_autocmd("User", {
+            group = grp,
+            pattern = "VimtexEventInitPost",
+            callback = function(ev)
+              vim.keymap.set("n", "\\v", "<Plug>(vimtex-view)", { buffer = ev.buf, remap = true, silent = true })
+              vim.keymap.set("n", "'v", "<Plug>(vimtex-view)", { buffer = ev.buf, remap = true, silent = true })
+            end,
                 }
             )
         end

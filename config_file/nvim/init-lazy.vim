@@ -57,7 +57,7 @@ endif
 " }
 
 " Whether to enable plug-in(0->off | 1->on){
-let g:latex_full_compiled_mode=0 "1：开启vimtex 编译传入参数 0：不传入参数
+let g:latex_full_compiled_mode=1 "1：开启vimtex 编译传入参数 0：不传入参数
 let g:is_vim_studio=0 "1：用工程开发试图开发vim 0：普通vim编辑模式(已添加到脚本vimm中，不需要手动调整）
 let g:is_Android_jni=0 "1：将添加Android-JNI头文件到path中，0：不添加
 let g:is_inscape=1 "1：开启inkscape使用，0：不开启
