@@ -51,7 +51,11 @@ set_systemctl() {
 }
 
 download_clash() {
-	local clash_file="mihomo-$(uname -o | awk '{print tolower($0)}')-$(uname -m)-${clash_version}.gz"
+	local os=$(uname -o | awk '{print tolower($0)}')
+	local arch=$(uname -m)
+	if [[ $os == "gnu/linux" ]]; then os="linux"; fi
+	if [[ $arch == "x86_64" ]]; then arch="amd64"; fi
+	local clash_file="mihomo-${os}-${arch}-${clash_version}.gz"
 	local clash_bin=${clash_file%.*}
 	if [ ! -f ${target_dir}/clash ]; then
 		if [ ! -f ${clash_file} ] && [ ! -f ${clash_bin} ]; then
