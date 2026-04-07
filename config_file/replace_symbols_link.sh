@@ -24,6 +24,7 @@ main() {
 	replace_symbols_link "$ME/.config/nvim/filetype.vim" "$SH_FOOT/config_file/nvim/filetype.vim"
 	replace_symbols_link "$ME/.clang-format" "$SH_FOOT/config_file/xx.clang-format"
 	replace_symbols_link "$ME/.clangd" "$SH_FOOT/config_file/xx.clangd"
+	replace_symbols_link "$ME/.aria2/aria2.conf" "$SH_FOOT/config_file/aria2.conf"
 
 	#vim
 	replace_symbols_link "$ME/.vimrc" "$SH_FOOT/config_file/nvim/xx.vimrc"
