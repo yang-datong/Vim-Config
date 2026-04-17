@@ -28,5 +28,10 @@ alias ida='wine /home/hi/MySoftWare/IDA_Pro_7.7/ida64.exe'
 
 set-proxy
 
+#neovim 退出后会改变光标为Block，这里强制切换I
+function restore_cursor_shape --on-event fish_prompt
+    echo -en "\e[5 q"
+end
+
 if test -f $HOME/.autojump/share/autojump/autojump.fish; . $HOME/.autojump/share/autojump/autojump.fish; end
 end
