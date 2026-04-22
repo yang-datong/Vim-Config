@@ -30,11 +30,12 @@ set port [lindex \$argv 3]
 set ssh  [lindex \$argv 4]
 set ssh_port_cmd  [lindex \$argv 5]
 
-spawn \$ssh \$ssh_port_cmd \$port \$name@\$ip
+# Prefer password flow and disable GSSAPI to avoid some host-side auth stalls.
+spawn \$ssh -o GSSAPIAuthentication=no -o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no \$ssh_port_cmd \$port \$name@\$ip
 expect {
         "Are you sure you want to continue connecting*"
         {send "yes\n";exp_continue}
-        "assword:"
+        -re "(P|p)assword:"
         {send "\$pswd\n"}
 }
 interact
