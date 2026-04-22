@@ -3,6 +3,7 @@
 alias cl='clear'
 alias rm='trash'
 alias du='du -sh'
+alias v='nvim'
 alias vim='nvim'
 alias pping="httping -x 127.0.0.1:7890"
 alias diff='colordiff -w'
@@ -27,9 +28,17 @@ alias dis-proxy='export https_proxy= http_proxy= all_proxy='
 
 # ffmpeg
 alias ffmpeg="ffmpeg -hide_banner"
+alias ffprobe="ffprobe -hide_banner"
+alias ffplay="ffplay -hide_banner"
+
 alias ffmpeg-q="ffmpeg -loglevel quiet"
-alias ffplay-q="ffplay -loglevel quiet"
 alias ffprobe-q="ffprobe -loglevel quiet"
+alias ffplay-q="ffplay -loglevel quiet"
+
+# git
+alias gs="git status"
+#alias gd="git diff"
+#alias gl="git log"
 
 # perf
 alias perf-top="perf top"
