@@ -9,9 +9,9 @@ autoload -Uz add-zsh-hook colors
 colors
 
 # MacOS 环境
-export PATH=$PATH:/Applications/Inkscape.app/Contents/MacOS
-export PATH=$PATH:$HOME/Library/Python/3.10/bin
-export PATH=$PATH:$HOME/.local/bin/
+export PATH=/Applications/Inkscape.app/Contents/MacOS:$PATH
+export PATH=$HOME/Library/Python/3.10/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs

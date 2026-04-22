@@ -3,9 +3,9 @@ if status is-interactive
 set fish_greeting #去除提示
 
 #MacOS
-set -x PATH $PATH /Applications/Inkscape.app/Contents/MacOS
-set -x PATH $PATH $HOME/Library/Python/3.10/bin
-set -x PATH $PATH $HOME/.local/bin/
+set -x PATH /Applications/Inkscape.app/Contents/MacOS $PATH 
+set -x PATH $HOME/Library/Python/3.10/bin $PATH
+set -x PATH $HOME/.local/bin $PATH
 
 set -x SH_FOOT $HOME/sh_foot
 set -x CLOUD $HOME/Library/Mobile\ Documents/com~apple~CloudDocs
