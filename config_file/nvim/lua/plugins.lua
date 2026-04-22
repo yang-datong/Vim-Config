@@ -204,6 +204,12 @@ return {
 			end
 		end,
 	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.nvim" },
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
+	},
 	-- 文件/注释/通知等
 	{
 		"nvim-neo-tree/neo-tree.nvim",
@@ -328,14 +334,14 @@ return {
 		end,
 	},
 	-- FZF
-	{
-		"junegunn/fzf",
-		build = "./install --all",
-	},
-	{
-		"junegunn/fzf.vim",
-		dependencies = { "junegunn/fzf" },
-	},
+	--{
+		--"junegunn/fzf",
+		--build = "./install --all",
+	--},
+	--{
+		--"junegunn/fzf.vim",
+		--dependencies = { "junegunn/fzf" },
+	--},
 	-- 自动保存
 	{
 		"907th/vim-auto-save",
