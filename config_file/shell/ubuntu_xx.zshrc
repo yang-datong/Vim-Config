@@ -61,7 +61,7 @@ add-zsh-hook -d precmd omz_termsupport_cwd 2>/dev/null
 add-zsh-hook -d preexec omz_termsupport_preexec 2>/dev/null
 
 # fish 风格 ls：保留颜色并显示类型后缀（软链接为 @）
-alias ls='ls -GF'
+alias ls='ls --color=auto -F'
 
 
 
