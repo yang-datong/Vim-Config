@@ -12,6 +12,7 @@ shopt -s checkwinsize #在每个命令之后检查窗口大小，并在必要时
 export PATH=$PATH:$HOME/.local/bin/
 
 export SH_FOOT=$HOME/sh_foot
+export TMPDIR=/tmp
 export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
 export TMPDIR=/tmp/
 

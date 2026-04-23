@@ -20,6 +20,7 @@ export PATH=$HOME/Library/Python/3.10/bin:$PATH
 export PATH=$HOME/.local/bin:$PATH
 
 export SH_FOOT=$HOME/sh_foot
+export TMPDIR=/tmp
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
 if [[ "$(uname -m)" == "arm64" ]]; then
   export ANDROID_NDK_HOME="/opt/homebrew/share/android-ndk"
