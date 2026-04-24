@@ -5,7 +5,7 @@ typeset -gi NVIM_CURSOR_NEEDS_RESET=0
 
 # Reset terminal cursor to bar only after editor commands exit.
 mark_nvim_cursor_reset_preexec() {
-  [[ "$1" =~ '(^|[[:space:];|&()])(v|vim|nvim|neovim|nvimdiff)([[:space:];|&()]|$)' ]] || return
+  [[ "$1" =~ '(^|[[:space:];|&()])(v|vim|nvim|vimm|neovim|nvimdiff)([[:space:];|&()]|$)' ]] || return
   NVIM_CURSOR_NEEDS_RESET=1
 }
 

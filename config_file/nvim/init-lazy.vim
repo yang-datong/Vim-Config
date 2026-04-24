@@ -224,6 +224,7 @@ cnoreabbrev W! w!
 cnoreabbrev Q! q!
 cnoreabbrev Qall! qall!
 if g:is_vim_studio == 1
+  cnoreabbrev q qall
   cnoreabbrev wq wqall
   cnoreabbrev Wq wqall
   cnoreabbrev wQ wqall

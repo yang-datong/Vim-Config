@@ -1,28 +1,46 @@
 ---@diagnostic disable: undefined-global
 
+local api = vim.api
+local fn = vim.fn
+local g = vim.g
+
+local HAS_MAC = fn.has("mac") == 1
+local HAS_LINUX = fn.has("linux") == 1
+
 local function flag_enabled(name)
-	local value = vim.g[name]
+	local value = g[name]
 	return value == nil or value == 1
 end
 
-local function is_mac()
-	return vim.fn.has("mac") == 1
-end
-
-local function is_linux()
-	return vim.fn.has("linux") == 1
+local function create_augroup(name)
+	return api.nvim_create_augroup(name, { clear = true })
 end
 
 local function nerdcommenter_toggle_normal()
-	vim.fn["nerdcommenter#Comment"]("n", "toggle")
+	fn["nerdcommenter#Comment"]("n", "toggle")
 	vim.cmd("normal 0j")
 end
 
 local function nerdcommenter_toggle_visual(move_cursor)
-	vim.fn["nerdcommenter#Comment"]("x", "invert")
+	fn["nerdcommenter#Comment"]("x", "invert")
 	if move_cursor then
 		vim.cmd("normal 0j")
 	end
+end
+
+local function nerdcommenter_toggle_visual_keep()
+	nerdcommenter_toggle_visual(false)
+end
+
+local function nerdcommenter_toggle_visual_move()
+	nerdcommenter_toggle_visual(true)
+end
+
+local function autocmd_vimenter(group_name, cb)
+	api.nvim_create_autocmd("VimEnter", {
+		group = create_augroup(group_name),
+		callback = cb,
+	})
 end
 
 return {
@@ -47,7 +65,7 @@ return {
 		branch = "release",
 		cond = flag_enabled("is_coc_vim"),
 		init = function()
-			vim.g.coc_global_extensions = {
+			g.coc_global_extensions = {
 				"coc-clangd",
 				"coc-snippets",
 				"coc-texlab",
@@ -55,24 +73,23 @@ return {
 				"coc-cmake",
 				"coc-json",
 				"coc-pyright",
-				"coc-powershell",
 				"coc-lua",
 				"coc-yaml",
+				--"coc-powershell",
 			}
 
-			if vim.g.is_latex == 1 then
-				local grp = vim.api.nvim_create_augroup("CocLatexBootstrap", { clear = true })
-				vim.api.nvim_create_autocmd("User", {
-					group = grp,
+			if g.is_latex == 1 then
+				api.nvim_create_autocmd("User", {
+					group = create_augroup("CocLatexBootstrap"),
 					pattern = "CocJumpPlaceholderPre",
 					callback = function()
-						if vim.fn.exists("*coc#rpc#ready") == 1 and vim.fn["coc#rpc#ready"]() == 0 then
+						if fn.exists("*coc#rpc#ready") == 1 and fn["coc#rpc#ready"]() == 0 then
 							vim.cmd("silent! CocStart --channel-ignored")
 						end
 					end,
 				})
 
-				if is_mac() and vim.fn.executable("texlab") == 0 then
+				if HAS_MAC and fn.executable("texlab") == 0 then
 					vim.schedule(function()
 						vim.notify("Please use -> brew install --HEAD texlab", vim.log.levels.WARN)
 					end)
@@ -84,13 +101,13 @@ return {
 		"SirVer/ultisnips",
 		dependencies = { "keelii/vim-snippets" },
 		init = function()
-			vim.g.UltiSnipsExpandTrigger = "<tab>"
-			vim.g.UltiSnipsJumpForwardTrigger = "<tab>"
-			vim.g.UltiSnipsJumpBackwardTrigger = "<S-tab>"
+			g.UltiSnipsExpandTrigger = "<tab>"
+			g.UltiSnipsJumpForwardTrigger = "<tab>"
+			g.UltiSnipsJumpBackwardTrigger = "<S-tab>"
 		end,
 	},
 	-- 主题
-	{ "junegunn/seoul256.vim", priority = 1000 },
+	{ "junegunn/seoul256.vim" },
 	{ "shaunsingh/nord.nvim" },
 	{ "Mofiqul/vscode.nvim" },
 	{ "nyoom-engineering/oxocarbon.nvim" },
@@ -99,11 +116,11 @@ return {
 	{
 		"vim-autoformat/vim-autoformat",
 		init = function()
-			if vim.g.is_latex == 1 then
-				vim.g.formatdef_latexindent = '"latexindent -"'
+			if g.is_latex == 1 then
+				g.formatdef_latexindent = '"latexindent -"'
 			end
-			vim.g.formatdef_nasmfmt = '"asmfmt"'
-			vim.g.formatters_nasm = { "nasmfmt" }
+			g.formatdef_nasmfmt = '"asmfmt"'
+			g.formatters_nasm = { "nasmfmt" }
 		end,
 	},
 	{
@@ -113,74 +130,66 @@ return {
 			{ "<F2>", "<cmd>TagbarToggle<CR>", mode = "n", silent = true },
 		},
 		init = function()
-			vim.g.tagbar_sort = 0
-			if vim.g.is_vim_studio == 1 then
-				local grp = vim.api.nvim_create_augroup("TagbarStudioAutoOpen", { clear = true })
-				vim.api.nvim_create_autocmd("VimEnter", {
-					group = grp,
-					callback = function()
-						vim.cmd("TagbarOpen")
-					end,
-				})
+			g.tagbar_sort = 0
+			if g.is_vim_studio == 1 then
+				autocmd_vimenter("TagbarStudioAutoOpen", function()
+					vim.cmd("TagbarOpen")
+				end)
 			end
 		end,
 	},
 	-- LaTeX
 	{
 		"lervag/vimtex",
-		tag = "v2.15",
+		--tag = "v2.15",
 		cond = flag_enabled("is_latex"),
 		init = function()
-			vim.g.vimtex_quickfix_mode = 0
-			vim.g.tex_flavor = "latex"
+			g.vimtex_quickfix_mode = 0
+			g.tex_flavor = "latex"
 
-			if is_mac() then
-				vim.g.vimtex_view_general_viewer = "skim"
-				vim.g.vimtex_view_method = "skim"
-			elseif is_linux() then
-				vim.g.vimtex_view_general_viewer = "zathura"
-				vim.g.vimtex_view_method = "zathura"
+			local viewer = HAS_MAC and "skim" or (HAS_LINUX and "zathura" or nil)
+			if viewer then
+				g.vimtex_view_general_viewer = viewer
+				g.vimtex_view_method = viewer
 			end
 
-			vim.g.vimtex_view_skim_sync = 0
-			vim.g.vimtex_view_skim_activate = 0
-			vim.g.vimtex_compiler_progname = "nvr"
+			g.vimtex_view_skim_sync = 0
+			g.vimtex_view_skim_activate = 0
+			g.vimtex_compiler_progname = "nvr"
 
 			local defs = {}
-			if is_mac() then
+			if HAS_MAC then
 				defs[#defs + 1] = "\\def\\Mac{true}"
 			end
-			if tonumber(vim.g.latex_full_compiled_mode or 0) ~= 0 then
+			if tonumber(g.latex_full_compiled_mode or 0) ~= 0 then
 				defs[#defs + 1] = "\\def\\StandardModel{true}"
 				defs[#defs + 1] = "\\def\\ShowAfterClassExercises{true}"
 				defs[#defs + 1] = "\\def\\UseInkscapeTools{true}"
 			end
 			local macro_definition = table.concat(defs)
 
-			vim.g.vimtex_compiler_latexmk = {
+			g.vimtex_compiler_latexmk = {
 				executable = "latexmk",
 				options = {
 					"-file-line-error",
 					"-synctex=1",
 					"-interaction=batchmode",
-					"-pretex=" .. vim.fn.shellescape(macro_definition),
+					"-pretex=" .. fn.shellescape(macro_definition),
 					"-usepretex",
 					"-output-directory=build",
 				},
 				out_dir = "build",
 			}
 
-			vim.g.tex_conceal_frac = 1
-			vim.g.tex_superscripts = "[0-9a-zA-W.,:;+-<>/()=]"
-			vim.g.tex_subscripts = "[0-9aehijklmnoprstuvx,+-/().]"
-			vim.g.tex_conceal = "abdmg"
+			g.tex_conceal_frac = 1
+			g.tex_superscripts = "[0-9a-zA-W.,:;+-<>/()=]"
+			g.tex_subscripts = "[0-9aehijklmnoprstuvx,+-/().]"
+			g.tex_conceal = "abdmg"
 			vim.opt.conceallevel = 2
 			vim.cmd("hi Conceal ctermbg=none")
 
-			local grp = vim.api.nvim_create_augroup("VimtexPreviewMap", { clear = true })
-
-			vim.api.nvim_create_autocmd("User", {
-				group = grp,
+			api.nvim_create_autocmd("User", {
+				group = create_augroup("VimtexPreviewMap"),
 				pattern = "VimtexEventInitPost",
 				callback = function(ev)
 					vim.keymap.set("n", "\\v", "<Plug>(vimtex-view)", { buffer = ev.buf, remap = true, silent = true })
@@ -197,18 +206,13 @@ return {
 		cond = flag_enabled("is_markdown"),
 		build = "cd app && ./install.sh",
 		init = function()
-			if is_mac() then
-				vim.g.mkdp_browser = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-			else
-				vim.g.mkdp_browser = "/usr/bin/google-chrome-stable"
-			end
+			g.mkdp_browser = HAS_MAC and "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+				or "/usr/bin/google-chrome-stable"
 		end,
 	},
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.nvim" },
-		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-mini/mini.icons" },
-		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
+		dependencies = { "nvim-mini/mini.nvim", "nvim-mini/mini.icons", "nvim-tree/nvim-web-devicons" },
 	},
 	-- 文件/注释/通知等
 	{
@@ -218,14 +222,10 @@ return {
 			"MunifTanjim/nui.nvim",
 		},
 		init = function()
-			if vim.g.is_vim_studio == 1 then
-				local grp = vim.api.nvim_create_augroup("NeoTreeStudioAutoOpen", { clear = true })
-				vim.api.nvim_create_autocmd("VimEnter", {
-					group = grp,
-					callback = function()
-						vim.cmd("Neotree source=filesystem reveal=true show")
-					end,
-				})
+			if g.is_vim_studio == 1 then
+				autocmd_vimenter("NeoTreeStudioAutoOpen", function()
+					vim.cmd("Neotree source=filesystem reveal=true show")
+				end)
 			end
 		end,
 		opts = {
@@ -263,9 +263,6 @@ return {
 				},
 			},
 		},
-		config = function(_, opts)
-			require("neo-tree").setup(opts)
-		end,
 		cmd = { "Neotree" },
 		keys = {
 			{ "<leader>F", "<cmd>Neotree focus<CR>", mode = "n", silent = true },
@@ -276,48 +273,20 @@ return {
 		"preservim/nerdcommenter",
 		lazy = false,
 		init = function()
-			vim.g.NERDCustomDelimiters = {
+			g.NERDCustomDelimiters = {
 				c = { left = "/* ", right = " */" },
 				asm = { left = "// " },
 			}
 		end,
 		keys = function()
 			local keys = {
-				{
-					"<leader>/",
-					function()
-						nerdcommenter_toggle_normal()
-					end,
-					mode = "n",
-					silent = true,
-				},
-				{
-					"<leader>/",
-					function()
-						nerdcommenter_toggle_visual(false)
-					end,
-					mode = "x",
-					silent = true,
-				},
+				{ "<leader>/", nerdcommenter_toggle_normal, mode = "n", silent = true },
+				{ "<leader>/", nerdcommenter_toggle_visual_keep, mode = "x", silent = true },
 			}
 
-			if is_linux() then
-				table.insert(keys, {
-					"<C-_>",
-					function()
-						nerdcommenter_toggle_normal()
-					end,
-					mode = "n",
-					silent = true,
-				})
-				table.insert(keys, {
-					"<C-_>",
-					function()
-						nerdcommenter_toggle_visual(true)
-					end,
-					mode = "x",
-					silent = true,
-				})
+			if HAS_LINUX then
+				table.insert(keys, { "<C-_>", nerdcommenter_toggle_normal, mode = "n", silent = true })
+				table.insert(keys, { "<C-_>", nerdcommenter_toggle_visual_move, mode = "x", silent = true })
 			end
 
 			return keys
@@ -325,30 +294,27 @@ return {
 	},
 	{
 		"rcarriga/nvim-notify",
-		version = "v3.13.5",
-		cond = function()
-			return vim.fn.has("nvim") == 1 and flag_enabled("is_nvim_notify")
-		end,
+		--version = "v3.13.5",
+		cond = flag_enabled("is_nvim_notify"),
 		config = function()
 			vim.notify = require("notify")
 		end,
 	},
 	-- FZF
 	--{
-		--"junegunn/fzf",
-		--build = "./install --all",
+	--"junegunn/fzf",
+	--build = "./install --all",
 	--},
 	--{
-		--"junegunn/fzf.vim",
-		--dependencies = { "junegunn/fzf" },
+	--"junegunn/fzf.vim",
+	--dependencies = { "junegunn/fzf" },
 	--},
 	-- 自动保存
 	{
 		"907th/vim-auto-save",
 		init = function()
-			local grp = vim.api.nvim_create_augroup("AutoSaveTexOnly", { clear = true })
-			vim.api.nvim_create_autocmd("FileType", {
-				group = grp,
+			api.nvim_create_autocmd("FileType", {
+				group = create_augroup("AutoSaveTexOnly"),
 				pattern = { "tex", "plaintex" },
 				callback = function()
 					vim.b.auto_save = 1
@@ -362,7 +328,7 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		-- 兼容 nvim 0.9.3 的跨端固定版本；0.11.6 的撤销越界问题在 yj.lua 中做运行时规避
-		commit = "cfc6f2c",
+		--commit = "cfc6f2c",
 		build = ":TSUpdate",
 	},
 	-- {
