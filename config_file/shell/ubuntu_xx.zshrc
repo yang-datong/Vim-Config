@@ -14,36 +14,28 @@ setopt prompt_subst
 autoload -Uz add-zsh-hook colors
 colors
 
-# MacOS 环境
-export PATH=/Applications/Inkscape.app/Contents/MacOS:$PATH
-export PATH=$HOME/Library/Python/3.10/bin:$PATH
+# Ubuntu 环境
 export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/MySoftWare/jadx/bin:$PATH
 
 export SH_FOOT=$HOME/sh_foot
+export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
+export ANDROID_NDK_HOME=/usr/lib/android-ndk
 export TMPDIR=/tmp
-export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
-if [[ "$(uname -m)" == "arm64" ]]; then
-  export ANDROID_NDK_HOME="/opt/homebrew/share/android-ndk"
-  [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && export PATH="/opt/homebrew/bin:$PATH"
-else
-  export ANDROID_NDK_HOME="$HOME/Library/Android/Sdk/ndk"
-fi
-export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
 
 AI_KEY_FILE="$HOME/.AI-Key.txt"
 if [[ -r "$AI_KEY_FILE" ]]; then
   export GEMINI_API_KEY="$(awk '/GEMINI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
-  export AVANTE_GEMINI_API_KEY="$GEMINI_API_KEY"
   export OPENAI_API_KEY="$(awk '/OPENAI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
-  export AVANTE_OPENAI_API_KEY="$OPENAI_API_KEY"
+  export DEEPSEEK_API_KEY="$(awk '/DEEPSEEK_API_KEY/ {print $2}' "$AI_KEY_FILE")"
 fi
 
 # Aliases & helpers
 source "$HOME/.common_aliases.sh"
-alias cat='bat -p'
-alias gdb='lldb'
-alias ldd='otool -L'
-alias ida='/Applications/IDA\ Professional\ 9.0.app/Contents/MacOS/ida'
+alias ls='ls --color=auto -F'
+alias apt='sudo apt'
+alias cat='batcat -p'
+alias ida='wine $HOME/MySoftWare/IDA_Pro_7.7/ida64.exe'
 
 set-proxy
 
@@ -55,14 +47,16 @@ plugins=(git zsh-autosuggestions autojump zsh-syntax-highlighting)
 
 source "$ZSH/oh-my-zsh.sh"
 
+# fish 风格历史：每个终端独立上下文，退出后合并到全局文件
+unsetopt sharehistory
+setopt incappendhistory
+setopt appendhistory
+
 # 进一步减少每次回车的无用钩子开销
 add-zsh-hook -d precmd _omz_async_request 2>/dev/null
 add-zsh-hook -d precmd omz_termsupport_precmd 2>/dev/null
 add-zsh-hook -d precmd omz_termsupport_cwd 2>/dev/null
 add-zsh-hook -d preexec omz_termsupport_preexec 2>/dev/null
-
-# fish 风格 ls：保留颜色并显示类型后缀（软链接为 @）
-alias ls='ls --color=auto -F'
 
 [[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh"
 [[ -r "$SH_FOOT/config_file/shell/xx.nvim_cursor_reset.zsh" ]] && source "$SH_FOOT/config_file/shell/xx.nvim_cursor_reset.zsh"

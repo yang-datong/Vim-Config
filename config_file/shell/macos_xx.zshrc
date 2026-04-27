@@ -32,13 +32,13 @@ export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bott
 AI_KEY_FILE="$HOME/.AI-Key.txt"
 if [[ -r "$AI_KEY_FILE" ]]; then
   export GEMINI_API_KEY="$(awk '/GEMINI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
-  export AVANTE_GEMINI_API_KEY="$GEMINI_API_KEY"
   export OPENAI_API_KEY="$(awk '/OPENAI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
-  export AVANTE_OPENAI_API_KEY="$OPENAI_API_KEY"
+  export DEEPSEEK_API_KEY="$(awk '/DEEPSEEK_API_KEY/ {print $2}' "$AI_KEY_FILE")"
 fi
 
 # Aliases & helpers
 source "$HOME/.common_aliases.sh"
+alias ls='ls -GF'
 alias cat='bat -p'
 alias gdb='lldb'
 alias ldd='otool -L'
@@ -54,14 +54,16 @@ plugins=(git zsh-autosuggestions autojump zsh-syntax-highlighting)
 
 source "$ZSH/oh-my-zsh.sh"
 
+# fish 风格历史：每个终端独立上下文，退出后合并到全局文件
+unsetopt sharehistory
+setopt incappendhistory
+setopt appendhistory
+
 # 进一步减少每次回车的无用钩子开销
 add-zsh-hook -d precmd _omz_async_request 2>/dev/null
 add-zsh-hook -d precmd omz_termsupport_precmd 2>/dev/null
 add-zsh-hook -d precmd omz_termsupport_cwd 2>/dev/null
 add-zsh-hook -d preexec omz_termsupport_preexec 2>/dev/null
-
-# fish 风格 ls：保留颜色并显示类型后缀（软链接为 @）
-alias ls='ls -GF'
 
 [[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh"
 [[ -r "$SH_FOOT/config_file/shell/xx.nvim_cursor_reset.zsh" ]] && source "$SH_FOOT/config_file/shell/xx.nvim_cursor_reset.zsh"
