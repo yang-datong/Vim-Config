@@ -25,6 +25,7 @@ if [[ "$(uname -m)" == "arm64" ]]; then
   export ANDROID_NDK_HOME="/opt/homebrew/share/android-ndk"
   [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && export PATH="/opt/homebrew/bin:$PATH"
 else
+  export PATH=/usr/local/Cellar/node/25.9.0_2/bin:$PATH
   export ANDROID_NDK_HOME="$HOME/Library/Android/Sdk/ndk"
 fi
 export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
