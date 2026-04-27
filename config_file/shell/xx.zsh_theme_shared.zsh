@@ -77,9 +77,15 @@ zstyle ':completion:*' list-colors \
   'du=0;38;2;229;233;240;48;2;67;76;94'
 FISH_ITALIC_ON=$'%{\e[3m%}'
 FISH_ITALIC_OFF=$'%{\e[23m%}'
-zstyle ':completion:*:descriptions' format "%F{#ebcb8b}${FISH_ITALIC_ON}%d${FISH_ITALIC_OFF}%f"
-zstyle ':completion:*:messages' format '%F{#3b4252}%K{#d08770} %d %k%f'
-zstyle ':completion:*:warnings' format '%F{#bf616a}%d%f'
+
+# 显示分组标题
+#zstyle ':completion:*:descriptions' format "%F{#ebcb8b}${FISH_ITALIC_ON}%d${FISH_ITALIC_OFF}%f"
+#zstyle ':completion:*:messages' format '%F{#3b4252}%K{#d08770} %d %k%f'
+#zstyle ':completion:*:warnings' format '%F{#bf616a}%d%f'
+zstyle ':completion:*:descriptions' format ''
+zstyle ':completion:*:messages' format ''
+zstyle ':completion:*:warnings' format ''
+
 zstyle ':completion:*' list-prompt '%F{#3b4252}%K{#d08770} %p | %m/%M | %l/%L %k%f'
 zstyle ':completion:*' select-prompt '%F{#3b4252}%K{#d08770} %p | %m/%M %k%f'
 

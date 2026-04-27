@@ -160,7 +160,7 @@ set foldlevel=2
 " }
 
 " Cursor {
-set guicursor=a:ver25-blinkon10
+"set guicursor=a:ver25-blinkon10
 "set ruler
 set nonumber
 "set cursorline
