@@ -432,6 +432,8 @@ func Run()
     normal \ll 
   elseif &filetype == 'markdown'
     :MarkdownPreview
+  elseif &filetype == 'html'
+    :! open %
   endif
 
   " NOTE: 4. （最高优先级）直接在源代码中声明 -> 由用户自定义的执行命令(只能在第一行)：
