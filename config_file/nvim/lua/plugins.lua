@@ -202,6 +202,7 @@ return {
 	-- Markdown
 	{
 		"iamcco/markdown-preview.nvim",
+		lazy = false,
 		ft = { "markdown" },
 		cond = flag_enabled("is_markdown"),
 		build = "cd app && ./install.sh",

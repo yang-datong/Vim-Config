@@ -1,0 +1,139 @@
+#!/bin/bash
+
+set -euo pipefail
+
+GATEWAY_HOST="${CLAUDE_GEMINI_HOST:-127.0.0.1}"
+GATEWAY_PORT="${CLAUDE_GEMINI_PORT:-4001}"
+GATEWAY_URL="http://${GATEWAY_HOST}:${GATEWAY_PORT}"
+GATEWAY_KEY="${CLAUDE_GEMINI_GATEWAY_KEY:-sk-claude-gemini-local}"
+CONFIG_FILE="${CLAUDE_GEMINI_CONFIG:-$HOME/.config/litellm/claude-gemini.yaml}"
+LOG_FILE="${CLAUDE_GEMINI_LOG_FILE:-$HOME/.cache/claude-gemini-litellm.log}"
+MODEL="${CLAUDE_GEMINI_MODEL:-gemini-2.5-flash}"
+REQUEST_TIMEOUT="${CLAUDE_GEMINI_REQUEST_TIMEOUT:-12}"
+PREFLIGHT_TIMEOUT="${CLAUDE_GEMINI_PREFLIGHT_TIMEOUT:-4}"
+SKIP_PREFLIGHT="${CLAUDE_GEMINI_SKIP_PREFLIGHT:-0}"
+
+if [[ -z "${GEMINI_API_KEY:-}" ]]; then
+  echo "GEMINI_API_KEY is not set. Please load it first."
+  exit 1
+fi
+
+if [[ ! -f "$CONFIG_FILE" ]]; then
+  echo "LiteLLM config not found: $CONFIG_FILE"
+  exit 1
+fi
+
+if ! command -v litellm >/dev/null 2>&1; then
+  echo "litellm is not installed or not in PATH."
+  echo "Install with: python3.10 -m pip install --user \"litellm[proxy]>=1.82.9\""
+  exit 1
+fi
+
+mkdir -p "$(dirname "$LOG_FILE")"
+
+is_vertex_model() {
+  [[ "$MODEL" == *"-vertex" ]]
+}
+
+print_recent_failure_hint() {
+  if [[ ! -f "$LOG_FILE" ]]; then
+    return
+  fi
+
+  if grep -q "User location is not supported for the API use" "$LOG_FILE"; then
+    echo "Recent LiteLLM log hint: Google previously rejected this endpoint with:"
+    echo "  User location is not supported for the API use."
+    return
+  fi
+
+  if grep -q "Cannot connect to host generativelanguage.googleapis.com" "$LOG_FILE"; then
+    echo "Recent LiteLLM log hint: it could not connect to generativelanguage.googleapis.com:443."
+  fi
+}
+
+probe_google_ai_studio() {
+  curl -sS -o /dev/null \
+    --connect-timeout "$PREFLIGHT_TIMEOUT" \
+    --max-time "$PREFLIGHT_TIMEOUT" \
+    "https://generativelanguage.googleapis.com"
+}
+
+preflight_check() {
+  if [[ "$SKIP_PREFLIGHT" == "1" ]]; then
+    return
+  fi
+
+  if is_vertex_model; then
+    local missing=()
+
+    [[ -n "${VERTEXAI_PROJECT:-}" ]] || missing+=("VERTEXAI_PROJECT")
+    [[ -n "${VERTEXAI_LOCATION:-}" ]] || missing+=("VERTEXAI_LOCATION")
+
+    if (( ${#missing[@]} > 0 )); then
+      echo "Vertex model selected but required env vars are missing: ${missing[*]}"
+      echo "Model: $MODEL"
+      exit 1
+    fi
+
+    return
+  fi
+
+  if probe_google_ai_studio; then
+    return
+  fi
+
+  echo "Gemini preflight failed before starting Claude."
+  echo "Endpoint is unreachable: https://generativelanguage.googleapis.com"
+  echo "Model: $MODEL"
+
+  if [[ -n "${https_proxy:-}" ]]; then
+    echo "https_proxy=$https_proxy"
+  fi
+  if [[ -n "${all_proxy:-}" ]]; then
+    echo "all_proxy=$all_proxy"
+  fi
+
+  print_recent_failure_hint
+  echo "Set CLAUDE_GEMINI_SKIP_PREFLIGHT=1 to bypass this check."
+  exit 1
+}
+
+is_gateway_ready() {
+  curl -fsS "${GATEWAY_URL}/health/liveliness" >/dev/null 2>&1
+}
+
+preflight_check
+
+if ! is_gateway_ready; then
+  nohup litellm --config "$CONFIG_FILE" --host "$GATEWAY_HOST" --port "$GATEWAY_PORT" --request_timeout "$REQUEST_TIMEOUT" >"$LOG_FILE" 2>&1 &
+
+  for _ in {1..40}; do
+    if is_gateway_ready; then
+      break
+    fi
+    sleep 0.25
+  done
+
+  if ! is_gateway_ready; then
+    echo "LiteLLM gateway failed to start. Check logs: $LOG_FILE"
+    exit 1
+  fi
+fi
+
+export ANTHROPIC_BASE_URL="$GATEWAY_URL"
+export ANTHROPIC_AUTH_TOKEN="$GATEWAY_KEY"
+export ANTHROPIC_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES="thinking,interleaved_thinking"
+export ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES="thinking,interleaved_thinking"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES="thinking,interleaved_thinking"
+export CLAUDE_CODE_SUBAGENT_MODEL="$MODEL"
+export ANTHROPIC_CUSTOM_MODEL_OPTION="$MODEL"
+export ANTHROPIC_CUSTOM_MODEL_OPTION_NAME="Gemini 2.5 Flash via LiteLLM"
+export ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION="Google Gemini routed through local LiteLLM gateway"
+export ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES="thinking,interleaved_thinking"
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1
+
+exec claude "$@"

@@ -1,0 +1,69 @@
+#!/bin/bash
+
+set -euo pipefail
+
+GATEWAY_HOST="${CLAUDE_OPENAI_HOST:-127.0.0.1}"
+GATEWAY_PORT="${CLAUDE_OPENAI_PORT:-4002}"
+GATEWAY_URL="http://${GATEWAY_HOST}:${GATEWAY_PORT}"
+GATEWAY_KEY="${CLAUDE_OPENAI_GATEWAY_KEY:-sk-claude-openai-local}"
+CONFIG_FILE="${CLAUDE_OPENAI_CONFIG:-$HOME/.config/litellm/claude-openai.yaml}"
+LOG_FILE="${CLAUDE_OPENAI_LOG_FILE:-$HOME/.cache/claude-openai-litellm.log}"
+MODEL="${CLAUDE_OPENAI_MODEL:-gpt-5.4}"
+EFFORT_LEVEL="${CLAUDE_OPENAI_EFFORT_LEVEL:-xhigh}"
+
+if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+  echo "OPENAI_API_KEY is not set. Please load it first."
+  exit 1
+fi
+
+if [[ ! -f "$CONFIG_FILE" ]]; then
+  echo "LiteLLM config not found: $CONFIG_FILE"
+  exit 1
+fi
+
+if ! command -v litellm >/dev/null 2>&1; then
+  echo "litellm is not installed or not in PATH."
+  echo "Install with: python3.10 -m pip install --user \"litellm[proxy]>=1.82.9\""
+  exit 1
+fi
+
+mkdir -p "$(dirname "$LOG_FILE")"
+
+is_gateway_ready() {
+  curl -fsS "${GATEWAY_URL}/health/liveliness" >/dev/null 2>&1
+}
+
+if ! is_gateway_ready; then
+  nohup litellm --config "$CONFIG_FILE" --host "$GATEWAY_HOST" --port "$GATEWAY_PORT" >"$LOG_FILE" 2>&1 &
+
+  for _ in {1..40}; do
+    if is_gateway_ready; then
+      break
+    fi
+    sleep 0.25
+  done
+
+  if ! is_gateway_ready; then
+    echo "LiteLLM gateway failed to start. Check logs: $LOG_FILE"
+    exit 1
+  fi
+fi
+
+export ANTHROPIC_BASE_URL="$GATEWAY_URL"
+export ANTHROPIC_AUTH_TOKEN="$GATEWAY_KEY"
+export ANTHROPIC_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="$MODEL"
+export ANTHROPIC_DEFAULT_OPUS_MODEL_SUPPORTED_CAPABILITIES="effort,xhigh_effort,max_effort,thinking,adaptive_thinking,interleaved_thinking"
+export ANTHROPIC_DEFAULT_SONNET_MODEL_SUPPORTED_CAPABILITIES="effort,xhigh_effort,max_effort,thinking,adaptive_thinking,interleaved_thinking"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL_SUPPORTED_CAPABILITIES="effort,xhigh_effort,max_effort,thinking,adaptive_thinking,interleaved_thinking"
+export CLAUDE_CODE_SUBAGENT_MODEL="$MODEL"
+export ANTHROPIC_CUSTOM_MODEL_OPTION="$MODEL"
+export ANTHROPIC_CUSTOM_MODEL_OPTION_NAME="GPT-5.4 via LiteLLM"
+export ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION="OpenAI-compatible endpoint routed through local LiteLLM gateway"
+export ANTHROPIC_CUSTOM_MODEL_OPTION_SUPPORTED_CAPABILITIES="effort,xhigh_effort,max_effort,thinking,adaptive_thinking,interleaved_thinking"
+export CLAUDE_CODE_EFFORT_LEVEL="$EFFORT_LEVEL"
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1
+
+exec claude "$@"
