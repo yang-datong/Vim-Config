@@ -1,0 +1,299 @@
+#!/usr/bin/env python3
+"""Translate zh<->en text via Google Translate web endpoint.
+
+Examples:
+  ./gtrans.py "你好，世界"
+  ./gtrans.py "hello world"
+  echo "今天天气不错" | ./gtrans.py
+  ./gtrans.py --source zh --target en "混合输入 with override"
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+
+ENDPOINT = "https://translate.googleapis.com/translate_a/single"
+INPUTTOOLS_ENDPOINT = "https://inputtools.google.com/request"
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/135.0.0.0 Safari/537.36"
+)
+
+ZH_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
+EN_RE = re.compile(r"[A-Za-z]")
+
+
+def fetch_url_text(request: urllib.request.Request, timeout: float, retries: int = 3) -> str:
+    last_error = None
+    for attempt in range(retries):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                return response.read().decode("utf-8")
+        except urllib.error.HTTPError:
+            raise
+        except urllib.error.URLError as exc:
+            last_error = exc
+            if attempt + 1 == retries:
+                break
+            time.sleep(0.25 * (attempt + 1))
+    raise RuntimeError(f"network error: {last_error}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Translate Chinese <-> English with Google Translate."
+    )
+    parser.add_argument(
+        "text",
+        nargs="*",
+        help="Text to translate. If omitted, read from stdin.",
+    )
+    parser.add_argument("--source", help="Source language, for example zh or en.")
+    parser.add_argument("--target", help="Target language, for example en or zh.")
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=5.0,
+        help="HTTP timeout in seconds. Default: 5",
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print detected direction to stderr.",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the raw JSON response.",
+    )
+    return parser.parse_args()
+
+
+def read_text(args: argparse.Namespace) -> str:
+    if args.text:
+        text = " ".join(args.text)
+    elif not sys.stdin.isatty():
+        text = sys.stdin.read()
+    else:
+        raise SystemExit("missing text: pass text as an argument or pipe it through stdin")
+
+    text = text.strip()
+    if not text:
+        raise SystemExit("input text is empty")
+    return text
+
+
+def first_script(text: str) -> str | None:
+    for char in text:
+        if ZH_RE.match(char):
+            return "zh"
+        if EN_RE.match(char):
+            return "en"
+    return None
+
+
+def detect_direction(text: str) -> tuple[str, str]:
+    has_zh = bool(ZH_RE.search(text))
+    has_en = bool(EN_RE.search(text))
+
+    if has_zh and not has_en:
+        return "zh", "en"
+    if has_en and not has_zh:
+        return "en", "zh"
+    if has_zh and has_en:
+        primary = first_script(text)
+        if primary == "zh":
+            return "zh", "en"
+        if primary == "en":
+            return "en", "zh"
+
+    raise SystemExit(
+        "unable to detect translation direction; use --source and --target explicitly"
+    )
+
+
+def normalize_lang(code: str) -> str:
+    normalized = code.strip().lower()
+    if normalized in {"zh", "zh-cn", "zh_hans", "zh-hans"}:
+        return "zh-CN"
+    if normalized in {"en", "en-us", "en_us"}:
+        return "en"
+    return code.strip()
+
+
+def resolve_direction(
+    text: str,
+    source: str | None,
+    target: str | None,
+) -> tuple[str, str]:
+    if source and target:
+        return normalize_lang(source), normalize_lang(target)
+    if target:
+        detected_source, _ = detect_direction(text)
+        return normalize_lang(detected_source), normalize_lang(target)
+    if source:
+        normalized_source = normalize_lang(source)
+        if normalized_source.startswith("zh"):
+            return normalized_source, "en"
+        if normalized_source == "en":
+            return normalized_source, "zh-CN"
+        raise SystemExit("please provide --target together with a non-zh/en --source")
+
+    source, target = detect_direction(text)
+    return normalize_lang(source), normalize_lang(target)
+
+
+def translate(text: str, source: str, target: str, timeout: float) -> list:
+    params = urllib.parse.urlencode(
+        [
+            ("client", "gtx"),
+            ("sl", source),
+            ("tl", target),
+            ("dt", "t"),
+            ("q", text),
+        ]
+    )
+    request = urllib.request.Request(
+        f"{ENDPOINT}?{params}",
+        headers={"User-Agent": USER_AGENT},
+    )
+
+    try:
+        body = fetch_url_text(request, timeout)
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"HTTP {exc.code}: {body}") from exc
+
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"unexpected response: {body[:200]}") from exc
+
+
+def extract_translation(data: list) -> str:
+    parts = []
+    for item in data[0]:
+        if item and item[0]:
+            parts.append(item[0])
+    if not parts:
+        raise RuntimeError("translation result is empty")
+    return "".join(parts)
+
+
+def should_try_pinyin_fallback(
+    text: str,
+    source: str | None,
+    target: str,
+) -> bool:
+    if normalize_lang(target) != "en":
+        return False
+    if source and normalize_lang(source) == "en":
+        return False
+    if ZH_RE.search(text):
+        return False
+    return bool(EN_RE.search(text))
+
+
+def pinyin_to_chinese(text: str, timeout: float) -> str | None:
+    params = urllib.parse.urlencode(
+        [
+            ("text", text),
+            ("itc", "zh-t-i0-pinyin"),
+            ("num", "1"),
+            ("cp", "0"),
+            ("cs", "1"),
+            ("ie", "utf-8"),
+            ("oe", "utf-8"),
+            ("app", "demopage"),
+        ]
+    )
+    request = urllib.request.Request(
+        f"{INPUTTOOLS_ENDPOINT}?{params}",
+        headers={"User-Agent": USER_AGENT},
+    )
+
+    try:
+        body = fetch_url_text(request, timeout)
+    except RuntimeError:
+        return None
+
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError:
+        return None
+
+    if not isinstance(data, list) or len(data) < 2 or data[0] != "SUCCESS":
+        return None
+
+    converted = []
+    for item in data[1]:
+        if not isinstance(item, list) or len(item) < 2:
+            continue
+        original = item[0]
+        candidates = item[1]
+        if isinstance(candidates, list) and candidates:
+            converted.append(candidates[0])
+        elif isinstance(original, str):
+            converted.append(original)
+
+    result = "".join(converted).strip()
+    if not result or result.strip() == text.strip():
+        return None
+    if not ZH_RE.search(result):
+        return None
+    return result
+
+
+def main() -> int:
+    args = parse_args()
+    text = read_text(args)
+    converted_text = None
+    if args.target and should_try_pinyin_fallback(text, args.source, args.target):
+        converted_text = pinyin_to_chinese(text, args.timeout)
+        if converted_text:
+            source, target = "zh-CN", "en"
+            data = translate(converted_text, source, target, args.timeout)
+            translation = extract_translation(data)
+        else:
+            source, target = resolve_direction(text, args.source, args.target)
+            data = translate(text, source, target, args.timeout)
+            translation = extract_translation(data)
+    else:
+        source, target = resolve_direction(text, args.source, args.target)
+        data = translate(text, source, target, args.timeout)
+        translation = extract_translation(data)
+
+    if args.verbose:
+        detected = data[2] if len(data) > 2 else source
+        if converted_text:
+            print(
+                f"direction: {detected} -> {target}; pinyin=>{converted_text}",
+                file=sys.stderr,
+            )
+        else:
+            print(f"direction: {detected} -> {target}", file=sys.stderr)
+
+    if args.json:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        print(translation)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        raise SystemExit(130)
+    except RuntimeError as exc:
+        print(f"gtrans: {exc}", file=sys.stderr)
+        raise SystemExit(1)

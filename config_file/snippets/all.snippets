@@ -8,6 +8,40 @@ priority -60
 ##############
 global !p
 from vimsnippets import foldmarker, make_box, get_comment_format
+import importlib.machinery
+import importlib.util
+import sys
+
+_GTRANS_PATH = "/home/hi/sh_foot/tools/gtrans"
+
+
+def load_gtrans_module():
+	mod = globals().get("_gtrans_module")
+	if mod is not None:
+		return mod
+	loader = importlib.machinery.SourceFileLoader("ultisnips_gtrans", _GTRANS_PATH)
+	spec = importlib.util.spec_from_loader(loader.name, loader)
+	mod = importlib.util.module_from_spec(spec)
+	sys.modules[spec.name] = mod
+	loader.exec_module(mod)
+	globals()["_gtrans_module"] = mod
+	return mod
+
+
+def translate_with_gtrans(text, target_lang, timeout=5):
+	mod = load_gtrans_module()
+	source, target = mod.resolve_direction(text, None, target_lang)
+	converted_text = None
+	if mod.should_try_pinyin_fallback(text, None, target_lang):
+		converted_text = mod.pinyin_to_chinese(text, timeout)
+		if converted_text:
+			source, target = "zh-CN", "en"
+			data = mod.translate(converted_text, source, target, timeout)
+		else:
+			data = mod.translate(text, source, target, timeout)
+	else:
+		data = mod.translate(text, source, target, timeout)
+	return mod.extract_translation(data)
 endglobal
 
 snippet help "help"
@@ -175,18 +209,24 @@ endsnippet
 priority 10000
 snippet "-(.*)-(en|zh)" "To English|Chinese" wr
 `!p
-import subprocess as sp
-code = match.group(1)
-text = match.group(2)
+source_text = match.group(1)
+target_lang = match.group(2)
 try:
-    process = sp.Popen(['trans', ':' + text, code, '-b'], stdout=sp.PIPE, stderr=sp.PIPE)
-    stdout, stderr = process.communicate(timeout=5)
-    if process.returncode != 0:
-        snip.rv = f"Error: {stderr.decode()}"
-    else:
-        snip.rv = stdout.decode().strip()
-except sp.TimeoutExpired:
-    print("Command timed out.")
+    snip.rv = translate_with_gtrans(source_text, target_lang, timeout=5)
+except Exception as exc:
+    snip.rv = f"Error: {exc}"
+
+# Old translate-shell solution kept for reference:
+# import subprocess as sp
+# env = os.environ.copy()
+# for key in ("HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy"):
+#     env.pop(key, None)
+# process = sp.Popen(
+#     ['trans', ':' + target_lang, source_text, '-b', '-e', 'bing'],
+#     stdout=sp.PIPE,
+#     stderr=sp.PIPE,
+#     env=env,
+# )
 `
 endsnippet
 
