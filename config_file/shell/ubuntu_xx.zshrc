@@ -1,14 +1,17 @@
 export ZSH="$HOME/.oh-my-zsh"
-zstyle ':omz:update' mode disabled
-export DISABLE_AUTO_UPDATE="true"
-export DISABLE_UPDATE_PROMPT="true"
-# 提速：关闭 OMZ 终端标题钩子与 async git prompt 钩子
-export DISABLE_AUTO_TITLE="true"
-zstyle ':omz:alpha:lib:git' async-prompt no
 
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=500000
 export SAVEHIST=500000
+
+
+# 提速：关闭 OMZ 终端标题钩子与 async git prompt 钩子
+export DISABLE_AUTO_UPDATE="true"
+export DISABLE_AUTO_TITLE="true"
+export DISABLE_UPDATE_PROMPT="true"
+
+zstyle ':omz:alpha:lib:git' async-prompt no
+zstyle ':omz:update' mode disabled
 
 setopt prompt_subst
 autoload -Uz add-zsh-hook colors

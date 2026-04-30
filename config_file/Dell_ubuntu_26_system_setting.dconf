@@ -158,7 +158,7 @@ automatic-timezone=true
 mru-sources=[('xkb', 'cn')]
 per-window=false
 sources=[('xkb', 'cn')]
-xkb-options=['caps:menu']
+xkb-options=['caps:menu', 'ctrl:swap_lalt_lctl_lwin']
 
 [org/gnome/desktop/interface]
 accent-color='pink'
@@ -175,6 +175,7 @@ font-antialiasing='grayscale'
 font-hinting='slight'
 font-name='Garuda 11'
 gtk-enable-primary-paste=true
+gtk-key-theme='Default'
 gtk-theme='Yaru'
 icon-theme='Yaru-purple'
 monospace-font-name='Ubuntu Sans Mono 11'
@@ -704,11 +705,11 @@ sleep-inactive-ac-timeout=3600
 sleep-inactive-ac-type='nothing'
 
 [org/gnome/shell]
-app-picker-layout=[{'usb-creator-gtk.desktop': <{'position': <0>}>, 'org.gnome.Calculator.desktop': <{'position': <1>}>, 'simple-scan.desktop': <{'position': <2>}>, 'org.gnome.Calendar.desktop': <{'position': <3>}>, 'update-manager.desktop': <{'position': <4>}>, 'Utilities': <{'position': <5>}>, 'chrome-injjphjimjibbhkacilkfnpdjcdiclga-Default.desktop': <{'position': <6>}>, 'gnome-language-selector.desktop': <{'position': <7>}>}, {'firefox_firefox.desktop': <{'position': <0>}>, 'org.gnome.clocks.desktop': <{'position': <1>}>, 'org.gnome.Yelp.desktop': <{'position': <2>}>, 'org.gnome.TextEditor.desktop': <{'position': <3>}>, 'org.gnome.Characters.desktop': <{'position': <4>}>, 'libreoffice-startcenter.desktop': <{'position': <5>}>, 'libreoffice-calc.desktop': <{'position': <6>}>, 'libreoffice-draw.desktop': <{'position': <7>}>, 'org.flameshot.Flameshot.desktop': <{'position': <8>}>, 'org.gnome.Snapshot.desktop': <{'position': <9>}>, 'libreoffice-impress.desktop': <{'position': <10>}>, 'ca.desrt.dconf-editor.desktop': <{'position': <11>}>, 'libreoffice-math.desktop': <{'position': <12>}>, 'org.remmina.Remmina.desktop': <{'position': <13>}>, 'firmware-updater_firmware-updater.desktop': <{'position': <14>}>, 'nvim.desktop': <{'position': <15>}>, 'Clash Verge.desktop': <{'position': <16>}>, 'nvidia-settings.desktop': <{'position': <17>}>, 'org.gnome.Rhythmbox3.desktop': <{'position': <18>}>, 'transmission-gtk.desktop': <{'position': <19>}>, 'scrcpy.desktop': <{'position': <20>}>, 'IDA Freeware 7.7.desktop': <{'position': <21>}>, 'org.gnome.Papers.desktop': <{'position': <22>}>, 'antigravity.desktop': <{'position': <23>}>, 'org.gnome.Loupe.desktop': <{'position': <24>}>, 'org.gnome.Logs.desktop': <{'position': <25>}>, 'net.nokyan.Resources.desktop': <{'position': <26>}>, 'org.fcitx.Fcitx5.desktop': <{'position': <27>}>, 'org.gnome.Ptyxis.desktop': <{'position': <28>}>, 'org.gnome.Showtime.desktop': <{'position': <29>}>, 'fcitx5-configtool.desktop': <{'position': <30>}>, 'cursor.desktop': <{'position': <31>}>, 'org.fcitx.fcitx5-migrator.desktop': <{'position': <32>}>, 'wechat.desktop': <{'position': <33>}>, 'kbd-layout-viewer5.desktop': <{'position': <34>}>}, {'scrcpy-console.desktop': <{'position': <0>}>, 'org.gnome.font-viewer.desktop': <{'position': <1>}>, 'start-latex-work.desktop': <{'position': <2>}>, 'vim.desktop': <{'position': <3>}>, 'prerex.desktop': <{'position': <4>}>, 'debian-uxterm.desktop': <{'position': <5>}>, 'vprerex.desktop': <{'position': <6>}>, 'debian-xterm.desktop': <{'position': <7>}>, 'org.kde.kcachegrind.desktop': <{'position': <8>}>, 'display-im7.q16.desktop': <{'position': <9>}>, 'texdoctk.desktop': <{'position': <10>}>, 'info.desktop': <{'position': <11>}>, 'zotero.desktop': <{'position': <12>}>, 'desktop-security-center_desktop-security-center.desktop': <{'position': <13>}>, 'org.gnome.Sysprof.desktop': <{'position': <14>}>, 'mpv.desktop': <{'position': <15>}>, 'StreamAnalyzer.desktop': <{'position': <16>}>, 'StreamEye.desktop': <{'position': <17>}>, 'VideoQuest.desktop': <{'position': <18>}>, 'htop.desktop': <{'position': <19>}>, 'winetricks.desktop': <{'position': <20>}>}, {'nvtop.desktop': <{'position': <0>}>, 'rustdesk.desktop': <{'position': <1>}>, 'YUVViewer.desktop': <{'position': <2>}>}]
+app-picker-layout=[{'usb-creator-gtk.desktop': <{'position': <0>}>, 'org.gnome.Calculator.desktop': <{'position': <1>}>, 'simple-scan.desktop': <{'position': <2>}>, 'org.gnome.Calendar.desktop': <{'position': <3>}>, 'update-manager.desktop': <{'position': <4>}>, 'Utilities': <{'position': <5>}>, 'chrome-injjphjimjibbhkacilkfnpdjcdiclga-Default.desktop': <{'position': <6>}>, 'gnome-language-selector.desktop': <{'position': <7>}>}, {'firefox_firefox.desktop': <{'position': <0>}>, 'org.gnome.clocks.desktop': <{'position': <1>}>, 'org.gnome.Yelp.desktop': <{'position': <2>}>, 'org.gnome.TextEditor.desktop': <{'position': <3>}>, 'org.gnome.Characters.desktop': <{'position': <4>}>, 'libreoffice-startcenter.desktop': <{'position': <5>}>, 'libreoffice-calc.desktop': <{'position': <6>}>, 'libreoffice-draw.desktop': <{'position': <7>}>, 'org.flameshot.Flameshot.desktop': <{'position': <8>}>, 'org.gnome.Snapshot.desktop': <{'position': <9>}>, 'libreoffice-impress.desktop': <{'position': <10>}>, 'ca.desrt.dconf-editor.desktop': <{'position': <11>}>, 'libreoffice-math.desktop': <{'position': <12>}>, 'org.remmina.Remmina.desktop': <{'position': <13>}>, 'firmware-updater_firmware-updater.desktop': <{'position': <14>}>, 'nvim.desktop': <{'position': <15>}>, 'Clash Verge.desktop': <{'position': <16>}>, 'nvidia-settings.desktop': <{'position': <17>}>, 'org.gnome.Rhythmbox3.desktop': <{'position': <18>}>, 'transmission-gtk.desktop': <{'position': <19>}>, 'scrcpy.desktop': <{'position': <20>}>, 'IDA Freeware 7.7.desktop': <{'position': <21>}>, 'org.gnome.Papers.desktop': <{'position': <22>}>, 'antigravity.desktop': <{'position': <23>}>, 'org.gnome.Loupe.desktop': <{'position': <24>}>, 'org.gnome.Logs.desktop': <{'position': <25>}>, 'net.nokyan.Resources.desktop': <{'position': <26>}>, 'org.fcitx.Fcitx5.desktop': <{'position': <27>}>, 'org.gnome.Ptyxis.desktop': <{'position': <28>}>, 'org.gnome.Showtime.desktop': <{'position': <29>}>, 'fcitx5-configtool.desktop': <{'position': <30>}>, 'cursor.desktop': <{'position': <31>}>, 'org.fcitx.fcitx5-migrator.desktop': <{'position': <32>}>, 'wechat.desktop': <{'position': <33>}>, 'kbd-layout-viewer5.desktop': <{'position': <34>}>, 'chrome-jgeocpdicgmkeemopbanhokmhcgcflmi-Default.desktop': <{'position': <35>}>}, {'scrcpy-console.desktop': <{'position': <0>}>, 'org.gnome.font-viewer.desktop': <{'position': <1>}>, 'start-latex-work.desktop': <{'position': <2>}>, 'vim.desktop': <{'position': <3>}>, 'prerex.desktop': <{'position': <4>}>, 'debian-uxterm.desktop': <{'position': <5>}>, 'vprerex.desktop': <{'position': <6>}>, 'debian-xterm.desktop': <{'position': <7>}>, 'org.kde.kcachegrind.desktop': <{'position': <8>}>, 'display-im7.q16.desktop': <{'position': <9>}>, 'texdoctk.desktop': <{'position': <10>}>, 'info.desktop': <{'position': <11>}>, 'zotero.desktop': <{'position': <12>}>, 'desktop-security-center_desktop-security-center.desktop': <{'position': <13>}>, 'org.gnome.Sysprof.desktop': <{'position': <14>}>, 'mpv.desktop': <{'position': <15>}>, 'StreamAnalyzer.desktop': <{'position': <16>}>, 'StreamEye.desktop': <{'position': <17>}>, 'VideoQuest.desktop': <{'position': <18>}>, 'htop.desktop': <{'position': <19>}>, 'winetricks.desktop': <{'position': <20>}>}, {'nvtop.desktop': <{'position': <0>}>, 'rustdesk.desktop': <{'position': <1>}>, 'YUVViewer.desktop': <{'position': <2>}>}]
 disable-user-extensions=false
 disabled-extensions=['dash-to-dock@micxgx.gmail.com', 'hide-panel-lite@fthx', 'hidetopbar@mathieu.bidon.ca', 'roundedSystemMenuButtons@pratap.fastmail.fm', 'wintile@nowsci.com', 'Rounded_Corners@lennart-k', 'screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com', 'drive-menu@gnome-shell-extensions.gcampax.github.com', 'places-menu@gnome-shell-extensions.gcampax.github.com', 'launch-new-instance@gnome-shell-extensions.gcampax.github.com', 'auto-move-windows@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'workspace-indicator@gnome-shell-extensions.gcampax.github.com', 'windowsNavigator@gnome-shell-extensions.gcampax.github.com', 'window-list@gnome-shell-extensions.gcampax.github.com', 'mprisLabel@moon-0xff.github.com', 'media-progress@krypion17', 'widgets@aylur', 'native-window-placement@gnome-shell-extensions.gcampax.github.com', 'status-icons@gnome-shell-extensions.gcampax.github.com', 'system-monitor@gnome-shell-extensions.gcampax.github.com']
 enabled-extensions=['nightthemeswitcher@romainvigier.fr', 'rounded-window-corners@yilozt', 'blur-my-shell@aunetx', 'ding@rastersoft.com', 'tiling-assistant@ubuntu.com', 'mediacontrols@cliffniff.github.com', 'gtktitlebar@velitasali.github.io', 'ubuntu-dock@ubuntu.com', 'rounded-window-corners@fxgn', 'snapd-search-provider@canonical.com', 'web-search-provider@ubuntu.com', 'search-light@icedman.github.com', 'light-style@gnome-shell-extensions.gcampax.github.com', 'ubuntu-appindicators@ubuntu.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'ubuntu-move-windows@hi']
-favorite-apps=['org.gnome.Nautilus.desktop', 'snap-store_snap-store.desktop', 'org.gnome.Extensions.desktop', 'org.gnome.Shotwell.desktop', 'thunderbird_thunderbird.desktop', 'onlyoffice-desktopeditors.desktop', 'libreoffice-writer.desktop', 'xmind.desktop', 'google-chrome.desktop', 'typora.desktop', 'code.desktop', 'chrome-agimnkijcaahngcdmfeangaknmldooml-Default.desktop', 'chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop', 'chrome-jgeocpdicgmkeemopbanhokmhcgcflmi-Default.desktop', 'org.inkscape.Inkscape.desktop', 'zaimang.desktop', 'org.pwmt.zathura.desktop', 'IDA64.desktop', 'terminator.desktop', 'org.gnome.Settings.desktop']
+favorite-apps=['org.gnome.Nautilus.desktop', 'snap-store_snap-store.desktop', 'google-chrome.desktop', 'org.gnome.Extensions.desktop', 'org.gnome.Shotwell.desktop', 'thunderbird_thunderbird.desktop', 'onlyoffice-desktopeditors.desktop', 'libreoffice-writer.desktop', 'xmind.desktop', 'typora.desktop', 'code.desktop', 'chrome-agimnkijcaahngcdmfeangaknmldooml-Default.desktop', 'chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop', 'org.inkscape.Inkscape.desktop', 'zaimang.desktop', 'org.pwmt.zathura.desktop', 'IDA64.desktop', 'terminator.desktop', 'org.gnome.Settings.desktop']
 had-bluetooth-devices-setup=true
 last-selected-power-profile='performance'
 welcome-dialog-last-shown-version='42.9'
@@ -759,6 +760,10 @@ sigma=20
 blur=true
 customize=true
 
+[org/gnome/shell/extensions/blur-my-shell/applications]
+blur=true
+pipeline='pipeline_default'
+
 [org/gnome/shell/extensions/blur-my-shell/coverflow-alt-tab]
 pipeline='pipeline_default'
 
@@ -784,9 +789,10 @@ pipeline='pipeline_default'
 
 [org/gnome/shell/extensions/blur-my-shell/panel]
 brightness=0.59999999999999998
+force-light-text=false
 pipeline='pipeline_default'
 sigma=20
-static-blur=true
+static-blur=false
 
 [org/gnome/shell/extensions/blur-my-shell/screenshot]
 pipeline='pipeline_default'
@@ -849,7 +855,7 @@ manual-schedule=true
 border-width=0
 focused-shadow={'verticalOffset': 4, 'horizontalOffset': 0, 'blurOffset': 28, 'spreadRadius': 4, 'opacity': 60}
 global-rounded-corner-settings={'padding': <{'left': uint32 0, 'right': 0, 'top': 0, 'bottom': 0}>, 'keepRoundedCorners': <{'maximized': false, 'fullscreen': false}>, 'borderRadius': <uint32 11>, 'smoothing': <0.0>, 'borderColor': <(0.5, 0.5, 0.5, 1.0)>, 'enabled': <true>}
-settings-version=uint32 7
+settings-version=uint32 9
 unfocused-shadow={'verticalOffset': 1, 'horizontalOffset': 0, 'blurOffset': 12, 'spreadRadius': -1, 'opacity': 65}
 
 [org/gnome/shell/extensions/rounded-window-corners]
@@ -863,6 +869,7 @@ settings-version=uint32 5
 unfocused-shadow={'horizontal_offset': 0, 'vertical_offset': 2, 'blur_offset': 12, 'spread_radius': -1, 'opacity': 65}
 
 [org/gnome/shell/extensions/search-light]
+animation-speed=100.0
 background-color=(0.029999999329447746, 0.0013000004692003131, 0.0013000004692003131, 0.25)
 blur-brightness=0.59999999999999998
 blur-sigma=30.0
@@ -1010,7 +1017,7 @@ sort-column='name'
 sort-directories-first=true
 sort-order='ascending'
 type-format='category'
-window-position=(359, 47)
+window-position=(26, 23)
 window-size=(1203, 891)
 
 [org/virt-manager/virt-manager]
@@ -1047,8 +1054,8 @@ library-width=1024
 
 [system/proxy]
 autoconfig-url='http://127.0.0.1:33331/commands/pac'
-ignore-hosts=['localhost', '127.0.0.0/8', '::1']
-mode='manual'
+ignore-hosts=['localhost', '127.0.0.1', '192.168.0.0/16', '10.0.0.0/8', '172.16.0.0/12', '172.29.0.0/16', '::1']
+mode='none'
 
 [system/proxy/http]
 host='127.0.0.1'
@@ -1060,4 +1067,4 @@ port=7890
 
 [system/proxy/socks]
 host='127.0.0.1'
-port=7891
+port=7890
