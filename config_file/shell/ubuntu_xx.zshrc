@@ -30,22 +30,12 @@ if [[ -r "$AI_KEY_FILE" ]]; then
   export DEEPSEEK_API_KEY="$(awk '/DEEPSEEK_API_KEY/ {print $2}' "$AI_KEY_FILE")"
 fi
 
-# Aliases & helpers
-source "$HOME/.common_aliases.sh"
-alias ls='ls --color=auto -F'
-alias apt='sudo apt'
-alias cat='batcat -p'
-alias ida='wine $HOME/MySoftWare/IDA_Pro_7.7/ida64.exe'
-
-set-proxy
-
 [[ -f "$HOME/.autojump/share/autojump/autojump.zsh" ]] && source "$HOME/.autojump/share/autojump/autojump.zsh"
 
 # 提速：autosuggestions 不在每次 precmd 重绑 widgets
 typeset -g ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 plugins=(git zsh-autosuggestions autojump zsh-syntax-highlighting)
 
-source "$ZSH/oh-my-zsh.sh"
 
 # fish 风格历史：每个终端独立上下文，退出后合并到全局文件
 unsetopt sharehistory
@@ -58,5 +48,18 @@ add-zsh-hook -d precmd omz_termsupport_precmd 2>/dev/null
 add-zsh-hook -d precmd omz_termsupport_cwd 2>/dev/null
 add-zsh-hook -d preexec omz_termsupport_preexec 2>/dev/null
 
+source "$ZSH/oh-my-zsh.sh"
+
 [[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh"
 [[ -r "$SH_FOOT/config_file/shell/xx.nvim_cursor_reset.zsh" ]] && source "$SH_FOOT/config_file/shell/xx.nvim_cursor_reset.zsh"
+export LS_COLORS="rs=0:di=38;5;33:ln=38;5;205:mh=00:pi=40;38;5;226:so=38;5;13:do=38;5;5:bd=40;38;5;226:cd=40;38;5;226:or=40;38;5;221:mi=00:su=38;5;1:sg=38;5;16:ca=38;5;9:tw=40;38;5;222:ow=38;5;34:st=40;38;5;13:ex=38;5;196:"
+
+# Aliases & helpers
+source "$HOME/.common_aliases.sh"
+alias ls='ls --color=auto -F'
+alias apt='sudo apt'
+alias cat='batcat -p'
+alias ida='wine $HOME/MySoftWare/IDA_Pro_7.7/ida64.exe'
+
+set-proxy
+
