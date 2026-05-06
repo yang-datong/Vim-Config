@@ -19,26 +19,28 @@
     visible_bell = True
     icon_bell = False
     background_color = "#2a2a2a"
-    background_darkness = 0.93
+    background_darkness = 1.0
     background_type = transparent
     cursor_shape = ibeam
     cursor_fg_color = "#000000"
     cursor_bg_color = "#aaaaaa"
-    font = Ubuntu Mono 14
+    font = SF Mono 13
+    foreground_color = "#deddda"
     show_titlebar = False
     scrollbar_position = hidden
     use_system_font = False
-  [[default 2]]
+  [[codex]]
     allow_bold = False
     visible_bell = True
     icon_bell = False
-    background_color = "#2e3436"
-    background_darkness = 0.93
+    background_color = "#010101"
+    background_darkness = 1.0
     background_type = transparent
     cursor_shape = ibeam
     cursor_fg_color = "#000000"
     cursor_bg_color = "#aaaaaa"
-    font = Ubuntu Mono 14
+    font = SF Mono 13
+    foreground_color = "#ffffff"
     show_titlebar = False
     scrollbar_position = hidden
     use_system_font = False
