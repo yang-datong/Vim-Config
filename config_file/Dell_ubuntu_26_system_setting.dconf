@@ -57,7 +57,7 @@ panel-id='world'
 size=(870, 690)
 
 [org/gnome/control-center]
-last-panel='keyboard'
+last-panel='power'
 window-state=(1131, 670, false)
 
 [org/gnome/deja-dup]
@@ -158,7 +158,7 @@ automatic-timezone=true
 mru-sources=[('xkb', 'cn')]
 per-window=false
 sources=[('xkb', 'cn')]
-xkb-options=['caps:menu', 'ctrl:swap_lalt_lctl_lwin']
+xkb-options=['caps:hyper', 'ctrl:swap_lalt_lctl_lwin']
 
 [org/gnome/desktop/interface]
 accent-color='pink'
@@ -169,21 +169,21 @@ color-scheme='default'
 cursor-blink=false
 cursor-blink-time=1200
 cursor-theme='Yaru'
-document-font-name='Sans 11'
+document-font-name='SF Mono Medium 11'
 enable-hot-corners=false
 font-antialiasing='grayscale'
-font-hinting='slight'
-font-name='Garuda 11'
+font-hinting='full'
+font-name='SF Mono Medium 11'
 gtk-enable-primary-paste=true
 gtk-key-theme='Default'
 gtk-theme='Yaru'
 icon-theme='Yaru-purple'
-monospace-font-name='Ubuntu Sans Mono 11'
+monospace-font-name='SF Mono Medium 11'
 show-battery-percentage=true
 toolkit-accessibility=false
 
 [org/gnome/desktop/notifications]
-application-children=['org-gnome-dejadup', 'org-gnome-nautilus', 'com-alibabainc-dingtalk', 'utools', 'org-pwmt-zathura', 'org-gnome-eog', 'jetbrains-studio', 'org-gnome-fileroller', 'update-manager', 'org-gnome-baobab', 'vmware-workstation', 'typora', 'wine-programs-', 'io-snapcraft-sessionagent', 'google-chrome', 'ca-desrt-dconf-editor', 'apport-gtk', 'wechat', 'gnome-power-panel', 'telegram-desktop-telegram-desktop', 'org-gnome-diskutility', 'terminator', 'org-gnome-extensions', 'zotero', 'firefox-firefox', 'todesk', 'xmind', 'code', 'org-inkscape-inkscape', 'thunderbird-thunderbird', 'rustdesk', 'zaimang']
+application-children=['org-gnome-dejadup', 'org-gnome-nautilus', 'com-alibabainc-dingtalk', 'utools', 'org-pwmt-zathura', 'org-gnome-eog', 'jetbrains-studio', 'org-gnome-fileroller', 'update-manager', 'org-gnome-baobab', 'vmware-workstation', 'typora', 'wine-programs-', 'io-snapcraft-sessionagent', 'google-chrome', 'ca-desrt-dconf-editor', 'apport-gtk', 'wechat', 'gnome-power-panel', 'telegram-desktop-telegram-desktop', 'org-gnome-diskutility', 'terminator', 'org-gnome-extensions', 'zotero', 'firefox-firefox', 'todesk', 'xmind', 'code', 'org-inkscape-inkscape', 'thunderbird-thunderbird', 'rustdesk', 'zaimang', 'clash-verge']
 
 [org/gnome/desktop/notifications/application/apport-gtk]
 application-id='apport-gtk.desktop'
@@ -199,6 +199,9 @@ application-id='chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default.desktop'
 
 [org/gnome/desktop/notifications/application/chrome-jgeocpdicgmkeemopbanhokmhcgcflmi-default]
 enable=true
+
+[org/gnome/desktop/notifications/application/clash-verge]
+application-id='Clash Verge.desktop'
 
 [org/gnome/desktop/notifications/application/code]
 application-id='code.desktop'
@@ -341,7 +344,7 @@ disabled=['org.gnome.Calculator.desktop', 'org.gnome.Calendar.desktop', 'org.gno
 sort-order=['org.gnome.Contacts.desktop', 'org.gnome.Documents.desktop', 'org.gnome.Nautilus.desktop']
 
 [org/gnome/desktop/session]
-idle-delay=uint32 900
+idle-delay=uint32 3600
 
 [org/gnome/desktop/sound]
 allow-volume-above-100-percent=true
@@ -500,6 +503,9 @@ overlay-key='Super_R'
 toggle-tiled-left=@as []
 toggle-tiled-right=@as []
 
+[org/gnome/mutter/wayland]
+xwayland-scaling-factor=1.0
+
 [org/gnome/mutter/wayland/keybindings]
 restore-shortcuts=@as []
 
@@ -593,8 +599,8 @@ show-sidebar=false
 sidebar-page='thumbnails'
 sizing-mode='automatic'
 text-color='blue'
-window-height=986
-window-width=1008
+window-height=1625
+window-width=1536
 
 [org/gnome/portal/filechooser/chrome-cinhimbnkkaeohfgghhklpknlkffjgod-Default]
 last-folder-path='/home/hi/Figure'
@@ -603,7 +609,7 @@ last-folder-path='/home/hi/Figure'
 last-folder-path='/home/hi/Downloads'
 
 [org/gnome/portal/filechooser/com.google.Chrome]
-last-folder-path='/home/hi/Documents'
+last-folder-path='/home/hi/Downloads'
 
 [org/gnome/portal/filechooser/google-chrome]
 last-folder-path='/home/hi/Documents'
@@ -636,7 +642,7 @@ volume-down=['<Super>F2']
 volume-up=['<Super>F3']
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0]
-binding='Caps_Lock'
+binding='Hyper_L'
 command='fcitx5-remote -t'
 name='Fcitx5 Toggle'
 
@@ -753,6 +759,7 @@ workspace-indicator=false
 
 [org/gnome/shell/extensions/blur-my-shell]
 pipelines={'pipeline_default': {'name': <'Default'>, 'effects': <[<{'type': <'native_static_gaussian_blur'>, 'id': <'effect_000000000000'>, 'params': <{'radius': <30>, 'brightness': <0.59999999999999998>}>}>]>}}
+rounded-blur-found=false
 settings-version=2
 sigma=20
 
@@ -1002,8 +1009,8 @@ view-type='list'
 window-size=(807, 382)
 
 [org/gtk/settings/color-chooser]
-custom-colors=[(0.16470588235294117, 0.16470588235294117, 0.16470588235294117, 1.0), (0.1803921568627451, 0.20392156862745098, 0.21176470588235294, 1.0), (0.86274509803921573, 0.19607843137254902, 0.18431372549019609, 1.0), (0.66666666666666663, 0.66666666666666663, 0.66666666666666663, 1.0)]
-selected-color=(true, 0.16470588235294117, 0.16470588235294117, 0.16470588235294117, 1.0)
+custom-colors=[(0.0066666666666666671, 0.0064666666666666674, 0.0064666666666666674, 1.0), (0.16470588235294117, 0.16470588235294117, 0.16470588235294117, 1.0), (0.1803921568627451, 0.20392156862745098, 0.21176470588235294, 1.0), (0.86274509803921573, 0.19607843137254902, 0.18431372549019609, 1.0), (0.66666666666666663, 0.66666666666666663, 0.66666666666666663, 1.0)]
+selected-color=(true, 0.87058823529411766, 0.8666666666666667, 0.85490196078431369, 1.0)
 
 [org/gtk/settings/file-chooser]
 clock-format='24h'
@@ -1054,8 +1061,8 @@ library-width=1024
 
 [system/proxy]
 autoconfig-url='http://127.0.0.1:33331/commands/pac'
-ignore-hosts=['localhost', '127.0.0.1', '192.168.0.0/16', '10.0.0.0/8', '172.16.0.0/12', '172.29.0.0/16', '::1']
-mode='none'
+ignore-hosts=['localhost', '127.0.0.0/8', '::1']
+mode='manual'
 
 [system/proxy/http]
 host='127.0.0.1'
@@ -1067,4 +1074,4 @@ port=7890
 
 [system/proxy/socks]
 host='127.0.0.1'
-port=7890
+port=7891
