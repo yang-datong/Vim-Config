@@ -23,7 +23,7 @@ alias clang='clang -std=c99 -Wall'
 alias clang++='clang++ -std=c++14 -Wall'
 alias gcc='gcc -std=c17 -Wall'
 alias g++='g++ -std=c++14 -Wall'
-alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890'
+alias set-proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7891'
 alias dis-proxy='export https_proxy= http_proxy= all_proxy='
 
 # ffmpeg
