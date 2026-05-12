@@ -66,6 +66,12 @@ const gHighlightedFunctionNames = new Set([
     'lpf_16_wd4_neon',
 
     'warp_affine_8x8_8bpc_neon_dotprod',
+    'warp_affine_8x8_8bpc_neon_i8mm',
+
+    'wiener_filter5_hv2_8bpc_neon',
+    'lpf_h_sb_y_8bpc_neon',
+    'lpf_h_sb_uv_8bpc_neon',
+    'lpf_h_6_16_neon',
 
 // ------------- 16 bit -------------------
     'prep_6tap_neon_i8mm',
