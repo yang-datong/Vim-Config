@@ -7,4 +7,5 @@ augroup filetypedetect
     ".s/S文件都是gas(arm)语法
     autocmd BufRead,BufNewFile *.s setfiletype asm
     autocmd BufRead,BufNewFile *.S setfiletype asm
+    autocmd BufRead,BufNewFile *.perf setfiletype asm
 augroup END
