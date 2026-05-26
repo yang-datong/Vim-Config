@@ -33,7 +33,7 @@ from_github() {
 		$HOME/ffmpeg-4.4.2
 		$HOME/x264-0.164.5
 		$HOME/x265-3.6
-		$HOME/dav1d-1.5.1
+		$HOME/dav1d-1.5.3
 		$HOME/svtav1-4.1.0
 		$HOME/vvcd
 		$HOME/vvcd-fast
