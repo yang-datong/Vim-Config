@@ -37,6 +37,8 @@ if [[ -r "$AI_KEY_FILE" ]]; then
   export DEEPSEEK_API_KEY="$(awk '/DEEPSEEK_API_KEY/ {print $2}' "$AI_KEY_FILE")"
 fi
 
+[[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source $HOME/.tmp_aliases.sh
+
 # Aliases & helpers
 source "$HOME/.common_aliases.sh"
 alias ls='ls -GF'
