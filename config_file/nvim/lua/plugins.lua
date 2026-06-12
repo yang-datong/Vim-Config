@@ -208,7 +208,7 @@ return {
 		build = "cd app && ./install.sh",
 		init = function()
 			g.mkdp_browser = HAS_MAC and "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-				or "/usr/bin/google-chrome-stable"
+			or "/usr/bin/google-chrome-stable"
 		end,
 	},
 	{
@@ -302,14 +302,10 @@ return {
 		end,
 	},
 	-- FZF
-	--{
-	--"junegunn/fzf",
-	--build = "./install --all",
-	--},
-	--{
-	--"junegunn/fzf.vim",
-	--dependencies = { "junegunn/fzf" },
-	--},
+	{
+		"junegunn/fzf.vim",
+		dependencies = { "junegunn/fzf" },
+	},
 	-- 自动保存
 	{
 		"907th/vim-auto-save",
@@ -332,27 +328,4 @@ return {
 		--commit = "cfc6f2c",
 		build = ":TSUpdate",
 	},
-	-- {
-	--     "yetone/avante.nvim",
-	--     cond = function()
-	--         return vim.fn.has("nvim-0.10") == 1
-	--     end,
-	--     build = "make",
-	--     event = "VeryLazy",
-	--     version = false,
-	--     opts = {
-	--         provider = "gemini",
-	--         providers = {
-	--             gemini = {
-	--                 --endpoint = "https://api.anthropic.com",
-	--                 model = "gemini-3-flash-preview",
-	--                 --model = "gemini-2.5-flash",
-	--                 --model = "gemini-2.5-pro",
-	--                 timeout = 30000, -- Timeout in milliseconds
-	--                 extra_request_body = {temperature = 0.75, max_tokens = 20480}
-	--             }
-	--         }
-	--     },
-	--     dependencies = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}
-	-- }
 }
