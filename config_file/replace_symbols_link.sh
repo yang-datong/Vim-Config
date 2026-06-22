@@ -44,6 +44,7 @@ main() {
 	#mpv
 	if [ ! -d $ME/.config/mpv ]; then mkdir $ME/.config/mpv; fi
 	replace_symbols_link "$ME/.config/mpv/mpv.conf" "$SH_FOOT/config_file/mpv.conf"
+	replace_symbols_link "$ME/.config/mpv/scripts/space-restart.lua" "$SH_FOOT/config_file/space-restart.lua"
 
 	if [ ! -d $ME/.config/nvim/lua ]; then
 		mkdir $ME/.config/nvim/lua
