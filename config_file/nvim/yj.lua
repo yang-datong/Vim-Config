@@ -169,20 +169,18 @@ require'marks'.setup {
 
 
 --============================== nvim-Treesitter ===============================
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"asm", "nasm"},
-  auto_install = false,
-  highlight = {
-    enable = true,
-    disable = function(lang, buf)
-        local max_filesize = 300 * 1024 -- 300 KB
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-        if ok and stats and stats.size > max_filesize then
-            return true
-        else --除了汇编语言都关闭
-            return lang ~= "asm" and lang ~= "nasm"
-        end
-    end,
-   additional_vim_regex_highlighting = false,
-  },
-}
+require('nvim-treesitter').setup()
+require('nvim-treesitter').install({ "asm", "nasm" })
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { "asm", "nasm" },
+  callback = function(ev)
+    local buf = ev.buf
+    local max_filesize = 300 * 1024 -- 300 KB
+    local filename = vim.api.nvim_buf_get_name(buf)
+    local ok, stats = pcall(vim.uv.fs_stat, filename)
+    if ok and stats and stats.size <= max_filesize then
+      pcall(vim.treesitter.start, buf)
+    end
+  end,
+})
