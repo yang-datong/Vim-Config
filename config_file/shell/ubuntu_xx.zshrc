@@ -31,6 +31,7 @@ if [[ -r "$AI_KEY_FILE" ]]; then
   export GEMINI_API_KEY="$(awk '/GEMINI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
   export OPENAI_API_KEY="$(awk '/OPENAI_API_KEY/ {print $2}' "$AI_KEY_FILE")"
   export DEEPSEEK_API_KEY="$(awk '/DEEPSEEK_API_KEY/ {print $2}' "$AI_KEY_FILE")"
+  export ANTHROPIC_AUTH_TOKEN="$(awk '/ANTHROPIC_AUTH_TOKEN/ {print $2}' "$AI_KEY_FILE")"
 fi
 
 [[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source $HOME/.tmp_aliases.sh

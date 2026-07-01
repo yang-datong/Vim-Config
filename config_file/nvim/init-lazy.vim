@@ -551,8 +551,8 @@ command! FindNaluStartCode /0000 01\|00 0001\|0000 0001\|0000 01
 "                  5. 自动执行命令区域                              "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Auto open by hex model {
-autocmd BufReadPre *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,out} setlocal binary
-autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,out} call ToggleHexMode()
+autocmd BufReadPre *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,h266,avc,hevc,vvc,obu,yuv,rgb,ppm,bmp,ivf,mp4,mov} setlocal binary
+autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,h266,avc,hevc,vvc,obu,yuv,rgb,ppm,bmp,ivf,mp4,mpv} call ToggleHexMode()
 " }
 
 " 大文件模式检查
