@@ -104,7 +104,7 @@ snippet '(R|C|Z){2}(-)?' "math{R}" rw
 if match.group(2) is None:
 	snip.rv = "\\mathbb{" + match.group(1) + "}"
 else:
-	snip.rv = "\\bar{\mathbb{" + match.group(1) + "}}"
+	snip.rv = "\\bar{\\mathbb{" + match.group(1) + "}}"
 `
 endsnippet
 #-------------------- 3. \CMD{$1} (alise) --------------
@@ -310,11 +310,11 @@ context "math()"
 snippet '(sig|lam|mu)(\d{1,2})' "sig\d+" rw
 `!p 
 if match.group(1) == "sig":
-	snip.rv = f"\sigma_{{{match.group(2)}}}"
+	snip.rv = f"\\sigma_{{{match.group(2)}}}"
 elif match.group(1) == "lam":
-	snip.rv = f"\lambda_{{{match.group(2)}}}"
+	snip.rv = f"\\lambda_{{{match.group(2)}}}"
 else:
-	snip.rv = f"\{match.group(1)}_{{{match.group(2)}}}"
+	snip.rv = f"\\{match.group(1)}_{{{match.group(2)}}}"
 `
 endsnippet
 #-------------------- 8. lims_{x -> 0} ----------------
@@ -408,9 +408,9 @@ context "display_math()"
 snippet '(o)?int_' "int_" ir
 `!p 
 if match.group(1):
-	snip.rv = "\oint"
+	snip.rv = "\\oint"
 else:
-	snip.rv = "\int"
+	snip.rv = "\\int"
 `_{${1:C}}$0
 endsnippet
 
@@ -418,9 +418,9 @@ context "internel_math()"
 snippet '(o)?int_' "int_" ir
 `!p 
 if match.group(1):
-	snip.rv = "\doint"
+	snip.rv = "\\doint"
 else:
-	snip.rv = "\dint"
+	snip.rv = "\\dint"
 `_{${1:C}}$0
 endsnippet
 
@@ -1013,9 +1013,9 @@ context "env("tikzpicture")"
 snippet '(x|y)emp(ty|t)?' "empty" wr
 `!p 
 if match.group(1) == 'x':
-	snip.rv = 'xtick=\empty,'
+	snip.rv = 'xtick=\\empty,'
 else:
-	snip.rv = 'ytick=\empty,'
+	snip.rv = 'ytick=\\empty,'
 `
 endsnippet
 
@@ -1191,12 +1191,12 @@ context "math()"
 snippet 'd(sig|x|y|t|u|z|r|p|s)?' "dx" wr
 `!p 
 if match.group(1) is None:
-	snip.rv = "\mathrm{d}"
+	snip.rv = "\\mathrm{d}"
 else:
 	if match.group(1) == 'sig':
-		snip.rv = "\mathrm{d}\sigma"
+		snip.rv = "\\mathrm{d}\\sigma"
 	else:
-		snip.rv = "\mathrm{d}" + match.group(1)
+		snip.rv = "\\mathrm{d}" + match.group(1)
 `$0
 endsnippet
 
@@ -1217,7 +1217,7 @@ endsnippet
 #-------------------- 19.3. 偏导数 -----------------------
 context "math()"
 snippet '(parl|par|pal)sr' "'(parl|par|pal)sr'" r
-`!p snip.rv = "\partial^{2}{"`$1}$0
+`!p snip.rv = "\\partial^{2}{"`$1}$0
 endsnippet
 
 context "math()"
@@ -1230,9 +1230,9 @@ if not two is None:
 	if two == 'eta':
 		two = "\\eta "
 	else:
-		snip.rv = f"\partial{{{two}}}"
+		snip.rv = f"\\partial{{{two}}}"
 else:
-	snip.rv = "\partial "
+	snip.rv = "\\partial "
 `
 endsnippet
 
@@ -1320,7 +1320,7 @@ endsnippet
 
 context "math()"
 snippet '(eta|xi)(\d)' "'eta(\d)'" wr
-`!p snip.rv = f"\{match.group(1)}_{{{match.group(2)}}}" `
+`!p snip.rv = f"\\{match.group(1)}_{{{match.group(2)}}}" `
 endsnippet
 
 context "math()"
