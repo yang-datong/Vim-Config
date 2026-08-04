@@ -3,45 +3,10 @@
 local api = vim.api
 local fn = vim.fn
 local g = vim.g
+local helper = require("plugins_helper")
 
 local HAS_MAC = fn.has("mac") == 1
 local HAS_LINUX = fn.has("linux") == 1
-
-local function flag_enabled(name)
-	local value = g[name]
-	return value == nil or value == 1
-end
-
-local function create_augroup(name)
-	return api.nvim_create_augroup(name, { clear = true })
-end
-
-local function nerdcommenter_toggle_normal()
-	fn["nerdcommenter#Comment"]("n", "toggle")
-	vim.cmd("normal 0j")
-end
-
-local function nerdcommenter_toggle_visual(move_cursor)
-	fn["nerdcommenter#Comment"]("x", "invert")
-	if move_cursor then
-		vim.cmd("normal 0j")
-	end
-end
-
-local function nerdcommenter_toggle_visual_keep()
-	nerdcommenter_toggle_visual(false)
-end
-
-local function nerdcommenter_toggle_visual_move()
-	nerdcommenter_toggle_visual(true)
-end
-
-local function autocmd_vimenter(group_name, cb)
-	api.nvim_create_autocmd("VimEnter", {
-		group = create_augroup(group_name),
-		callback = cb,
-	})
-end
 
 return {
 	-- Git
@@ -63,7 +28,7 @@ return {
 	{
 		"neoclide/coc.nvim",
 		branch = "release",
-		cond = flag_enabled("is_coc_vim"),
+		cond = helper.flag_enabled("is_coc_vim"),
 		init = function()
 			g.coc_global_extensions = {
 				"coc-clangd",
@@ -80,7 +45,7 @@ return {
 
 			if g.is_latex == 1 then
 				api.nvim_create_autocmd("User", {
-					group = create_augroup("CocLatexBootstrap"),
+					group = helper.create_augroup("CocLatexBootstrap"),
 					pattern = "CocJumpPlaceholderPre",
 					callback = function()
 						if fn.exists("*coc#rpc#ready") == 1 and fn["coc#rpc#ready"]() == 0 then
@@ -125,24 +90,20 @@ return {
 	},
 	{
 		"majutsushi/tagbar",
-		cmd = { "TagbarOpen", "TagbarToggle" },
-		keys = {
-			{ "<F2>", "<cmd>TagbarToggle<CR>", mode = "n", silent = true },
-		},
+		cmd = { "TagbarClose", "TagbarOpen", "TagbarToggle" },
 		init = function()
 			g.tagbar_sort = 0
-			if g.is_vim_studio == 1 then
-				autocmd_vimenter("TagbarStudioAutoOpen", function()
-					vim.cmd("TagbarOpen")
-				end)
-			end
+			g.tagbar_position = "belowright"
+			g.tagbar_height = 10
+			g.tagbar_width = 30
+			vim.keymap.set("n", "<F2>", helper.toggle_tagbar_with_nerdtree_layout, { silent = true })
 		end,
 	},
 	-- LaTeX
 	{
 		"lervag/vimtex",
 		--tag = "v2.15",
-		cond = flag_enabled("is_latex"),
+		cond = helper.flag_enabled("is_latex"),
 		init = function()
 			g.vimtex_quickfix_mode = 0
 			g.tex_flavor = "latex"
@@ -189,7 +150,7 @@ return {
 			vim.cmd("hi Conceal ctermbg=none")
 
 			api.nvim_create_autocmd("User", {
-				group = create_augroup("VimtexPreviewMap"),
+				group = helper.create_augroup("VimtexPreviewMap"),
 				pattern = "VimtexEventInitPost",
 				callback = function(ev)
 					vim.keymap.set("n", "\\v", "<Plug>(vimtex-view)", { buffer = ev.buf, remap = true, silent = true })
@@ -198,13 +159,13 @@ return {
 			})
 		end,
 	},
-	{ "KeitaNakamura/tex-conceal.vim", ft = { "tex", "plaintex" }, cond = flag_enabled("is_latex") },
+	{ "KeitaNakamura/tex-conceal.vim", ft = { "tex", "plaintex" }, cond = helper.flag_enabled("is_latex") },
 	-- Markdown
 	{
 		"iamcco/markdown-preview.nvim",
 		lazy = false,
 		ft = { "markdown" },
-		cond = flag_enabled("is_markdown"),
+		cond = helper.flag_enabled("is_markdown"),
 		build = "cd app && ./install.sh",
 		init = function()
 			g.mkdp_browser = HAS_MAC and "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
@@ -217,57 +178,66 @@ return {
 	},
 	-- 文件/注释/通知等
 	{
-		"nvim-neo-tree/neo-tree.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"MunifTanjim/nui.nvim",
-		},
+		"preservim/nerdtree",
 		init = function()
+			helper.set_nerdtree_current_file_highlight()
+			api.nvim_create_autocmd("ColorScheme", {
+				group = helper.create_augroup("NERDTreeCurrentFileHighlight"),
+				callback = helper.set_nerdtree_current_file_highlight,
+			})
+
+			g.NERDTreeChDirMode = 2
+			g.NERDTreeShowHidden = 1
+			g.NERDTreeShowBookmarks = 1
+			g.NERDTreeHighlightCursorline = 1
+			g.nerdtree_tabs_focus_on_files = 1
+			g.NERDTreeMapOpenInTabSilent = "<RightMouse>"
+			g.NERDTreeWinPos = "left"
+			g.NERDTreeWinSize = 30
+
+			api.nvim_create_autocmd("BufEnter", {
+				group = helper.create_augroup("NERDTreeCloseLastWindow"),
+				callback = function()
+					vim.cmd([[if winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree() | quit | endif]])
+				end,
+			})
+			api.nvim_create_autocmd("BufEnter", {
+				group = helper.create_augroup("NERDTreeCurrentFileMarker"),
+				callback = function(ev)
+					if not helper.should_sync_nerdtree_current_file(ev.buf) then
+						return
+					end
+
+					vim.schedule(function()
+						if api.nvim_get_current_buf() == ev.buf then
+							helper.sync_nerdtree_current_file()
+						end
+					end)
+				end,
+			})
+
 			if g.is_vim_studio == 1 then
-				autocmd_vimenter("NeoTreeStudioAutoOpen", function()
-					vim.cmd("Neotree source=filesystem reveal=true show")
-				end)
+				api.nvim_create_autocmd("VimEnter", {
+					group = helper.create_augroup("NERDTreeStudioAutoOpen"),
+					nested = true,
+					callback = function()
+						local source_win = api.nvim_get_current_win()
+						vim.cmd("NERDTreeFind")
+						helper.mark_nerdtree_current_file()
+						helper.open_tagbar_below_nerdtree()
+						if api.nvim_win_is_valid(source_win) then
+							api.nvim_set_current_win(source_win)
+						end
+					end,
+				})
 			end
 		end,
-		opts = {
-			default_component_configs = {
-				indent = {
-					with_markers = true,
-					indent_marker = "|",
-					last_indent_marker = "`",
-					with_expanders = true,
-					expander_collapsed = ">",
-					expander_expanded = "v",
-				},
-				icon = {
-					folder_closed = "+",
-					folder_open = "-",
-					folder_empty = "~",
-					folder_empty_open = "~",
-					default = "*",
-					provider = function(icon)
-						return icon
-					end,
-				},
-				git_status = {
-					symbols = {
-						added = "A",
-						modified = "M",
-						deleted = "D",
-						renamed = "R",
-						untracked = "U",
-						ignored = "I",
-						unstaged = "!",
-						staged = "S",
-						conflict = "X",
-					},
-				},
-			},
-		},
-		cmd = { "Neotree" },
+		cmd = { "NERDTree", "NERDTreeFind", "NERDTreeToggle" },
 		keys = {
-			{ "<leader>F", "<cmd>Neotree focus<CR>", mode = "n", silent = true },
-			{ "<F1>", "<cmd>Neotree toggle<CR>", mode = "n", silent = true },
+			{ "<leader>F", "<cmd>NERDTreeFind<CR>", mode = "n", silent = true },
+			{ "<leader>f", "<cmd>NERDTreeFind<CR><C-w>p", mode = "n", silent = true },
+			{ "<F1>", "<cmd>NERDTreeFind<CR><C-w>p", mode = "n", silent = true },
+			--{ "<F1>", "<cmd>NERDTreeFind<CR>", mode = "n", silent = true },
 		},
 	},
 	{
@@ -281,13 +251,13 @@ return {
 		end,
 		keys = function()
 			local keys = {
-				{ "<leader>/", nerdcommenter_toggle_normal, mode = "n", silent = true },
-				{ "<leader>/", nerdcommenter_toggle_visual_keep, mode = "x", silent = true },
+				{ "<leader>/", helper.nerdcommenter_toggle_normal, mode = "n", silent = true },
+				{ "<leader>/", helper.nerdcommenter_toggle_visual_keep, mode = "x", silent = true },
 			}
 
 			if HAS_LINUX then
-				table.insert(keys, { "<C-_>", nerdcommenter_toggle_normal, mode = "n", silent = true })
-				table.insert(keys, { "<C-_>", nerdcommenter_toggle_visual_move, mode = "x", silent = true })
+				table.insert(keys, { "<C-_>", helper.nerdcommenter_toggle_normal, mode = "n", silent = true })
+				table.insert(keys, { "<C-_>", helper.nerdcommenter_toggle_visual_move, mode = "x", silent = true })
 			end
 
 			return keys
@@ -296,7 +266,7 @@ return {
 	{
 		"rcarriga/nvim-notify",
 		--version = "v3.13.5",
-		cond = flag_enabled("is_nvim_notify"),
+		cond = helper.flag_enabled("is_nvim_notify"),
 		config = function()
 			vim.notify = require("notify")
 		end,
@@ -311,7 +281,7 @@ return {
 		"907th/vim-auto-save",
 		init = function()
 			api.nvim_create_autocmd("FileType", {
-				group = create_augroup("AutoSaveTexOnly"),
+				group = helper.create_augroup("AutoSaveTexOnly"),
 				pattern = { "tex", "plaintex" },
 				callback = function()
 					vim.b.auto_save = 1
