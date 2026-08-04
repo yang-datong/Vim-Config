@@ -51,6 +51,7 @@ main() {
 	fi
 	replace_symbols_link "$ME/.config/nvim/lua/lazy.lua" "$SH_FOOT/config_file/nvim/lua/lazy.lua"
 	replace_symbols_link "$ME/.config/nvim/lua/plugins.lua" "$SH_FOOT/config_file/nvim/lua/plugins.lua"
+	replace_symbols_link "$ME/.config/nvim/lua/plugins_helper.lua" "$SH_FOOT/config_file/nvim/lua/plugins_helper.lua"
 
 	for file in snippets/*.snippets; do
 		file_name=$(basename $file)
