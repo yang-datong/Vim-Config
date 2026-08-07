@@ -1,0 +1,17 @@
+# 缩进设置：使用 2 个空格代替默认的 4 空格，大幅收紧水平空间
+indent_type = "Spaces"
+indent_width = 2
+
+# 行宽限制：维持或增大单行最大字符数，减少不必要的自动折行
+column_width = 120
+
+# 引号风格：优先使用双引号或单引号
+quote_style = "AutoPreferDouble"
+
+# 紧凑核心：将单行简单语句合并到同一行（如单行 if、简单函数等）
+# 可选值："Never" | "FunctionOnly" | "Always"
+collapse_simple_statement = "Always"
+
+# 函数调用括号：对单一字符串/表参数省略括号，简化代码
+# 可选值："Always" | "NoSingleString" | "None" | "Input"
+#call_parentheses = "None"
