@@ -98,7 +98,7 @@ return {
   -- LaTeX
   {
     "lervag/vimtex",
-    --tag = "v2.15",
+    tag = "v2.15",
     cond = helper.flag_enabled("is_latex"),
     init = function()
       g.vimtex_quickfix_mode = 0
