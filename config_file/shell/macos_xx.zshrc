@@ -47,6 +47,7 @@ alias cat='bat -p'
 alias gdb='lldb'
 alias ldd='otool -L'
 alias ida='/Applications/IDA\ Professional\ 9.0.app/Contents/MacOS/ida'
+alias lscpu='sysctl -a | grep machdep.cpu'
 
 set-proxy
 
