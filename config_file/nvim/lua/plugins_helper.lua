@@ -53,6 +53,46 @@ local function tagbar_window()
   end
 end
 
+local skipped_window_filetypes = {
+  nerdtree = true,
+  tagbar = true,
+}
+
+local function is_skipped_window(win)
+  local buf = api.nvim_win_get_buf(win)
+  return skipped_window_filetypes[vim.bo[buf].filetype] == true
+end
+
+local function focus_normal_window(direction)
+  local window_count = fn.winnr("$")
+  local current_number = fn.winnr()
+
+  for offset = 1, window_count - 1 do
+    local target_number = ((current_number - 1 + direction * offset) % window_count) + 1
+    local target_win = fn.win_getid(target_number)
+    if target_win ~= 0 and not is_skipped_window(target_win) then
+      api.nvim_set_current_win(target_win)
+      return
+    end
+  end
+end
+
+function M.focus_next_normal_window() focus_normal_window(1) end
+
+function M.focus_previous_normal_window() focus_normal_window(-1) end
+
+function M.open_readonly_git_diff()
+  vim.cmd("Gvdiff")
+
+  for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
+    local buf = api.nvim_win_get_buf(win)
+    if api.nvim_buf_get_name(buf):match("^fugitive://") then
+      vim.bo[buf].readonly = true
+      vim.bo[buf].modifiable = false
+    end
+  end
+end
+
 local function layout_nerdtree_and_tagbar()
   local tree_win = nerdtree_window()
   local tagbar_win = tagbar_window()

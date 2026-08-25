@@ -332,8 +332,11 @@ elseif has('linux')
   nnoremap <silent> <A-3> :3wincmd w<CR>
 endif
 
-nnoremap <silent> <Tab> :wincmd w<CR>
-nnoremap <silent> <S-Tab> :wincmd p<CR>
+"Tab现在不会进入到F1,F2窗口
+nnoremap <silent> <Tab> <Cmd>lua require('plugins_helper').focus_next_normal_window()<CR>
+nnoremap <silent> <S-Tab> <Cmd>lua require('plugins_helper').focus_previous_normal_window()<CR>
+nnoremap <silent> <C-w>w <Cmd>lua require('plugins_helper').focus_next_normal_window()<CR>
+nnoremap <silent> <C-w>W <Cmd>lua require('plugins_helper').focus_previous_normal_window()<CR>
 "nnoremap <Tab> gt
 "nnoremap <S-Tab> gT
 "nnoremap <silent> <S-t> :tabnew<CR>
