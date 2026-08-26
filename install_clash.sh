@@ -4,7 +4,7 @@ set -e
 
 url="https://"
 target_dir=$HOME/.config/clash
-clash_version="v1.19.24"
+clash_version="v1.19.30"
 arch="$(uname -m)"
 
 set_systemctl() {
