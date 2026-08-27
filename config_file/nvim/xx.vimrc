@@ -349,14 +349,6 @@ autocmd BufReadPost *.{bin,jpg,jpeg,JPG,JPEG,h264,h265,avc,hevc,yuv,rgb,ppm,bmp,
 " }
 
 
-" 打开文件时自动调用检查函数（检查文件行数如果小于1000行，则在写入指定格式文件时自动格式化，以及在某些特定格式模版下，不需要进行格式化，比如小窗口的vim-tex，固定为3行，且不需要格式化）{
-au! BufNewFile,BufRead *.tpp set filetype=cpp
-"autocmd FileType c,cpp,tex,sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
-"NOTE:关掉了latex的format，在实时编辑的时候太卡顿了
-autocmd FileType sh autocmd BufWritePre <buffer> call AutoformatIfSmall(1000,3)
-" }
-
-
 " Assembler file {
 au BufNewFile,BufRead *.s set filetype=asm
 au BufNewFile,BufRead *.S set filetype=asm
@@ -368,10 +360,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 
 " Auto add Executive authority{
 au BufWritePost * if getline(1) =~ "^#!" | if getline(1) =~ "/bin/" | silent exec "!chmod +x <afile>" | endif | endif
-" }
-
-" Auto add File Content{
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()"
 " }
 
 " Auto Lines to log{
