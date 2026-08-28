@@ -82,6 +82,8 @@ call CheckIsSetMinimunMode()
 set encoding=utf-8
 set fencs=ucs-bom,utf-8,gbk,cp936,latin1
 set formatoptions+=nM
+set nobackup
+set nowritebackup
 " }
 
 " Set include path -> use "gf" jump {
@@ -447,6 +449,9 @@ colorscheme seoul256
 "colorscheme nord
 " Light
 "colorscheme oxocarbon
+highlight CocHighlightText  guibg=#44475a ctermbg=238 gui=bold cterm=bold
+highlight CocHighlightRead  guibg=#44475a ctermbg=238 gui=bold cterm=bold
+highlight CocHighlightWrite guibg=#4b5263 ctermbg=239 gui=bold cterm=bold
 " }
 
 

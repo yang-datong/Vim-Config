@@ -16,5 +16,27 @@
       "filetypes": ["nasm", "asm"],
       "rootPatterns": [".git"]
     }
+  },
+  "mcp": {
+    "autoStart": true,
+    "allowedTools": [
+     "editor/state",
+      "document/read",
+      "document/list",
+      "document/write",
+      "workspace/apply_edit",
+      "lsp/references",
+      "lsp/definition",
+      "lsp/declaration",
+      "lsp/type_definition",
+      "lsp/implementation",
+      "lsp/document_symbols",
+      "lsp/workspace_symbols",
+      "lsp/diagnostics",
+      "lsp/code_actions",
+      "lsp/hover",
+      "lsp/rename",
+      "lsp/format"
+    ]
   }
 }
