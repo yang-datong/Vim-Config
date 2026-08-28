@@ -98,11 +98,11 @@ keyset("x", "<C-x>", "<Plug>(coc-cursors-range)", {silent = true})
 vim.api.nvim_create_augroup('CocGroup', {})
 
 -- 高亮显示符号及其引用（鼠标处于空闲状态） 
---vim.api.nvim_create_autocmd('CursorHold', {
-  --group = 'CocGroup',
-  --command = "silent call CocActionAsync('highlight')",
-  --desc = 'Highlight symbol under cursor on CursorHold'
---})
+vim.api.nvim_create_autocmd('CursorHold', {
+  group = 'CocGroup',
+  command = "silent call CocActionAsync('highlight')",
+  desc = 'Highlight symbol under cursor on CursorHold'
+})
 
 -- Update signature help on jump placeholder
 vim.api.nvim_create_autocmd('User', {

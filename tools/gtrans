@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Translate zh<->en text via Google Translate web endpoint.
+"""Translate zh<->en text via Google Translate and Tencent Transmart with auto-fallback.
 
 Examples:
-  ./gtrans.py "你好，世界"
-  ./gtrans.py "hello world"
-  echo "今天天气不错" | ./gtrans.py
-  ./gtrans.py --source zh --target en "混合输入 with override"
+  ./gtrans "你好，世界"
+  ./gtrans "hello world"
+  ./gtrans "v5 比 v4 快了约 27.6%" --target en
+  echo "今天天气不错" | ./gtrans
+  ./gtrans --engine tencent "测试文本"
+  ./gtrans --timeout 3 "测试文本"
 """
 
 from __future__ import annotations
@@ -18,10 +20,10 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from typing import Any
 
+DEFAULT_TIMEOUT = 3.0
 
-ENDPOINT = "https://translate.googleapis.com/translate_a/single"
-INPUTTOOLS_ENDPOINT = "https://inputtools.google.com/request"
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -31,26 +33,39 @@ USER_AGENT = (
 ZH_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
 EN_RE = re.compile(r"[A-Za-z]")
 
+DIRECT_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
-def fetch_url_text(request: urllib.request.Request, timeout: float, retries: int = 3) -> str:
+
+def fetch_url_text(
+    request: urllib.request.Request,
+    timeout: float,
+    retries: int = 1,
+    use_proxy: bool = True,
+) -> str:
+    start_time = time.time()
+    deadline = start_time + max(0.5, timeout)
     last_error = None
-    for attempt in range(retries):
+    open_fn = urllib.request.urlopen if use_proxy else DIRECT_OPENER.open
+
+    for attempt in range(retries + 1):
+        rem = deadline - time.time()
+        if rem <= 0.1:
+            break
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
+            with open_fn(request, timeout=rem) as response:
                 return response.read().decode("utf-8")
         except urllib.error.HTTPError:
             raise
         except urllib.error.URLError as exc:
             last_error = exc
-            if attempt + 1 == retries:
-                break
-            time.sleep(0.25 * (attempt + 1))
-    raise RuntimeError(f"network error: {last_error}")
+            if attempt < retries:
+                time.sleep(0.05)
+    raise RuntimeError(f"network error: {last_error or 'request timed out'}")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Translate Chinese <-> English with Google Translate."
+        description="Translate Chinese <-> English with Google / Tencent Translate."
     )
     parser.add_argument(
         "text",
@@ -60,15 +75,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--source", help="Source language, for example zh or en.")
     parser.add_argument("--target", help="Target language, for example en or zh.")
     parser.add_argument(
+        "--engine",
+        choices=["auto", "google", "tencent"],
+        default="auto",
+        help="Translation engine to use (default: auto, with smart fallback).",
+    )
+    parser.add_argument(
         "--timeout",
         type=float,
-        default=5.0,
-        help="HTTP timeout in seconds. Default: 5",
+        default=DEFAULT_TIMEOUT,
+        help=f"HTTP timeout in seconds. Default: {DEFAULT_TIMEOUT}s",
     )
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Print detected direction to stderr.",
+        help="Print engine and detected direction to stderr.",
     )
     parser.add_argument(
         "--json",
@@ -92,29 +113,19 @@ def read_text(args: argparse.Namespace) -> str:
     return text
 
 
-def first_script(text: str) -> str | None:
-    for char in text:
-        if ZH_RE.match(char):
-            return "zh"
-        if EN_RE.match(char):
-            return "en"
-    return None
-
-
 def detect_direction(text: str) -> tuple[str, str]:
-    has_zh = bool(ZH_RE.search(text))
-    has_en = bool(EN_RE.search(text))
+    zh_chars = len(ZH_RE.findall(text))
+    en_chars = len(EN_RE.findall(text))
 
-    if has_zh and not has_en:
+    if zh_chars > 0 and en_chars == 0:
         return "zh", "en"
-    if has_en and not has_zh:
+    if en_chars > 0 and zh_chars == 0:
         return "en", "zh"
-    if has_zh and has_en:
-        primary = first_script(text)
-        if primary == "zh":
+    if zh_chars > 0 and en_chars > 0:
+        # In mixed sentences, Chinese characters strongly signify Chinese source text
+        if zh_chars >= en_chars * 0.25 or zh_chars >= 2:
             return "zh", "en"
-        if primary == "en":
-            return "en", "zh"
+        return "en", "zh"
 
     raise SystemExit(
         "unable to detect translation direction; use --source and --target explicitly"
@@ -138,21 +149,64 @@ def resolve_direction(
     if source and target:
         return normalize_lang(source), normalize_lang(target)
     if target:
+        norm_target = normalize_lang(target)
+        if norm_target == "en":
+            has_zh = bool(ZH_RE.search(text))
+            return ("zh-CN" if has_zh else "en"), "en"
+        if norm_target.startswith("zh"):
+            has_en = bool(EN_RE.search(text))
+            return ("en" if has_en else "zh-CN"), norm_target
         detected_source, _ = detect_direction(text)
-        return normalize_lang(detected_source), normalize_lang(target)
+        return normalize_lang(detected_source), norm_target
     if source:
-        normalized_source = normalize_lang(source)
-        if normalized_source.startswith("zh"):
-            return normalized_source, "en"
-        if normalized_source == "en":
-            return normalized_source, "zh-CN"
+        norm_source = normalize_lang(source)
+        if norm_source.startswith("zh"):
+            return norm_source, "en"
+        if norm_source == "en":
+            return norm_source, "zh-CN"
         raise SystemExit("please provide --target together with a non-zh/en --source")
 
     source, target = detect_direction(text)
     return normalize_lang(source), normalize_lang(target)
 
 
-def translate(text: str, source: str, target: str, timeout: float) -> list:
+def translate_google(
+    text: str, source: str, target: str, timeout: float
+) -> tuple[str, str, Any]:
+    deadline = time.time() + max(0.2, timeout)
+
+    # 1. Try dict-chrome-ex endpoint first (reliable against 429)
+    try:
+        params = urllib.parse.urlencode(
+            [
+                ("client", "dict-chrome-ex"),
+                ("sl", source),
+                ("tl", target),
+                ("q", text),
+            ]
+        )
+        request = urllib.request.Request(
+            f"https://clients5.google.com/translate_a/t?{params}",
+            headers={"User-Agent": USER_AGENT},
+        )
+        rem = max(0.2, deadline - time.time())
+        body = fetch_url_text(request, rem)
+        data = json.loads(body)
+        if isinstance(data, list) and data:
+            if isinstance(data[0], list) and data[0]:
+                trans = data[0][0]
+                det_src = data[0][1] if len(data[0]) > 1 else source
+                return trans, det_src, data
+            if isinstance(data[0], str):
+                return data[0], source, data
+    except Exception:
+        pass
+
+    # 2. Try single/gtx endpoint if time permits
+    rem = max(0.2, deadline - time.time())
+    if rem < 0.2:
+        raise RuntimeError("Google request timed out")
+
     params = urllib.parse.urlencode(
         [
             ("client", "gtx"),
@@ -163,30 +217,96 @@ def translate(text: str, source: str, target: str, timeout: float) -> list:
         ]
     )
     request = urllib.request.Request(
-        f"{ENDPOINT}?{params}",
+        f"https://translate.googleapis.com/translate_a/single?{params}",
         headers={"User-Agent": USER_AGENT},
     )
-
     try:
-        body = fetch_url_text(request, timeout)
+        body = fetch_url_text(request, rem)
+        data = json.loads(body)
+        parts = []
+        if isinstance(data, list) and data and isinstance(data[0], list):
+            for item in data[0]:
+                if item and item[0]:
+                    parts.append(item[0])
+        if not parts:
+            raise RuntimeError("translation result is empty")
+        detected_src = data[2] if len(data) > 2 and isinstance(data[2], str) else source
+        return "".join(parts), detected_src, data
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"HTTP {exc.code}: {body}") from exc
+        raise RuntimeError(f"Google HTTP {exc.code}: {body}") from exc
+    except Exception as exc:
+        raise RuntimeError(f"Google error: {exc}") from exc
 
+
+def translate_tencent(
+    text: str, source: str, target: str, timeout: float
+) -> tuple[str, str, Any]:
+    src_lang = "zh" if source.lower().startswith("zh") else source.lower()
+    tgt_lang = "zh" if target.lower().startswith("zh") else target.lower()
+
+    url = "https://transmart.qq.com/api/imt"
+    payload = {
+        "header": {
+            "fn": "auto_translation",
+            "client_key": "browser-chrome-120.0.0.0",
+        },
+        "type": "plain",
+        "model_category": "normal",
+        "source": {"lang": src_lang, "text_list": [text]},
+        "target": {"lang": tgt_lang},
+    }
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
+        },
+    )
     try:
-        return json.loads(body)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"unexpected response: {body[:200]}") from exc
+        body = fetch_url_text(request, max(0.5, timeout), use_proxy=False)
+        data = json.loads(body)
+        header = data.get("header", {})
+        if header.get("ret_code") == "error":
+            raise RuntimeError(data.get("message", "Tencent API returned error"))
+        trans_list = data.get("auto_translation", [])
+        if not trans_list:
+            raise RuntimeError("Tencent returned empty translation")
+        detected_src = data.get("src_lang", src_lang)
+        return trans_list[0], detected_src, data
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Tencent HTTP {exc.code}: {body}") from exc
+    except Exception as exc:
+        raise RuntimeError(f"Tencent error: {exc}") from exc
 
 
-def extract_translation(data: list) -> str:
-    parts = []
-    for item in data[0]:
-        if item and item[0]:
-            parts.append(item[0])
-    if not parts:
-        raise RuntimeError("translation result is empty")
-    return "".join(parts)
+def translate_auto(
+    text: str, source: str, target: str, timeout: float, verbose: bool = False
+) -> tuple[str, str, str, Any]:
+    deadline = time.time() + max(0.5, timeout)
+    errors = []
+
+    # 1. Try Tencent (direct connection, no proxy) first
+    rem_tencent = max(0.5, deadline - time.time())
+    try:
+        trans, det_src, raw_data = translate_tencent(text, source, target, rem_tencent)
+        return "tencent", det_src, trans, raw_data
+    except Exception as e:
+        errors.append(f"tencent: {e}")
+        if verbose:
+            print(f"[gtrans fallback] Tencent failed ({e}), trying Google...", file=sys.stderr)
+
+    # 2. Try Google with remaining timeout
+    rem_google = max(0.5, deadline - time.time())
+    try:
+        trans, det_src, raw_data = translate_google(text, source, target, rem_google)
+        return "google", det_src, trans, raw_data
+    except Exception as e:
+        errors.append(f"google: {e}")
+
+    raise RuntimeError(f"all translation engines failed: {'; '.join(errors)}")
 
 
 def should_try_pinyin_fallback(
@@ -204,6 +324,7 @@ def should_try_pinyin_fallback(
 
 
 def pinyin_to_chinese(text: str, timeout: float) -> str | None:
+    pinyin_timeout = min(2.0, max(0.5, timeout * 0.3))
     params = urllib.parse.urlencode(
         [
             ("text", text),
@@ -217,13 +338,13 @@ def pinyin_to_chinese(text: str, timeout: float) -> str | None:
         ]
     )
     request = urllib.request.Request(
-        f"{INPUTTOOLS_ENDPOINT}?{params}",
+        f"https://inputtools.google.com/request?{params}",
         headers={"User-Agent": USER_AGENT},
     )
 
     try:
-        body = fetch_url_text(request, timeout)
-    except RuntimeError:
+        body = fetch_url_text(request, pinyin_timeout)
+    except Exception:
         return None
 
     try:
@@ -253,37 +374,112 @@ def pinyin_to_chinese(text: str, timeout: float) -> str | None:
     return result
 
 
+def do_translate(
+    text: str,
+    source: str,
+    target: str,
+    engine: str = "auto",
+    timeout: float = DEFAULT_TIMEOUT,
+    verbose: bool = False,
+) -> tuple[str, str, str, Any]:
+    if engine == "google":
+        trans, det_src, data = translate_google(text, source, target, timeout)
+        return "google", det_src, trans, data
+    elif engine == "tencent":
+        trans, det_src, data = translate_tencent(text, source, target, timeout)
+        return "tencent", det_src, trans, data
+    else:
+        return translate_auto(text, source, target, timeout, verbose)
+
+
+def translate(
+    text: str,
+    source: str,
+    target: str,
+    timeout: float = DEFAULT_TIMEOUT,
+    engine: str = "auto",
+) -> dict[str, Any]:
+    """Compatibility wrapper for external modules (e.g. UltiSnips)."""
+    engine_used, det_src, translation, raw_data = do_translate(
+        text, source, target, engine=engine, timeout=timeout, verbose=False
+    )
+    return {
+        "translation": translation,
+        "engine": engine_used,
+        "det_src": det_src,
+        "raw": raw_data,
+    }
+
+
+def extract_translation(data: Any) -> str:
+    """Compatibility extractor for external modules (e.g. UltiSnips)."""
+    if isinstance(data, dict):
+        return data.get("translation", "")
+    if isinstance(data, str):
+        return data
+    if isinstance(data, (list, tuple)) and len(data) > 0:
+        if isinstance(data[0], list):
+            parts = []
+            for item in data[0]:
+                if item and item[0]:
+                    parts.append(str(item[0]))
+            if parts:
+                return "".join(parts)
+        if isinstance(data[0], str):
+            return data[0]
+    return str(data)
+
+
 def main() -> int:
     args = parse_args()
     text = read_text(args)
     converted_text = None
+    start_time = time.time()
+
     if args.target and should_try_pinyin_fallback(text, args.source, args.target):
         converted_text = pinyin_to_chinese(text, args.timeout)
+        rem_timeout = max(0.5, args.timeout - (time.time() - start_time))
         if converted_text:
             source, target = "zh-CN", "en"
-            data = translate(converted_text, source, target, args.timeout)
-            translation = extract_translation(data)
+            engine_used, det_src, translation, raw_data = do_translate(
+                converted_text, source, target, args.engine, rem_timeout, args.verbose
+            )
         else:
             source, target = resolve_direction(text, args.source, args.target)
-            data = translate(text, source, target, args.timeout)
-            translation = extract_translation(data)
+            engine_used, det_src, translation, raw_data = do_translate(
+                text, source, target, args.engine, rem_timeout, args.verbose
+            )
     else:
         source, target = resolve_direction(text, args.source, args.target)
-        data = translate(text, source, target, args.timeout)
-        translation = extract_translation(data)
+        rem_timeout = max(0.5, args.timeout - (time.time() - start_time))
+        engine_used, det_src, translation, raw_data = do_translate(
+            text, source, target, args.engine, rem_timeout, args.verbose
+        )
 
     if args.verbose:
-        detected = data[2] if len(data) > 2 else source
+        detected = det_src or source
+        elapsed = time.time() - start_time
         if converted_text:
             print(
-                f"direction: {detected} -> {target}; pinyin=>{converted_text}",
+                f"[{engine_used}] direction: {detected} -> {target}; pinyin=>{converted_text} (took {elapsed:.2f}s)",
                 file=sys.stderr,
             )
         else:
-            print(f"direction: {detected} -> {target}", file=sys.stderr)
+            print(
+                f"[{engine_used}] direction: {detected} -> {target} (took {elapsed:.2f}s)",
+                file=sys.stderr,
+            )
 
     if args.json:
-        print(json.dumps(data, ensure_ascii=False, indent=2))
+        output_payload = {
+            "engine": engine_used,
+            "source": source,
+            "target": target,
+            "text": text,
+            "translation": translation,
+            "raw": raw_data,
+        }
+        print(json.dumps(output_payload, ensure_ascii=False, indent=2))
     else:
         print(translation)
     return 0

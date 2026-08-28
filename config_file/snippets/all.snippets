@@ -10,14 +10,17 @@ global !p
 from vimsnippets import foldmarker, make_box, get_comment_format
 import importlib.machinery
 import importlib.util
+import os
 import sys
 
-_GTRANS_PATH = "/Users/hi/sh_foot/tools/gtrans"
+_GTRANS_PATH = os.path.expanduser("~/sh_foot/tools/gtrans")
 
 
 def load_gtrans_module():
+	mtime = os.path.getmtime(_GTRANS_PATH) if os.path.exists(_GTRANS_PATH) else 0
 	mod = globals().get("_gtrans_module")
-	if mod is not None:
+	last_mtime = globals().get("_gtrans_mtime", 0)
+	if mod is not None and last_mtime == mtime:
 		return mod
 	loader = importlib.machinery.SourceFileLoader("ultisnips_gtrans", _GTRANS_PATH)
 	spec = importlib.util.spec_from_loader(loader.name, loader)
@@ -25,10 +28,11 @@ def load_gtrans_module():
 	sys.modules[spec.name] = mod
 	loader.exec_module(mod)
 	globals()["_gtrans_module"] = mod
+	globals()["_gtrans_mtime"] = mtime
 	return mod
 
 
-def translate_with_gtrans(text, target_lang, timeout=5):
+def translate_with_gtrans(text, target_lang, timeout=3):
 	mod = load_gtrans_module()
 	source, target = mod.resolve_direction(text, None, target_lang)
 	converted_text = None
@@ -212,7 +216,7 @@ snippet "-(.*)-(en|zh)" "To English|Chinese" wr
 source_text = match.group(1)
 target_lang = match.group(2)
 try:
-    snip.rv = translate_with_gtrans(source_text, target_lang, timeout=5)
+    snip.rv = translate_with_gtrans(source_text, target_lang, timeout=3)
 except Exception as exc:
     snip.rv = f"Error: {exc}"
 
