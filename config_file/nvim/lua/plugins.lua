@@ -36,11 +36,17 @@ return {
         "coc-snippets",
         "coc-texlab",
         "coc-sh",
+        "coc-make",
         "coc-cmake",
         "coc-json",
         "coc-pyright",
-        "coc-lua",
+        "coc-sumneko-lua",
+        "coc-xml",
         "coc-yaml",
+        "coc-toml",
+        "coc-vimlsp",
+        "coc-markdownlint",
+        "coc-nasm",
         --"coc-powershell",
       }
 
