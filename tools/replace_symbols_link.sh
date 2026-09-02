@@ -2,6 +2,7 @@
 set -e
 #ME=/usr/local/bin
 ME=$HOME/.local/bin
+if [[ ! $TMPDIR ]]; then TMPDIR=/tmp; fi
 TMP=$TMPDIR
 self=$(basename $0)
 
@@ -9,16 +10,17 @@ main() {
 	if [ ! -d $ME ]; then mkdir -p $ME; fi
 
 	# Check file #
-	for file in $(ls $SH_FOOT/tools | grep -v $self); do
+	for file in $(find . -type f -maxdepth 1 2>/dev/null | grep -v $self); do
 		local local_file="$SH_FOOT/tools/$file"
 		add_exec_permission "$local_file"
 		remove_shell_script_suffix "$local_file"
 	done
 
 	#  这里去掉后缀后再重新遍历一次 #
-	for file in $(ls $SH_FOOT/tools | grep -v $self); do
+	for file in $(find . -type f -maxdepth 1 2>/dev/null | grep -v $self); do
 		local local_file="$SH_FOOT/tools/$file"
-		if [ "$local_file" == "$SH_FOOT/tools/systemctl" ] && [ "$(uname)" == "Linux" ]; then
+		if [[ "$local_file" =~ "systemctl" ]] && [[ "$(uname)" == "Linux" ]]; then
+			echo " continue $local_file"
 			continue
 		fi
 		replace_symbols_link "$ME/${file}" "$SH_FOOT/tools/$file"

@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 ME=$HOME
+if [[ ! $TMPDIR ]]; then TMPDIR=/tmp; fi
 TMP=$TMPDIR
 
 main() {
