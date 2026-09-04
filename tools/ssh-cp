@@ -4,6 +4,7 @@ set -e
 
 ScriptVersion="1.0"
 
+TMPDIR="${TMPDIR:-/tmp}"
 ssh_history="$HOME/.ssh_history"
 
 unset ip
@@ -24,36 +25,52 @@ main() {
 }
 
 init_input_info() {
-  if [ ! $ip ] || [ ! $user ] || [ ! $passwd ]; then
+  if [ -z "$ip" ] || [ -z "$user" ] || [ -z "$passwd" ]; then
     # 没有输入连接信息
-    if [ ! -f $ssh_history ]; then # 尝试本地获取历史信息
-      echo -e "\033[31m Don't found user configure, Input you're $(basename $0) -i [ip] -u [username] -p [passwd] \033[0m"
-      exit
+    if [ ! -f "$ssh_history" ]; then # 尝试本地获取历史信息
+      echo -e "\033[31m Don't found user configure, Input you're $(basename "$0") -i [ip] -u [username] -p [passwd] \033[0m"
+      exit 1
     else
-      local line=$(cat "$ssh_history" | wc -l)
-      if [ $line -gt 1 ]; then
+      # 清理空行并去重
+      local tmp_clean="${TMPDIR}/ssh_clean_$$"
+      sort -u "$ssh_history" | sed '/^$/d' >"$tmp_clean" && mv "$tmp_clean" "$ssh_history"
+
+      local -a hist_ips=() hist_users=() hist_passwds=() hist_ports=()
+      while read -r h_ip h_user h_passwd h_port _; do
+        [ -z "$h_ip" ] && continue
+        hist_ips+=("$h_ip")
+        hist_users+=("$h_user")
+        hist_passwds+=("$h_passwd")
+        hist_ports+=("${h_port:-22}")
+      done <"$ssh_history"
+
+      local total=${#hist_ips[@]}
+      if [ "$total" -eq 0 ]; then
+        echo -e "\033[31m Don't found user configure, Input you're $(basename "$0") -i [ip] -u [username] -p [passwd] \033[0m"
+        exit 1
+      elif [ "$total" -eq 1 ]; then
+        ip="${hist_ips[0]}"
+        user="${hist_users[0]}"
+        passwd="${hist_passwds[0]}"
+        port="${hist_ports[0]}"
+      else
         echo -e "\033[33m存在多个连接信息：\033[0m"
-        local line_number=0
-        while read line; do
-          ((line_number++))
-          echo $line_number. $line | awk '{print $1,$2,$3}'
-        done <"$ssh_history"
+        printf "%-14s %-18s %-14s %-6s\n" "SerialNumber" "IP" "User" "Port"
+        for ((i = 0; i < total; i++)); do
+          printf "%-14s %-18s %-14s %-6s\n" "$((i + 1))." "${hist_ips[i]}" "${hist_users[i]}" "${hist_ports[i]}"
+        done
         echo -en "\033[33m请选择要连接的目标信息：\033[0m"
-        read opt
-        if [[ $opt =~ ^[0-9]+$ ]]; then
-          ip=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $1}')
-          user=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $2}')
-          passwd=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $3}')
-          port=$(cat "$ssh_history" | sed -n ${opt}p | awk '{print $4}')
+        read -r opt
+        if [[ "$opt" =~ ^[0-9]+$ ]] && [ "$opt" -ge 1 ] && [ "$opt" -le "$total" ]; then
+          local idx=$((opt - 1))
+          ip="${hist_ips[idx]}"
+          user="${hist_users[idx]}"
+          passwd="${hist_passwds[idx]}"
+          port="${hist_ports[idx]}"
         else
           echo -e "\033[31m输入错误，请输入对应的数字序号\033[0m"
-          exit
+          exit 1
         fi
-      else
-        ip=$(cat "$ssh_history" | awk '{print $1}')
-        user=$(cat "$ssh_history" | awk '{print $2}')
-        passwd=$(cat "$ssh_history" | awk '{print $3}')
-        port=$(cat "$ssh_history" | awk '{print $4}')
       fi
     fi
   fi
@@ -197,7 +214,7 @@ while getopts ":hdvf:D:si:u:p:P:-:" opt; do
       OPTIND=$((OPTIND + 1))
       ;;
     port)
-      passwd=${!OPTIND}
+      port=${!OPTIND}
       OPTIND=$((OPTIND + 1))
       ;;
     *) echo "Invalid option: --${OPTARG}" >&2 && exit 1 ;;
