@@ -18,8 +18,8 @@ _GTRANS_PATH = os.path.expanduser("~/sh_foot/tools/gtrans")
 
 def load_gtrans_module():
 	mtime = os.path.getmtime(_GTRANS_PATH) if os.path.exists(_GTRANS_PATH) else 0
-	mod = globals().get("_gtrans_module")
-	last_mtime = globals().get("_gtrans_mtime", 0)
+	mod = sys.modules.get("ultisnips_gtrans")
+	last_mtime = getattr(mod, "_gtrans_mtime", 0)
 	if mod is not None and last_mtime == mtime:
 		return mod
 	loader = importlib.machinery.SourceFileLoader("ultisnips_gtrans", _GTRANS_PATH)
@@ -27,13 +27,21 @@ def load_gtrans_module():
 	mod = importlib.util.module_from_spec(spec)
 	sys.modules[spec.name] = mod
 	loader.exec_module(mod)
-	globals()["_gtrans_module"] = mod
-	globals()["_gtrans_mtime"] = mtime
+	mod._gtrans_mtime = mtime
 	return mod
 
 
 def translate_with_gtrans(text, target_lang, timeout=3):
+	if not text or not text.strip():
+		return ""
 	mod = load_gtrans_module()
+	cache = getattr(mod, "_cache", None)
+	if cache is None:
+		cache = {}
+		mod._cache = cache
+	cache_key = (text, target_lang)
+	if cache_key in cache:
+		return cache[cache_key]
 	source, target = mod.resolve_direction(text, None, target_lang)
 	converted_text = None
 	if mod.should_try_pinyin_fallback(text, None, target_lang):
@@ -45,7 +53,9 @@ def translate_with_gtrans(text, target_lang, timeout=3):
 			data = mod.translate(text, source, target, timeout)
 	else:
 		data = mod.translate(text, source, target, timeout)
-	return mod.extract_translation(data)
+	res = mod.extract_translation(data)
+	cache[cache_key] = res
+	return res
 endglobal
 
 snippet help "help"
@@ -213,25 +223,16 @@ endsnippet
 priority 10000
 snippet "-(.*)-(en|zh)" "To English|Chinese" wr
 `!p
-source_text = match.group(1)
-target_lang = match.group(2)
-try:
-    snip.rv = translate_with_gtrans(source_text, target_lang, timeout=3)
-except Exception as exc:
-    snip.rv = f"Error: {exc}"
-
-# Old translate-shell solution kept for reference:
-# import subprocess as sp
-# env = os.environ.copy()
-# for key in ("HTTP_PROXY", "http_proxy", "HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy"):
-#     env.pop(key, None)
-# process = sp.Popen(
-#     ['trans', ':' + target_lang, source_text, '-b', '-e', 'bing'],
-#     stdout=sp.PIPE,
-#     stderr=sp.PIPE,
-#     env=env,
-# )
-`
+if not snip.c:
+    source_text = match.group(1)
+    target_lang = match.group(2)
+    try:
+        snip.rv = translate_with_gtrans(source_text, target_lang, timeout=3)
+    except Exception as exc:
+        snip.rv = f"Error: {exc}"
+else:
+    snip.rv = snip.c
+`$0
 endsnippet
 
 snippet "\((.*)\)(expr|calc|calculate|sum|all)" "all" wr
