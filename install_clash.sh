@@ -92,6 +92,40 @@ download_clash() {
 	echo "rm $clash_bin Country.mmdb geosite.dat config.yaml"
 }
 
+update_clash() {
+	local os=$(uname -o | awk '{print tolower($0)}')
+	local arch=$(uname -m)
+	if [[ $os == "gnu/linux" ]]; then os="linux"; fi
+	if [[ $arch == "x86_64" ]]; then arch="amd64"; fi
+	local clash_file="mihomo-${os}-${arch}-${clash_version}.gz"
+	local clash_bin=${clash_file%.*}
+
+	wget https://github.com/MetaCubeX/mihomo/releases/download/${clash_version}/${clash_file} -O $clash_file
+	gunzip -f $clash_file
+	cp -f ${clash_bin} ${target_dir}/clash
+	chmod +x ${target_dir}/clash
+	rm -f $clash_bin
+
+	if [ $(uname) == "Linux" ]; then
+		sudo systemctl restart clash
+	else
+		launchctl bootout gui/$(id -u) $HOME/Library/LaunchAgents/com.rl.clash.plist 2>/dev/null || true
+		launchctl bootstrap gui/$(id -u) $HOME/Library/LaunchAgents/com.rl.clash.plist 2>/dev/null || true
+	fi
+	echo "Clash CLI 已更新至 ${clash_version}"
+}
+
+if [ "$1" == "--update" ]; then
+	if [ -n "$2" ]; then
+		clash_version="$2"
+	fi
+	update_clash
+	exit 0
+elif [ "$1" == "--help" ]; then
+	echo "./$0 --update or ./$0"
+	exit 0
+fi
+
 if [ ! -d ${target_dir} ]; then
 	mkdir ${target_dir}
 fi
