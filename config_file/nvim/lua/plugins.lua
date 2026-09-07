@@ -45,7 +45,7 @@ return {
         "coc-yaml",
         "coc-toml",
         "coc-vimlsp",
-        "coc-markdownlint",
+        --"coc-markdownlint",
         "coc-nasm",
         --"coc-powershell",
       }
