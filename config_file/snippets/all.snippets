@@ -221,7 +221,7 @@ snippet "([^\s]\w+)\.l" "Lowercase prev word(postfix)" r
 endsnippet
 
 priority 10000
-snippet "-(.*)-(en|zh)" "To English|Chinese" wr
+snippet "-(.+)-(en|zh)" "To English|Chinese" wr
 `!p
 if not snip.c:
     source_text = match.group(1)
@@ -234,6 +234,26 @@ else:
     snip.rv = snip.c
 `$0
 endsnippet
+
+priority 10001
+context "snip.visual_text"
+snippet "(?:-{1,2}\*?-*|-*)(zh|en)" "Translate visual selection to Chinese|English" wr
+`!p
+if not snip.c:
+    source_text = snip.v.text.strip()
+    target_lang = match.group(1)
+    if source_text:
+        try:
+            snip.rv = translate_with_gtrans(source_text, target_lang, timeout=8)
+        except Exception as exc:
+            snip.rv = f"Error: {exc}"
+    else:
+        snip.rv = ""
+else:
+    snip.rv = snip.c
+`$0
+endsnippet
+
 
 snippet "\((.*)\)(expr|calc|calculate|sum|all)" "all" wr
 `!p 

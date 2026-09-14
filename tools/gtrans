@@ -34,6 +34,33 @@ ZH_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]")
 EN_RE = re.compile(r"[A-Za-z]")
 
 DIRECT_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+_CACHED_PROXY_OPENER: urllib.request.OpenerDirector | None = None
+
+
+def get_proxy_opener() -> urllib.request.OpenerDirector:
+    global _CACHED_PROXY_OPENER
+    if _CACHED_PROXY_OPENER is not None:
+        return _CACHED_PROXY_OPENER
+
+    proxies = urllib.request.getproxies()
+    if "http" in proxies or "https" in proxies or "all" in proxies:
+        _CACHED_PROXY_OPENER = urllib.request.build_opener()
+        return _CACHED_PROXY_OPENER
+
+    import socket
+    for port in [7890, 7897, 10808, 10809]:
+        try:
+            with socket.create_connection(("127.0.0.1", port), timeout=0.15):
+                proxy_url = f"http://127.0.0.1:{port}"
+                _CACHED_PROXY_OPENER = urllib.request.build_opener(
+                    urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url})
+                )
+                return _CACHED_PROXY_OPENER
+        except Exception:
+            continue
+
+    _CACHED_PROXY_OPENER = urllib.request.build_opener()
+    return _CACHED_PROXY_OPENER
 
 
 def fetch_url_text(
@@ -45,7 +72,7 @@ def fetch_url_text(
     start_time = time.time()
     deadline = start_time + max(0.5, timeout)
     last_error = None
-    open_fn = urllib.request.urlopen if use_proxy else DIRECT_OPENER.open
+    open_fn = get_proxy_opener().open if use_proxy else DIRECT_OPENER.open
 
     for attempt in range(retries + 1):
         rem = deadline - time.time()
@@ -239,7 +266,7 @@ def translate_google(
         raise RuntimeError(f"Google error: {exc}") from exc
 
 
-def translate_tencent(
+def _translate_tencent_single(
     text: str, source: str, target: str, timeout: float
 ) -> tuple[str, str, Any]:
     src_lang = "zh" if source.lower().startswith("zh") else source.lower()
@@ -264,17 +291,42 @@ def translate_tencent(
             "User-Agent": USER_AGENT,
         },
     )
+    body = fetch_url_text(request, max(0.5, timeout), use_proxy=False)
+    data = json.loads(body)
+    header = data.get("header", {})
+    if header.get("ret_code") == "error":
+        raise RuntimeError(data.get("message", "Tencent API returned error"))
+    trans_list = data.get("auto_translation", [])
+    if not trans_list:
+        raise RuntimeError("Tencent returned empty translation")
+    detected_src = data.get("src_lang", src_lang)
+    return trans_list[0], detected_src, data
+
+
+def translate_tencent(
+    text: str, source: str, target: str, timeout: float
+) -> tuple[str, str, Any]:
     try:
-        body = fetch_url_text(request, max(0.5, timeout), use_proxy=False)
-        data = json.loads(body)
-        header = data.get("header", {})
-        if header.get("ret_code") == "error":
-            raise RuntimeError(data.get("message", "Tencent API returned error"))
-        trans_list = data.get("auto_translation", [])
-        if not trans_list:
-            raise RuntimeError("Tencent returned empty translation")
-        detected_src = data.get("src_lang", src_lang)
-        return trans_list[0], detected_src, data
+        if len(text) <= 400 and "\n\n" not in text:
+            return _translate_tencent_single(text, source, target, timeout)
+
+        # Multi-paragraph / long text: split by paragraph breaks to prevent API truncation
+        parts = re.split(r"(\n\s*\n)", text)
+        results = []
+        det_src = source
+        last_raw = None
+        start_time = time.time()
+
+        for part in parts:
+            if not part.strip():
+                results.append(part)
+            else:
+                rem = max(1.0, timeout - (time.time() - start_time))
+                tr, det, last_raw = _translate_tencent_single(part, source, target, rem)
+                det_src = det
+                results.append(tr)
+
+        return "".join(results), det_src, last_raw
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(f"Tencent HTTP {exc.code}: {body}") from exc
@@ -282,29 +334,56 @@ def translate_tencent(
         raise RuntimeError(f"Tencent error: {exc}") from exc
 
 
+def is_incomplete_translation(
+    orig_text: str, trans_text: str, source: str, target: str
+) -> bool:
+    norm_tgt = normalize_lang(target)
+    if norm_tgt.startswith("zh"):
+        orig_lines = [l.strip() for l in orig_text.splitlines() if l.strip()]
+        trans_lines = [l.strip() for l in trans_text.splitlines() if l.strip()]
+        if len(orig_lines) > 2 and len(trans_lines) > 2:
+            if not ZH_RE.search(trans_lines[-1]) and EN_RE.search(trans_lines[-1]):
+                if trans_lines[-1] in orig_lines[-1] or orig_lines[-1] in trans_lines[-1]:
+                    return True
+    elif norm_tgt.startswith("en"):
+        orig_lines = [l.strip() for l in orig_text.splitlines() if l.strip()]
+        trans_lines = [l.strip() for l in trans_text.splitlines() if l.strip()]
+        if len(orig_lines) > 2 and len(trans_lines) > 2:
+            if not EN_RE.search(trans_lines[-1]) and ZH_RE.search(trans_lines[-1]):
+                if trans_lines[-1] in orig_lines[-1] or orig_lines[-1] in trans_lines[-1]:
+                    return True
+    return False
+
+
 def translate_auto(
     text: str, source: str, target: str, timeout: float, verbose: bool = False
 ) -> tuple[str, str, str, Any]:
-    deadline = time.time() + max(0.5, timeout)
     errors = []
 
-    # 1. Try Tencent (direct connection, no proxy) first
-    rem_tencent = max(0.5, deadline - time.time())
-    try:
-        trans, det_src, raw_data = translate_tencent(text, source, target, rem_tencent)
-        return "tencent", det_src, trans, raw_data
-    except Exception as e:
-        errors.append(f"tencent: {e}")
-        if verbose:
-            print(f"[gtrans fallback] Tencent failed ({e}), trying Google...", file=sys.stderr)
+    # For multiline or long text, Google handles entire paragraphs cleanly,
+    # whereas Tencent Transmart silently truncates/drops paragraphs after ~400 chars.
+    if "\n" in text or len(text) > 200:
+        engines = ["google", "tencent"]
+    else:
+        engines = ["tencent", "google"]
 
-    # 2. Try Google with remaining timeout
-    rem_google = max(0.5, deadline - time.time())
-    try:
-        trans, det_src, raw_data = translate_google(text, source, target, rem_google)
-        return "google", det_src, trans, raw_data
-    except Exception as e:
-        errors.append(f"google: {e}")
+    # Allocate an independent fair timeout per engine instead of a depleting shared deadline
+    per_engine_timeout = max(3.0, timeout * 0.6)
+
+    for eng in engines:
+        try:
+            if eng == "tencent":
+                trans, det_src, raw_data = translate_tencent(text, source, target, per_engine_timeout)
+                if is_incomplete_translation(text, trans, source, target):
+                    raise RuntimeError("Tencent returned truncated/incomplete translation")
+                return "tencent", det_src, trans, raw_data
+            else:
+                trans, det_src, raw_data = translate_google(text, source, target, per_engine_timeout)
+                return "google", det_src, trans, raw_data
+        except Exception as e:
+            errors.append(f"{eng}: {e}")
+            if verbose:
+                print(f"[gtrans fallback] {eng} failed ({e}), trying next...", file=sys.stderr)
 
     raise RuntimeError(f"all translation engines failed: {'; '.join(errors)}")
 
