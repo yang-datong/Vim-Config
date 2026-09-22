@@ -8,4 +8,4 @@ if [ ! $1 ]; then
 fi
 
 inputVideo=$1
-ffprobe -i $inputVideo -show_frames -select_streams v | grep pkt_pts
+ffprobe -i $inputVideo -show_frames -select_streams v | grep pts
