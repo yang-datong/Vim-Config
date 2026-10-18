@@ -2,10 +2,10 @@
 
 set -e
 
-if [ ! $1 ]; then
+if [ -z "$1" ]; then
 	echo -e "\033[31mNeed target file\033[0m"
-	exit
+	exit 1
 fi
 
-inputVideo=$1
-ffprobe -i $inputVideo -show_frames -select_streams v | grep pts
+inputVideo="$1"
+ffprobe -i "$inputVideo" -show_frames -select_streams v | grep pts

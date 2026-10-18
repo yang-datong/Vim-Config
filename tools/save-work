@@ -1,8 +1,30 @@
 #!/bin/bash
 set -e
 
-echo "Are you sure you want to save? The original file will be overwritten![Y/n]"
-read is_ok
+work_dirs=(
+	#Config
+	"$HOME/sh_foot"
+	"$HOME/Study"
+	"$HOME/MD-Note"
+
+	#My Project
+	"$HOME/H264Encoder"
+	"$HOME/JPEGer"
+	"$HOME/H264Decoder"
+	"$HOME/HEVCDecoder"
+	"$HOME/AV1Decoder"
+	"$HOME/VVCDecoder"
+
+	#Project 1
+	"$HOME/ffmpeg-4.4.2"
+	"$HOME/x264-0.164.5"
+	"$HOME/x265-3.6"
+	"$HOME/dav1d-1.5.3"
+	"$HOME/svtav1-4.1.0"
+	"$HOME/vvcd"
+	"$HOME/vvcd-fast"
+	"$HOME/ffmpeg-hevc-decoder-8.0"
+)
 
 to_icloud() {
 	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
@@ -13,34 +35,19 @@ to_icloud() {
 	echo -e "\033[31m[🍺!!!!!!!!!!!Done!!!!!!!!!!!]"
 }
 
+from_icloud() {
+	pushd ~/Library/Mobile\ Documents/com~apple~CloudDocs
+	cp -rv ./sh_foot/init.vim ~/.config/nvim/init.vim
+	cp -rv ./sh_foot/markdown.snippets ~/.config/nvim/plugged/vim-snippets/UltiSnips/markdown.snippets
+	cp -rv ./demo1 ~/Desktop/
+	popd
+	echo -e "\033[31m[🍺##########Done#############]"
+}
+
 to_github() {
-	work_dirs=(
-		#Config
-		$HOME/sh_foot
-		$HOME/Study
-		$HOME/MD-Note
-
-		#My Project
-		$HOME/H264Encoder
-		$HOME/JPEGer
-		$HOME/H264Decoder
-		$HOME/HEVCDecoder
-		$HOME/AV1Decoder
-		$HOME/VVCDecoder
-
-		#Project 1
-		$HOME/ffmpeg-4.4.2
-		$HOME/x264-0.164.5
-		$HOME/x265-3.6
-		$HOME/dav1d-1.5.3
-		$HOME/svtav1-4.1.0
-		$HOME/vvcd
-		$HOME/vvcd-fast
-		$HOME/ffmpeg-hevc-decoder-8.0
-	)
-	for in_dir in ${work_dirs[@]}; do
-		if [ ! -d ${in_dir} ]; then
-			echo "Not fond dir: ${in_dir}, skip it"
+	for in_dir in "${work_dirs[@]}"; do
+		if [ ! -d "${in_dir}" ]; then
+			echo "Not found dir: ${in_dir}, skip it"
 			continue
 		fi
 		pushd "${in_dir}" >/dev/null
@@ -53,7 +60,33 @@ to_github() {
 	echo "Done!"
 }
 
-if [ "$is_ok" != 'n' ]; then
-	#to_icloud
-	to_github
+from_github() {
+	for in_dir in "${work_dirs[@]}"; do
+		if [ ! -d "${in_dir}" ]; then
+			echo "Not found dir: ${in_dir}, skip it"
+			continue
+		fi
+		pushd "${in_dir}" >/dev/null
+		echo -e "\033[31m${in_dir}\033[0m"
+		git pull
+		popd >/dev/null
+	done
+	echo "Done!"
+}
+
+cmd_name="$(basename "$0")"
+if [[ "$cmd_name" == "pull-work" || "$1" == "pull" ]]; then
+	echo "Are you sure you want to pull it? The original file will be overwritten! [Y/n]"
+	read -r is_ok
+	if [[ "$is_ok" != "n" && "$is_ok" != "N" ]]; then
+		#from_icloud
+		from_github
+	fi
+else
+	echo "Are you sure you want to save? The original file will be overwritten![Y/n]"
+	read -r is_ok
+	if [[ "$is_ok" != "n" && "$is_ok" != "N" ]]; then
+		#to_icloud
+		to_github
+	fi
 fi

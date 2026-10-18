@@ -58,7 +58,7 @@ main() {
 	local ip="$1"
 	local code="$2"
 	local cmd="$3"
-	local expect_file="/tmp/jumpserver_sfpt_connect.expect"
+	local expect_file="/tmp/jumpserver_sftp_connect.expect"
 
 	cat <<EOF >"$expect_file"
 #!/usr/bin/expect

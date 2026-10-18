@@ -2,10 +2,10 @@
 
 set -e
 
-if [ ! $1 ]; then
+if [ -z "$1" ]; then
 	echo -e "\033[31mNeed target AV file\033[0m"
-	exit
+	exit 1
 fi
 
 file="$1"
-ffprobe -loglevel quiet -select_streams v -show_streams $file
+ffprobe -loglevel quiet -select_streams v -show_streams "$file"

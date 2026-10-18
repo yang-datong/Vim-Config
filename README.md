@@ -8,6 +8,6 @@
 - `tools` 一些自动化、简化常用操作的`Bash`脚本文件(replace_symbols_link.sh 可一键部署)
 - `powershell` Windows环境下`powershell`的配置环境、脚本文件
 - `config_file` 基本上为`neovim/vim`、`shell`、`snippets`的配置文件
-- `markdown_them_file` 特定于`markdown-perview`的主题配置文件
+- `markdown_theme_file` 特定于`markdown-preview`的主题配置文件
 
 可用于`Mac OS / Linux`环境

@@ -16,7 +16,10 @@ colors
 
 # MacOS 环境
 export PATH=/Applications/Inkscape.app/Contents/MacOS:$PATH
-export PATH=$HOME/Library/Python/3.10/bin:$PATH
+for _py_bin in "$HOME"/Library/Python/*/bin(N); do
+  export PATH="$_py_bin:$PATH"
+done
+unset _py_bin
 export PATH=$HOME/.local/bin:$PATH
 
 export SH_FOOT=$HOME/sh_foot
@@ -25,10 +28,15 @@ if [[ "$(uname -m)" == "arm64" ]]; then
   export ANDROID_NDK_HOME="/opt/homebrew/share/android-ndk"
   [[ ":$PATH:" != *":/opt/homebrew/bin:"* ]] && export PATH="/opt/homebrew/bin:$PATH"
 else
-  export PATH=/usr/local/Cellar/node/25.9.0_2/bin:$PATH
+  [[ -d "/usr/local/opt/node/bin" ]] && export PATH="/usr/local/opt/node/bin:$PATH"
   export ANDROID_NDK_HOME="$HOME/Library/Android/Sdk/ndk"
 fi
-export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles
+# Homebrew 清华镜像源与优化配置
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_NO_AUTO_UPDATE=1
+export no_proxy="localhost,127.0.0.1,mirrors.tuna.tsinghua.edu.cn,mirrors.ustc.edu.cn${no_proxy:+,${no_proxy}}"
+
 
 AI_KEY_FILE="$HOME/.AI-Key.txt"
 if [[ -r "$AI_KEY_FILE" ]]; then
@@ -38,7 +46,7 @@ if [[ -r "$AI_KEY_FILE" ]]; then
   export ANTHROPIC_AUTH_TOKEN="$(awk '/ANTHROPIC_AUTH_TOKEN/ {print $2}' "$AI_KEY_FILE")"
 fi
 
-[[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source $HOME/.tmp_aliases.sh
+[[ -r "$HOME/.tmp_aliases.sh" ]] && source "$HOME/.tmp_aliases.sh"
 
 # Aliases & helpers
 source "$HOME/.common_aliases.sh"

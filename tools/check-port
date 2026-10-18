@@ -2,7 +2,7 @@
 
 set -e
 
-if [ ! $1 ]; then
+if [ -z "$1" ]; then
 	echo -e "\033[31mA port needs to be specified!\033[0m"
 	exit 1
 fi
@@ -10,7 +10,7 @@ fi
 port="$1"
 
 #echo "lsof:"
-sudo lsof -i :$port
+sudo lsof -i :"$port"
 
 #echo "netstat:"
 #sudo netstat -tulnp | grep :$port

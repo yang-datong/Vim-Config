@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
-ME=$HOME
-if [[ ! $TMPDIR ]]; then TMPDIR=/tmp; fi
-TMP=$TMPDIR
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SH_FOOT="${SH_FOOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+ME="$HOME"
+if [[ -z "$TMPDIR" ]]; then TMPDIR=/tmp; fi
+TMP="$TMPDIR"
 
 main() {
 	if [ "$(uname)" == "Darwin" ]; then
@@ -38,32 +40,34 @@ main() {
 	replace_symbols_link "$ME/.config/nvim/unite_extension.vim" "$SH_FOOT/config_file/nvim/unite_extension.vim"
 
 	#android ndk
-	if [ "$(uname)" == "Darwin" ]; then
+	if [ "$(uname)" == "Darwin" ] && [ -n "$ANDROID_NDK_HOME" ]; then
 		replace_symbols_link "$ANDROID_NDK_HOME/simpleperf/report_html.js" "$SH_FOOT/config_file/simpleperf/report_html.js"
 	fi
 
 	#mpv
-	if [ ! -d $ME/.config/mpv ]; then mkdir $ME/.config/mpv; fi
+	mkdir -p "$ME/.config/mpv"
 	replace_symbols_link "$ME/.config/mpv/mpv.conf" "$SH_FOOT/config_file/mpv.conf"
 	replace_symbols_link "$ME/.config/mpv/scripts/space-restart.lua" "$SH_FOOT/config_file/space-restart.lua"
+	replace_symbols_link "$ME/.config/mpv/shaders/FSR.glsl" "$SH_FOOT/config_file/mpv_shaders/FSR.glsl"
+	replace_symbols_link "$ME/.config/mpv/shaders/RCAS_native.glsl" "$SH_FOOT/config_file/mpv_shaders/RCAS_native.glsl"
+	replace_symbols_link "$ME/.config/mpv/shaders/CAS-scaled.glsl" "$SH_FOOT/config_file/mpv_shaders/CAS-scaled.glsl"
 
-	if [ ! -d $ME/.config/nvim/lua ]; then
-		mkdir $ME/.config/nvim/lua
-	fi
+	mkdir -p "$ME/.config/nvim/lua"
 	replace_symbols_link "$ME/.config/nvim/lua/lazy.lua" "$SH_FOOT/config_file/nvim/lua/lazy.lua"
 	replace_symbols_link "$ME/.config/nvim/lua/plugins.lua" "$SH_FOOT/config_file/nvim/lua/plugins.lua"
 	replace_symbols_link "$ME/.config/nvim/lua/plugins_helper.lua" "$SH_FOOT/config_file/nvim/lua/plugins_helper.lua"
 
-	for file in snippets/*.snippets; do
-		file_name=$(basename $file)
-		if [ -d $ME/.local/share/nvim/lazy/vim-snippets/UltiSnips ]; then
+	for file in "$SCRIPT_DIR"/snippets/*.snippets; do
+		[ -e "$file" ] || continue
+		file_name="$(basename "$file")"
+		if [ -d "$ME/.local/share/nvim/lazy/vim-snippets/UltiSnips" ]; then
 			#lazy.nvim的目录(优先)
-			local plug_path=$ME/.local/share/nvim/lazy/vim-snippets/UltiSnips
+			local plug_path="$ME/.local/share/nvim/lazy/vim-snippets/UltiSnips"
 		else
 			#vim-plug的目录
-			local plug_path=$ME/.config/nvim/plugged/vim-snippets/UltiSnips
+			local plug_path="$ME/.config/nvim/plugged/vim-snippets/UltiSnips"
 		fi
-		replace_symbols_link "${plug_path}/$file_name" "$SH_FOOT/config_file/$file"
+		replace_symbols_link "${plug_path}/$file_name" "$file"
 	done
 }
 
@@ -72,22 +76,18 @@ replace_symbols_link() {
 	local really_file="$2"
 	if [ ! -f "$really_file" ]; then
 		echo -e "\033[31m Don't find the $really_file\033[0m"
-		exit
+		exit 1
 	fi
 	if [[ -L "$file" ]] || [[ -f "$file" ]]; then
-		local date=$(date +"%Y%m%d%H%M%S")
-		mv $file "$TMP/$(basename $file)_$date"
+		local date
+		date=$(date +"%Y%m%d%H%M%S")
+		mv "$file" "$TMP/$(basename "$file")_$date"
 		echo -e "\033[32m Replace $file done~\033[0m"
 	else
-		mkdir -p $(dirname $file)
+		mkdir -p "$(dirname "$file")"
 		echo -e "\033[33m Add $file done~\033[0m"
 	fi
-	ln -s $really_file $file
+	ln -s "$really_file" "$file"
 }
-
-if [ ! $SH_FOOT ]; then
-	echo -e "\033[31m未定义\$SH_FOOT\033[0m"
-	exit
-fi
 
 main

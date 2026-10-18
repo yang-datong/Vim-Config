@@ -2,11 +2,11 @@
 
 set -e
 
-dir=$1
-if [ ! $dir ]; then
+dir="$1"
+if [ -z "$dir" ]; then
 	echo -e "\033[31mDir?\033[0m"
-	exit
+	exit 1
 fi
 
-sudo chgrp -R $(whoami) $dir
-sudo chown -R $(whoami) $dir
+sudo chgrp -R "$(whoami)" "$dir"
+sudo chown -R "$(whoami)" "$dir"

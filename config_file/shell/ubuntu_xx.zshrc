@@ -34,7 +34,7 @@ if [[ -r "$AI_KEY_FILE" ]]; then
   export ANTHROPIC_AUTH_TOKEN="$(awk '/ANTHROPIC_AUTH_TOKEN/ {print $2}' "$AI_KEY_FILE")"
 fi
 
-[[ -r "$SH_FOOT/config_file/shell/xx.zsh_theme_shared.zsh" ]] && source $HOME/.tmp_aliases.sh
+[[ -r "$HOME/.tmp_aliases.sh" ]] && source "$HOME/.tmp_aliases.sh"
 [[ -f "$HOME/.autojump/share/autojump/autojump.zsh" ]] && source "$HOME/.autojump/share/autojump/autojump.zsh"
 
 # 提速：autosuggestions 不在每次 precmd 重绑 widgets

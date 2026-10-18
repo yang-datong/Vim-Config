@@ -2,9 +2,9 @@
 
 set -e
 
-if [ $1 ]; then
-	readlink -f $1
-	#realpath $1
+if [ -n "$1" ]; then
+	readlink -f "$1"
+	#realpath "$1"
 else
-	echo -e "\033[31mNeed $(basename $0) [file]\033[0m"
+	echo -e "\033[31mNeed $(basename "$0") [file]\033[0m"
 fi

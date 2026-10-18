@@ -2,8 +2,8 @@
 
 set -e
 
-if [ $1 ]; then
-    echo ${PWD}/$1
+if [ -n "$1" ]; then
+    echo "${PWD}/$1"
 fi
 
-/usr/bin/file $@
+/usr/bin/file "$@"

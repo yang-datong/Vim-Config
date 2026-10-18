@@ -3,7 +3,7 @@
 set -e
 
 if [ "$(uname)" == "Linux" ]; then
-	systemctl $@
+	systemctl "$@"
 	exit
 fi
 
@@ -12,16 +12,16 @@ server_name="$2" #$HOME/Library/LaunchAgents/com.rl.clash.plist
 
 if [ -z "$options" ] || [ -z "$server_name" ]; then
 	echo "Options or Server name is empty"
-	exit
+	exit 1
 fi
 
 if [ "$options" == "start" ]; then
-	launchctl bootstrap gui/$(id -u) $server_name
+	launchctl bootstrap "gui/$(id -u)" "$server_name"
 elif [ "$options" == "stop" ]; then
-	launchctl bootout gui/$(id -u) $server_name
+	launchctl bootout "gui/$(id -u)" "$server_name"
 elif [ "$options" == "restart" ]; then
-	launchctl bootout gui/$(id -u) $server_name
-	launchctl bootstrap gui/$(id -u) $server_name
+	launchctl bootout "gui/$(id -u)" "$server_name"
+	launchctl bootstrap "gui/$(id -u)" "$server_name"
 else
 	echo "Server name is error"
 fi
