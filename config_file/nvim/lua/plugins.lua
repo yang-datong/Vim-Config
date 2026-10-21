@@ -17,6 +17,7 @@ return {
       { "<leader>gs", "<cmd>Git<CR>", mode = "n", silent = true },
       -- 设置无法编辑（这应该属于插件的bug）
       { "<leader>gd", helper.open_readonly_git_diff, mode = "n", silent = true },
+      { "<leader>gD", helper.open_readonly_git_diff_staged, mode = "n", silent = true }, -- 打开已暂存对比
     },
   },
   -- 基础增强

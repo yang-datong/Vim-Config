@@ -93,6 +93,27 @@ function M.open_readonly_git_diff()
   end
 end
 
+function M.open_readonly_git_diff_staged()
+  -- 必须是 :0（暂存区版本），单独的 ":" 在 Fugitive 中是 git status buffer
+  -- 推荐 Gtabedit :0（在新标签页打开对比），审查完毕直接 :tabclose 或 :q 即可无缝回到原工作区布局
+  local ok, err = pcall(function()
+    vim.cmd("Gtabedit :0")
+    vim.cmd("Gvdiffsplit @")
+  end)
+  if not ok then
+    vim.notify("打开暂存区 diff 失败: " .. tostring(err), vim.log.levels.WARN)
+    return
+  end
+
+  for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
+    local buf = api.nvim_win_get_buf(win)
+    if api.nvim_buf_get_name(buf):match("^fugitive://") then
+      vim.bo[buf].readonly = true
+      vim.bo[buf].modifiable = false
+    end
+  end
+end
+
 local function layout_nerdtree_and_tagbar()
   local tree_win = nerdtree_window()
   local tagbar_win = tagbar_window()
