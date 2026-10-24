@@ -1,0 +1,238 @@
+{
+  "ShortcutSettingsDictionary": {
+    "802bab09-ffa1-43b0-85cb-686bf168d55d": {
+      "Id": "802bab09-ffa1-43b0-85cb-686bf168d55d",
+      "Shortcut": {
+        "OriginalKeys": "162;8",
+        "TargetKeys": "46",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "2767c4a0-3ab2-45ee-a214-b52db0acdc6a": {
+      "Id": "2767c4a0-3ab2-45ee-a214-b52db0acdc6a",
+      "Shortcut": {
+        "OriginalKeys": "162;9",
+        "TargetKeys": "164;9",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "9850f742-17cc-4608-b92d-35646843c8d1": {
+      "Id": "9850f742-17cc-4608-b92d-35646843c8d1",
+      "Shortcut": {
+        "OriginalKeys": "162;32",
+        "TargetKeys": "164;32",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "07193dc9-30b2-4bfd-a743-eb63f2cabff1": {
+      "Id": "07193dc9-30b2-4bfd-a743-eb63f2cabff1",
+      "Shortcut": {
+        "OriginalKeys": "162;72",
+        "TargetKeys": "91;40",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "c4f90ff1-6805-4167-9ca1-db82acfa8684": {
+      "Id": "c4f90ff1-6805-4167-9ca1-db82acfa8684",
+      "Shortcut": {
+        "OriginalKeys": "91;37",
+        "TargetKeys": "163;37",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "4965b110-f2bc-43a7-a14e-ed7f198eab19": {
+      "Id": "4965b110-f2bc-43a7-a14e-ed7f198eab19",
+      "Shortcut": {
+        "OriginalKeys": "91;39",
+        "TargetKeys": "163;39",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "8f9ec423-5b66-4946-b900-779f25da7cd1": {
+      "Id": "8f9ec423-5b66-4946-b900-779f25da7cd1",
+      "Shortcut": {
+        "OriginalKeys": "164",
+        "TargetKeys": "162",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "962e410a-0fe8-40e2-b435-791a5327655b": {
+      "Id": "962e410a-0fe8-40e2-b435-791a5327655b",
+      "Shortcut": {
+        "OriginalKeys": "20",
+        "TargetKeys": "163;32",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    },
+    "dc390389-0196-4540-aa9d-3710cf368661": {
+      "Id": "dc390389-0196-4540-aa9d-3710cf368661",
+      "Shortcut": {
+        "OriginalKeys": "162",
+        "TargetKeys": "164",
+        "TargetApp": "",
+        "OperationType": 0,
+        "ExactMatch": false,
+        "TargetText": "",
+        "ProgramPath": "",
+        "ProgramArgs": "",
+        "StartInDirectory": "",
+        "Elevation": 0,
+        "IfRunningAction": 0,
+        "Visibility": 0,
+        "UriToOpen": "",
+        "Condition": 0
+      },
+      "Profiles": [
+        "default"
+      ],
+      "IsActive": true
+    }
+  },
+  "ProfileDictionary": {
+    "default": [
+      "802bab09-ffa1-43b0-85cb-686bf168d55d",
+      "2767c4a0-3ab2-45ee-a214-b52db0acdc6a",
+      "9850f742-17cc-4608-b92d-35646843c8d1",
+      "07193dc9-30b2-4bfd-a743-eb63f2cabff1",
+      "c4f90ff1-6805-4167-9ca1-db82acfa8684",
+      "4965b110-f2bc-43a7-a14e-ed7f198eab19",
+      "8f9ec423-5b66-4946-b900-779f25da7cd1",
+      "962e410a-0fe8-40e2-b435-791a5327655b",
+      "dc390389-0196-4540-aa9d-3710cf368661"
+    ]
+  },
+  "ShortcutsByOperationType": {
+    "RemapShortcut": [
+      "802bab09-ffa1-43b0-85cb-686bf168d55d",
+      "2767c4a0-3ab2-45ee-a214-b52db0acdc6a",
+      "9850f742-17cc-4608-b92d-35646843c8d1",
+      "07193dc9-30b2-4bfd-a743-eb63f2cabff1",
+      "c4f90ff1-6805-4167-9ca1-db82acfa8684",
+      "4965b110-f2bc-43a7-a14e-ed7f198eab19",
+      "8f9ec423-5b66-4946-b900-779f25da7cd1",
+      "962e410a-0fe8-40e2-b435-791a5327655b",
+      "dc390389-0196-4540-aa9d-3710cf368661"
+    ]
+  },
+  "ActiveProfile": "default"
+}
