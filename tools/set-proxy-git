@@ -5,11 +5,13 @@ set -e
 on() {
 	git config --global http.proxy http://$ip:$http_proxy
 	git config --global https.proxy http://$ip:$http_proxy
+	git config --global core.sshCommand "ssh -o ProxyCommand='nc -X 5 -x $ip:$socks_proxy %h %p'"
 }
 
 off() {
-	git config --global http.proxy ""
-	git config --global https.proxy ""
+	git config --global --unset http.proxy 2>/dev/null || true
+	git config --global --unset https.proxy 2>/dev/null || true
+	git config --global --unset core.sshCommand 2>/dev/null || true
 }
 
 opt="$1"
