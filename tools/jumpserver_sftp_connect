@@ -1,8 +1,58 @@
 #!/bin/bash
 
-ScriptVersion="1.1"
+ScriptVersion="1.2"
 
 DEFAULT_DOWNLOAD_DIR="${HOME}/Downloads"
+
+CACHE_DIR="${HOME}/.cache/jumpserver"
+CACHE_FILE="${CACHE_DIR}/mfa_code"
+CACHE_TTL=60
+
+save_mfa_cache() {
+	local val="$1"
+	local ts="${2:-$(date +%s)}"
+	mkdir -p "$CACHE_DIR" 2>/dev/null
+	(
+		umask 077
+		echo "$ts $val" >"$CACHE_FILE"
+	) 2>/dev/null
+	chmod 600 "$CACHE_FILE" 2>/dev/null || true
+}
+
+get_or_prompt_mfa_code() {
+	local now
+	now=$(date +%s)
+
+	# 1. If code was already passed explicitly (via -c or positional args)
+	if [ -n "$code" ]; then
+		save_mfa_cache "$code" "$now"
+		return 0
+	fi
+
+	# 2. Try reading from cache
+	if [ -f "$CACHE_FILE" ]; then
+		local cached_time cached_val
+		read -r cached_time cached_val <"$CACHE_FILE" 2>/dev/null
+		if [ -n "$cached_time" ] && [ -n "$cached_val" ] && [[ "$cached_time" =~ ^[0-9]+$ ]]; then
+			if [ $((now - cached_time)) -ge 0 ] && [ $((now - cached_time)) -lt "$CACHE_TTL" ]; then
+				code="$cached_val"
+				return 0
+			fi
+		fi
+	fi
+
+	# 3. Cache missing or expired: prompt user in terminal
+	while [ -z "$code" ]; do
+		if ! read -r -p "请输入 MFA Code: " code; then
+			echo "" >&2
+			echo "Error: Failed to read MFA Code from input." >&2
+			exit 1
+		fi
+		code=$(echo "$code" | tr -d '[:space:]')
+	done
+
+	save_mfa_cache "$code" "$now"
+}
 
 unset ip
 unset code
@@ -15,8 +65,9 @@ usage() {
 	cat <<EOF
 Usage: $(basename "$0") [options] get <ip> <otp_code> <remote_path> [local_path]
    or: $(basename "$0") [options] put <ip> <otp_code> <local_path> [remote_path]
-   or: $(basename "$0") [options] <ip> <otp_code> [get|put] <path> [target_path]
-   or: $(basename "$0") [options] <ip> <otp_code>
+   or: $(basename "$0") [options] <ip> [otp_code] [get|put] <path> [target_path]
+   or: $(basename "$0") [options] <ip> [otp_code]
+   or: $(basename "$0") -i <ip> [-a get|put] [-r <remote>] [-l <local>]
 
 Connect to target server SFTP through JumpServer.
 
@@ -24,13 +75,13 @@ Operations:
   get                         Download file/dir from remote server (default local: ${DEFAULT_DOWNLOAD_DIR}/)
   put                         Upload local file/dir to remote server
 
-Required arguments:
+Arguments:
   <ip>                        Target host IP address
-  <otp_code>                  OTP dynamic verification code
+  [otp_code]                  OTP dynamic verification code (cached for 60s)
 
 Options:
   -i, --ip IP                 Target host IP address
-  -c, -o, --code, --otp CODE  OTP dynamic verification code
+  -c, -o, --code, --otp CODE  OTP dynamic verification code (updates cache)
   -a, --action ACTION         Operation: 'get' or 'put'
   -r, --remote PATH           Remote file/directory path
   -l, --local PATH            Local file/directory path (default: ${DEFAULT_DOWNLOAD_DIR}/ for get)
@@ -40,17 +91,18 @@ Options:
   -v, --version               Display script version
 
 Examples:
-  # 1. Download remote file to default ${DEFAULT_DOWNLOAD_DIR}/
+  # 1. Interactive SFTP session (auto-uses cached MFA code or prompts)
+  $(basename "$0") 10.200.3.6
+  $(basename "$0") -i 10.200.3.6
+
+  # 2. Download remote file using options
+  $(basename "$0") -i 10.200.3.6 -a get -r /data/app.log
+
+  # 3. Download remote file with explicit OTP code
   $(basename "$0") get 10.200.3.6 123456 /data/app.log
 
-  # 2. Download remote file to specified local path
-  $(basename "$0") get 10.200.3.6 123456 /data/app.log /tmp/
-
-  # 3. Upload local file to remote directory
-  $(basename "$0") put 10.200.3.6 123456 ./test.txt /data/
-
-  # 4. Interactive SFTP session
-  $(basename "$0") 10.200.3.6 123456
+  # 4. Upload local file using options
+  $(basename "$0") -i 10.200.3.6 -a put -l ./test.txt -r /data/
 EOF
 }
 
@@ -227,11 +279,13 @@ put)
 esac
 
 # Validation
-if [ -z "$ip" ] || [ -z "$code" ]; then
-	echo "Error: Both target IP address and OTP code are required." >&2
+if [ -z "$ip" ]; then
+	echo "Error: Target host IP address is required." >&2
 	usage >&2
 	exit 1
 fi
+
+get_or_prompt_mfa_code
 
 if [ "$action" = "get" ] && [ -z "$remote_path" ]; then
 	echo "Error: 'get' operation requires remote file path." >&2

@@ -1,24 +1,74 @@
 #!/bin/bash
 
-ScriptVersion="1.1"
+ScriptVersion="1.2"
+
+CACHE_DIR="${HOME}/.cache/jumpserver"
+CACHE_FILE="${CACHE_DIR}/mfa_code"
+CACHE_TTL=60
+
+save_mfa_cache() {
+	local val="$1"
+	local ts="${2:-$(date +%s)}"
+	mkdir -p "$CACHE_DIR" 2>/dev/null
+	(
+		umask 077
+		echo "$ts $val" >"$CACHE_FILE"
+	) 2>/dev/null
+	chmod 600 "$CACHE_FILE" 2>/dev/null || true
+}
+
+get_or_prompt_mfa_code() {
+	local now
+	now=$(date +%s)
+
+	# 1. If code was already passed explicitly (via -c or positional args)
+	if [ -n "$code" ]; then
+		save_mfa_cache "$code" "$now"
+		return 0
+	fi
+
+	# 2. Try reading from cache
+	if [ -f "$CACHE_FILE" ]; then
+		local cached_time cached_val
+		read -r cached_time cached_val <"$CACHE_FILE" 2>/dev/null
+		if [ -n "$cached_time" ] && [ -n "$cached_val" ] && [[ "$cached_time" =~ ^[0-9]+$ ]]; then
+			if [ $((now - cached_time)) -ge 0 ] && [ $((now - cached_time)) -lt "$CACHE_TTL" ]; then
+				code="$cached_val"
+				return 0
+			fi
+		fi
+	fi
+
+	# 3. Cache missing or expired: prompt user in terminal
+	while [ -z "$code" ]; do
+		if ! read -r -p "请输入 MFA Code: " code; then
+			echo "" >&2
+			echo "Error: Failed to read MFA Code from input." >&2
+			exit 1
+		fi
+		code=$(echo "$code" | tr -d '[:space:]')
+	done
+
+	save_mfa_cache "$code" "$now"
+}
 
 unset ip
 unset code
 
 usage() {
 	cat <<EOF
-Usage: $(basename "$0") [options] <ip> <otp_code>
-   or: $(basename "$0") -i <ip> -c <otp_code>
+Usage: $(basename "$0") [options] <ip> [otp_code]
+   or: $(basename "$0") -i <ip> [-c <otp_code>]
 
 Connect to target server through JumpServer.
 
-Required arguments:
+Arguments:
   <ip>                        Target host IP address
-  <otp_code>                  OTP dynamic verification code
+  [otp_code]                  OTP dynamic verification code (cached for 60s)
 
 Options:
   -i, --ip IP                 Target host IP address
-  -c, -o, --code, --otp CODE  OTP dynamic verification code
+  -c, -o, --code, --otp CODE  OTP dynamic verification code (updates cache)
   -h, --help                  Display this help message and exit
   -d, --debug                 Run script in debug mode (set -x)
   -v, --version               Display script version
@@ -114,9 +164,9 @@ if [ -z "$code" ] && [ -n "$1" ]; then
 	shift
 fi
 
-# Validation: ensure both required parameters are provided
-if [ -z "$ip" ] || [ -z "$code" ]; then
-	echo "Error: Both target IP address and OTP code are required (2 arguments needed)." >&2
+# Validation: ensure target IP is provided
+if [ -z "$ip" ]; then
+	echo "Error: Target host IP address is required." >&2
 	usage >&2
 	exit 1
 fi
@@ -126,5 +176,7 @@ if [ $# -gt 0 ]; then
 	usage >&2
 	exit 1
 fi
+
+get_or_prompt_mfa_code
 
 main "$ip" "$code"
