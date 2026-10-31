@@ -4,6 +4,8 @@
 Examples:
   ./gtrans "你好，世界"
   ./gtrans "hello world"
+  ./gtrans -s "hello"
+  ./gtrans -s "hello world"
   ./gtrans "v5 比 v4 快了约 27.6%" --target en
   echo "今天天气不错" | ./gtrans
   ./gtrans --engine tencent "测试文本"
@@ -13,9 +15,14 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
+import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -63,12 +70,12 @@ def get_proxy_opener() -> urllib.request.OpenerDirector:
     return _CACHED_PROXY_OPENER
 
 
-def fetch_url_text(
+def fetch_url_bytes(
     request: urllib.request.Request,
     timeout: float,
     retries: int = 1,
     use_proxy: bool = True,
-) -> str:
+) -> bytes:
     start_time = time.time()
     deadline = start_time + max(0.5, timeout)
     last_error = None
@@ -80,7 +87,7 @@ def fetch_url_text(
             break
         try:
             with open_fn(request, timeout=rem) as response:
-                return response.read().decode("utf-8")
+                return response.read()
         except urllib.error.HTTPError:
             raise
         except urllib.error.URLError as exc:
@@ -88,6 +95,17 @@ def fetch_url_text(
             if attempt < retries:
                 time.sleep(0.05)
     raise RuntimeError(f"network error: {last_error or 'request timed out'}")
+
+
+def fetch_url_text(
+    request: urllib.request.Request,
+    timeout: float,
+    retries: int = 1,
+    use_proxy: bool = True,
+) -> str:
+    return fetch_url_bytes(
+        request, timeout=timeout, retries=retries, use_proxy=use_proxy
+    ).decode("utf-8")
 
 
 def parse_args() -> argparse.Namespace:
@@ -98,6 +116,12 @@ def parse_args() -> argparse.Namespace:
         "text",
         nargs="*",
         help="Text to translate. If omitted, read from stdin.",
+    )
+    parser.add_argument(
+        "-s",
+        "--speak",
+        action="store_true",
+        help="Speak English input in background via ffplay and print US phonetic only (no translation).",
     )
     parser.add_argument("--source", help="Source language, for example zh or en.")
     parser.add_argument("--target", help="Target language, for example en or zh.")
@@ -509,11 +533,272 @@ def extract_translation(data: Any) -> str:
     return str(data)
 
 
+def find_ffplay() -> str:
+    ffplay_bin = shutil.which("ffplay")
+    if ffplay_bin:
+        return ffplay_bin
+    for candidate in ("/opt/homebrew/bin/ffplay", "/usr/local/bin/ffplay", "/usr/bin/ffplay"):
+        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    raise RuntimeError("ffplay not found; please install ffmpeg (with ffplay) first")
+
+
+def _extract_phonetic_from_youdao_word(word_obj: Any) -> str | None:
+    if not isinstance(word_obj, dict):
+        return None
+    for key in ("usphone", "ukphone", "phone"):
+        val = word_obj.get(key)
+        if isinstance(val, str) and val.strip():
+            cleaned = val.strip().strip("/[]").strip()
+            # Take the first primary pronunciation if multiple are listed (e.g. "ˈdʒemɪnaɪ; ˈdʒemɪni")
+            primary = re.split(r"[;,]", cleaned)[0].strip()
+            if primary:
+                return primary
+    return None
+
+
+def _extract_single_speech_param(data: dict[str, Any], primary_ph: str | None) -> str | None:
+    """Return specific single-pronunciation speech param from simple.word[0].multiPhone.us if multiPhone exists."""
+    simple = data.get("simple")
+    if not isinstance(simple, dict):
+        return None
+    words = simple.get("word")
+    if not isinstance(words, list) or not words or not isinstance(words[0], dict):
+        return None
+    multi_phone = words[0].get("multiPhone")
+    if not isinstance(multi_phone, dict):
+        return None
+    us_list = multi_phone.get("us") or multi_phone.get("uk")
+    if not isinstance(us_list, list) or not us_list:
+        return None
+
+    if primary_ph:
+        for item in us_list:
+            if isinstance(item, dict) and item.get("phone") == primary_ph and item.get("speech"):
+                return str(item["speech"])
+    first_item = us_list[0]
+    if isinstance(first_item, dict) and first_item.get("speech"):
+        return str(first_item["speech"])
+    return None
+
+
+def _fetch_youdao_word_info(query: str, timeout: float) -> tuple[str | None, str | None]:
+    params = urllib.parse.urlencode([("q", query), ("doctype", "json")])
+    request = urllib.request.Request(
+        f"https://dict.youdao.com/jsonapi?{params}",
+        headers={"User-Agent": USER_AGENT},
+    )
+    try:
+        body = fetch_url_text(request, timeout=max(0.5, timeout), use_proxy=False)
+        data = json.loads(body)
+    except Exception:
+        return None, None
+
+    if not isinstance(data, dict):
+        return None, None
+
+    primary_ph: str | None = None
+    for section in ("ec", "simple"):
+        sec_data = data.get(section)
+        if isinstance(sec_data, dict):
+            words = sec_data.get("word")
+            if isinstance(words, list) and words:
+                ph = _extract_phonetic_from_youdao_word(words[0])
+                if ph:
+                    primary_ph = ph
+                    break
+
+    speech_param = _extract_single_speech_param(data, primary_ph)
+    return primary_ph, speech_param
+
+
+def _fetch_youdao_word_phonetic(query: str, timeout: float) -> str | None:
+    ph, _ = _fetch_youdao_word_info(query, timeout)
+    return ph
+
+
+def fetch_youdao_phonetic_and_speech(text: str, timeout: float) -> tuple[str | None, str | None]:
+    cleaned_text = text.strip()
+    if not cleaned_text:
+        return None, None
+
+    # 1. Try querying the entire text first (covers single words and fixed idioms like "take off")
+    direct_ph, speech_param = _fetch_youdao_word_info(cleaned_text, timeout)
+    if direct_ph:
+        return direct_ph, speech_param
+
+    # 2. For multi-word phrases/sentences or words with punctuation, query individual English words concurrently
+    words = re.findall(r"[A-Za-z]+(?:'[A-Za-z]+)?", cleaned_text)
+    if not words:
+        return None, None
+    if len(words) == 1 and words[0].lower() == cleaned_text.lower():
+        return None, None
+
+    unique_words = list(dict.fromkeys(w.lower() for w in words))
+    word_map: dict[str, tuple[str | None, str | None]] = {}
+    max_workers = min(8, len(unique_words))
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_word = {
+            executor.submit(_fetch_youdao_word_info, w, timeout): w
+            for w in unique_words
+        }
+        for future in concurrent.futures.as_completed(future_to_word):
+            w = future_to_word[future]
+            try:
+                word_map[w] = future.result()
+            except Exception:
+                word_map[w] = (None, None)
+
+    parts = []
+    found_any = False
+    for w in words:
+        ph, _ = word_map.get(w.lower(), (None, None))
+        if ph:
+            parts.append(ph)
+            found_any = True
+        else:
+            parts.append(w)
+
+    single_speech = word_map.get(words[0].lower(), (None, None))[1] if len(words) == 1 else None
+    return (" ".join(parts) if found_any else None), single_speech
+
+
+def fetch_youdao_phonetic(text: str, timeout: float) -> str | None:
+    ph, _ = fetch_youdao_phonetic_and_speech(text, timeout)
+    return ph
+
+
+def fetch_youdao_audio(text: str, timeout: float, speech_param: str | None = None) -> bytes:
+    cleaned = text.strip()
+    if speech_param:
+        query_pairs = urllib.parse.parse_qsl("audio=" + speech_param)
+        params = urllib.parse.urlencode(query_pairs)
+    else:
+        params = urllib.parse.urlencode([("audio", cleaned), ("type", "2")])
+
+    endpoints: list[tuple[str, bool]] = [
+        (f"https://dict.youdao.com/dictvoice?{params}", False),
+    ]
+    if not speech_param:
+        q_enc = urllib.parse.quote(cleaned)
+        endpoints.extend(
+            [
+                (f"https://fanyi.baidu.com/gettts?lan=en&text={q_enc}&spd=3&source=web", False),
+                (
+                    f"https://fanyi.sogou.com/reventondc/synthesis?text={q_enc}&speed=1&lang=en&from=translateweb&speaker=6",
+                    False,
+                ),
+                (
+                    f"https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q={q_enc}",
+                    True,
+                ),
+            ]
+        )
+
+    last_err: Exception | None = None
+    for url, use_proxy in endpoints:
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        try:
+            audio_bytes = fetch_url_bytes(request, timeout=max(0.5, timeout), use_proxy=use_proxy)
+            if audio_bytes and len(audio_bytes) >= 64:
+                return audio_bytes
+        except Exception as exc:
+            last_err = exc
+            continue
+
+    raise RuntimeError(f"TTS error: {last_err or 'empty audio'}")
+
+
+def play_audio_async_ffplay(audio_bytes: bytes, ffplay_bin: str) -> None:
+    fd, tmp_path = tempfile.mkstemp(prefix="gtrans_tts_", suffix=".mp3")
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(audio_bytes)
+    except Exception:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
+    try:
+        subprocess.Popen(
+            [
+                "/bin/sh",
+                "-c",
+                '"$1" -nodisp -autoexit -loglevel quiet "$2" >/dev/null 2>&1; rm -f "$2"',
+                "_",
+                ffplay_bin,
+                tmp_path,
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+    except Exception as exc:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise RuntimeError(f"failed to start ffplay: {exc}") from exc
+
+
+def speak_and_phonetic(
+    text: str,
+    timeout: float = DEFAULT_TIMEOUT,
+) -> dict[str, Any]:
+    """Fetch US phonetic and play US pronunciation asynchronously via ffplay."""
+    cleaned = text.strip()
+    if not cleaned:
+        raise RuntimeError("input text is empty")
+    if ZH_RE.search(cleaned) or not EN_RE.search(cleaned):
+        raise RuntimeError("speak mode (-s/--speak) only supports English input")
+
+    ffplay_bin = find_ffplay()
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        info_future = executor.submit(fetch_youdao_phonetic_and_speech, cleaned, timeout)
+        audio_future = executor.submit(fetch_youdao_audio, cleaned, timeout)
+
+        phonetic, speech_param = info_future.result()
+        if speech_param:
+            try:
+                audio_bytes = fetch_youdao_audio(cleaned, timeout, speech_param=speech_param)
+            except Exception:
+                audio_bytes = audio_future.result()
+        else:
+            audio_bytes = audio_future.result()
+
+    play_audio_async_ffplay(audio_bytes, ffplay_bin)
+    formatted = f"{cleaned} [{phonetic}]" if phonetic else cleaned
+    return {
+        "text": cleaned,
+        "phonetic": phonetic or "",
+        "formatted": formatted,
+    }
+
+
 def main() -> int:
     args = parse_args()
     text = read_text(args)
     converted_text = None
     start_time = time.time()
+
+    if args.speak:
+        res = speak_and_phonetic(text, timeout=args.timeout)
+        if args.verbose:
+            elapsed = time.time() - start_time
+            print(
+                f"[youdao+ffplay] phonetic: {res['phonetic'] or 'N/A'} (took {elapsed:.2f}s)",
+                file=sys.stderr,
+            )
+        if args.json:
+            print(json.dumps(res, ensure_ascii=False, indent=2))
+        else:
+            print(res["formatted"])
+        return 0
 
     if args.target and should_try_pinyin_fallback(text, args.source, args.target):
         converted_text = pinyin_to_chinese(text, args.timeout)

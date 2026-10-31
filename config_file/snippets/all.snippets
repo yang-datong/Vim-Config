@@ -11,18 +11,25 @@ from vimsnippets import foldmarker, make_box, get_comment_format
 import importlib.machinery
 import importlib.util
 import os
+import shutil
 import sys
 
-_GTRANS_PATH = os.path.expanduser("~/sh_foot/tools/gtrans")
+
+def _resolve_gtrans_path():
+	path = shutil.which("gtrans")
+	if not path:
+		raise RuntimeError("gtrans not found in PATH")
+	return os.path.realpath(path)
 
 
 def load_gtrans_module():
-	mtime = os.path.getmtime(_GTRANS_PATH) if os.path.exists(_GTRANS_PATH) else 0
+	gtrans_path = _resolve_gtrans_path()
+	mtime = os.path.getmtime(gtrans_path) if os.path.exists(gtrans_path) else 0
 	mod = sys.modules.get("ultisnips_gtrans")
 	last_mtime = getattr(mod, "_gtrans_mtime", 0)
 	if mod is not None and last_mtime == mtime:
 		return mod
-	loader = importlib.machinery.SourceFileLoader("ultisnips_gtrans", _GTRANS_PATH)
+	loader = importlib.machinery.SourceFileLoader("ultisnips_gtrans", gtrans_path)
 	spec = importlib.util.spec_from_loader(loader.name, loader)
 	mod = importlib.util.module_from_spec(spec)
 	sys.modules[spec.name] = mod
@@ -56,6 +63,14 @@ def translate_with_gtrans(text, target_lang, timeout=3):
 	res = mod.extract_translation(data)
 	cache[cache_key] = res
 	return res
+
+
+def speak_with_gtrans(text, timeout=3):
+	if not text or not text.strip():
+		return ""
+	mod = load_gtrans_module()
+	res = mod.speak_and_phonetic(text.strip(), timeout=timeout)
+	return res.get("formatted", text.strip())
 endglobal
 
 snippet help "help"
@@ -235,6 +250,20 @@ else:
 `$0
 endsnippet
 
+priority 10000
+snippet "-(.+)-sp" "English Phonetic + Speak" wr
+`!p
+if not snip.c:
+    source_text = match.group(1)
+    try:
+        snip.rv = speak_with_gtrans(source_text, timeout=3)
+    except Exception as exc:
+        snip.rv = f"Error: {exc}"
+else:
+    snip.rv = snip.c
+`$0
+endsnippet
+
 priority 10001
 context "snip.visual_text"
 snippet "(?:-{1,2}\*?-*|-*)(zh|en)" "Translate visual selection to Chinese|English" wr
@@ -245,6 +274,24 @@ if not snip.c:
     if source_text:
         try:
             snip.rv = translate_with_gtrans(source_text, target_lang, timeout=8)
+        except Exception as exc:
+            snip.rv = f"Error: {exc}"
+    else:
+        snip.rv = ""
+else:
+    snip.rv = snip.c
+`$0
+endsnippet
+
+priority 10001
+context "snip.visual_text"
+snippet "(?:-{1,2}\*?-*|-*)sp" "Speak visual selection + Phonetic" wr
+`!p
+if not snip.c:
+    source_text = snip.v.text.strip()
+    if source_text:
+        try:
+            snip.rv = speak_with_gtrans(source_text, timeout=8)
         except Exception as exc:
             snip.rv = f"Error: {exc}"
     else:
