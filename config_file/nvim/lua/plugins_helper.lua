@@ -94,23 +94,53 @@ function M.open_readonly_git_diff()
 end
 
 function M.open_readonly_git_diff_staged()
-  -- 必须是 :0（暂存区版本），单独的 ":" 在 Fugitive 中是 git status buffer
-  -- 推荐 Gtabedit :0（在新标签页打开对比），审查完毕直接 :tabclose 或 :q 即可无缝回到原工作区布局
-  local ok, err = pcall(function()
-    vim.cmd("Gtabedit :0")
-    vim.cmd("Gvdiffsplit @")
-  end)
-  if not ok then
-    vim.notify("打开暂存区 diff 失败: " .. tostring(err), vim.log.levels.WARN)
+  if vim.bo[0].buftype ~= "" or api.nvim_buf_get_name(0) == "" then
+    vim.notify("当前缓冲区不是普通文件，无法进行 Git 对比", vim.log.levels.WARN)
     return
   end
 
-  for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
-    local buf = api.nvim_win_get_buf(win)
-    if api.nvim_buf_get_name(buf):match("^fugitive://") then
-      vim.bo[buf].readonly = true
-      vim.bo[buf].modifiable = false
+  if fn.exists("*FugitiveGitDir") == 1 and fn.FugitiveGitDir() == "" then
+    vim.notify("当前文件不在 Git 仓库中", vim.log.levels.WARN)
+    return
+  end
+
+  local tab_opened = false
+  local ok, err = pcall(function()
+    vim.cmd("tab split")
+    tab_opened = true
+    vim.cmd("Gvdiffsplit @")
+  end)
+
+  local has_fugitive_win = false
+  local working_win = nil
+
+  if ok then
+    for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
+      local buf = api.nvim_win_get_buf(win)
+      if api.nvim_buf_get_name(buf):match("^fugitive://") then
+        has_fugitive_win = true
+        vim.bo[buf].readonly = true
+        vim.bo[buf].modifiable = false
+      else
+        working_win = win
+        vim.bo[buf].readonly = false
+        vim.bo[buf].modifiable = true
+      end
     end
+  end
+
+  -- 若执行失败或未能成功生成对比分屏（如尚无初始 commit），自动关闭新 Tab 并恢复原布局
+  if not ok or not has_fugitive_win then
+    if tab_opened then
+      pcall(vim.cmd, "tabclose")
+    end
+    local msg = not ok and tostring(err) or "未能找到 HEAD 提交版本（可能尚无初始 commit）"
+    vim.notify("打开 HEAD 对比失败: " .. msg, vim.log.levels.WARN)
+    return
+  end
+
+  if working_win and api.nvim_win_is_valid(working_win) then
+    api.nvim_set_current_win(working_win)
   end
 end
 
