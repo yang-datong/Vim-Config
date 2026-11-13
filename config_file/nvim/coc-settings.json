@@ -1,4 +1,6 @@
 {
+  "tombi.updates.checkOnStartup": false,
+  "extensions.updateCheck": "never",
   "snippets.ultisnips.pythonPrompt": false,
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "clangd.arguments": [
