@@ -22,7 +22,7 @@ export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/MySoftWare/jadx/bin:$PATH
 
 export SH_FOOT=$HOME/sh_foot
-export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
+export CLOUD=$HOME/Documents/GoogleDrive
 export ANDROID_NDK_HOME=/usr/lib/android-ndk
 export TMPDIR=/tmp
 
@@ -67,4 +67,13 @@ alias cat='batcat -p'
 alias ida='wine $HOME/MySoftWare/IDA_Pro_7.7/ida64.exe'
 
 set-proxy
+
+# 进入 $CLOUD 目录（含子目录）立即异步触发 Google Drive 双向同步
+_cloud_auto_sync() {
+  if [[ -n "${CLOUD:-}" && ( "$PWD" == "$CLOUD" || "$PWD" == "$CLOUD/"* ) && -x "$HOME/.local/bin/gdrive-bisync.sh" ]]; then
+    "$HOME/.local/bin/gdrive-bisync.sh" --trigger >/dev/null 2>&1 &!
+  fi
+}
+add-zsh-hook chpwd _cloud_auto_sync
+_cloud_auto_sync
 

@@ -13,8 +13,20 @@ export PATH=$PATH:$HOME/.local/bin/
 
 export SH_FOOT=$HOME/sh_foot
 export TMPDIR=/tmp
-export CLOUD=/run/user/1000/gvfs/google-drive:host=gmail.com,user=gg546229768/0AG-EMH1t7aE4Uk9PVA/
+export CLOUD=$HOME/Documents/GoogleDrive
 export TMPDIR=/tmp/
 
 #Aliases
 source $HOME/.common_aliases.sh
+
+# 进入 $CLOUD 目录（含子目录）立即异步触发 Google Drive 双向同步
+_cloud_last_pwd=""
+_cloud_auto_sync() {
+	if [ "$PWD" != "$_cloud_last_pwd" ]; then
+		_cloud_last_pwd="$PWD"
+		if [ -n "${CLOUD:-}" ] && { [ "$PWD" = "$CLOUD" ] || [[ "$PWD" == "$CLOUD/"* ]]; } && [ -x "$HOME/.local/bin/gdrive-bisync.sh" ]; then
+			("$HOME/.local/bin/gdrive-bisync.sh" --trigger >/dev/null 2>&1 &)
+		fi
+	fi
+}
+PROMPT_COMMAND="_cloud_auto_sync${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
