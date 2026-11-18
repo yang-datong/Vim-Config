@@ -243,6 +243,9 @@ cnoreabbrev w: w
 cnoreabbrev Q q
 cnoreabbrev Qall qall
 cnoreabbrev qAll qall
+cnoreabbrev qA qall
+cnoreabbrev Qa qall
+cnoreabbrev QA qall
 cnoreabbrev Wall wall
 cnoreabbrev wAll wall
 cnoreabbrev Wqall! wqall!

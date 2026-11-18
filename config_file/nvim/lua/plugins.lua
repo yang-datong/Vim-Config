@@ -42,7 +42,7 @@ return {
         "coc-json",
         "coc-pyright",
         "coc-sumneko-lua",
-        --"coc-xml",
+        "coc-xml",
         "coc-yaml",
         "coc-toml",
         "coc-vimlsp",
