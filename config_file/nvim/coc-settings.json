@@ -17,6 +17,10 @@
       "command": "asm-lsp",
       "filetypes": ["nasm", "asm"],
       "rootPatterns": [".git"]
+    },
+    "glsl_analyzer": {
+      "command": "glsl_analyzer",
+      "filetypes": ["glsl", "vert", "tesc", "tese", "geom", "frag", "comp"]
     }
   },
   "mcp": {

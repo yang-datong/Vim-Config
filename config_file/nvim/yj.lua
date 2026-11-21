@@ -183,10 +183,10 @@ require'marks'.setup {
 
 --============================== nvim-Treesitter ===============================
 require('nvim-treesitter').setup()
-require('nvim-treesitter').install({ "asm", "nasm" })
+require('nvim-treesitter').install({ "asm", "nasm", "glsl" })
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { "asm", "nasm" },
+  pattern = { "asm", "nasm", "glsl" },
   callback = function(ev)
     local buf = ev.buf
     local max_filesize = 300 * 1024 -- 300 KB
