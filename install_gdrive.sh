@@ -82,7 +82,24 @@ install_deps() {
 setup_rclone_remote() {
 	echo -e "\033[36m[2/5] 检查 rclone remote (${REMOTE_NAME}:)...\033[0m"
 	if rclone listremotes 2>/dev/null | grep -qx "${REMOTE_NAME}:"; then
-		echo -e "\033[32m已存在 remote '${REMOTE_NAME}:'，跳过 OAuth 授权\033[0m"
+		local test_rc=0
+		if [ -n "$PROXY_URL" ]; then
+			HTTP_PROXY="$PROXY_URL" HTTPS_PROXY="$PROXY_URL" \
+				rclone lsf "${REMOTE_NAME}:" --max-depth 1 --drive-skip-gdocs >/dev/null 2>&1 || test_rc=$?
+		else
+			rclone lsf "${REMOTE_NAME}:" --max-depth 1 --drive-skip-gdocs >/dev/null 2>&1 || test_rc=$?
+		fi
+		if [ "$test_rc" -eq 0 ]; then
+			echo -e "\033[32m已存在且鉴权正常的 remote '${REMOTE_NAME}:'，跳过 OAuth 授权\033[0m"
+		else
+			echo -e "\033[33m检测到 '${REMOTE_NAME}:' 访问失败（可能 Token 已过期或需重新授权），正在重新发起 OAuth 授权...\033[0m"
+			if [ -n "$PROXY_URL" ]; then
+				HTTP_PROXY="$PROXY_URL" HTTPS_PROXY="$PROXY_URL" \
+					rclone config reconnect "${REMOTE_NAME}:"
+			else
+				rclone config reconnect "${REMOTE_NAME}:"
+			fi
+		fi
 	else
 		echo -e "\033[33m即将打开浏览器进行 Google Drive OAuth 授权，请在浏览器中登录并允许访问...\033[0m"
 		if [ -n "$PROXY_URL" ]; then
@@ -560,7 +577,6 @@ EOF
 		if systemctl --user is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
 			systemctl --user stop "$SERVICE_NAME" || true
 		fi
-		rm -f "$HOME/.cache/rclone/bisync/${REMOTE_NAME}"/*.lst*
 		systemd-run --user --collect --no-block --unit="${UNIT_BASE}-resync" "$wrapper_script" --resync
 	else
 		systemctl --user start --no-block "$SERVICE_NAME"

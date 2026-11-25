@@ -212,4 +212,27 @@ function M.sync_nerdtree_current_file()
   if not ok then vim.notify(err, vim.log.levels.WARN) end
 end
 
+local function is_last_nerdtree_tab_tree()
+  return fn.winnr("$") == 1 and fn.exists("b:NERDTree") == 1 and api.nvim_eval("b:NERDTree.isTabTree()") == 1
+end
+
+--- Defer closing the tab/editor when NERDTree is the sole remaining window
+--- so `quit` never executes inside a window-locked `BufEnter` autocmd (E1312).
+function M.close_last_nerdtree_window()
+  if not is_last_nerdtree_tab_tree() then return end
+
+  local win = api.nvim_get_current_win()
+  local buf = api.nvim_get_current_buf()
+
+  vim.schedule(function()
+    if vim.v.exiting ~= vim.NIL or vim.v.dying > 0 then return end
+    if not api.nvim_win_is_valid(win) or not api.nvim_buf_is_valid(buf) then return end
+    if api.nvim_get_current_win() ~= win or api.nvim_get_current_buf() ~= buf then return end
+    if not is_last_nerdtree_tab_tree() then return end
+
+    local ok, err = pcall(vim.cmd, "quit")
+    if not ok then vim.notify(tostring(err), vim.log.levels.WARN) end
+  end)
+end
+
 return M

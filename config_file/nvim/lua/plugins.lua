@@ -25,6 +25,15 @@ return {
     "chentoast/marks.nvim",
     config = true,
   },
+  {
+    "folke/todo-comments.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = {
+      highlight = {
+        keyword = "fg",
+      },
+    },
+  },
   { "deris/vim-shot-f" },
   -- LSP / 补全 / 格式化
   {
@@ -199,9 +208,7 @@ return {
 
       api.nvim_create_autocmd("BufEnter", {
         group = helper.create_augroup("NERDTreeCloseLastWindow"),
-        callback = function()
-          vim.cmd([[if winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree() | quit | endif]])
-        end,
+        callback = helper.close_last_nerdtree_window,
       })
       api.nvim_create_autocmd("BufEnter", {
         group = helper.create_augroup("NERDTreeCurrentFileMarker"),
