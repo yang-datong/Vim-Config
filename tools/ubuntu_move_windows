@@ -24,7 +24,7 @@ usage() {
 
 Options:
   -h, --help        Display this message
-  -v, --version     Display script version
+      --version     Display script version
   -p <screen>       Screen index, e.g. 1 or 2
   -w <window>       Window title, default is :ACTIVE:
   -l                Move window to left half
@@ -36,6 +36,7 @@ Options:
   -t                Move window to top half
   -d                Move window to bottom half
   -c                Center window
+  -v                Center window at optimal coding viewport (75%x85%, Wayland only)
   -m                Maximize window"
 }
 
@@ -214,6 +215,11 @@ x11_main() {
 		exit 1
 	fi
 
+	if [ "$key" = "coding" ]; then
+		echo "Option -v is only supported on the Wayland backend." >&2
+		exit 1
+	fi
+
 	if [ -f "$screen_info_file" ]; then
 		read_database_info
 	else
@@ -256,10 +262,7 @@ while getopts ":hp:vlruijktdcmw:D:-:" opt; do
 	case "${opt}" in
 	h) usage && exit 0 ;;
 	p) second_screen="${OPTARG}" ;;
-	v)
-		echo "$0 -- Version $ScriptVersion"
-		exit 0
-		;;
+	v) key="coding" ;;
 	l) key="left" ;;
 	r) key="right" ;;
 	u) key="u" ;;
