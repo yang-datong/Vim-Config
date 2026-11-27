@@ -156,14 +156,48 @@ local function layout_nerdtree_and_tagbar()
   end)
 end
 
-function M.open_tagbar_below_nerdtree()
-  local source_win = api.nvim_get_current_win()
+local function can_tagbar_display(win)
+  local buf = api.nvim_win_get_buf(win)
+  local name = api.nvim_buf_get_name(buf)
+  if is_skipped_window(win) or vim.bo[buf].buftype ~= "" or name == "" then return false end
+
+  local ok, lazy = pcall(require, "lazy")
+  if ok then pcall(lazy.load, { plugins = { "tagbar" } }) end
+  if not api.nvim_win_call(win, function() return pcall(fn["tagbar#Update"]) end) then return false end
+
+  local fileinfo = fn["tagbar#state#get_current_file"](0)
+  return type(fileinfo) == "table"
+    and fileinfo.fpath == fn.fnamemodify(name, ":p")
+    and type(fileinfo._taglist) == "table"
+    and #fileinfo._taglist > 0
+end
+
+function M.open_tagbar_below_nerdtree(source_win)
+  source_win = (source_win and api.nvim_win_is_valid(source_win)) and source_win or api.nvim_get_current_win()
   local tree_win = nerdtree_window()
   if tree_win then api.nvim_set_current_win(tree_win) end
 
   vim.cmd("TagbarOpen")
   layout_nerdtree_and_tagbar()
 
+  if api.nvim_win_is_valid(source_win) then api.nvim_set_current_win(source_win) end
+end
+
+function M.open_studio_sidebar()
+  local source_win = api.nvim_get_current_win()
+  local buf = api.nvim_win_get_buf(source_win)
+  if vim.bo[buf].filetype ~= "nerdtree" then
+    local name = api.nvim_buf_get_name(buf)
+    local is_file = name ~= "" and vim.bo[buf].buftype == "" and fn.isdirectory(name) == 0
+    vim.cmd(is_file and "NERDTreeFind" or "NERDTree")
+  end
+
+  M.mark_nerdtree_current_file()
+  if can_tagbar_display(source_win) then
+    M.open_tagbar_below_nerdtree(source_win)
+  elseif tagbar_window() then
+    vim.cmd("TagbarClose")
+  end
   if api.nvim_win_is_valid(source_win) then api.nvim_set_current_win(source_win) end
 end
 

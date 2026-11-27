@@ -225,13 +225,7 @@ return {
         api.nvim_create_autocmd("VimEnter", {
           group = helper.create_augroup("NERDTreeStudioAutoOpen"),
           nested = true,
-          callback = function()
-            local source_win = api.nvim_get_current_win()
-            vim.cmd("NERDTreeFind")
-            helper.mark_nerdtree_current_file()
-            helper.open_tagbar_below_nerdtree()
-            if api.nvim_win_is_valid(source_win) then api.nvim_set_current_win(source_win) end
-          end,
+          callback = helper.open_studio_sidebar,
         })
       end
     end,

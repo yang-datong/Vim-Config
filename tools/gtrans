@@ -382,34 +382,10 @@ def is_incomplete_translation(
 def translate_auto(
     text: str, source: str, target: str, timeout: float, verbose: bool = False
 ) -> tuple[str, str, str, Any]:
-    errors = []
-
-    # For multiline or long text, Google handles entire paragraphs cleanly,
-    # whereas Tencent Transmart silently truncates/drops paragraphs after ~400 chars.
-    if "\n" in text or len(text) > 200:
-        engines = ["google", "tencent"]
-    else:
-        engines = ["tencent", "google"]
-
-    # Allocate an independent fair timeout per engine instead of a depleting shared deadline
-    per_engine_timeout = max(3.0, timeout * 0.6)
-
-    for eng in engines:
-        try:
-            if eng == "tencent":
-                trans, det_src, raw_data = translate_tencent(text, source, target, per_engine_timeout)
-                if is_incomplete_translation(text, trans, source, target):
-                    raise RuntimeError("Tencent returned truncated/incomplete translation")
-                return "tencent", det_src, trans, raw_data
-            else:
-                trans, det_src, raw_data = translate_google(text, source, target, per_engine_timeout)
-                return "google", det_src, trans, raw_data
-        except Exception as e:
-            errors.append(f"{eng}: {e}")
-            if verbose:
-                print(f"[gtrans fallback] {eng} failed ({e}), trying next...", file=sys.stderr)
-
-    raise RuntimeError(f"all translation engines failed: {'; '.join(errors)}")
+    # Tencent TranSmart (transmart.qq.com) shut down on 2026-11-24,
+    # so auto mode goes directly to Google until a replacement domestic engine is configured.
+    trans, det_src, raw_data = translate_google(text, source, target, max(0.5, timeout))
+    return "google", det_src, trans, raw_data
 
 
 def should_try_pinyin_fallback(
