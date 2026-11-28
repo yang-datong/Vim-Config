@@ -20,7 +20,7 @@ for _py_bin in "$HOME"/Library/Python/*/bin(N); do
   export PATH="$_py_bin:$PATH"
 done
 unset _py_bin
-export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/.cargo/bin:$HOME/.local/bin:$PATH
 
 export SH_FOOT=$HOME/sh_foot
 export CLOUD=$HOME/Library/Mobile\ Documents/com~apple~CloudDocs
